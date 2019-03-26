@@ -21,3 +21,26 @@
 
 # virtual machine crash logs, see http://www.java.com/en/download/help/error_hotspot.xml
 hs_err_pid*
+
+.DS_Store
+
+.classpath
+.project
+.settings/*
+target/*
+../.project
+../.settings/
+
+grocery-core/.settings/*
+grocery-core/target/*
+
+grocery-integ/.settings/*
+grocery-integ/target/*
+grocery-integ/.DS_Store
+
+grocery-core/.mvn
+grocery-core/mvnw
+grocery-core/mvnw.cmd
+grocery-integ/.mvn
+grocery-integ/mvnw
+grocery-integ/mvnw.cmd
