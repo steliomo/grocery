@@ -13,11 +13,11 @@ import javax.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 
-import mz.co.grocery.core.config.AbstractServiceTest;
+import mz.co.grocery.core.config.AbstractIntegServiceTest;
 import mz.co.grocery.core.fixturefactory.SaleItemTemplate;
 import mz.co.grocery.core.product.service.ProductDescriptionService;
 import mz.co.grocery.core.product.service.ProductService;
-import mz.co.grocery.core.product.service.ProductSizeService;
+import mz.co.grocery.core.product.service.ProductUnitService;
 import mz.co.grocery.core.sale.model.Sale;
 import mz.co.grocery.core.sale.model.SaleItem;
 import mz.co.grocery.core.sale.service.SaleService;
@@ -30,7 +30,7 @@ import mz.co.msaude.boot.frameworks.util.TestUtil;
  * @author Stélio Moiane
  *
  */
-public class SaleServiceTest extends AbstractServiceTest {
+public class SaleServiceTest extends AbstractIntegServiceTest {
 
 	@Inject
 	private SaleService saleService;
@@ -42,7 +42,7 @@ public class SaleServiceTest extends AbstractServiceTest {
 	private ProductService productService;
 
 	@Inject
-	private ProductSizeService productSizeService;
+	private ProductUnitService productSizeService;
 
 	@Inject
 	private ProductDescriptionService productDescriptionService;
@@ -60,8 +60,8 @@ public class SaleServiceTest extends AbstractServiceTest {
 			try {
 				this.productService.createProduct(this.getUserContext(),
 				        saleItem.getStock().getProductDescription().getProduct());
-				this.productSizeService.createProductSize(this.getUserContext(),
-				        saleItem.getStock().getProductDescription().getProductSize());
+				this.productSizeService.createProductUnit(this.getUserContext(),
+				        saleItem.getStock().getProductDescription().getProductUnit());
 				this.productDescriptionService.createProductDescription(this.getUserContext(),
 				        saleItem.getStock().getProductDescription());
 				this.stockService.createStock(this.getUserContext(), saleItem.getStock());
@@ -78,8 +78,8 @@ public class SaleServiceTest extends AbstractServiceTest {
 			try {
 				this.productService.createProduct(this.getUserContext(),
 				        saleItem.getStock().getProductDescription().getProduct());
-				this.productSizeService.createProductSize(this.getUserContext(),
-				        saleItem.getStock().getProductDescription().getProductSize());
+				this.productSizeService.createProductUnit(this.getUserContext(),
+				        saleItem.getStock().getProductDescription().getProductUnit());
 				this.productDescriptionService.createProductDescription(this.getUserContext(),
 				        saleItem.getStock().getProductDescription());
 				this.stockService.createStock(this.getUserContext(), saleItem.getStock());

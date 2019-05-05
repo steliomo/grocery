@@ -8,7 +8,7 @@ import br.com.six2six.fixturefactory.Rule;
 import br.com.six2six.fixturefactory.loader.TemplateLoader;
 import mz.co.grocery.core.product.model.Product;
 import mz.co.grocery.core.product.model.ProductDescription;
-import mz.co.grocery.core.product.model.ProductSize;
+import mz.co.grocery.core.product.model.ProductUnit;
 
 /**
  * @author Stélio Moiane
@@ -25,7 +25,7 @@ public class ProductDescriptionTemplate implements TemplateLoader {
 			{
 				this.add("product", this.one(Product.class, ProductTemplate.VALID));
 				this.add("description", "pipoca de milho");
-				this.add("productSize", this.one(ProductSize.class, ProductSizeTemplate.VALID));
+				this.add("productUnit", this.one(ProductUnit.class, ProductUnitTemplate.VALID));
 			}
 		});
 

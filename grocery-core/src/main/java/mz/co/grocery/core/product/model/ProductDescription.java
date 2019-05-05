@@ -8,16 +8,24 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
+import mz.co.grocery.core.product.dao.ProductDescriptionDAO;
 import mz.co.msaude.boot.frameworks.model.GenericEntity;
 
 /**
  * @author Stélio Moiane
  *
  */
+@NamedQueries({
+        @NamedQuery(name = ProductDescriptionDAO.QUERY_NAME.fetchdAll, query = ProductDescriptionDAO.QUERY.fetchdAll),
+        @NamedQuery(name = ProductDescriptionDAO.QUERY_NAME.count, query = ProductDescriptionDAO.QUERY.count),
+        @NamedQuery(name = ProductDescriptionDAO.QUERY_NAME.fetchByDescription, query = ProductDescriptionDAO.QUERY.fetchByDescription),
+        @NamedQuery(name = ProductDescriptionDAO.QUERY_NAME.fetchByUuid, query = ProductDescriptionDAO.QUERY.fetchByUuid) })
 @Entity
 @Table(name = "PRODUCT_DESCRIPTIONS")
 public class ProductDescription extends GenericEntity {
@@ -35,8 +43,8 @@ public class ProductDescription extends GenericEntity {
 
 	@NotNull
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "PRODUCT_SIZE", nullable = false)
-	private ProductSize productSize;
+	@JoinColumn(name = "PRODUCT_UNIT", nullable = false)
+	private ProductUnit productUnit;
 
 	public Product getProduct() {
 		return this.product;
@@ -54,11 +62,11 @@ public class ProductDescription extends GenericEntity {
 		this.description = description;
 	}
 
-	public ProductSize getProductSize() {
-		return this.productSize;
+	public ProductUnit getProductUnit() {
+		return this.productUnit;
 	}
 
-	public void setProductSize(final ProductSize productSize) {
-		this.productSize = productSize;
+	public void setProductUnit(final ProductUnit productUnit) {
+		this.productUnit = productUnit;
 	}
 }

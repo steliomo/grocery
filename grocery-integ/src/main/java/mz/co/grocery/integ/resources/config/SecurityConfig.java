@@ -4,6 +4,7 @@
 package mz.co.grocery.integ.resources.config;
 
 import javax.inject.Inject;
+import javax.ws.rs.HttpMethod;
 
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -35,8 +36,9 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(final HttpSecurity http) throws Exception {
-		http.authorizeRequests().anyRequest().authenticated().and().httpBasic().and().csrf().disable()
-		        .sessionManagement().sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+		http.authorizeRequests().antMatchers(HttpMethod.OPTIONS, "**").permitAll().anyRequest().authenticated().and()
+		        .httpBasic().and().csrf().disable().sessionManagement()
+		        .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 	}
 
 	@Bean

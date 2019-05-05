@@ -12,5 +12,10 @@ import mz.co.msaude.boot.frameworks.model.UserContext;
  *
  */
 public interface ProductService {
+
 	Product createProduct(UserContext userContext, Product product) throws BusinessException;
+
+	Product uppdateProduct(UserContext userContext, Product product) throws BusinessException;
+
+	Product removeProduct(UserContext userContext, Product product) throws BusinessException;
 }

@@ -7,13 +7,13 @@ package mz.co.grocery.core.product.model;
  * @author Stélio Moiane
  *
  */
-public enum ProductSizeType {
+public enum ProductUnitType {
 
-	KILOGRAM,
+	KG,
 
-	GRAM,
+	G,
 
-	LITER,
+	L,
 
-	MILITRE;
+	ML;
 }

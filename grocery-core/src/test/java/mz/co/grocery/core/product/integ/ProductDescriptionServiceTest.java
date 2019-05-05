@@ -8,12 +8,12 @@ import javax.inject.Inject;
 import org.junit.Before;
 import org.junit.Test;
 
-import mz.co.grocery.core.config.AbstractServiceTest;
+import mz.co.grocery.core.config.AbstractIntegServiceTest;
 import mz.co.grocery.core.fixturefactory.ProductDescriptionTemplate;
 import mz.co.grocery.core.product.model.ProductDescription;
 import mz.co.grocery.core.product.service.ProductDescriptionService;
 import mz.co.grocery.core.product.service.ProductService;
-import mz.co.grocery.core.product.service.ProductSizeService;
+import mz.co.grocery.core.product.service.ProductUnitService;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.fixturefactory.EntityFactory;
 import mz.co.msaude.boot.frameworks.util.TestUtil;
@@ -22,13 +22,13 @@ import mz.co.msaude.boot.frameworks.util.TestUtil;
  * @author Stélio Moiane
  *
  */
-public class ProductDescriptionServiceTest extends AbstractServiceTest {
+public class ProductDescriptionServiceTest extends AbstractIntegServiceTest {
 
 	@Inject
 	private ProductService productService;
 
 	@Inject
-	private ProductSizeService productSizeService;
+	private ProductUnitService productSizeService;
 
 	@Inject
 	private ProductDescriptionService productDescriptionService;
@@ -40,7 +40,7 @@ public class ProductDescriptionServiceTest extends AbstractServiceTest {
 		this.productDescription = EntityFactory.gimme(ProductDescription.class, ProductDescriptionTemplate.VALID);
 
 		this.productService.createProduct(this.getUserContext(), this.productDescription.getProduct());
-		this.productSizeService.createProductSize(this.getUserContext(), this.productDescription.getProductSize());
+		this.productSizeService.createProductUnit(this.getUserContext(), this.productDescription.getProductUnit());
 
 	}
 

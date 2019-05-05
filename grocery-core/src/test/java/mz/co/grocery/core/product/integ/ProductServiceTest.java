@@ -5,9 +5,10 @@ package mz.co.grocery.core.product.integ;
 
 import javax.inject.Inject;
 
+import org.junit.Before;
 import org.junit.Test;
 
-import mz.co.grocery.core.config.AbstractServiceTest;
+import mz.co.grocery.core.config.AbstractIntegServiceTest;
 import mz.co.grocery.core.fixturefactory.ProductTemplate;
 import mz.co.grocery.core.product.model.Product;
 import mz.co.grocery.core.product.service.ProductService;
@@ -19,17 +20,31 @@ import mz.co.msaude.boot.frameworks.util.TestUtil;
  * @author Stélio Moiane
  *
  */
-public class ProductServiceTest extends AbstractServiceTest {
+public class ProductServiceTest extends AbstractIntegServiceTest {
 
 	@Inject
 	private ProductService productService;
 
+	private Product product;
+
+	@Before
+	public void before() {
+		this.product = EntityFactory.gimme(Product.class, ProductTemplate.VALID);
+	}
+
 	@Test
 	public void shouldCreateProduct() throws BusinessException {
 
-		final Product product = EntityFactory.gimme(Product.class, ProductTemplate.VALID);
-		this.productService.createProduct(this.getUserContext(), product);
+		this.productService.createProduct(this.getUserContext(), this.product);
 
-		TestUtil.assertCreation(product);
+		TestUtil.assertCreation(this.product);
+	}
+
+	@Test
+	public void shouldUpdateProduct() throws BusinessException {
+		this.productService.createProduct(this.getUserContext(), this.product);
+		this.productService.uppdateProduct(this.getUserContext(), this.product);
+
+		TestUtil.assertUpdate(this.product);
 	}
 }
