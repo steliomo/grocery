@@ -27,9 +27,13 @@ public class StockServiceImpl extends AbstractService implements StockService {
 
 	@Override
 	public Stock createStock(final UserContext userContext, final Stock stock) throws BusinessException {
-
 		this.stockDAO.create(userContext, stock);
+		return stock;
+	}
 
+	@Override
+	public Stock updateStock(final UserContext userContext, final Stock stock) throws BusinessException {
+		this.stockDAO.update(userContext, stock);
 		return stock;
 	}
 

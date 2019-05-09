@@ -15,4 +15,6 @@ public interface StockService {
 
 	Stock createStock(UserContext userContext, Stock stock) throws BusinessException;
 
+	Stock updateStock(UserContext userContext, Stock stock) throws BusinessException;
+
 }

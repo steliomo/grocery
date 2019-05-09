@@ -9,6 +9,7 @@ import org.springframework.stereotype.Service;
 import mz.co.grocery.integ.resources.product.ProductDescriptionResource;
 import mz.co.grocery.integ.resources.product.ProductResource;
 import mz.co.grocery.integ.resources.product.ProductUnitResource;
+import mz.co.grocery.integ.resources.stock.StockResource;
 
 /**
  * @author Stélio Moiane
@@ -22,5 +23,6 @@ public class JerseyConfig extends ResourceConfig {
 		this.register(ProductResource.class);
 		this.register(ProductUnitResource.class);
 		this.register(ProductDescriptionResource.class);
+		this.register(StockResource.class);
 	}
 }

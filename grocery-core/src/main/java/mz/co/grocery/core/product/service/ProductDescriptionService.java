@@ -15,4 +15,10 @@ public interface ProductDescriptionService {
 
 	ProductDescription createProductDescription(UserContext userContext, ProductDescription productDescription)
 	        throws BusinessException;
+
+	ProductDescription updateProductDescription(UserContext userContext, ProductDescription productDescription)
+	        throws BusinessException;
+
+	ProductDescription removeProductDescription(UserContext userContext, ProductDescription productDescription)
+	        throws BusinessException;
 }

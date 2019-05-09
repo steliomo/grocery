@@ -57,4 +57,13 @@ public class StockServiceTest extends AbstractIntegServiceTest {
 
 		TestUtil.assertCreation(this.stock);
 	}
+
+	@Test
+	public void shouldUpdateStock() throws BusinessException {
+
+		this.stockService.createStock(this.getUserContext(), this.stock);
+		this.stockService.updateStock(this.getUserContext(), this.stock);
+
+		TestUtil.assertUpdate(this.stock);
+	}
 }

@@ -11,17 +11,22 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 import mz.co.grocery.core.product.model.ProductDescription;
 import mz.co.grocery.core.sale.model.SaleItem;
+import mz.co.grocery.core.stock.dao.StockDAO;
 import mz.co.msaude.boot.frameworks.model.GenericEntity;
 
 /**
  * @author Stélio Moiane
  *
  */
+@NamedQueries({ @NamedQuery(name = StockDAO.QUERY_NAME.findAllIds, query = StockDAO.QUERY.findAllIds),
+        @NamedQuery(name = StockDAO.QUERY_NAME.fetchAll, query = StockDAO.QUERY.fetchAll) })
 @Entity
 @Table(name = "STOCKS")
 public class Stock extends GenericEntity {
@@ -84,6 +89,7 @@ public class Stock extends GenericEntity {
 			final BigDecimal result = saleItem.getSaleItemValue().divide(this.salePrice, 2, RoundingMode.HALF_UP);
 
 			this.quantity = this.quantity.subtract(result);
+
 			return;
 		}
 

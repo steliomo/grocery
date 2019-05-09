@@ -7,8 +7,10 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -84,6 +86,29 @@ public class ProductDescriptionResource extends AbstractResource {
 
 		final ProductDescription productDescription = this.productDescriptionQueryService
 		        .fetchProductDescriptionByUuid(productDescriptionUuid);
+
+		return Response.ok(productDescription).build();
+	}
+
+	@PUT
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response updateProductDescription(final ProductDescription productDescription) throws BusinessException {
+		this.productDescriptionService.updateProductDescription(this.getContext(), productDescription);
+
+		return Response.ok(productDescription).build();
+	}
+
+	@Path("{productDescriptionUuid}")
+	@DELETE
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response deleteProductDescription(@PathParam("productDescriptionUuid") final String productDescriptionUuid)
+	        throws BusinessException {
+		final ProductDescription productDescription = this.productDescriptionQueryService
+		        .fetchProductDescriptionByUuid(productDescriptionUuid);
+
+		this.productDescriptionService.updateProductDescription(this.getContext(), productDescription);
 
 		return Response.ok(productDescription).build();
 	}

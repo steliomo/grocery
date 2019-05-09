@@ -46,9 +46,16 @@ public class ProductDescriptionServiceTest extends AbstractIntegServiceTest {
 
 	@Test
 	public void shouldCreateProductDescription() throws BusinessException {
-
 		this.productDescriptionService.createProductDescription(this.getUserContext(), this.productDescription);
 
 		TestUtil.assertCreation(this.productDescription);
+	}
+
+	@Test
+	public void shouldUpateProductDescription() throws BusinessException {
+		this.productDescriptionService.createProductDescription(this.getUserContext(), this.productDescription);
+		this.productDescriptionService.updateProductDescription(this.getUserContext(), this.productDescription);
+
+		TestUtil.assertUpdate(this.productDescription);
 	}
 }
