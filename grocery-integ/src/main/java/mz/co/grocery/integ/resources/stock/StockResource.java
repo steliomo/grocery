@@ -7,10 +7,12 @@ import java.util.List;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
@@ -67,5 +69,31 @@ public class StockResource extends AbstractResource {
 		final StockDTO stockDTO = new StockDTO(stocks, totalItems);
 
 		return Response.ok(stockDTO).build();
+	}
+
+	@GET
+	@Path("{stockUuid}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response fetchByUuid(@PathParam("stockUuid") final String stockUuid) throws BusinessException {
+		final Stock stock = this.stockQueryService.fetchStockByUuid(stockUuid);
+		return Response.ok(stock).build();
+	}
+
+	@GET
+	@Path("by-description")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response fetchStocksByProductDescription(@QueryParam("description") final String description)
+	        throws BusinessException {
+		final List<Stock> stocks = this.stockQueryService.fetchStocksByProductDescription(description);
+		return Response.ok(stocks).build();
+	}
+
+	@DELETE
+	@Path("{stockUuid}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response removeStock(@PathParam("stockUuid") final String stockUuid) throws BusinessException {
+		final Stock stock = this.stockQueryService.fetchStockByUuid(stockUuid);
+		this.stockService.removeStock(this.getContext(), stock);
+		return Response.ok(stock).build();
 	}
 }

@@ -18,4 +18,8 @@ public interface StockQueryService {
 	List<Stock> fetchAllStocks(int currentPage, int maxResult) throws BusinessException;
 
 	Long count(EntityStatus entityStatus) throws BusinessException;
+
+	Stock fetchStockByUuid(String stockUuid) throws BusinessException;
+
+	List<Stock> fetchStocksByProductDescription(String description) throws BusinessException;
 }

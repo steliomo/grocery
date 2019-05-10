@@ -34,4 +34,17 @@ public class StockDAOImpl extends GenericDAOImpl<Stock, Long> implements StockDA
 		return this.findByNamedQuery(StockDAO.QUERY_NAME.fetchAll,
 		        new ParamBuilder().add("stockIds", stockIds).process());
 	}
+
+	@Override
+	public Stock fetchByUuid(final String stockUuid, final EntityStatus entityStatus) throws BusinessException {
+		return this.findSingleByNamedQuery(StockDAO.QUERY_NAME.fetchByUuid,
+		        new ParamBuilder().add("stockUuid", stockUuid).add("entityStatus", entityStatus).process());
+	}
+
+	@Override
+	public List<Stock> fetchByProductDescription(final String description, final EntityStatus entityStatus)
+	        throws BusinessException {
+		return this.findByNamedQuery(StockDAO.QUERY_NAME.fetchByProductDescription, new ParamBuilder()
+		        .add("description", "%" + description + "%").add("entityStatus", entityStatus).process());
+	}
 }

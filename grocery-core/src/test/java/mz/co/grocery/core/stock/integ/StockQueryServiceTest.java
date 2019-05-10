@@ -46,6 +46,8 @@ public class StockQueryServiceTest extends AbstractIntegServiceTest {
 	@Inject
 	private StockService stockService;
 
+	private String stockUuid;
+
 	@Before
 	public void before() throws BusinessException {
 
@@ -53,6 +55,7 @@ public class StockQueryServiceTest extends AbstractIntegServiceTest {
 
 		stocks.forEach(stock -> {
 			this.createStock(stock);
+			this.stockUuid = stock.getUuid();
 		});
 	}
 
@@ -80,6 +83,31 @@ public class StockQueryServiceTest extends AbstractIntegServiceTest {
 
 		assertFalse(stocks.isEmpty());
 		assertEquals(maxResult, stocks.size());
+
+		stocks.forEach(stock -> {
+			assertNotNull(stock.getProductDescription());
+			assertNotNull(stock.getProductDescription().getProduct());
+			assertNotNull(stock.getProductDescription().getProductUnit());
+		});
+	}
+
+	@Test
+	public void shouldFectStockByUuid() throws BusinessException {
+		final Stock stock = this.stockQueryService.fetchStockByUuid(this.stockUuid);
+
+		assertNotNull(stock.getProductDescription());
+		assertNotNull(stock.getProductDescription().getProduct());
+		assertNotNull(stock.getProductDescription().getProductUnit());
+	}
+
+	@Test
+	public void shouldFetchStocksByProductDescription() throws BusinessException {
+
+		final String description = "milho";
+
+		final List<Stock> stocks = this.stockQueryService.fetchStocksByProductDescription(description);
+
+		assertFalse(stocks.isEmpty());
 
 		stocks.forEach(stock -> {
 			assertNotNull(stock.getProductDescription());

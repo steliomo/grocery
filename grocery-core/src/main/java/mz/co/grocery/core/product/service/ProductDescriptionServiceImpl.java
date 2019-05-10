@@ -10,7 +10,6 @@ import org.springframework.stereotype.Service;
 import mz.co.grocery.core.product.dao.ProductDescriptionDAO;
 import mz.co.grocery.core.product.model.ProductDescription;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
-import mz.co.msaude.boot.frameworks.model.EntityStatus;
 import mz.co.msaude.boot.frameworks.model.UserContext;
 import mz.co.msaude.boot.frameworks.service.AbstractService;
 
@@ -43,7 +42,7 @@ public class ProductDescriptionServiceImpl extends AbstractService implements Pr
 	@Override
 	public ProductDescription removeProductDescription(final UserContext userContext,
 	        final ProductDescription productDescription) throws BusinessException {
-		productDescription.setEntityStatus(EntityStatus.INACTIVE);
+		productDescription.inactive();
 		this.productDescriptionDAO.update(userContext, productDescription);
 		return productDescription;
 	}

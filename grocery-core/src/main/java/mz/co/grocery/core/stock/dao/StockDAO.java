@@ -21,6 +21,10 @@ public interface StockDAO extends GenericDAO<Stock, Long> {
 		public static final String findAllIds = "SELECT s.id FROM Stock s WHERE s.entityStatus = :entityStatus";
 
 		public static final String fetchAll = "SELECT s FROM Stock s INNER JOIN FETCH s.productDescription pd INNER JOIN FETCH pd.product INNER JOIN FETCH pd.productUnit WHERE s.id IN (:stockIds) GROUP BY s.id ORDER BY pd.product.name, pd.description";
+
+		public static final String fetchByUuid = "SELECT s FROM Stock s INNER JOIN FETCH s.productDescription pd INNER JOIN FETCH pd.product INNER JOIN FETCH pd.productUnit WHERE s.uuid = :stockUuid AND s.entityStatus = :entityStatus";
+
+		public static final String fetchByProductDescription = "SELECT s FROM Stock s INNER JOIN FETCH s.productDescription pd INNER JOIN FETCH pd.product INNER JOIN FETCH pd.productUnit WHERE pd.description LIKE :description AND s.entityStatus = :entityStatus";
 	}
 
 	class QUERY_NAME {
@@ -28,8 +32,16 @@ public interface StockDAO extends GenericDAO<Stock, Long> {
 		public static final String findAllIds = "Stock.findAllIds";
 
 		public static final String fetchAll = "Stock.fetchAll";
+
+		public static final String fetchByUuid = "Stock.fetchByUuid";
+
+		public static final String fetchByProductDescription = "Stock.fetchByProductDescription";
 	}
 
 	List<Stock> fetchAll(int currentPage, int maxResult, EntityStatus entityStatus) throws BusinessException;
+
+	Stock fetchByUuid(String stockUuid, EntityStatus entityStatus) throws BusinessException;
+
+	List<Stock> fetchByProductDescription(String description, EntityStatus entityStatus) throws BusinessException;
 
 }
