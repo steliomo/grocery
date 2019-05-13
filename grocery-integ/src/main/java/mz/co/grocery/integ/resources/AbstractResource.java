@@ -15,7 +15,7 @@ import mz.co.msaude.boot.frameworks.model.UserContext;
  */
 public abstract class AbstractResource {
 
-	private final UserContext context;
+	private UserContext context;
 
 	public AbstractResource() {
 		this.context = new UserContext();
@@ -24,7 +24,8 @@ public abstract class AbstractResource {
 	public UserContext getContext() {
 		final Authentication authentication = SecurityContextHolder.getContext().getAuthentication();
 		final UserDetailsImpl principal = (UserDetailsImpl) authentication.getPrincipal();
-		this.context.setUuid(principal.getUuid());
+		this.context = principal.getUserContext();
+		this.context.setPassword(null);
 		return this.context;
 	}
 }

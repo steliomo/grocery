@@ -97,4 +97,8 @@ public class Stock extends GenericEntity {
 
 		this.quantity = this.quantity.subtract(saleItem.getQuantity());
 	}
+
+	public void addQuantity(final BigDecimal quantity) {
+		this.quantity = this.quantity.add(quantity);
+	}
 }

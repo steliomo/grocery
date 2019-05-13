@@ -37,7 +37,7 @@ public class SaleServiceImpl extends AbstractService implements SaleService {
 	public Sale registSale(final UserContext userContext, final Sale sale) throws BusinessException {
 
 		if (sale.getItems().isEmpty()) {
-			throw new BusinessException("");
+			throw new BusinessException("cannot create a sale without items");
 		}
 
 		this.saleDAO.create(userContext, sale);
@@ -54,6 +54,8 @@ public class SaleServiceImpl extends AbstractService implements SaleService {
 				e.printStackTrace();
 			}
 		});
+
+		sale.setTotal();
 
 		return sale;
 	}

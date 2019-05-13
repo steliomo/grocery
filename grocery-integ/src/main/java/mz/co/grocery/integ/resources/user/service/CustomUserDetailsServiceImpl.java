@@ -39,7 +39,8 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
 		        .request(MediaType.APPLICATION_JSON).get(UserDTO.class);
 
 		user.setPassword(get.getPassword());
-		user.setUuid(get.getCreatedBy());
+		user.setUuid(get.getUuid());
+		user.setFullName(get.getFullName());
 
 		return new UserDetailsImpl(user);
 	}

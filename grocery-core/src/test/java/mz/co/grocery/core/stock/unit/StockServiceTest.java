@@ -5,6 +5,8 @@ package mz.co.grocery.core.stock.unit;
 
 import static org.junit.Assert.assertEquals;
 
+import java.math.BigDecimal;
+
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
@@ -43,5 +45,15 @@ public class StockServiceTest extends AbstractUnitServiceTest {
 	public void shouldRemoveStock() throws BusinessException {
 		this.stockService.removeStock(this.getUserContext(), this.stock);
 		assertEquals(EntityStatus.INACTIVE, this.stock.getEntityStatus());
+	}
+
+	@Test
+	public void shouldAddStockQuantity() throws BusinessException {
+		final BigDecimal quantity = new BigDecimal(10);
+		final BigDecimal oldQuantity = this.stock.getQuantity();
+
+		this.stockService.addStockQuantity(this.getUserContext(), this.stock, quantity);
+
+		assertEquals(oldQuantity.add(quantity), this.stock.getQuantity());
 	}
 }

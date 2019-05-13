@@ -3,6 +3,8 @@
  */
 package mz.co.grocery.core.stock.service;
 
+import java.math.BigDecimal;
+
 import javax.inject.Inject;
 
 import org.springframework.stereotype.Service;
@@ -41,6 +43,20 @@ public class StockServiceImpl extends AbstractService implements StockService {
 	public Stock removeStock(final UserContext userContext, final Stock stock) throws BusinessException {
 		stock.inactive();
 		this.stockDAO.update(userContext, stock);
+		return stock;
+	}
+
+	@Override
+	public Stock addStockQuantity(final UserContext userContext, final Stock stock, final BigDecimal quantity)
+	        throws BusinessException {
+
+		if (BigDecimal.ZERO.doubleValue() == quantity.doubleValue()) {
+			throw new BusinessException("The stock quantity cannot be less than 1");
+		}
+
+		stock.addQuantity(quantity);
+		this.stockDAO.update(userContext, stock);
+
 		return stock;
 	}
 

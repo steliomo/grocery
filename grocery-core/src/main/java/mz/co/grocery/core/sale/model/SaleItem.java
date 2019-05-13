@@ -12,6 +12,7 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
+import javax.xml.bind.annotation.XmlTransient;
 
 import mz.co.grocery.core.stock.model.Stock;
 import mz.co.msaude.boot.frameworks.model.GenericEntity;
@@ -26,6 +27,7 @@ public class SaleItem extends GenericEntity {
 
 	private static final long serialVersionUID = 1L;
 
+	@XmlTransient
 	@NotNull
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "SALE_ID", nullable = false)

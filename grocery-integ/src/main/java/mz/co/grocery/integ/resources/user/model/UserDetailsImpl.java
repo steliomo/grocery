@@ -59,7 +59,7 @@ public class UserDetailsImpl implements UserDetails {
 		return true;
 	}
 
-	public String getUuid() {
-		return this.userContext.getUuid();
+	public UserContext getUserContext() {
+		return this.userContext;
 	}
 }

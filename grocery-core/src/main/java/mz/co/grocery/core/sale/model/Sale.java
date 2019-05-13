@@ -32,7 +32,7 @@ public class Sale extends GenericEntity {
 
 	@NotNull
 	@Column(name = "TOTAL")
-	private BigDecimal total;
+	private BigDecimal total = BigDecimal.ZERO;
 
 	public Set<SaleItem> getItems() {
 		return Collections.unmodifiableSet(this.items);
@@ -42,14 +42,18 @@ public class Sale extends GenericEntity {
 
 		if (this.items == null) {
 			this.items = new HashSet<>();
-			this.total = BigDecimal.ZERO;
 		}
 
-		this.total = this.total.add(item.getTotal());
 		this.items.add(item);
 	}
 
 	public BigDecimal getTotal() {
 		return this.total;
+	}
+
+	public void setTotal() {
+		this.items.forEach(saleItem -> {
+			this.total = this.total.add(saleItem.getTotal());
+		});
 	}
 }

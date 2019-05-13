@@ -96,4 +96,28 @@ public class StockResource extends AbstractResource {
 		this.stockService.removeStock(this.getContext(), stock);
 		return Response.ok(stock).build();
 	}
+
+	@PUT
+	@Path("add-quantity")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response addStockQuantity(final StockDTO stockDTO) throws BusinessException {
+		final List<StockQuantity> stockQuantities = stockDTO.getStockQuantities();
+
+		stockQuantities.forEach(stockQuantity -> {
+			this.addStockQuantity(stockQuantity);
+		});
+
+		return Response.ok().build();
+	}
+
+	private void addStockQuantity(final StockQuantity stockQuantity) {
+		try {
+			final Stock stock = this.stockQueryService.findStockByUuid(stockQuantity.getStock().getUuid());
+			this.stockService.addStockQuantity(this.getContext(), stock, stockQuantity.getQuantity());
+		}
+		catch (final BusinessException e) {
+			e.printStackTrace();
+		}
+	}
 }
