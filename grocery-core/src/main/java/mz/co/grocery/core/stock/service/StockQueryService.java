@@ -24,4 +24,6 @@ public interface StockQueryService {
 	List<Stock> fetchStocksByProductDescription(String description) throws BusinessException;
 
 	Stock findStockByUuid(String stockUuid) throws BusinessException;
+
+	List<Stock> fetchStockByProductUuid(String productUuid) throws BusinessException;
 }

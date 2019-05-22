@@ -120,4 +120,12 @@ public class StockResource extends AbstractResource {
 			e.printStackTrace();
 		}
 	}
+
+	@GET
+	@Path("by-product/{productUuid}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response fecthByProductUuid(@PathParam("productUuid") final String productUuid) throws BusinessException {
+		final List<Stock> stocks = this.stockQueryService.fetchStockByProductUuid(productUuid);
+		return Response.ok(stocks).build();
+	}
 }

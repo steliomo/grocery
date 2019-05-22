@@ -16,6 +16,7 @@ import org.junit.Test;
 
 import mz.co.grocery.core.config.AbstractIntegServiceTest;
 import mz.co.grocery.core.fixturefactory.StockTemplate;
+import mz.co.grocery.core.product.model.Product;
 import mz.co.grocery.core.product.service.ProductDescriptionService;
 import mz.co.grocery.core.product.service.ProductService;
 import mz.co.grocery.core.product.service.ProductUnitService;
@@ -48,6 +49,8 @@ public class StockQueryServiceTest extends AbstractIntegServiceTest {
 
 	private String stockUuid;
 
+	private Product product;
+
 	@Before
 	public void before() throws BusinessException {
 
@@ -61,6 +64,8 @@ public class StockQueryServiceTest extends AbstractIntegServiceTest {
 
 	private void createStock(final Stock stock) {
 		try {
+			this.product = stock.getProductDescription().getProduct();
+
 			this.productService.createProduct(this.getUserContext(), stock.getProductDescription().getProduct());
 			this.productUnitService.createProductUnit(this.getUserContext(),
 			        stock.getProductDescription().getProductUnit());
@@ -113,6 +118,18 @@ public class StockQueryServiceTest extends AbstractIntegServiceTest {
 			assertNotNull(stock.getProductDescription());
 			assertNotNull(stock.getProductDescription().getProduct());
 			assertNotNull(stock.getProductDescription().getProductUnit());
+		});
+	}
+
+	@Test
+	public void shouldFecthStockByProduct() throws BusinessException {
+		final List<Stock> stocks = this.stockQueryService.fetchStockByProductUuid(this.product.getUuid());
+
+		assertFalse(stocks.isEmpty());
+
+		stocks.forEach(stock -> {
+			assertNotNull(stock.getProductDescription().getProduct());
+			assertEquals(this.product.getUuid(), stock.getProductDescription().getProduct().getUuid());
 		});
 	}
 }

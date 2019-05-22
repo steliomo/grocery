@@ -46,6 +46,10 @@ public class SaleItem extends GenericEntity {
 	@Column(name = "SALE_ITEM_VALUE", nullable = false)
 	private BigDecimal saleItemValue = BigDecimal.ZERO;
 
+	@NotNull
+	@Column(name = "DISCOUNT", nullable = false)
+	private BigDecimal discount = BigDecimal.ZERO;
+
 	public Sale getSale() {
 		return this.sale;
 	}
@@ -80,5 +84,13 @@ public class SaleItem extends GenericEntity {
 
 	public void setSaleItemValue(final BigDecimal saleItemValue) {
 		this.saleItemValue = saleItemValue;
+	}
+
+	public BigDecimal getDiscount() {
+		return this.discount;
+	}
+
+	public void setDiscount(final BigDecimal discount) {
+		this.discount = discount;
 	}
 }

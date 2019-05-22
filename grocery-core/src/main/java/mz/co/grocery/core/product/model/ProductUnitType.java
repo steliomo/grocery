@@ -8,7 +8,6 @@ package mz.co.grocery.core.product.model;
  *
  */
 public enum ProductUnitType {
-
 	KG,
 
 	G,

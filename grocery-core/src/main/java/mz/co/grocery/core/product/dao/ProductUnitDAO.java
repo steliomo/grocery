@@ -17,7 +17,7 @@ import mz.co.msaude.boot.frameworks.model.EntityStatus;
 public interface ProductUnitDAO extends GenericDAO<ProductUnit, Long> {
 
 	class QUERY {
-		public static final String findAll = "SELECT pu FROM ProductUnit pu where pu.entityStatus = :entityStatus";
+		public static final String findAll = "SELECT pu FROM ProductUnit pu WHERE pu.entityStatus = :entityStatus ORDER BY pu.unit, pu.productUnitType";
 	}
 
 	class QUERY_NAME {

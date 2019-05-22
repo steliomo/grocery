@@ -3,6 +3,7 @@
  */
 package mz.co.grocery.core.stock.dao;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import org.springframework.stereotype.Repository;
@@ -31,6 +32,10 @@ public class StockDAOImpl extends GenericDAOImpl<Stock, Long> implements StockDA
 		                new ParamBuilder().add("entityStatus", entityStatus).process(), Long.class)
 		        .setFirstResult(currentPage * maxResult).setMaxResults(maxResult).getResultList();
 
+		if (stockIds.isEmpty()) {
+			return new ArrayList<>();
+		}
+
 		return this.findByNamedQuery(StockDAO.QUERY_NAME.fetchAll,
 		        new ParamBuilder().add("stockIds", stockIds).process());
 	}
@@ -46,5 +51,12 @@ public class StockDAOImpl extends GenericDAOImpl<Stock, Long> implements StockDA
 	        throws BusinessException {
 		return this.findByNamedQuery(StockDAO.QUERY_NAME.fetchByProductDescription, new ParamBuilder()
 		        .add("description", "%" + description + "%").add("entityStatus", entityStatus).process());
+	}
+
+	@Override
+	public List<Stock> fetchByProductUUid(final String productUuid, final EntityStatus entityStatus)
+	        throws BusinessException {
+		return this.findByNamedQuery(StockDAO.QUERY_NAME.fetchByProductUuid,
+		        new ParamBuilder().add("productUuid", productUuid).add("entityStatus", entityStatus).process());
 	}
 }
