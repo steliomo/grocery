@@ -14,13 +14,13 @@ import mz.co.msaude.boot.frameworks.model.UserContext;
  * @author Stélio Moiane
  *
  */
-public class UserDetailsImpl implements UserDetails {
+public class ResourceOwner implements UserDetails {
 
 	private static final long serialVersionUID = 1L;
 
 	private final UserContext userContext;
 
-	public UserDetailsImpl(final UserContext userContext) {
+	public ResourceOwner(final UserContext userContext) {
 		this.userContext = userContext;
 	}
 

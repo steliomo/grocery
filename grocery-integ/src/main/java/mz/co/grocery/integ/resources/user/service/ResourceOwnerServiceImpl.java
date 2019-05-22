@@ -3,7 +3,7 @@
  */
 package mz.co.grocery.integ.resources.user.service;
 
-import static mz.co.grocery.integ.resources.user.service.CustomUserDetailsServiceImpl.NAME;
+import static mz.co.grocery.integ.resources.user.service.ResourceOwnerServiceImpl.NAME;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
@@ -15,7 +15,7 @@ import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
 import mz.co.grocery.integ.resources.user.dto.UserDTO;
-import mz.co.grocery.integ.resources.user.model.UserDetailsImpl;
+import mz.co.grocery.integ.resources.user.model.ResourceOwner;
 import mz.co.grocery.integ.resources.util.UrlTargets;
 import mz.co.msaude.boot.frameworks.model.UserContext;
 
@@ -24,9 +24,9 @@ import mz.co.msaude.boot.frameworks.model.UserContext;
  *
  */
 @Service(NAME)
-public class CustomUserDetailsServiceImpl implements UserDetailsService {
+public class ResourceOwnerServiceImpl implements UserDetailsService {
 
-	public static final String NAME = "mz.co.msaude.consultation.integ.resources.config.user.service.CustomUserDetailsServiceImpl";
+	public static final String NAME = "mz.co.grocery.integ.resources.user.service.ResourceOwnerServiceImpl";
 
 	@Override
 	public UserDetails loadUserByUsername(final String username) throws UsernameNotFoundException {
@@ -42,6 +42,6 @@ public class CustomUserDetailsServiceImpl implements UserDetailsService {
 		user.setUuid(get.getUuid());
 		user.setFullName(get.getFullName());
 
-		return new UserDetailsImpl(user);
+		return new ResourceOwner(user);
 	}
 }
