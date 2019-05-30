@@ -29,7 +29,8 @@ import mz.co.msaude.boot.frameworks.model.GenericEntity;
         @NamedQuery(name = StockDAO.QUERY_NAME.fetchAll, query = StockDAO.QUERY.fetchAll),
         @NamedQuery(name = StockDAO.QUERY_NAME.fetchByUuid, query = StockDAO.QUERY.fetchByUuid),
         @NamedQuery(name = StockDAO.QUERY_NAME.fetchByProductDescription, query = StockDAO.QUERY.fetchByProductDescription),
-        @NamedQuery(name = StockDAO.QUERY_NAME.fetchByProductUuid, query = StockDAO.QUERY.fetchByProductUuid) })
+        @NamedQuery(name = StockDAO.QUERY_NAME.fetchByProductUuid, query = StockDAO.QUERY.fetchByProductUuid),
+        @NamedQuery(name = StockDAO.QUERY_NAME.fetchStocks, query = StockDAO.QUERY.fetchStocks) })
 @Entity
 @Table(name = "STOCKS")
 public class Stock extends GenericEntity {

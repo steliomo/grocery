@@ -1,7 +1,7 @@
 /**
  *
  */
-package mz.co.grocery.core.sale.service;
+package mz.co.grocery.core.sale.dao;
 
 import mz.co.grocery.core.sale.model.SaleItem;
 import mz.co.msaude.boot.frameworks.dao.GenericDAO;

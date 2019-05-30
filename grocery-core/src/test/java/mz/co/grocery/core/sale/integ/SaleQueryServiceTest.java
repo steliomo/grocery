@@ -3,9 +3,8 @@
  */
 package mz.co.grocery.core.sale.integ;
 
-import static org.junit.Assert.assertTrue;
+import static org.junit.Assert.assertFalse;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -21,17 +20,18 @@ import mz.co.grocery.core.product.service.ProductService;
 import mz.co.grocery.core.product.service.ProductUnitService;
 import mz.co.grocery.core.sale.model.Sale;
 import mz.co.grocery.core.sale.model.SaleItem;
+import mz.co.grocery.core.sale.model.SaleReport;
+import mz.co.grocery.core.sale.service.SaleQueryService;
 import mz.co.grocery.core.sale.service.SaleService;
 import mz.co.grocery.core.stock.service.StockService;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.fixturefactory.EntityFactory;
-import mz.co.msaude.boot.frameworks.util.TestUtil;
 
 /**
  * @author Stélio Moiane
  *
  */
-public class SaleServiceTest extends AbstractIntegServiceTest {
+public class SaleQueryServiceTest extends AbstractIntegServiceTest {
 
 	@Inject
 	private SaleService saleService;
@@ -48,12 +48,14 @@ public class SaleServiceTest extends AbstractIntegServiceTest {
 	@Inject
 	private ProductDescriptionService productDescriptionService;
 
-	private Sale sale;
+	@Inject
+	private SaleQueryService saleQueryService;
 
 	@Before
-	public void before() {
-		this.sale = new Sale();
-		this.sale.setSaleDate(LocalDate.now());
+	public void before() throws BusinessException {
+		final Sale sale = new Sale();
+		sale.setSaleDate(LocalDate.now());
+
 		final List<SaleItem> saleItems = EntityFactory.gimme(SaleItem.class, 10, SaleItemTemplate.VALID);
 		final List<SaleItem> saleItemsValues = EntityFactory.gimme(SaleItem.class, 10, SaleItemTemplate.SALE_VALUE);
 
@@ -72,7 +74,7 @@ public class SaleServiceTest extends AbstractIntegServiceTest {
 				e.printStackTrace();
 			}
 
-			this.sale.addItem(saleItem);
+			sale.addItem(saleItem);
 		});
 
 		saleItemsValues.forEach(saleItem -> {
@@ -90,17 +92,15 @@ public class SaleServiceTest extends AbstractIntegServiceTest {
 				e.printStackTrace();
 			}
 
-			this.sale.addItem(saleItem);
+			sale.addItem(saleItem);
 		});
+
+		this.saleService.registSale(this.getUserContext(), sale);
 	}
 
 	@Test
-	public void shouldRegisteSale() throws BusinessException {
-
-		this.saleService.registSale(this.getUserContext(), this.sale);
-		final int compareTo = this.sale.getTotal().compareTo(BigDecimal.ZERO);
-		assertTrue(compareTo > 0);
-
-		TestUtil.assertCreation(this.sale);
+	public void shouldFindLast7DaysSale() throws BusinessException {
+		final List<SaleReport> sales = this.saleQueryService.findLast7DaysSale();
+		assertFalse(sales.isEmpty());
 	}
 }

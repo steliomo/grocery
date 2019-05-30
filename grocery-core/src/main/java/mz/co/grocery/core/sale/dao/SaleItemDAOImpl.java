@@ -1,7 +1,7 @@
 /**
  *
  */
-package mz.co.grocery.core.sale.service;
+package mz.co.grocery.core.sale.dao;
 
 import org.springframework.stereotype.Repository;
 

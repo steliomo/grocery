@@ -132,4 +132,18 @@ public class StockQueryServiceTest extends AbstractIntegServiceTest {
 			assertEquals(this.product.getUuid(), stock.getProductDescription().getProduct().getUuid());
 		});
 	}
+
+	@Test
+	public void shouldFecthStock() throws BusinessException {
+
+		final List<Stock> stocks = this.stockQueryService.fetchStocks();
+
+		assertFalse(stocks.isEmpty());
+
+		stocks.forEach(stock -> {
+			assertNotNull(stock.getProductDescription());
+			assertNotNull(stock.getProductDescription().getProduct());
+			assertNotNull(stock.getProductDescription().getProductUnit());
+		});
+	}
 }

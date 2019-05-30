@@ -57,4 +57,9 @@ public class StockQueryServiceImpl implements StockQueryService {
 		return this.stockDAO.fetchByProductUUid(productUuid, EntityStatus.ACTIVE);
 	}
 
+	@Override
+	public List<Stock> fetchStocks() throws BusinessException {
+		return this.stockDAO.fetchStocks(EntityStatus.ACTIVE);
+	}
+
 }

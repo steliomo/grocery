@@ -128,4 +128,12 @@ public class StockResource extends AbstractResource {
 		final List<Stock> stocks = this.stockQueryService.fetchStockByProductUuid(productUuid);
 		return Response.ok(stocks).build();
 	}
+
+	@GET
+	@Path("all")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response fetchStocks() throws BusinessException {
+		final List<Stock> stocks = this.stockQueryService.fetchStocks();
+		return Response.ok(stocks).build();
+	}
 }

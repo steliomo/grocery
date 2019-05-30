@@ -8,6 +8,7 @@ import javax.inject.Inject;
 import org.springframework.stereotype.Service;
 
 import mz.co.grocery.core.sale.dao.SaleDAO;
+import mz.co.grocery.core.sale.dao.SaleItemDAO;
 import mz.co.grocery.core.sale.model.Sale;
 import mz.co.grocery.core.stock.dao.StockDAO;
 import mz.co.grocery.core.stock.model.Stock;
@@ -41,6 +42,7 @@ public class SaleServiceImpl extends AbstractService implements SaleService {
 		}
 
 		this.saleDAO.create(userContext, sale);
+
 		sale.getItems().stream().forEach(saleItem -> {
 			try {
 				final Stock stock = this.stockDAO.findByUuid(saleItem.getStock().getUuid());
@@ -55,7 +57,8 @@ public class SaleServiceImpl extends AbstractService implements SaleService {
 			}
 		});
 
-		sale.setTotal();
+		sale.calculateTotal();
+		sale.calculateProfit();
 
 		return sale;
 	}
