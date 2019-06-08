@@ -3,8 +3,6 @@
  */
 package mz.co.grocery.core.stock.service;
 
-import java.math.BigDecimal;
-
 import mz.co.grocery.core.stock.model.Stock;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.model.UserContext;
@@ -21,6 +19,6 @@ public interface StockService {
 
 	Stock removeStock(UserContext userContext, Stock stock) throws BusinessException;
 
-	Stock addStockQuantity(UserContext userContext, Stock stock, BigDecimal quantity) throws BusinessException;
+	Stock updateStocksAndPrices(UserContext userContext, Stock stock) throws BusinessException;
 
 }

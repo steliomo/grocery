@@ -4,6 +4,7 @@
 package mz.co.grocery.core.stock.unit;
 
 import static org.junit.Assert.assertEquals;
+import static org.mockito.Mockito.when;
 
 import java.math.BigDecimal;
 
@@ -48,12 +49,32 @@ public class StockServiceTest extends AbstractUnitServiceTest {
 	}
 
 	@Test
-	public void shouldAddStockQuantity() throws BusinessException {
-		final BigDecimal quantity = new BigDecimal(10);
-		final BigDecimal oldQuantity = this.stock.getQuantity();
+	public void shouldUpdateStockAndPrices() throws BusinessException {
+		when(this.stockDAO.findByUuid(this.stock.getUuid())).thenReturn(this.stock);
 
-		this.stockService.addStockQuantity(this.getUserContext(), this.stock, quantity);
+		final BigDecimal purchasePrice = this.stock.getPurchasePrice();
+		final BigDecimal salePrice = this.stock.getSalePrice();
+		final BigDecimal quantity = this.stock.getQuantity();
 
-		assertEquals(oldQuantity.add(quantity), this.stock.getQuantity());
+		this.stockService.updateStocksAndPrices(this.getUserContext(), this.stock);
+
+		assertEquals(purchasePrice, this.stock.getPurchasePrice());
+		assertEquals(salePrice, this.stock.getSalePrice());
+		assertEquals(quantity.multiply(new BigDecimal(2)), this.stock.getQuantity());
+	}
+
+	@Test(expected = BusinessException.class)
+	public void shouldNotUpdateStockAndPricesWithQuantityZero() throws BusinessException {
+		this.stock.setQuantity(BigDecimal.ZERO);
+
+		this.stockService.updateStocksAndPrices(this.getUserContext(), this.stock);
+	}
+
+	@Test(expected = BusinessException.class)
+	public void shouldNotUpdateStockAndPricesWithZeroPrices() throws BusinessException {
+		this.stock.setPurchasePrice(BigDecimal.ZERO);
+		this.stock.setSalePrice(BigDecimal.ZERO);
+
+		this.stockService.updateStocksAndPrices(this.getUserContext(), this.stock);
 	}
 }

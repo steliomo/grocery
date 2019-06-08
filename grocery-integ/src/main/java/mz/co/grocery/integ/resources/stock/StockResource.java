@@ -98,23 +98,21 @@ public class StockResource extends AbstractResource {
 	}
 
 	@PUT
-	@Path("add-quantity")
+	@Path("update-stocks-and-prices")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response addStockQuantity(final StockDTO stockDTO) throws BusinessException {
-		final List<StockQuantity> stockQuantities = stockDTO.getStockQuantities();
+	public Response addStockQuantity(final List<Stock> stocks) throws BusinessException {
 
-		stockQuantities.forEach(stockQuantity -> {
-			this.addStockQuantity(stockQuantity);
+		stocks.forEach(stock -> {
+			this.updateStocksAndPrices(stock);
 		});
 
 		return Response.ok().build();
 	}
 
-	private void addStockQuantity(final StockQuantity stockQuantity) {
+	private void updateStocksAndPrices(final Stock stock) {
 		try {
-			final Stock stock = this.stockQueryService.findStockByUuid(stockQuantity.getStock().getUuid());
-			this.stockService.addStockQuantity(this.getContext(), stock, stockQuantity.getQuantity());
+			this.stockService.updateStocksAndPrices(this.getContext(), stock);
 		}
 		catch (final BusinessException e) {
 			e.printStackTrace();

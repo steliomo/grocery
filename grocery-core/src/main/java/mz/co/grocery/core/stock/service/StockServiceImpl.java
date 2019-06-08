@@ -47,17 +47,26 @@ public class StockServiceImpl extends AbstractService implements StockService {
 	}
 
 	@Override
-	public Stock addStockQuantity(final UserContext userContext, final Stock stock, final BigDecimal quantity)
-	        throws BusinessException {
+	public Stock updateStocksAndPrices(final UserContext userContext, final Stock stock) throws BusinessException {
 
-		if (BigDecimal.ZERO.doubleValue() == quantity.doubleValue()) {
+		if (BigDecimal.ZERO.doubleValue() == stock.getQuantity().doubleValue()) {
 			throw new BusinessException("The stock quantity cannot be less than 1");
 		}
 
-		stock.addQuantity(quantity);
-		this.stockDAO.update(userContext, stock);
+		if ((BigDecimal.ZERO.doubleValue() == stock.getPurchasePrice().doubleValue())
+		        || (BigDecimal.ZERO.doubleValue() == stock.getSalePrice().doubleValue())) {
+			throw new BusinessException("The prices cannot be 0");
+		}
 
-		return stock;
+		final Stock stockToUpdate = this.stockDAO.findByUuid(stock.getUuid());
+
+		stockToUpdate.setPurchasePrice(stock.getPurchasePrice());
+		stockToUpdate.setSalePrice(stock.getSalePrice());
+		stockToUpdate.addQuantity(stock.getQuantity());
+
+		this.stockDAO.update(userContext, stockToUpdate);
+
+		return stockToUpdate;
 	}
 
 }
