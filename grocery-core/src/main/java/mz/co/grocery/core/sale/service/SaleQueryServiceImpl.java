@@ -3,6 +3,7 @@
  */
 package mz.co.grocery.core.sale.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -29,5 +30,11 @@ public class SaleQueryServiceImpl implements SaleQueryService {
 	@Override
 	public List<SaleReport> findLast7DaysSale() throws BusinessException {
 		return this.saleDAO.findLast7DaysSale(EntityStatus.ACTIVE);
+	}
+
+	@Override
+	public List<SaleReport> findSalesPerPeriod(final LocalDate startDate, final LocalDate endDate)
+	        throws BusinessException {
+		return this.saleDAO.findPerPeriod(startDate, endDate, EntityStatus.ACTIVE);
 	}
 }

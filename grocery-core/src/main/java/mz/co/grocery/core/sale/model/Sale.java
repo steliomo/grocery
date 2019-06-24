@@ -27,7 +27,8 @@ import mz.co.msaude.boot.frameworks.util.LocalDateAdapter;
  * @author Stélio Moiane
  *
  */
-@NamedQueries({ @NamedQuery(name = SaleDAO.QUERY_NAME.findLast7DaysSale, query = SaleDAO.QUERY.findLast7DaysSale) })
+@NamedQueries({ @NamedQuery(name = SaleDAO.QUERY_NAME.findLast7DaysSale, query = SaleDAO.QUERY.findLast7DaysSale),
+        @NamedQuery(name = SaleDAO.QUERY_NAME.findPerPeriod, query = SaleDAO.QUERY.findPerPeriod) })
 @Entity
 @Table(name = "SALES")
 public class Sale extends GenericEntity {

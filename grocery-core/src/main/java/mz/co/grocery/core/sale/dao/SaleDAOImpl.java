@@ -3,6 +3,7 @@
  */
 package mz.co.grocery.core.sale.dao;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.stereotype.Repository;
@@ -29,5 +30,12 @@ public class SaleDAOImpl extends GenericDAOImpl<Sale, Long> implements SaleDAO {
 		        .findByQuery(SaleDAO.QUERY_NAME.findLast7DaysSale,
 		                new ParamBuilder().add("entityStatus", entityStatus).process(), SaleReport.class)
 		        .setMaxResults(7).getResultList();
+	}
+
+	@Override
+	public List<SaleReport> findPerPeriod(final LocalDate startDate, final LocalDate endDate,
+	        final EntityStatus entityStatus) throws BusinessException {
+		return this.findByNamedQuery(SaleDAO.QUERY_NAME.findPerPeriod, new ParamBuilder().add("startDate", startDate)
+		        .add("endDate", endDate).add("entityStatus", entityStatus).process(), SaleReport.class);
 	}
 }

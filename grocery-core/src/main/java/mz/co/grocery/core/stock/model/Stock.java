@@ -5,6 +5,7 @@ package mz.co.grocery.core.stock.model;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.time.LocalDate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -54,6 +55,9 @@ public class Stock extends GenericEntity {
 	@Column(name = "QUANTITY", nullable = false)
 	private BigDecimal quantity;
 
+	@Column(name = "EXPIRE_DATE")
+	private LocalDate expireDate;
+
 	public ProductDescription getProductDescription() {
 		return this.productDescription;
 	}
@@ -84,6 +88,14 @@ public class Stock extends GenericEntity {
 
 	public void setQuantity(final BigDecimal quantity) {
 		this.quantity = quantity;
+	}
+
+	public LocalDate getExpireDate() {
+		return this.expireDate;
+	}
+
+	public void setExpireDate(final LocalDate expireDate) {
+		this.expireDate = expireDate;
 	}
 
 	public void updateStock(final SaleItem saleItem) {

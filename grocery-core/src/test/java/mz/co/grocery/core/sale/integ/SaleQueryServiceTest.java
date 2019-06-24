@@ -103,4 +103,10 @@ public class SaleQueryServiceTest extends AbstractIntegServiceTest {
 		final List<SaleReport> sales = this.saleQueryService.findLast7DaysSale();
 		assertFalse(sales.isEmpty());
 	}
+
+	@Test
+	public void shouldFindSalePerPeriod() throws BusinessException {
+		final List<SaleReport> sales = this.saleQueryService.findSalesPerPeriod(LocalDate.now(), LocalDate.now());
+		assertFalse(sales.isEmpty());
+	}
 }
