@@ -28,13 +28,13 @@ public class SaleQueryServiceImpl implements SaleQueryService {
 	private SaleDAO saleDAO;
 
 	@Override
-	public List<SaleReport> findLast7DaysSale() throws BusinessException {
-		return this.saleDAO.findLast7DaysSale(EntityStatus.ACTIVE);
+	public List<SaleReport> findLast7DaysSale(final String groceryUuid) throws BusinessException {
+		return this.saleDAO.findLast7DaysSale(groceryUuid, EntityStatus.ACTIVE);
 	}
 
 	@Override
-	public List<SaleReport> findSalesPerPeriod(final LocalDate startDate, final LocalDate endDate)
-	        throws BusinessException {
-		return this.saleDAO.findPerPeriod(startDate, endDate, EntityStatus.ACTIVE);
+	public List<SaleReport> findSalesPerPeriod(final String groceryUuid, final LocalDate startDate,
+	        final LocalDate endDate) throws BusinessException {
+		return this.saleDAO.findPerPeriod(groceryUuid, startDate, endDate, EntityStatus.ACTIVE);
 	}
 }

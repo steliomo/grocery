@@ -14,7 +14,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import mz.co.grocery.core.config.AbstractIntegServiceTest;
+import mz.co.grocery.core.fixturefactory.GroceryTemplate;
 import mz.co.grocery.core.fixturefactory.SaleItemTemplate;
+import mz.co.grocery.core.grocery.model.Grocery;
+import mz.co.grocery.core.grocery.service.GroceryService;
 import mz.co.grocery.core.product.service.ProductDescriptionService;
 import mz.co.grocery.core.product.service.ProductService;
 import mz.co.grocery.core.product.service.ProductUnitService;
@@ -51,6 +54,11 @@ public class SaleQueryServiceTest extends AbstractIntegServiceTest {
 	@Inject
 	private SaleQueryService saleQueryService;
 
+	@Inject
+	private GroceryService groceryService;
+
+	private Grocery grocery;
+
 	@Before
 	public void before() throws BusinessException {
 		final Sale sale = new Sale();
@@ -68,6 +76,7 @@ public class SaleQueryServiceTest extends AbstractIntegServiceTest {
 				        saleItem.getStock().getProductDescription().getProductUnit());
 				this.productDescriptionService.createProductDescription(this.getUserContext(),
 				        saleItem.getStock().getProductDescription());
+				this.groceryService.createGrocery(this.getUserContext(), saleItem.getStock().getGrocery());
 				this.stockService.createStock(this.getUserContext(), saleItem.getStock());
 			}
 			catch (final BusinessException e) {
@@ -86,6 +95,7 @@ public class SaleQueryServiceTest extends AbstractIntegServiceTest {
 				        saleItem.getStock().getProductDescription().getProductUnit());
 				this.productDescriptionService.createProductDescription(this.getUserContext(),
 				        saleItem.getStock().getProductDescription());
+				this.groceryService.createGrocery(this.getUserContext(), saleItem.getStock().getGrocery());
 				this.stockService.createStock(this.getUserContext(), saleItem.getStock());
 			}
 			catch (final BusinessException e) {
@@ -95,18 +105,23 @@ public class SaleQueryServiceTest extends AbstractIntegServiceTest {
 			sale.addItem(saleItem);
 		});
 
+		this.grocery = this.groceryService.createGrocery(this.getUserContext(),
+		        EntityFactory.gimme(Grocery.class, GroceryTemplate.VALID));
+		sale.setGrocery(this.grocery);
+
 		this.saleService.registSale(this.getUserContext(), sale);
 	}
 
 	@Test
 	public void shouldFindLast7DaysSale() throws BusinessException {
-		final List<SaleReport> sales = this.saleQueryService.findLast7DaysSale();
+		final List<SaleReport> sales = this.saleQueryService.findLast7DaysSale(this.grocery.getUuid());
 		assertFalse(sales.isEmpty());
 	}
 
 	@Test
 	public void shouldFindSalePerPeriod() throws BusinessException {
-		final List<SaleReport> sales = this.saleQueryService.findSalesPerPeriod(LocalDate.now(), LocalDate.now());
+		final List<SaleReport> sales = this.saleQueryService.findSalesPerPeriod(this.grocery.getUuid(), LocalDate.now(),
+		        LocalDate.now());
 		assertFalse(sales.isEmpty());
 	}
 }

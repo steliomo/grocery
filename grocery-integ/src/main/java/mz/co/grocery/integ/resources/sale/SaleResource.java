@@ -10,6 +10,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
@@ -50,23 +51,24 @@ public class SaleResource extends AbstractResource {
 	}
 
 	@GET
-	@Path("last-7-days")
+	@Path("last-7-days/{groceryUuid}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response findLast7DaysSales() throws BusinessException {
-		final List<SaleReport> sales = this.saleQueryService.findLast7DaysSale();
+	public Response findLast7DaysSales(@PathParam("groceryUuid") final String groceryUuid) throws BusinessException {
+		final List<SaleReport> sales = this.saleQueryService.findLast7DaysSale(groceryUuid);
 		return Response.ok(sales).build();
 	}
 
 	@GET
 	@Path("per-period")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response findSalesPerPeriod(@QueryParam("startDate") final String startDate,
-	        @QueryParam("endDate") final String endDate) throws BusinessException {
+	public Response findSalesPerPeriod(@QueryParam("groceryUuid") final String groceryUuid,
+	        @QueryParam("startDate") final String startDate, @QueryParam("endDate") final String endDate)
+	        throws BusinessException {
 
 		final LocalDateAdapter dateAdapter = new LocalDateAdapter();
 
-		final List<SaleReport> sales = this.saleQueryService.findSalesPerPeriod(dateAdapter.unmarshal(startDate),
-		        dateAdapter.unmarshal(endDate));
+		final List<SaleReport> sales = this.saleQueryService.findSalesPerPeriod(groceryUuid,
+		        dateAdapter.unmarshal(startDate), dateAdapter.unmarshal(endDate));
 
 		return Response.ok(sales).build();
 	}

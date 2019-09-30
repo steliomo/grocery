@@ -12,6 +12,8 @@ import java.util.Set;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
+import javax.persistence.JoinColumn;
+import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
@@ -19,6 +21,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
+import mz.co.grocery.core.grocery.model.Grocery;
 import mz.co.grocery.core.sale.dao.SaleDAO;
 import mz.co.msaude.boot.frameworks.model.GenericEntity;
 import mz.co.msaude.boot.frameworks.util.LocalDateAdapter;
@@ -35,6 +38,12 @@ public class Sale extends GenericEntity {
 
 	private static final long serialVersionUID = 1L;
 
+	@NotNull
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "GROCERY_ID", nullable = false)
+	private Grocery grocery;
+
+	@NotNull
 	@Column(name = "SALE_DATE", nullable = false)
 	@XmlJavaTypeAdapter(LocalDateAdapter.class)
 	private LocalDate saleDate;
@@ -49,6 +58,14 @@ public class Sale extends GenericEntity {
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sale")
 	private Set<SaleItem> items;
+
+	public Grocery getGrocery() {
+		return this.grocery;
+	}
+
+	public void setGrocery(final Grocery grocery) {
+		this.grocery = grocery;
+	}
 
 	public LocalDate getSaleDate() {
 		return this.saleDate;

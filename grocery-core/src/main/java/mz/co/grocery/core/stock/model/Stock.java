@@ -17,6 +17,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import mz.co.grocery.core.grocery.model.Grocery;
 import mz.co.grocery.core.product.model.ProductDescription;
 import mz.co.grocery.core.sale.model.SaleItem;
 import mz.co.grocery.core.stock.dao.StockDAO;
@@ -30,13 +31,18 @@ import mz.co.msaude.boot.frameworks.model.GenericEntity;
         @NamedQuery(name = StockDAO.QUERY_NAME.fetchAll, query = StockDAO.QUERY.fetchAll),
         @NamedQuery(name = StockDAO.QUERY_NAME.fetchByUuid, query = StockDAO.QUERY.fetchByUuid),
         @NamedQuery(name = StockDAO.QUERY_NAME.fetchByProductDescription, query = StockDAO.QUERY.fetchByProductDescription),
-        @NamedQuery(name = StockDAO.QUERY_NAME.fetchByProductUuid, query = StockDAO.QUERY.fetchByProductUuid),
-        @NamedQuery(name = StockDAO.QUERY_NAME.fetchStocks, query = StockDAO.QUERY.fetchStocks) })
+        @NamedQuery(name = StockDAO.QUERY_NAME.fetchByGroceryAndProduct, query = StockDAO.QUERY.fetchByGroceryAndProduct),
+        @NamedQuery(name = StockDAO.QUERY_NAME.fetchByGrocery, query = StockDAO.QUERY.fetchByGrocery) })
 @Entity
 @Table(name = "STOCKS")
 public class Stock extends GenericEntity {
 
 	private static final long serialVersionUID = 1L;
+
+	@NotNull
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "GROCERY_ID", nullable = false)
+	private Grocery grocery;
 
 	@NotNull
 	@ManyToOne(fetch = FetchType.LAZY)
@@ -57,6 +63,14 @@ public class Stock extends GenericEntity {
 
 	@Column(name = "EXPIRE_DATE")
 	private LocalDate expireDate;
+
+	public Grocery getGrocery() {
+		return this.grocery;
+	}
+
+	public void setGrocery(final Grocery grocery) {
+		this.grocery = grocery;
+	}
 
 	public ProductDescription getProductDescription() {
 		return this.productDescription;

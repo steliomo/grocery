@@ -20,15 +20,15 @@ public interface StockDAO extends GenericDAO<Stock, Long> {
 
 		public static final String findAllIds = "SELECT s.id FROM Stock s WHERE s.entityStatus = :entityStatus";
 
-		public static final String fetchAll = "SELECT s FROM Stock s INNER JOIN FETCH s.productDescription pd INNER JOIN FETCH pd.product INNER JOIN FETCH pd.productUnit WHERE s.id IN (:stockIds) GROUP BY s.id ORDER BY pd.product.name, pd.description";
+		public static final String fetchAll = "SELECT s FROM Stock s INNER JOIN FETCH s.grocery INNER JOIN FETCH s.productDescription pd INNER JOIN FETCH pd.product INNER JOIN FETCH pd.productUnit WHERE s.id IN (:stockIds) GROUP BY s.id ORDER BY pd.product.name, pd.description";
 
-		public static final String fetchByUuid = "SELECT s FROM Stock s INNER JOIN FETCH s.productDescription pd INNER JOIN FETCH pd.product INNER JOIN FETCH pd.productUnit WHERE s.uuid = :stockUuid AND s.entityStatus = :entityStatus";
+		public static final String fetchByUuid = "SELECT s FROM Stock s INNER JOIN FETCH s.grocery INNER JOIN FETCH s.productDescription pd INNER JOIN FETCH pd.product INNER JOIN FETCH pd.productUnit WHERE s.uuid = :stockUuid AND s.entityStatus = :entityStatus";
 
-		public static final String fetchByProductDescription = "SELECT s FROM Stock s INNER JOIN FETCH s.productDescription pd INNER JOIN FETCH pd.product INNER JOIN FETCH pd.productUnit WHERE pd.description LIKE :description AND s.entityStatus = :entityStatus";
+		public static final String fetchByProductDescription = "SELECT s FROM Stock s INNER JOIN FETCH s.grocery INNER JOIN FETCH s.productDescription pd INNER JOIN FETCH pd.product INNER JOIN FETCH pd.productUnit WHERE pd.description LIKE :description AND s.entityStatus = :entityStatus";
 
-		public static final String fetchByProductUuid = "SELECT s FROM Stock s INNER JOIN FETCH s.productDescription pd INNER JOIN FETCH pd.product p INNER JOIN FETCH pd.productUnit WHERE p.uuid = :productUuid AND s.entityStatus = :entityStatus ORDER BY p.name, pd.description";
+		public static final String fetchByGroceryAndProduct = "SELECT s FROM Stock s INNER JOIN FETCH s.grocery g INNER JOIN FETCH s.productDescription pd INNER JOIN FETCH pd.product p INNER JOIN FETCH pd.productUnit WHERE g.uuid = :groceryUuid AND p.uuid = :productUuid AND s.entityStatus = :entityStatus ORDER BY p.name, pd.description";
 
-		public static final String fetchStocks = "SELECT s FROM Stock s INNER JOIN FETCH s.productDescription pd INNER JOIN FETCH pd.product p INNER JOIN FETCH pd.productUnit WHERE s.entityStatus = :entityStatus ORDER BY p.name, pd.description";
+		public static final String fetchByGrocery = "SELECT s FROM Stock s INNER JOIN FETCH s.grocery g INNER JOIN FETCH s.productDescription pd INNER JOIN FETCH pd.product p INNER JOIN FETCH pd.productUnit WHERE g.uuid = :groceryUuid AND s.entityStatus = :entityStatus ORDER BY p.name, pd.description";
 	}
 
 	class QUERY_NAME {
@@ -41,9 +41,9 @@ public interface StockDAO extends GenericDAO<Stock, Long> {
 
 		public static final String fetchByProductDescription = "Stock.fetchByProductDescription";
 
-		public static final String fetchByProductUuid = "Stock.fetchByProductUUid";
+		public static final String fetchByGroceryAndProduct = "Stock.fetchByGroceryAndProduct";
 
-		public static final String fetchStocks = "Stock.fetchStocks";
+		public static final String fetchByGrocery = "Stock.fetchByGrocery";
 	}
 
 	List<Stock> fetchAll(int currentPage, int maxResult, EntityStatus entityStatus) throws BusinessException;
@@ -52,8 +52,9 @@ public interface StockDAO extends GenericDAO<Stock, Long> {
 
 	List<Stock> fetchByProductDescription(String description, EntityStatus entityStatus) throws BusinessException;
 
-	List<Stock> fetchByProductUUid(String productUuid, EntityStatus entityStatus) throws BusinessException;
+	List<Stock> fetchByGroceryAndProduct(String groceryUuid, String productUuid, EntityStatus entityStatus)
+	        throws BusinessException;
 
-	List<Stock> fetchStocks(EntityStatus entityStatus) throws BusinessException;
+	List<Stock> fetchByGrocery(String groceryUuid, EntityStatus entityStatus) throws BusinessException;
 
 }

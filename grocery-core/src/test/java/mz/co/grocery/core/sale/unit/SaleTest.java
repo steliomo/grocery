@@ -14,6 +14,7 @@ import mz.co.grocery.core.config.AbstractUnitServiceTest;
 import mz.co.grocery.core.fixturefactory.SaleTemplate;
 import mz.co.grocery.core.sale.model.Sale;
 import mz.co.grocery.core.sale.model.SaleItem;
+import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.fixturefactory.EntityFactory;
 
 /**
@@ -25,8 +26,8 @@ public class SaleTest extends AbstractUnitServiceTest {
 	private Sale sale;
 
 	@Before
-	public void before() {
-		this.sale = EntityFactory.gimme(Sale.class, SaleTemplate.VALID);
+	public void before() throws BusinessException {
+		this.sale = EntityFactory.gimme(Sale.class, SaleTemplate.WITH_ITEMS);
 	}
 
 	@Test

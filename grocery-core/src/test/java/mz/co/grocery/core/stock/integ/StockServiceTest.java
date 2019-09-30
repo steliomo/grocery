@@ -10,6 +10,7 @@ import org.junit.Test;
 
 import mz.co.grocery.core.config.AbstractIntegServiceTest;
 import mz.co.grocery.core.fixturefactory.StockTemplate;
+import mz.co.grocery.core.grocery.service.GroceryService;
 import mz.co.grocery.core.product.service.ProductDescriptionService;
 import mz.co.grocery.core.product.service.ProductService;
 import mz.co.grocery.core.product.service.ProductUnitService;
@@ -37,6 +38,9 @@ public class StockServiceTest extends AbstractIntegServiceTest {
 	@Inject
 	private ProductDescriptionService productDescriptionService;
 
+	@Inject
+	private GroceryService groceryService;
+
 	private Stock stock;
 
 	@Before
@@ -48,6 +52,7 @@ public class StockServiceTest extends AbstractIntegServiceTest {
 		        this.stock.getProductDescription().getProductUnit());
 		this.productDescriptionService.createProductDescription(this.getUserContext(),
 		        this.stock.getProductDescription());
+		this.groceryService.createGrocery(this.getUserContext(), this.stock.getGrocery());
 	}
 
 	@Test

@@ -25,7 +25,7 @@ public interface StockQueryService {
 
 	Stock findStockByUuid(String stockUuid) throws BusinessException;
 
-	List<Stock> fetchStockByProductUuid(String productUuid) throws BusinessException;
+	List<Stock> fetchStockByGroceryAndProduct(String groceryUuid, String productUuid) throws BusinessException;
 
-	List<Stock> fetchStocks() throws BusinessException;
+	List<Stock> fetchStocksByGrocery(String groceryUuid) throws BusinessException;
 }

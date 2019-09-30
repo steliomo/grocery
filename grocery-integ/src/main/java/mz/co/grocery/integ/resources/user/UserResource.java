@@ -12,11 +12,15 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import mz.co.grocery.core.grocery.model.GroceryUser;
+import mz.co.grocery.core.grocery.service.GroceryUserQueryService;
 import mz.co.grocery.integ.resources.AbstractResource;
+import mz.co.grocery.integ.resources.user.dto.UserDTO;
 import mz.co.grocery.integ.resources.user.model.ResourceOwner;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.model.UserContext;
@@ -35,14 +39,24 @@ public class UserResource extends AbstractResource {
 	@Inject
 	private AuthenticationProvider authenticationProvider;
 
+	@Inject
+	private GroceryUserQueryService groceryUserQueryService;
+
 	@POST
 	@Path("login")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response login(final UserContext context) throws BusinessException {
 
-		final Authentication authenticate = this.authenticationProvider
-		        .authenticate(new UsernamePasswordAuthenticationToken(context.getUsername(), context.getPassword()));
+		Authentication authenticate = null;
+
+		try {
+			authenticate = this.authenticationProvider.authenticate(
+			        new UsernamePasswordAuthenticationToken(context.getUsername(), context.getPassword()));
+		}
+		catch (final BadCredentialsException e) {
+			throw new BusinessException("Invalid credentials");
+		}
 
 		if (!authenticate.isAuthenticated()) {
 			throw new BusinessException("Invalid credentials");
@@ -51,8 +65,13 @@ public class UserResource extends AbstractResource {
 		final ResourceOwner resourceOwner = (ResourceOwner) authenticate.getPrincipal();
 		final UserContext userContext = resourceOwner.getUserContext();
 
-		userContext.setPassword(null);
+		final UserDTO userDTO = new UserDTO();
+		userDTO.setUuid(userContext.getUuid());
+		userDTO.setFullName(userContext.getFullName());
 
-		return Response.ok(userContext).build();
+		final GroceryUser groceryUser = this.groceryUserQueryService.fetchGroceryUserByUser(userDTO.getUuid());
+		userDTO.setGroceryUser(groceryUser);
+
+		return Response.ok(userDTO).build();
 	}
 }

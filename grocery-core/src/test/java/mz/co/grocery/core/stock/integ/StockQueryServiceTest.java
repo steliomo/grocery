@@ -15,7 +15,10 @@ import org.junit.Before;
 import org.junit.Test;
 
 import mz.co.grocery.core.config.AbstractIntegServiceTest;
+import mz.co.grocery.core.fixturefactory.GroceryTemplate;
 import mz.co.grocery.core.fixturefactory.StockTemplate;
+import mz.co.grocery.core.grocery.model.Grocery;
+import mz.co.grocery.core.grocery.service.GroceryService;
 import mz.co.grocery.core.product.model.Product;
 import mz.co.grocery.core.product.service.ProductDescriptionService;
 import mz.co.grocery.core.product.service.ProductService;
@@ -47,14 +50,21 @@ public class StockQueryServiceTest extends AbstractIntegServiceTest {
 	@Inject
 	private StockService stockService;
 
+	@Inject
+	private GroceryService groceryService;
+
 	private String stockUuid;
 
 	private Product product;
+
+	private Grocery grocery;
 
 	@Before
 	public void before() throws BusinessException {
 
 		final List<Stock> stocks = EntityFactory.gimme(Stock.class, 10, StockTemplate.VALID);
+		this.grocery = this.groceryService.createGrocery(this.getUserContext(),
+		        EntityFactory.gimme(Grocery.class, GroceryTemplate.VALID));
 
 		stocks.forEach(stock -> {
 			this.createStock(stock);
@@ -71,6 +81,7 @@ public class StockQueryServiceTest extends AbstractIntegServiceTest {
 			        stock.getProductDescription().getProductUnit());
 			this.productDescriptionService.createProductDescription(this.getUserContext(),
 			        stock.getProductDescription());
+			stock.setGrocery(this.grocery);
 			this.stockService.createStock(this.getUserContext(), stock);
 		}
 		catch (final BusinessException e) {
@@ -123,7 +134,8 @@ public class StockQueryServiceTest extends AbstractIntegServiceTest {
 
 	@Test
 	public void shouldFecthStockByProduct() throws BusinessException {
-		final List<Stock> stocks = this.stockQueryService.fetchStockByProductUuid(this.product.getUuid());
+		final List<Stock> stocks = this.stockQueryService.fetchStockByGroceryAndProduct(this.grocery.getUuid(),
+		        this.product.getUuid());
 
 		assertFalse(stocks.isEmpty());
 
@@ -134,9 +146,9 @@ public class StockQueryServiceTest extends AbstractIntegServiceTest {
 	}
 
 	@Test
-	public void shouldFecthStock() throws BusinessException {
+	public void shouldFecthStocksByGrocery() throws BusinessException {
 
-		final List<Stock> stocks = this.stockQueryService.fetchStocks();
+		final List<Stock> stocks = this.stockQueryService.fetchStocksByGrocery(this.grocery.getUuid());
 
 		assertFalse(stocks.isEmpty());
 

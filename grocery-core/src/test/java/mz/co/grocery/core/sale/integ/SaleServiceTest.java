@@ -6,7 +6,6 @@ package mz.co.grocery.core.sale.integ;
 import static org.junit.Assert.assertTrue;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -16,6 +15,8 @@ import org.junit.Test;
 
 import mz.co.grocery.core.config.AbstractIntegServiceTest;
 import mz.co.grocery.core.fixturefactory.SaleItemTemplate;
+import mz.co.grocery.core.fixturefactory.SaleTemplate;
+import mz.co.grocery.core.grocery.service.GroceryService;
 import mz.co.grocery.core.product.service.ProductDescriptionService;
 import mz.co.grocery.core.product.service.ProductService;
 import mz.co.grocery.core.product.service.ProductUnitService;
@@ -48,12 +49,15 @@ public class SaleServiceTest extends AbstractIntegServiceTest {
 	@Inject
 	private ProductDescriptionService productDescriptionService;
 
+	@Inject
+	private GroceryService groceryService;
+
 	private Sale sale;
 
 	@Before
-	public void before() {
-		this.sale = new Sale();
-		this.sale.setSaleDate(LocalDate.now());
+	public void before() throws BusinessException {
+
+		this.sale = EntityFactory.gimme(Sale.class, SaleTemplate.VALID);
 		final List<SaleItem> saleItems = EntityFactory.gimme(SaleItem.class, 10, SaleItemTemplate.VALID);
 		final List<SaleItem> saleItemsValues = EntityFactory.gimme(SaleItem.class, 10, SaleItemTemplate.SALE_VALUE);
 
@@ -66,6 +70,7 @@ public class SaleServiceTest extends AbstractIntegServiceTest {
 				        saleItem.getStock().getProductDescription().getProductUnit());
 				this.productDescriptionService.createProductDescription(this.getUserContext(),
 				        saleItem.getStock().getProductDescription());
+				this.groceryService.createGrocery(this.getUserContext(), saleItem.getStock().getGrocery());
 				this.stockService.createStock(this.getUserContext(), saleItem.getStock());
 			}
 			catch (final BusinessException e) {
@@ -84,6 +89,7 @@ public class SaleServiceTest extends AbstractIntegServiceTest {
 				        saleItem.getStock().getProductDescription().getProductUnit());
 				this.productDescriptionService.createProductDescription(this.getUserContext(),
 				        saleItem.getStock().getProductDescription());
+				this.groceryService.createGrocery(this.getUserContext(), saleItem.getStock().getGrocery());
 				this.stockService.createStock(this.getUserContext(), saleItem.getStock());
 			}
 			catch (final BusinessException e) {
@@ -92,6 +98,8 @@ public class SaleServiceTest extends AbstractIntegServiceTest {
 
 			this.sale.addItem(saleItem);
 		});
+
+		this.groceryService.createGrocery(this.getUserContext(), this.sale.getGrocery());
 	}
 
 	@Test

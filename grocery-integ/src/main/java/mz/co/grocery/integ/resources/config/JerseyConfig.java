@@ -6,6 +6,8 @@ package mz.co.grocery.integ.resources.config;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.springframework.stereotype.Service;
 
+import mz.co.grocery.integ.resources.grocery.GroceryResource;
+import mz.co.grocery.integ.resources.grocery.GroceryUserResource;
 import mz.co.grocery.integ.resources.product.ProductDescriptionResource;
 import mz.co.grocery.integ.resources.product.ProductResource;
 import mz.co.grocery.integ.resources.product.ProductUnitResource;
@@ -28,5 +30,7 @@ public class JerseyConfig extends ResourceConfig {
 		this.register(StockResource.class);
 		this.register(SaleResource.class);
 		this.register(UserResource.class);
+		this.register(GroceryResource.class);
+		this.register(GroceryUserResource.class);
 	}
 }

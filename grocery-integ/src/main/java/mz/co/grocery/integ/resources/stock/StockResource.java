@@ -120,18 +120,19 @@ public class StockResource extends AbstractResource {
 	}
 
 	@GET
-	@Path("by-product/{productUuid}")
+	@Path("by-grocery-and-product")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response fecthByProductUuid(@PathParam("productUuid") final String productUuid) throws BusinessException {
-		final List<Stock> stocks = this.stockQueryService.fetchStockByProductUuid(productUuid);
+	public Response fecthStocksByGroceryAndProduct(@QueryParam("groceryUuid") final String groceryUuid,
+	        @QueryParam("productUuid") final String productUuid) throws BusinessException {
+		final List<Stock> stocks = this.stockQueryService.fetchStockByGroceryAndProduct(groceryUuid, productUuid);
 		return Response.ok(stocks).build();
 	}
 
 	@GET
-	@Path("all")
+	@Path("by-grocery/{groceryUuid}")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response fetchStocks() throws BusinessException {
-		final List<Stock> stocks = this.stockQueryService.fetchStocks();
+	public Response fetchStocksByGrocery(@PathParam("groceryUuid") final String groceryUuid) throws BusinessException {
+		final List<Stock> stocks = this.stockQueryService.fetchStocksByGrocery(groceryUuid);
 		return Response.ok(stocks).build();
 	}
 }

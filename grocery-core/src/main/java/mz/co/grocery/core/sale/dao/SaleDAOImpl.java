@@ -25,17 +25,19 @@ public class SaleDAOImpl extends GenericDAOImpl<Sale, Long> implements SaleDAO {
 	public static final String NAME = "mz.co.grocery.core.sale.dao.SaleDAOImpl";
 
 	@Override
-	public List<SaleReport> findLast7DaysSale(final EntityStatus entityStatus) throws BusinessException {
-		return this
-		        .findByQuery(SaleDAO.QUERY_NAME.findLast7DaysSale,
-		                new ParamBuilder().add("entityStatus", entityStatus).process(), SaleReport.class)
-		        .setMaxResults(7).getResultList();
+	public List<SaleReport> findLast7DaysSale(final String groceryUuid, final EntityStatus entityStatus)
+	        throws BusinessException {
+		return this.findByQuery(SaleDAO.QUERY_NAME.findLast7DaysSale,
+		        new ParamBuilder().add("groceryUuid", groceryUuid).add("entityStatus", entityStatus).process(),
+		        SaleReport.class).setMaxResults(7).getResultList();
 	}
 
 	@Override
-	public List<SaleReport> findPerPeriod(final LocalDate startDate, final LocalDate endDate,
+	public List<SaleReport> findPerPeriod(final String groceryUuid, final LocalDate startDate, final LocalDate endDate,
 	        final EntityStatus entityStatus) throws BusinessException {
-		return this.findByNamedQuery(SaleDAO.QUERY_NAME.findPerPeriod, new ParamBuilder().add("startDate", startDate)
-		        .add("endDate", endDate).add("entityStatus", entityStatus).process(), SaleReport.class);
+		return this.findByNamedQuery(SaleDAO.QUERY_NAME.findPerPeriod,
+		        new ParamBuilder().add("groceryUuid", groceryUuid).add("startDate", startDate).add("endDate", endDate)
+		                .add("entityStatus", entityStatus).process(),
+		        SaleReport.class);
 	}
 }
