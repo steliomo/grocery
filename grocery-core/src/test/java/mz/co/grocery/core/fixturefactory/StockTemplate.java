@@ -11,6 +11,7 @@ import br.com.six2six.fixturefactory.loader.TemplateLoader;
 import mz.co.grocery.core.grocery.model.Grocery;
 import mz.co.grocery.core.product.model.ProductDescription;
 import mz.co.grocery.core.stock.model.Stock;
+import mz.co.msaude.boot.frameworks.util.UuidFactory;
 
 /**
  * @author Stélio Moiane
@@ -19,6 +20,7 @@ import mz.co.grocery.core.stock.model.Stock;
 public class StockTemplate implements TemplateLoader {
 
 	public static final String VALID = "VALID";
+	public static final String WITH_UUID = "WITH_UUID";
 
 	@Override
 	public void load() {
@@ -30,6 +32,12 @@ public class StockTemplate implements TemplateLoader {
 				this.add("purchasePrice", this.random(BigDecimal.class, this.range(1, 100)));
 				this.add("salePrice", this.random(BigDecimal.class, this.range(100, 200)));
 				this.add("quantity", new BigDecimal("200.5"));
+			}
+		});
+
+		Fixture.of(Stock.class).addTemplate(WITH_UUID).inherits(VALID, new Rule() {
+			{
+				this.add("uuid", UuidFactory.generate());
 			}
 		});
 	}

@@ -1,7 +1,7 @@
 /**
  *
  */
-package mz.co.grocery.integ.resources.grocery;
+package mz.co.grocery.integ.resources.grocery.dto;
 
 import java.time.LocalDate;
 

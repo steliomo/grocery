@@ -1,25 +1,28 @@
 /**
  *
  */
-package mz.co.grocery.integ.resources.stock;
+package mz.co.grocery.integ.resources.stock.dto;
 
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
 import mz.co.grocery.core.stock.model.Stock;
+import mz.co.grocery.integ.resources.stock.StockQuantity;
 
 /**
  * @author Stélio Moiane
  *
  */
-public class StockDTO {
+public class StocksDTO {
 
 	private final List<Stock> stocks;
+
 	private final Long totalItems;
+
 	private List<StockQuantity> stockQuantities;
 
-	public StockDTO(final List<Stock> stocks, final Long totalItems) {
+	public StocksDTO(final List<Stock> stocks, final Long totalItems) {
 		this.stocks = stocks;
 		this.totalItems = totalItems;
 	}

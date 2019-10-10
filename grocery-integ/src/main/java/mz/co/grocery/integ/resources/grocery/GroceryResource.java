@@ -21,6 +21,7 @@ import mz.co.grocery.core.grocery.model.Grocery;
 import mz.co.grocery.core.grocery.service.GroceryQueryService;
 import mz.co.grocery.core.grocery.service.GroceryService;
 import mz.co.grocery.integ.resources.AbstractResource;
+import mz.co.grocery.integ.resources.grocery.dto.GroceriesDTO;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 
 /**
@@ -54,7 +55,7 @@ public class GroceryResource extends AbstractResource {
 
 		final Long totalItems = this.groceryQueryService.count();
 		final List<Grocery> groceries = this.groceryQueryService.findAllGroceries(currentPage, maxResult);
-		final GroceryDTO groceryDTO = new GroceryDTO(groceries, totalItems);
+		final GroceriesDTO groceryDTO = new GroceriesDTO(groceries, totalItems);
 
 		return Response.ok(groceryDTO).build();
 	}

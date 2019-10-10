@@ -26,6 +26,7 @@ import mz.co.grocery.core.grocery.model.UserRole;
 import mz.co.grocery.core.grocery.service.GroceryUserQueryService;
 import mz.co.grocery.core.grocery.service.GroceryUserService;
 import mz.co.grocery.integ.resources.AbstractResource;
+import mz.co.grocery.integ.resources.grocery.dto.GroceryUserDTO;
 import mz.co.grocery.integ.resources.user.dto.UserDTO;
 import mz.co.grocery.integ.resources.user.service.ResourceOnwnerService;
 import mz.co.grocery.integ.resources.util.SmsResource;

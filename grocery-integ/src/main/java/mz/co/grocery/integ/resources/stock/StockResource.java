@@ -24,6 +24,7 @@ import mz.co.grocery.core.stock.model.Stock;
 import mz.co.grocery.core.stock.service.StockQueryService;
 import mz.co.grocery.core.stock.service.StockService;
 import mz.co.grocery.integ.resources.AbstractResource;
+import mz.co.grocery.integ.resources.stock.dto.StocksDTO;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.model.EntityStatus;
 
@@ -66,7 +67,7 @@ public class StockResource extends AbstractResource {
 		final List<Stock> stocks = this.stockQueryService.fetchAllStocks(currentPage, maxResult);
 		final Long totalItems = this.stockQueryService.count(EntityStatus.ACTIVE);
 
-		final StockDTO stockDTO = new StockDTO(stocks, totalItems);
+		final StocksDTO stockDTO = new StocksDTO(stocks, totalItems);
 
 		return Response.ok(stockDTO).build();
 	}
