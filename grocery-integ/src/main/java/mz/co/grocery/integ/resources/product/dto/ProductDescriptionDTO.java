@@ -22,6 +22,9 @@ public class ProductDescriptionDTO extends GenericDTO<ProductDescription> {
 
 	private ProductUnitDTO productUnitDTO;
 
+	public ProductDescriptionDTO() {
+	}
+
 	public ProductDescriptionDTO(final ProductDescription productDescription) {
 		super(productDescription);
 		this.mapper(productDescription);
@@ -45,6 +48,17 @@ public class ProductDescriptionDTO extends GenericDTO<ProductDescription> {
 		}
 	}
 
+	@Override
+	public ProductDescription get() {
+		final ProductDescription productDescription = this.get(new ProductDescription());
+
+		productDescription.setProduct(this.productDTO.get());
+		productDescription.setDescription(this.description);
+		productDescription.setProductUnit(this.productUnitDTO.get());
+
+		return productDescription;
+	}
+
 	public ProductDTO getProductDTO() {
 		return this.productDTO;
 	}
@@ -55,5 +69,12 @@ public class ProductDescriptionDTO extends GenericDTO<ProductDescription> {
 
 	public ProductUnitDTO getProductUnitDTO() {
 		return this.productUnitDTO;
+	}
+
+	public String getName() {
+		final StringBuilder builder = new StringBuilder();
+		builder.append(this.productDTO.getName()).append(" ").append(this.description).append(" ")
+		        .append(this.productUnitDTO.getUnit()).append(" ").append(this.productUnitDTO.getProductUnitType());
+		return builder.toString();
 	}
 }

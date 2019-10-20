@@ -99,14 +99,18 @@ public class InventoryServiceTest extends AbstractUnitServiceTest {
 
 		final Inventory inventory = EntityFactory.gimme(Inventory.class, InventoryTemplate.WITH_STOCKS);
 		inventory.approveInventory();
-		this.inventoryService.approveInventory(this.getUserContext(), inventory);
+		when(this.inventoryQueryService.fetchInventoryUuid(inventory.getUuid())).thenReturn(inventory);
+		this.inventoryService.approveInventory(this.getUserContext(), inventory.getUuid());
 	}
 
 	@Test
 	public void shouldApproveInventory() throws BusinessException {
 
 		final Inventory inventory = EntityFactory.gimme(Inventory.class, InventoryTemplate.WITH_STOCKS);
-		this.inventoryService.approveInventory(this.getUserContext(), inventory);
+
+		when(this.inventoryQueryService.fetchInventoryUuid(inventory.getUuid())).thenReturn(inventory);
+
+		this.inventoryService.approveInventory(this.getUserContext(), inventory.getUuid());
 
 		assertEquals(InventoryStatus.APPROVED, inventory.getInventoryStatus());
 	}

@@ -30,7 +30,8 @@ import mz.co.msaude.boot.frameworks.model.GenericEntity;
  *
  */
 @NamedQueries({
-        @NamedQuery(name = InventoryDAO.QUERY_NAME.fetchByGroceryAndStatus, query = InventoryDAO.QUERY.fetchByGroceryAndStatus) })
+        @NamedQuery(name = InventoryDAO.QUERY_NAME.fetchByGroceryAndStatus, query = InventoryDAO.QUERY.fetchByGroceryAndStatus),
+        @NamedQuery(name = InventoryDAO.QUERY_NAME.fetchByUuid, query = InventoryDAO.QUERY.fetchByUuid) })
 @Entity
 @Table(name = "INVENTORIES")
 public class Inventory extends GenericEntity {
@@ -49,7 +50,7 @@ public class Inventory extends GenericEntity {
 	@NotNull
 	@Enumerated(EnumType.STRING)
 	@Column(name = "INVENTORY_STATUS", nullable = false, length = 15)
-	private InventoryStatus inventoryStatus;
+	private InventoryStatus inventoryStatus = InventoryStatus.PENDING;
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "inventory")
 	private final Set<StockInventory> stockInventories = new HashSet<>();
@@ -78,7 +79,15 @@ public class Inventory extends GenericEntity {
 		return this.inventoryStatus;
 	}
 
+	public void setInventoryStatus(final InventoryStatus inventoryStatus) {
+		this.inventoryStatus = inventoryStatus;
+	}
+
 	public void approveInventory() {
 		this.inventoryStatus = InventoryStatus.APPROVED;
+	}
+
+	public void addStockInventory(final StockInventory stockInventory) {
+		this.stockInventories.add(stockInventory);
 	}
 }

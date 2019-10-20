@@ -5,69 +5,58 @@ package mz.co.grocery.integ.resources.grocery.dto;
 
 import java.time.LocalDate;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
-import mz.co.grocery.core.grocery.model.Grocery;
 import mz.co.grocery.core.grocery.model.GroceryUser;
 import mz.co.grocery.core.grocery.model.UserRole;
-import mz.co.grocery.integ.resources.user.dto.UserDTO;
+import mz.co.grocery.integ.resources.dto.GenericDTO;
 
 /**
  * @author Stélio Moiane
  *
  */
-public class GroceryUserDTO {
+public class GroceryUserDTO extends GenericDTO<GroceryUser> {
 
-	private String fullName;
+	private GroceryDTO groceryDTO;
 
-	private Grocery grocery;
-
-	private String username;
-
-	private String password;
+	private String user;
 
 	private UserRole userRole;
 
 	private LocalDate expiryDate;
 
-	private String email;
-
-	private Long totalItems;
-
 	public GroceryUserDTO() {
+
 	}
 
-	public GroceryUserDTO(final GroceryUser groceryUser, final UserDTO userDTO, final Long totalItems) {
-		this.fullName = userDTO.getFullName();
-		this.grocery = groceryUser.getGrocery();
-		this.username = userDTO.getUsername();
+	public GroceryUserDTO(final GroceryUser groceryUser) {
+		super(groceryUser);
+		this.mapper(groceryUser);
+	}
+
+	@Override
+	public void mapper(final GroceryUser groceryUser) {
+		this.groceryDTO = new GroceryDTO(groceryUser.getGrocery());
+		this.user = groceryUser.getUser();
 		this.userRole = groceryUser.getUserRole();
 		this.expiryDate = groceryUser.getExpiryDate();
-		this.totalItems = totalItems;
 	}
 
-	public String getEmail() {
-		return this.email;
+	@Override
+	public GroceryUser get() {
+		final GroceryUser groceryUser = this.get(new GroceryUser());
+		groceryUser.setGrocery(this.groceryDTO.get());
+		groceryUser.setUser(this.user);
+		groceryUser.setUserRole(this.userRole);
+		groceryUser.setExpiryDate(this.expiryDate);
+
+		return groceryUser;
 	}
 
-	public void setEmail(final String email) {
-		this.email = email;
+	public GroceryDTO getGroceryDTO() {
+		return this.groceryDTO;
 	}
 
-	public String getFullName() {
-		return this.fullName;
-	}
-
-	public Grocery getGrocery() {
-		return this.grocery;
-	}
-
-	public String getUsername() {
-		return this.username;
-	}
-
-	public String getPassword() {
-		return this.password;
+	public String getUser() {
+		return this.user;
 	}
 
 	public UserRole getUserRole() {
@@ -76,20 +65,5 @@ public class GroceryUserDTO {
 
 	public LocalDate getExpiryDate() {
 		return this.expiryDate;
-	}
-
-	public Long getTotalItems() {
-		return this.totalItems;
-	}
-
-	@JsonIgnore
-	public GroceryUser getGroceryUser() {
-
-		final GroceryUser groceryUser = new GroceryUser();
-		groceryUser.setGrocery(this.grocery);
-		groceryUser.setUserRole(this.userRole);
-		groceryUser.setExpiryDate(this.expiryDate);
-
-		return groceryUser;
 	}
 }

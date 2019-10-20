@@ -38,4 +38,10 @@ public class InventoryDAOImpl extends GenericDAOImpl<Inventory, Long> implements
 		}
 	}
 
+	@Override
+	public Inventory fetchByUuid(final String inventoryUuid, final EntityStatus entityStatus) throws BusinessException {
+		return this.findSingleByNamedQuery(InventoryDAO.QUERY_NAME.fetchByUuid,
+		        new ParamBuilder().add("inventoryUuid", inventoryUuid).add("entityStatus", entityStatus).process());
+	}
+
 }

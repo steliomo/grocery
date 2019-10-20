@@ -23,6 +23,7 @@ import mz.co.grocery.core.sale.model.SaleReport;
 import mz.co.grocery.core.sale.service.SaleQueryService;
 import mz.co.grocery.core.sale.service.SaleService;
 import mz.co.grocery.integ.resources.AbstractResource;
+import mz.co.grocery.integ.resources.sale.dto.SaleDTO;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.util.LocalDateAdapter;
 
@@ -45,9 +46,9 @@ public class SaleResource extends AbstractResource {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response registSale(final Sale sale) throws BusinessException {
-		this.saleService.registSale(this.getContext(), sale);
-		return Response.ok(sale).build();
+	public Response registSale(final SaleDTO saleDTO) throws BusinessException {
+		final Sale sale = this.saleService.registSale(this.getContext(), saleDTO.get());
+		return Response.ok(new SaleDTO(sale)).build();
 	}
 
 	@GET

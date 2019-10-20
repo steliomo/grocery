@@ -114,14 +114,17 @@ public class InventoryServiceImpl extends AbstractService implements InventorySe
 	}
 
 	@Override
-	public Inventory approveInventory(final UserContext userContext, final Inventory inventory)
+	public Inventory approveInventory(final UserContext userContext, final String inventoryUuid)
 	        throws BusinessException {
+
+		final Inventory inventory = this.inventoryQueryService.fetchInventoryUuid(inventoryUuid);
 
 		if (InventoryStatus.APPROVED == inventory.getInventoryStatus()) {
 			throw new BusinessException("Cannot perform this operation on approved inventories...");
 		}
 
 		inventory.approveInventory();
+		this.updateInventory(userContext, inventory);
 
 		inventory.getStockInventories().forEach(stockInventory -> {
 			final Stock stock = stockInventory.getStock();

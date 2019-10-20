@@ -19,12 +19,10 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import mz.co.grocery.core.grocery.model.Grocery;
 import mz.co.grocery.core.sale.dao.SaleDAO;
 import mz.co.msaude.boot.frameworks.model.GenericEntity;
-import mz.co.msaude.boot.frameworks.util.LocalDateAdapter;
 
 /**
  * @author Stélio Moiane
@@ -45,7 +43,6 @@ public class Sale extends GenericEntity {
 
 	@NotNull
 	@Column(name = "SALE_DATE", nullable = false)
-	@XmlJavaTypeAdapter(LocalDateAdapter.class)
 	private LocalDate saleDate;
 
 	@NotNull

@@ -4,6 +4,7 @@
 package mz.co.grocery.integ.resources.product;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -23,6 +24,8 @@ import mz.co.grocery.core.product.model.Product;
 import mz.co.grocery.core.product.service.ProductQueryService;
 import mz.co.grocery.core.product.service.ProductService;
 import mz.co.grocery.integ.resources.AbstractResource;
+import mz.co.grocery.integ.resources.grocery.dto.GroceryDTO;
+import mz.co.grocery.integ.resources.product.dto.ProductDTO;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 
 /**
@@ -44,16 +47,20 @@ public class ProductResource extends AbstractResource {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response createProduct(final Product product) throws BusinessException {
-		this.producService.createProduct(this.getContext(), product);
-		return Response.ok(product).build();
+	public Response createProduct(final ProductDTO productDTO) throws BusinessException {
+		this.producService.createProduct(this.getContext(), productDTO.get());
+		return Response.ok(productDTO).build();
 	}
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response findAllProducts() throws BusinessException {
 		final List<Product> products = this.productQueryService.findAllProducts();
-		return Response.ok(products).build();
+
+		final List<ProductDTO> productsDTO = products.stream().map(product -> new ProductDTO(product))
+		        .collect(Collectors.toList());
+
+		return Response.ok(productsDTO).build();
 	}
 
 	@GET
@@ -61,15 +68,19 @@ public class ProductResource extends AbstractResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response findProductsByName(@PathParam("name") final String name) throws BusinessException {
 		final List<Product> products = this.productQueryService.findProductByName(name);
-		return Response.ok(products).build();
+
+		final List<ProductDTO> productsDTO = products.stream().map(product -> new ProductDTO(product))
+		        .collect(Collectors.toList());
+
+		return Response.ok(productsDTO).build();
 	}
 
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response updateProduct(final Product product) throws BusinessException {
-		this.producService.uppdateProduct(this.getContext(), product);
-		return Response.ok(product).build();
+	public Response updateProduct(final ProductDTO productDTO) throws BusinessException {
+		final Product product = this.producService.uppdateProduct(this.getContext(), productDTO.get());
+		return Response.ok(new ProductDTO(product)).build();
 	}
 
 	@GET
@@ -77,7 +88,22 @@ public class ProductResource extends AbstractResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response findProductByUuid(@PathParam("productUuid") final String productUuid) throws BusinessException {
 		final Product product = this.productQueryService.findProductByUuid(productUuid);
-		return Response.ok(product).build();
+		return Response.ok(new ProductDTO(product)).build();
+	}
+
+	@GET
+	@Path("by-grocery/{groceryUuid}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response findProductByGroceryUuid(@PathParam("groceryUuid") final String groceryUuid)
+	        throws BusinessException {
+
+		final GroceryDTO groceryDTO = new GroceryDTO(groceryUuid);
+		final List<Product> products = this.productQueryService.findProductsByGrocery(groceryDTO.get());
+
+		final List<ProductDTO> productsDTO = products.stream().map(product -> new ProductDTO(product))
+		        .collect(Collectors.toList());
+
+		return Response.ok(productsDTO).build();
 	}
 
 	@DELETE
@@ -86,6 +112,6 @@ public class ProductResource extends AbstractResource {
 	public Response removeProduct(@PathParam("productUuid") final String productUuid) throws BusinessException {
 		final Product product = this.productQueryService.findProductByUuid(productUuid);
 		this.producService.removeProduct(this.getContext(), product);
-		return Response.ok(product).build();
+		return Response.ok(new ProductDTO(product)).build();
 	}
 }

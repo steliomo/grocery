@@ -32,4 +32,9 @@ public class InventoryQueryServiceImpl implements InventoryQueryService {
 		return this.inventoryDAO.fetchByGroceryAndStatus(grocery, inventoryStatus, EntityStatus.ACTIVE);
 	}
 
+	@Override
+	public Inventory fetchInventoryUuid(final String inventoryUuid) throws BusinessException {
+		return this.inventoryDAO.fetchByUuid(inventoryUuid, EntityStatus.ACTIVE);
+	}
+
 }

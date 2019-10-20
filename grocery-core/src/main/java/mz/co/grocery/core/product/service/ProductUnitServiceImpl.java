@@ -23,19 +23,19 @@ public class ProductUnitServiceImpl extends AbstractService implements ProductUn
 	public static final String NAME = "mz.co.grocery.core.product.service.ProductUnitServiceImpl";
 
 	@Inject
-	private ProductUnitDAO productSizeDAO;
+	private ProductUnitDAO productUnitDAO;
 
 	@Override
 	public ProductUnit createProductUnit(final UserContext userContext, final ProductUnit productUnit)
 	        throws BusinessException {
-		this.productSizeDAO.create(userContext, productUnit);
+		this.productUnitDAO.create(userContext, productUnit);
 		return productUnit;
 	}
 
 	@Override
 	public ProductUnit updateProductUnit(final UserContext userContext, final ProductUnit productUnit)
 	        throws BusinessException {
-		this.productSizeDAO.update(userContext, productUnit);
+		this.productUnitDAO.update(userContext, productUnit);
 		return productUnit;
 	}
 
@@ -43,7 +43,7 @@ public class ProductUnitServiceImpl extends AbstractService implements ProductUn
 	public ProductUnit removeProductUnit(final UserContext userContext, final ProductUnit productUnit)
 	        throws BusinessException {
 		productUnit.inactive();
-		this.productSizeDAO.update(userContext, productUnit);
+		this.productUnitDAO.update(userContext, productUnit);
 		return productUnit;
 	}
 }

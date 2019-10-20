@@ -4,6 +4,7 @@
 package mz.co.grocery.integ.resources.grocery;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -22,6 +23,7 @@ import mz.co.grocery.core.grocery.service.GroceryQueryService;
 import mz.co.grocery.core.grocery.service.GroceryService;
 import mz.co.grocery.integ.resources.AbstractResource;
 import mz.co.grocery.integ.resources.grocery.dto.GroceriesDTO;
+import mz.co.grocery.integ.resources.grocery.dto.GroceryDTO;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 
 /**
@@ -55,8 +57,10 @@ public class GroceryResource extends AbstractResource {
 
 		final Long totalItems = this.groceryQueryService.count();
 		final List<Grocery> groceries = this.groceryQueryService.findAllGroceries(currentPage, maxResult);
-		final GroceriesDTO groceryDTO = new GroceriesDTO(groceries, totalItems);
 
-		return Response.ok(groceryDTO).build();
+		final List<GroceryDTO> groceriesDTO = groceries.stream().map(grocery -> new GroceryDTO(grocery))
+		        .collect(Collectors.toList());
+
+		return Response.ok(new GroceriesDTO(groceriesDTO, totalItems)).build();
 	}
 }

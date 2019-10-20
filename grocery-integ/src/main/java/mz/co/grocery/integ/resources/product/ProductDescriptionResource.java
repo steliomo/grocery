@@ -4,6 +4,7 @@
 package mz.co.grocery.integ.resources.product;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -24,6 +25,7 @@ import mz.co.grocery.core.product.model.ProductDescription;
 import mz.co.grocery.core.product.service.ProductDescriptionQueryService;
 import mz.co.grocery.core.product.service.ProductDescriptionService;
 import mz.co.grocery.integ.resources.AbstractResource;
+import mz.co.grocery.integ.resources.product.dto.ProductDescriptionDTO;
 import mz.co.grocery.integ.resources.product.dto.ProductDescriptionsDTO;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 
@@ -46,9 +48,10 @@ public class ProductDescriptionResource extends AbstractResource {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response createProductDescription(final ProductDescription productDescription) throws BusinessException {
-		this.productDescriptionService.createProductDescription(this.getContext(), productDescription);
-		return Response.ok(productDescription).build();
+	public Response createProductDescription(final ProductDescriptionDTO productDescriptionDTO)
+	        throws BusinessException {
+		this.productDescriptionService.createProductDescription(this.getContext(), productDescriptionDTO.get());
+		return Response.ok(productDescriptionDTO).build();
 	}
 
 	@GET
@@ -59,9 +62,14 @@ public class ProductDescriptionResource extends AbstractResource {
 
 		final List<ProductDescription> productDescriptions = this.productDescriptionQueryService
 		        .fetchdAllProductDescriptions(currentPage, maxResult);
+
+		final List<ProductDescriptionDTO> productDescriptionsDTO = productDescriptions.stream()
+		        .map(productDescription -> new ProductDescriptionDTO(productDescription)).collect(Collectors.toList());
+
 		final Long totalItems = this.productDescriptionQueryService.countProductDescriptions();
 
-		final ProductDescriptionsDTO productDescriptionDTO = new ProductDescriptionsDTO(productDescriptions, totalItems);
+		final ProductDescriptionsDTO productDescriptionDTO = new ProductDescriptionsDTO(productDescriptionsDTO,
+		        totalItems);
 		return Response.ok(productDescriptionDTO).build();
 	}
 
@@ -75,7 +83,10 @@ public class ProductDescriptionResource extends AbstractResource {
 		final List<ProductDescription> productDescriptions = this.productDescriptionQueryService
 		        .fetchProductDescriptionByDescription(description);
 
-		return Response.ok(productDescriptions).build();
+		final List<ProductDescriptionDTO> productDescriptionsDTO = productDescriptions.stream()
+		        .map(productDescription -> new ProductDescriptionDTO(productDescription)).collect(Collectors.toList());
+
+		return Response.ok(productDescriptionsDTO).build();
 	}
 
 	@Path("{productDescriptionUuid}")
@@ -88,16 +99,16 @@ public class ProductDescriptionResource extends AbstractResource {
 		final ProductDescription productDescription = this.productDescriptionQueryService
 		        .fetchProductDescriptionByUuid(productDescriptionUuid);
 
-		return Response.ok(productDescription).build();
+		return Response.ok(new ProductDescriptionDTO(productDescription)).build();
 	}
 
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response updateProductDescription(final ProductDescription productDescription) throws BusinessException {
-		this.productDescriptionService.updateProductDescription(this.getContext(), productDescription);
-
-		return Response.ok(productDescription).build();
+	public Response updateProductDescription(final ProductDescriptionDTO productDescriptionDTO)
+	        throws BusinessException {
+		this.productDescriptionService.updateProductDescription(this.getContext(), productDescriptionDTO.get());
+		return Response.ok(productDescriptionDTO).build();
 	}
 
 	@Path("{productDescriptionUuid}")
@@ -106,11 +117,12 @@ public class ProductDescriptionResource extends AbstractResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response deleteProductDescription(@PathParam("productDescriptionUuid") final String productDescriptionUuid)
 	        throws BusinessException {
+
 		final ProductDescription productDescription = this.productDescriptionQueryService
 		        .fetchProductDescriptionByUuid(productDescriptionUuid);
 
 		this.productDescriptionService.updateProductDescription(this.getContext(), productDescription);
 
-		return Response.ok(productDescription).build();
+		return Response.ok(new ProductDescriptionDTO(productDescription)).build();
 	}
 }

@@ -39,11 +39,13 @@ public class InventoryQueryServiceTest extends AbstractIntegServiceTest {
 
 	private Grocery grocery;
 
+	private Inventory inventory;
+
 	@Before
 	public void setup() throws BusinessException {
-		final Inventory inventory = EntityFactory.gimme(Inventory.class, InventoryTemplate.VALID);
-		this.grocery = this.groceryService.createGrocery(this.getUserContext(), inventory.getGrocery());
-		this.inventoryService.createInventory(this.getUserContext(), inventory);
+		this.inventory = EntityFactory.gimme(Inventory.class, InventoryTemplate.VALID);
+		this.grocery = this.groceryService.createGrocery(this.getUserContext(), this.inventory.getGrocery());
+		this.inventoryService.createInventory(this.getUserContext(), this.inventory);
 	}
 
 	@Test
@@ -51,6 +53,16 @@ public class InventoryQueryServiceTest extends AbstractIntegServiceTest {
 
 		final Inventory inventory = this.inventoryQueryService.fetchInventoryByGroceryAndStatus(this.grocery,
 		        InventoryStatus.PENDING);
+
+		assertNotNull(inventory);
+		assertNotNull(inventory.getGrocery());
+		assertTrue(inventory.getStockInventories().isEmpty());
+	}
+
+	@Test
+	public void shouldFetchInventoryByUuid() throws BusinessException {
+
+		final Inventory inventory = this.inventoryQueryService.fetchInventoryUuid(this.inventory.getUuid());
 
 		assertNotNull(inventory);
 		assertNotNull(inventory.getGrocery());

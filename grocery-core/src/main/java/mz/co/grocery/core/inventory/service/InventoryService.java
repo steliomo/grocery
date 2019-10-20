@@ -17,7 +17,7 @@ public interface InventoryService {
 
 	Inventory performInventory(UserContext userContext, Inventory inventory) throws BusinessException;
 
-	Inventory approveInventory(UserContext userContext, Inventory inventory) throws BusinessException;
+	Inventory approveInventory(UserContext userContext, String inventoryUuid) throws BusinessException;
 
 	Inventory updateInventory(UserContext userContext, Inventory inventory) throws BusinessException;
 }

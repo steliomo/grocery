@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Repository;
 
+import mz.co.grocery.core.grocery.model.Grocery;
 import mz.co.grocery.core.product.model.Product;
 import mz.co.msaude.boot.frameworks.dao.GenericDAOImpl;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
@@ -33,5 +34,12 @@ public class ProductDAOImpl extends GenericDAOImpl<Product, Long> implements Pro
 
 		return this.findByNamedQuery(ProductDAO.QUERY_NAME.findByName,
 		        new ParamBuilder().add("name", "%" + name + "%").add("entityStatus", entityStatus).process());
+	}
+
+	@Override
+	public List<Product> findByGrocery(final Grocery grocery, final EntityStatus entityStatus)
+	        throws BusinessException {
+		return this.findByNamedQuery(ProductDAO.QUERY_NAME.findByGrocery,
+		        new ParamBuilder().add("groceryUuid", grocery.getUuid()).add("entityStatus", entityStatus).process());
 	}
 }
