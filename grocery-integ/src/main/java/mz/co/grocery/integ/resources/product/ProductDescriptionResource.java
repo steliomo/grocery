@@ -24,6 +24,7 @@ import mz.co.grocery.core.product.model.ProductDescription;
 import mz.co.grocery.core.product.service.ProductDescriptionQueryService;
 import mz.co.grocery.core.product.service.ProductDescriptionService;
 import mz.co.grocery.integ.resources.AbstractResource;
+import mz.co.grocery.integ.resources.product.dto.ProductDescriptionsDTO;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 
 /**
@@ -60,7 +61,7 @@ public class ProductDescriptionResource extends AbstractResource {
 		        .fetchdAllProductDescriptions(currentPage, maxResult);
 		final Long totalItems = this.productDescriptionQueryService.countProductDescriptions();
 
-		final ProductDescriptionDTO productDescriptionDTO = new ProductDescriptionDTO(productDescriptions, totalItems);
+		final ProductDescriptionsDTO productDescriptionDTO = new ProductDescriptionsDTO(productDescriptions, totalItems);
 		return Response.ok(productDescriptionDTO).build();
 	}
 
