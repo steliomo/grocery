@@ -4,6 +4,7 @@
 package mz.co.grocery.integ.resources.stock;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -24,6 +25,7 @@ import mz.co.grocery.core.stock.model.Stock;
 import mz.co.grocery.core.stock.service.StockQueryService;
 import mz.co.grocery.core.stock.service.StockService;
 import mz.co.grocery.integ.resources.AbstractResource;
+import mz.co.grocery.integ.resources.stock.dto.StockDTO;
 import mz.co.grocery.integ.resources.stock.dto.StocksDTO;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.model.EntityStatus;
@@ -47,27 +49,28 @@ public class StockResource extends AbstractResource {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response createStock(final Stock stock) throws BusinessException {
-		this.stockService.createStock(this.getContext(), stock);
-		return Response.ok(stock).build();
+	public Response createStock(final StockDTO stockDTO) throws BusinessException {
+		this.stockService.createStock(this.getContext(), stockDTO.get());
+		return Response.ok(stockDTO).build();
 	}
 
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response updateStock(final Stock stock) throws BusinessException {
-		this.stockService.updateStock(this.getContext(), stock);
-		return Response.ok(stock).build();
+	public Response updateStock(final StockDTO stockDTO) throws BusinessException {
+		this.stockService.updateStock(this.getContext(), stockDTO.get());
+		return Response.ok(stockDTO).build();
 	}
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response fetchAllStocks(@QueryParam("currentPage") final int currentPage,
 	        @QueryParam("maxResult") final int maxResult) throws BusinessException {
-		final List<Stock> stocks = this.stockQueryService.fetchAllStocks(currentPage, maxResult);
 		final Long totalItems = this.stockQueryService.count(EntityStatus.ACTIVE);
+		final List<Stock> stocks = this.stockQueryService.fetchAllStocks(currentPage, maxResult);
 
-		final StocksDTO stockDTO = new StocksDTO(stocks, totalItems);
+		final List<StockDTO> stocksDTO = stocks.stream().map(stock -> new StockDTO(stock)).collect(Collectors.toList());
+		final StocksDTO stockDTO = new StocksDTO(stocksDTO, totalItems);
 
 		return Response.ok(stockDTO).build();
 	}
@@ -77,7 +80,7 @@ public class StockResource extends AbstractResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response fetchByUuid(@PathParam("stockUuid") final String stockUuid) throws BusinessException {
 		final Stock stock = this.stockQueryService.fetchStockByUuid(stockUuid);
-		return Response.ok(stock).build();
+		return Response.ok(new StockDTO(stock)).build();
 	}
 
 	@GET
@@ -86,7 +89,8 @@ public class StockResource extends AbstractResource {
 	public Response fetchStocksByProductDescription(@QueryParam("description") final String description)
 	        throws BusinessException {
 		final List<Stock> stocks = this.stockQueryService.fetchStocksByProductDescription(description);
-		return Response.ok(stocks).build();
+		final List<StockDTO> stocksDTO = stocks.stream().map(stock -> new StockDTO(stock)).collect(Collectors.toList());
+		return Response.ok(stocksDTO).build();
 	}
 
 	@DELETE
@@ -95,17 +99,17 @@ public class StockResource extends AbstractResource {
 	public Response removeStock(@PathParam("stockUuid") final String stockUuid) throws BusinessException {
 		final Stock stock = this.stockQueryService.fetchStockByUuid(stockUuid);
 		this.stockService.removeStock(this.getContext(), stock);
-		return Response.ok(stock).build();
+		return Response.ok(new StockDTO(stock)).build();
 	}
 
 	@PUT
 	@Path("update-stocks-and-prices")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response addStockQuantity(final List<Stock> stocks) throws BusinessException {
+	public Response addStockQuantity(final List<StockDTO> stocksDTO) throws BusinessException {
 
-		stocks.forEach(stock -> {
-			this.updateStocksAndPrices(stock);
+		stocksDTO.forEach(stockDTO -> {
+			this.updateStocksAndPrices(stockDTO.get());
 		});
 
 		return Response.ok().build();
@@ -125,8 +129,12 @@ public class StockResource extends AbstractResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response fecthStocksByGroceryAndProduct(@QueryParam("groceryUuid") final String groceryUuid,
 	        @QueryParam("productUuid") final String productUuid) throws BusinessException {
+
 		final List<Stock> stocks = this.stockQueryService.fetchStockByGroceryAndProduct(groceryUuid, productUuid);
-		return Response.ok(stocks).build();
+
+		final List<StockDTO> stocksDTO = stocks.stream().map(stock -> new StockDTO(stock)).collect(Collectors.toList());
+
+		return Response.ok(stocksDTO).build();
 	}
 
 	@GET
@@ -134,6 +142,9 @@ public class StockResource extends AbstractResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response fetchStocksByGrocery(@PathParam("groceryUuid") final String groceryUuid) throws BusinessException {
 		final List<Stock> stocks = this.stockQueryService.fetchStocksByGrocery(groceryUuid);
-		return Response.ok(stocks).build();
+
+		final List<StockDTO> stocksDTO = stocks.stream().map(stock -> new StockDTO(stock)).collect(Collectors.toList());
+
+		return Response.ok(stocksDTO).build();
 	}
 }

@@ -13,8 +13,6 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
-import com.fasterxml.jackson.annotation.JsonIgnore;
-
 import mz.co.grocery.core.stock.model.Stock;
 import mz.co.msaude.boot.frameworks.model.GenericEntity;
 
@@ -29,7 +27,6 @@ public class StockInventory extends GenericEntity {
 
 	private static final long serialVersionUID = 1L;
 
-	@JsonIgnore
 	@NotNull
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "INVENTORY_ID", nullable = false)

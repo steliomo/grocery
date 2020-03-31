@@ -7,10 +7,14 @@ import java.time.LocalDate;
 import java.util.Set;
 import java.util.stream.Collectors;
 
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
+
 import mz.co.grocery.core.inventory.model.Inventory;
 import mz.co.grocery.core.inventory.model.InventoryStatus;
 import mz.co.grocery.integ.resources.dto.GenericDTO;
 import mz.co.grocery.integ.resources.grocery.dto.GroceryDTO;
+import mz.co.grocery.integ.resources.util.ProxyUtil;
+import mz.co.msaude.boot.frameworks.util.LocalDateAdapter;
 
 /**
  * @author Stélio Moiane
@@ -20,11 +24,15 @@ public class InventoryDTO extends GenericDTO<Inventory> {
 
 	private GroceryDTO groceryDTO;
 
-	private LocalDate InventoryDate;
+	@XmlJavaTypeAdapter(LocalDateAdapter.class)
+	private LocalDate inventoryDate;
 
 	private InventoryStatus inventoryStatus;
 
-	private Set<StockInventoryDTO> stockInventoryDTOs;
+	private Set<StockInventoryDTO> stockInventoriesDTO;
+
+	public InventoryDTO() {
+	}
 
 	public InventoryDTO(final Inventory inventory) {
 		super(inventory);
@@ -33,15 +41,30 @@ public class InventoryDTO extends GenericDTO<Inventory> {
 
 	@Override
 	public void mapper(final Inventory inventory) {
-		this.groceryDTO = new GroceryDTO(inventory.getGrocery());
+		if (ProxyUtil.isInitialized(inventory.getGrocery())) {
+			this.groceryDTO = new GroceryDTO(inventory.getGrocery());
+		}
 
-		this.InventoryDate = inventory.getInventoryDate();
+		this.inventoryDate = inventory.getInventoryDate();
 
 		this.inventoryStatus = inventory.getInventoryStatus();
 
-		this.stockInventoryDTOs = inventory.getStockInventories().stream().map(stockInventory -> {
-			return new StockInventoryDTO(stockInventory);
-		}).collect(Collectors.toSet());
+		this.stockInventoriesDTO = inventory.getStockInventories().stream()
+		        .map(stockInventory -> new StockInventoryDTO(stockInventory)).collect(Collectors.toSet());
+	}
+
+	@Override
+	public Inventory get() {
+		final Inventory inventory = this.get(new Inventory());
+		inventory.setGrocery(this.groceryDTO.get());
+		inventory.setInventoryDate(this.inventoryDate);
+		inventory.setInventoryStatus(this.inventoryStatus);
+
+		for (final StockInventoryDTO stockInventoryDTO : this.stockInventoriesDTO) {
+			inventory.addStockInventory(stockInventoryDTO.get());
+		}
+
+		return inventory;
 	}
 
 	public GroceryDTO getGroceryDTO() {
@@ -49,14 +72,14 @@ public class InventoryDTO extends GenericDTO<Inventory> {
 	}
 
 	public LocalDate getInventoryDate() {
-		return this.InventoryDate;
+		return this.inventoryDate;
 	}
 
 	public InventoryStatus getInventoryStatus() {
 		return this.inventoryStatus;
 	}
 
-	public Set<StockInventoryDTO> getStockInvetoryDTOs() {
-		return this.stockInventoryDTOs;
+	public Set<StockInventoryDTO> getStockInventoriesDTO() {
+		return this.stockInventoriesDTO;
 	}
 }

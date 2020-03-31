@@ -22,9 +22,16 @@ public class GroceryDTO extends GenericDTO<Grocery> {
 
 	private String email;
 
+	public GroceryDTO() {
+	}
+
 	public GroceryDTO(final Grocery grocery) {
 		super(grocery);
 		this.mapper(grocery);
+	}
+
+	public GroceryDTO(final String groceryUuid) {
+		this.setUuid(groceryUuid);
 	}
 
 	@Override
@@ -34,6 +41,18 @@ public class GroceryDTO extends GenericDTO<Grocery> {
 		this.phoneNumber = grocery.getPhoneNumber();
 		this.phoneNumberOptional = grocery.getPhoneNumberOptional();
 		this.email = grocery.getEmail();
+	}
+
+	@Override
+	public Grocery get() {
+		final Grocery grocery = this.get(new Grocery());
+		grocery.setName(this.name);
+		grocery.setAddress(this.address);
+		grocery.setPhoneNumber(this.phoneNumber);
+		grocery.setPhoneNumberOptional(this.phoneNumberOptional);
+		grocery.setEmail(this.email);
+
+		return grocery;
 	}
 
 	public String getName() {
@@ -55,4 +74,5 @@ public class GroceryDTO extends GenericDTO<Grocery> {
 	public String getEmail() {
 		return this.email;
 	}
+
 }

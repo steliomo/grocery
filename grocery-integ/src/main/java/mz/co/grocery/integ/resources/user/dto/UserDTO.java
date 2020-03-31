@@ -4,14 +4,17 @@
 package mz.co.grocery.integ.resources.user.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonInclude;
+import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
-import mz.co.grocery.core.grocery.model.GroceryUser;
+import mz.co.grocery.integ.resources.grocery.dto.GroceryUserDTO;
 
 /**
  * @author Stélio Moiane
  *
  */
 @JsonIgnoreProperties(ignoreUnknown = true)
+@JsonInclude(Include.NON_NULL)
 public class UserDTO {
 
 	private String uuid;
@@ -24,7 +27,9 @@ public class UserDTO {
 
 	private String fullName;
 
-	private GroceryUser groceryUser;
+	private GroceryUserDTO groceryUserDTO;
+
+	private String email;
 
 	public String getUuid() {
 		return this.uuid;
@@ -66,11 +71,19 @@ public class UserDTO {
 		this.fullName = fullName;
 	}
 
-	public GroceryUser getGroceryUser() {
-		return this.groceryUser;
+	public GroceryUserDTO getGroceryUserDTO() {
+		return this.groceryUserDTO;
 	}
 
-	public void setGroceryUser(final GroceryUser groceryUser) {
-		this.groceryUser = groceryUser;
+	public void setGroceryUserDTO(final GroceryUserDTO groceryUserDTO) {
+		this.groceryUserDTO = groceryUserDTO;
+	}
+
+	public String getEmail() {
+		return this.email;
+	}
+
+	public void setEmail(final String email) {
+		this.email = email;
 	}
 }

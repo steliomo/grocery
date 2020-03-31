@@ -15,7 +15,6 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
-import mz.co.grocery.integ.resources.grocery.dto.GroceryUserDTO;
 import mz.co.grocery.integ.resources.user.dto.UserDTO;
 import mz.co.grocery.integ.resources.user.model.ResourceOwner;
 import mz.co.grocery.integ.resources.util.UrlTargets;
@@ -48,14 +47,14 @@ public class ResourceOwnerServiceImpl implements UserDetailsService, ResourceOnw
 	}
 
 	@Override
-	public String createUser(final UserContext userContext, final GroceryUserDTO groceryUserDTO) {
+	public String createUser(final UserContext userContext, final UserDTO userDTO) {
 		final Client client = ClientBuilder.newClient();
 
 		final UserContext context = new UserContext();
 		context.setUuid(userContext.getUuid());
-		context.setFullName(groceryUserDTO.getFullName());
-		context.setUsername(groceryUserDTO.getUsername());
-		context.setPassword(groceryUserDTO.getPassword());
+		context.setFullName(userDTO.getFullName());
+		context.setUsername(userDTO.getUsername());
+		context.setPassword(userDTO.getPassword());
 
 		final UserContext post = client.target(UrlTargets.ACCOUNT_MODULE).path("users/create")
 		        .request(MediaType.APPLICATION_JSON)

@@ -5,6 +5,8 @@ package mz.co.grocery.integ.resources.inventory.dto;
 
 import static mz.co.grocery.integ.resources.util.ProxyUtil.isInitialized;
 
+import java.math.BigDecimal;
+
 import mz.co.grocery.core.inventory.model.StockInventory;
 import mz.co.grocery.core.stock.model.Stock;
 import mz.co.grocery.integ.resources.dto.GenericDTO;
@@ -19,6 +21,9 @@ public class StockInventoryDTO extends GenericDTO<StockInventory> {
 	private StockDTO stockDTO;
 
 	private String fisicalInventory;
+
+	public StockInventoryDTO() {
+	}
 
 	public StockInventoryDTO(final StockInventory stockInventory) {
 		super(stockInventory);
@@ -35,6 +40,15 @@ public class StockInventoryDTO extends GenericDTO<StockInventory> {
 		}
 
 		this.fisicalInventory = String.valueOf(stockInventory.getFisicalInventory());
+	}
+
+	@Override
+	public StockInventory get() {
+		final StockInventory stockInventory = this.get(new StockInventory());
+		stockInventory.setStock(this.stockDTO.get());
+		stockInventory.setFisicalInventory(new BigDecimal(this.fisicalInventory));
+
+		return stockInventory;
 	}
 
 	public StockDTO getStockDTO() {

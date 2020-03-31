@@ -14,6 +14,9 @@ public class ProductDTO extends GenericDTO<Product> {
 
 	private String name;
 
+	public ProductDTO() {
+	}
+
 	public ProductDTO(final Product product) {
 		super(product);
 		this.mapper(product);
@@ -22,6 +25,13 @@ public class ProductDTO extends GenericDTO<Product> {
 	@Override
 	public void mapper(final Product product) {
 		this.name = product.getName();
+	}
+
+	@Override
+	public Product get() {
+		final Product product = this.get(new Product());
+		product.setName(this.name);
+		return product;
 	}
 
 	public String getName() {

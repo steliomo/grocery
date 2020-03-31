@@ -9,6 +9,7 @@ import javax.inject.Inject;
 
 import org.springframework.stereotype.Service;
 
+import mz.co.grocery.core.grocery.model.Grocery;
 import mz.co.grocery.core.product.dao.ProductDAO;
 import mz.co.grocery.core.product.model.Product;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
@@ -39,5 +40,10 @@ public class ProductQueryServiceImpl implements ProductQueryService {
 	@Override
 	public Product findProductByUuid(final String uuid) throws BusinessException {
 		return this.productDAO.findByUuid(uuid);
+	}
+
+	@Override
+	public List<Product> findProductsByGrocery(final Grocery grocery) throws BusinessException {
+		return this.productDAO.findByGrocery(grocery, EntityStatus.ACTIVE);
 	}
 }

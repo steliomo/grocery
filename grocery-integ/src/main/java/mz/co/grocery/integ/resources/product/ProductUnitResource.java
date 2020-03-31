@@ -5,6 +5,7 @@ package mz.co.grocery.integ.resources.product;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -25,6 +26,7 @@ import mz.co.grocery.core.product.model.ProductUnitType;
 import mz.co.grocery.core.product.service.ProductUnitQueryService;
 import mz.co.grocery.core.product.service.ProductUnitService;
 import mz.co.grocery.integ.resources.AbstractResource;
+import mz.co.grocery.integ.resources.product.dto.ProductUnitDTO;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 
 /**
@@ -46,9 +48,9 @@ public class ProductUnitResource extends AbstractResource {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response createProductUnit(final ProductUnit productUnit) throws BusinessException {
-		this.productUnitService.createProductUnit(this.getContext(), productUnit);
-		return Response.ok(productUnit).build();
+	public Response createProductUnit(final ProductUnitDTO productUnitDTO) throws BusinessException {
+		this.productUnitService.createProductUnit(this.getContext(), productUnitDTO.get());
+		return Response.ok(productUnitDTO).build();
 	}
 
 	@Path("types")
@@ -63,7 +65,11 @@ public class ProductUnitResource extends AbstractResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response findAllProductUnits() throws BusinessException {
 		final List<ProductUnit> productUnits = this.productUnitQueryService.findAllProductUnits();
-		return Response.ok(productUnits).build();
+
+		final List<ProductUnitDTO> productUnitsDTO = productUnits.stream()
+		        .map(productUnit -> new ProductUnitDTO(productUnit)).collect(Collectors.toList());
+
+		return Response.ok(productUnitsDTO).build();
 	}
 
 	@Path("{productUnitUuid}")
@@ -73,15 +79,15 @@ public class ProductUnitResource extends AbstractResource {
 	public Response findProductUnitByUuid(@PathParam("productUnitUuid") final String productUnitUuid)
 	        throws BusinessException {
 		final ProductUnit productUnit = this.productUnitQueryService.findProductUnitByUuid(productUnitUuid);
-		return Response.ok(productUnit).build();
+		return Response.ok(new ProductUnitDTO(productUnit)).build();
 	}
 
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response updateProductUnit(final ProductUnit productUnit) throws BusinessException {
-		this.productUnitService.updateProductUnit(this.getContext(), productUnit);
-		return Response.ok(productUnit).build();
+	public Response updateProductUnit(final ProductUnitDTO productUnitDTO) throws BusinessException {
+		this.productUnitService.updateProductUnit(this.getContext(), productUnitDTO.get());
+		return Response.ok(productUnitDTO).build();
 	}
 
 	@Path("{productUnitUuid}")
@@ -92,6 +98,6 @@ public class ProductUnitResource extends AbstractResource {
 	        throws BusinessException {
 		final ProductUnit productUnit = this.productUnitQueryService.findProductUnitByUuid(productUnitUuid);
 		this.productUnitService.removeProductUnit(this.getContext(), productUnit);
-		return Response.ok(productUnit).build();
+		return Response.ok(new ProductUnitDTO(productUnit)).build();
 	}
 }

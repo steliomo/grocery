@@ -20,6 +20,7 @@ import org.springframework.stereotype.Service;
 import mz.co.grocery.core.grocery.model.GroceryUser;
 import mz.co.grocery.core.grocery.service.GroceryUserQueryService;
 import mz.co.grocery.integ.resources.AbstractResource;
+import mz.co.grocery.integ.resources.grocery.dto.GroceryUserDTO;
 import mz.co.grocery.integ.resources.user.dto.UserDTO;
 import mz.co.grocery.integ.resources.user.model.ResourceOwner;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
@@ -68,9 +69,10 @@ public class UserResource extends AbstractResource {
 		final UserDTO userDTO = new UserDTO();
 		userDTO.setUuid(userContext.getUuid());
 		userDTO.setFullName(userContext.getFullName());
+		userDTO.setEmail(context.getEmail());
 
 		final GroceryUser groceryUser = this.groceryUserQueryService.fetchGroceryUserByUser(userDTO.getUuid());
-		userDTO.setGroceryUser(groceryUser);
+		userDTO.setGroceryUserDTO(new GroceryUserDTO(groceryUser));
 
 		return Response.ok(userDTO).build();
 	}

@@ -9,6 +9,7 @@ import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
@@ -60,16 +61,17 @@ public class InventoryResource extends AbstractResource {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response performInventory(final Inventory inventory) throws BusinessException {
-		this.inventoryService.performInventory(this.getContext(), inventory);
-		return Response.ok(new InventoryDTO(inventory)).build();
+	public Response performInventory(final InventoryDTO inventoryDTO) throws BusinessException {
+		this.inventoryService.performInventory(this.getContext(), inventoryDTO.get());
+		return Response.ok(inventoryDTO).build();
 	}
 
 	@PUT
+	@Path("{inventoryUuid}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response aproveInventory(final Inventory inventory) throws BusinessException {
-		this.inventoryService.approveInventory(this.getContext(), inventory);
+	public Response aproveInventory(@PathParam("inventoryUuid") final String inventoryUuid) throws BusinessException {
+		final Inventory inventory = this.inventoryService.approveInventory(this.getContext(), inventoryUuid);
 		return Response.ok(new InventoryDTO(inventory)).build();
 	}
 }

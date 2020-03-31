@@ -7,7 +7,6 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 
-import mz.co.grocery.core.stock.model.Stock;
 import mz.co.grocery.integ.resources.stock.StockQuantity;
 
 /**
@@ -16,23 +15,23 @@ import mz.co.grocery.integ.resources.stock.StockQuantity;
  */
 public class StocksDTO {
 
-	private final List<Stock> stocks;
+	private final List<StockDTO> stocksDTO;
 
 	private final Long totalItems;
 
 	private List<StockQuantity> stockQuantities;
 
-	public StocksDTO(final List<Stock> stocks, final Long totalItems) {
-		this.stocks = stocks;
+	public StocksDTO(final List<StockDTO> stocksDTO, final Long totalItems) {
+		this.stocksDTO = stocksDTO;
 		this.totalItems = totalItems;
 	}
 
-	public List<Stock> getStocks() {
-		if (this.stocks == null) {
+	public List<StockDTO> getStocksDTO() {
+		if (this.stocksDTO == null) {
 			return new ArrayList<>();
 		}
 
-		return Collections.unmodifiableList(this.stocks);
+		return Collections.unmodifiableList(this.stocksDTO);
 	}
 
 	public Long getTotalItems() {

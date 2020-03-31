@@ -28,6 +28,7 @@ import mz.co.grocery.core.grocery.service.GroceryUserService;
 import mz.co.grocery.integ.resources.AbstractResource;
 import mz.co.grocery.integ.resources.grocery.dto.GroceryUserDTO;
 import mz.co.grocery.integ.resources.user.dto.UserDTO;
+import mz.co.grocery.integ.resources.user.dto.UsersDTO;
 import mz.co.grocery.integ.resources.user.service.ResourceOnwnerService;
 import mz.co.grocery.integ.resources.util.SmsResource;
 import mz.co.grocery.integ.resources.util.UrlTargets;
@@ -58,23 +59,23 @@ public class GroceryUserResource extends AbstractResource {
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
-	public Response registGroceryUser(final GroceryUserDTO groceryUserDTO) throws BusinessException {
+	public Response registGroceryUser(final UserDTO userDTO) throws BusinessException {
 
-		final String userUuid = this.resourceOnwnerService.createUser(this.getContext(), groceryUserDTO);
-		final GroceryUser groceryUser = groceryUserDTO.getGroceryUser();
+		final String userUuid = this.resourceOnwnerService.createUser(this.getContext(), userDTO);
+		final GroceryUser groceryUser = userDTO.getGroceryUserDTO().get();
 
 		groceryUser.setUser(userUuid);
 
 		final StringBuilder text = new StringBuilder();
-		text.append("O(A) Sr(a). ").append(groceryUserDTO.getFullName())
+		text.append("O(A) Sr(a). ").append(userDTO.getFullName())
 		        .append(" foi registado com sucesso como utilizador(a) no aplicativo MERCEARIAS.")
-		        .append(" O seu utilizador é: ").append(groceryUserDTO.getUsername())
-		        .append(". A senha administrativa é: ").append(groceryUserDTO.getPassword()).append(". Obrigado");
+		        .append(" O seu utilizador é: ").append(userDTO.getUsername()).append(". A senha administrativa é: ")
+		        .append(userDTO.getPassword()).append(". Obrigado");
 
-		this.smsResource.send(groceryUserDTO.getUsername(), text.toString());
+		this.smsResource.send(userDTO.getUsername(), text.toString());
 
 		this.groceryUserService.createGroceryUser(this.getContext(), groceryUser);
-		return Response.ok(groceryUserDTO).build();
+		return Response.ok(userDTO).build();
 	}
 
 	@GET
@@ -100,16 +101,18 @@ public class GroceryUserResource extends AbstractResource {
 
 		final Client client = ClientBuilder.newClient();
 
-		final List<GroceryUserDTO> groceryUserDTOs = groceryUsers.stream().map(groceryUser -> {
+		final List<UserDTO> userDTOs = groceryUsers.stream().map(groceryUser -> {
 
 			final UserDTO userDTO = client.target(UrlTargets.ACCOUNT_MODULE)
 			        .path("users/by-uuid/" + groceryUser.getUser()).request(MediaType.APPLICATION_JSON)
 			        .get(UserDTO.class);
 
-			return new GroceryUserDTO(groceryUser, userDTO, totalItems);
+			userDTO.setGroceryUserDTO(new GroceryUserDTO(groceryUser));
+
+			return userDTO;
 
 		}).collect(Collectors.toList());
 
-		return Response.ok(groceryUserDTOs).build();
+		return Response.ok(new UsersDTO(userDTOs, totalItems)).build();
 	}
 }

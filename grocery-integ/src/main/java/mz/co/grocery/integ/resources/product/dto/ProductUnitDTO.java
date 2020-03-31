@@ -19,6 +19,10 @@ public class ProductUnitDTO extends GenericDTO<ProductUnit> {
 
 	private BigDecimal unit;
 
+	public ProductUnitDTO() {
+
+	}
+
 	public ProductUnitDTO(final ProductUnit productUnit) {
 		super(productUnit);
 		this.mapper(productUnit);
@@ -30,6 +34,15 @@ public class ProductUnitDTO extends GenericDTO<ProductUnit> {
 		this.unit = productUnit.getUnit();
 	}
 
+	@Override
+	public ProductUnit get() {
+		final ProductUnit productUnit = this.get(new ProductUnit());
+		productUnit.setProductUnitType(this.productUnitType);
+		productUnit.setUnit(this.unit);
+
+		return productUnit;
+	}
+
 	public ProductUnitType getProductUnitType() {
 		return this.productUnitType;
 	}
@@ -38,4 +51,9 @@ public class ProductUnitDTO extends GenericDTO<ProductUnit> {
 		return this.unit;
 	}
 
+	public String getName() {
+		final StringBuilder builder = new StringBuilder();
+		builder.append(this.unit).append(" ").append(this.productUnitType);
+		return builder.toString();
+	}
 }

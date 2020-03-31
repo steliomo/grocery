@@ -3,7 +3,7 @@
  */
 package mz.co.grocery.integ.resources.user.service;
 
-import mz.co.grocery.integ.resources.grocery.dto.GroceryUserDTO;
+import mz.co.grocery.integ.resources.user.dto.UserDTO;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.model.UserContext;
 
@@ -13,6 +13,6 @@ import mz.co.msaude.boot.frameworks.model.UserContext;
  */
 public interface ResourceOnwnerService {
 
-	String createUser(UserContext userContext, GroceryUserDTO groceryUserDTO) throws BusinessException;
+	String createUser(UserContext userContext, UserDTO userDTO) throws BusinessException;
 
 }

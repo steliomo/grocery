@@ -17,4 +17,5 @@ public interface InventoryQueryService {
 	Inventory fetchInventoryByGroceryAndStatus(Grocery grocery, InventoryStatus inventoryStatus)
 	        throws BusinessException;
 
+	Inventory fetchInventoryUuid(String inventoryUuid) throws BusinessException;
 }
