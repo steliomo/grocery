@@ -44,3 +44,5 @@ grocery-core/mvnw.cmd
 grocery-integ/.mvn
 grocery-integ/mvnw
 grocery-integ/mvnw.cmd
+pom.xml.releaseBackup
+release.properties

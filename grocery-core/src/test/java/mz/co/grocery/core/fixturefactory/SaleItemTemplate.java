@@ -34,7 +34,7 @@ public class SaleItemTemplate implements TemplateLoader {
 			{
 				this.add("stock", this.one(Stock.class, StockTemplate.VALID));
 				this.add("quantity", BigDecimal.ZERO);
-				this.add("saleItemValue", this.random(BigDecimal.class, this.range(1.0, 50.0)));
+				this.add("saleItemValue", this.random(BigDecimal.class, this.range(100.0, 500.0)));
 			}
 		});
 	}

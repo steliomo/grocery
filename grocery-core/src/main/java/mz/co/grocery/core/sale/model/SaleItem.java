@@ -75,7 +75,7 @@ public class SaleItem extends GenericEntity {
 	}
 
 	public BigDecimal getTotalSaleItem() {
-		return this.stock.getSalePrice().multiply(this.quantity).subtract(this.discount);
+		return saleItemValue.subtract(this.discount);
 	}
 
 	public BigDecimal getSaleItemValue() {
@@ -96,6 +96,6 @@ public class SaleItem extends GenericEntity {
 
 	public BigDecimal getTotalProfit() {
 		return this.stock.getSalePrice().subtract(this.stock.getPurchasePrice()).multiply(this.quantity)
-		        .subtract(this.discount);
+				.subtract(this.discount);
 	}
 }

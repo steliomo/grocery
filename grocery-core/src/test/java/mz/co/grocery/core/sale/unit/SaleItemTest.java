@@ -31,8 +31,7 @@ public class SaleItemTest extends AbstractUnitServiceTest {
 	@Test
 	public void shouldCalculateTotalItemSale() {
 
-		final BigDecimal totalSale = this.saleItem.getStock().getSalePrice().multiply(this.saleItem.getQuantity())
-		        .subtract(this.saleItem.getDiscount());
+		final BigDecimal totalSale = this.saleItem.getSaleItemValue().subtract(this.saleItem.getDiscount());
 
 		assertEquals(totalSale, this.saleItem.getTotalSaleItem());
 	}
@@ -41,8 +40,8 @@ public class SaleItemTest extends AbstractUnitServiceTest {
 	public void shouldCalculateProfitItemSale() {
 
 		final BigDecimal totalProfit = this.saleItem.getStock().getSalePrice()
-		        .subtract(this.saleItem.getStock().getPurchasePrice()).multiply(this.saleItem.getQuantity())
-		        .subtract(this.saleItem.getDiscount());
+				.subtract(this.saleItem.getStock().getPurchasePrice()).multiply(this.saleItem.getQuantity())
+				.subtract(this.saleItem.getDiscount());
 
 		assertEquals(totalProfit, this.saleItem.getTotalProfit());
 	}
