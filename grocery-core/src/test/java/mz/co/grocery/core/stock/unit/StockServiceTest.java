@@ -17,6 +17,7 @@ import mz.co.grocery.core.config.AbstractUnitServiceTest;
 import mz.co.grocery.core.fixturefactory.StockTemplate;
 import mz.co.grocery.core.stock.dao.StockDAO;
 import mz.co.grocery.core.stock.model.Stock;
+import mz.co.grocery.core.stock.model.StockStatus;
 import mz.co.grocery.core.stock.service.StockService;
 import mz.co.grocery.core.stock.service.StockServiceImpl;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
@@ -76,5 +77,15 @@ public class StockServiceTest extends AbstractUnitServiceTest {
 		this.stock.setSalePrice(BigDecimal.ZERO);
 
 		this.stockService.updateStocksAndPrices(this.getUserContext(), this.stock);
+	}
+
+	@Test
+	public void shouldSetMinimumStock() {
+
+		BigDecimal minimumStock = new BigDecimal(10);
+		stock.setMinimumStock(minimumStock);
+
+		assertEquals(minimumStock, stock.getMinimumStock());
+		assertEquals(StockStatus.GOOD, stock.getStockStatus());
 	}
 }

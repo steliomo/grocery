@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import mz.co.grocery.core.sale.dao.SaleDAO;
 import mz.co.grocery.core.sale.dao.SaleItemDAO;
 import mz.co.grocery.core.sale.model.Sale;
+import mz.co.grocery.core.sale.model.SaleItem;
 import mz.co.grocery.core.stock.dao.StockDAO;
 import mz.co.grocery.core.stock.model.Stock;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
@@ -43,19 +44,14 @@ public class SaleServiceImpl extends AbstractService implements SaleService {
 
 		this.saleDAO.create(userContext, sale);
 
-		sale.getItems().stream().forEach(saleItem -> {
-			try {
-				final Stock stock = this.stockDAO.findByUuid(saleItem.getStock().getUuid());
-				stock.updateStock(saleItem);
-				this.stockDAO.update(userContext, stock);
+		for (final SaleItem saleItem : sale.getItems()) {
+			final Stock stock = this.stockDAO.findByUuid(saleItem.getStock().getUuid());
+			stock.updateStock(saleItem);
+			this.stockDAO.update(userContext, stock);
 
-				saleItem.setSale(sale);
-				this.saleItemDAO.create(userContext, saleItem);
-			}
-			catch (final BusinessException e) {
-				e.printStackTrace();
-			}
-		});
+			saleItem.setSale(sale);
+			this.saleItemDAO.create(userContext, saleItem);
+		}
 
 		sale.calculateTotal();
 		sale.calculateProfit();

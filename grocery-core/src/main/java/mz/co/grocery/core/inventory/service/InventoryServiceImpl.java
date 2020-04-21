@@ -42,14 +42,14 @@ public class InventoryServiceImpl extends AbstractService implements InventorySe
 
 	@Override
 	public Inventory createInventory(final UserContext userContext, final Inventory inventory)
-	        throws BusinessException {
+			throws BusinessException {
 		this.inventoryDAO.create(userContext, inventory);
 		return inventory;
 	}
 
 	@Override
 	public Inventory performInventory(final UserContext userContext, final Inventory inventory)
-	        throws BusinessException {
+			throws BusinessException {
 
 		if (inventory.getStockInventories().isEmpty()) {
 			throw new BusinessException("Cannot perform inventory without stock items...");
@@ -57,65 +57,47 @@ public class InventoryServiceImpl extends AbstractService implements InventorySe
 
 		try {
 			final Inventory foundInventory = this.inventoryQueryService
-			        .fetchInventoryByGroceryAndStatus(inventory.getGrocery(), InventoryStatus.PENDING);
+					.fetchInventoryByGroceryAndStatus(inventory.getGrocery(), InventoryStatus.PENDING);
 
 			this.updateInventory(userContext, foundInventory);
 
-			inventory.getStockInventories().forEach(stockInventory -> {
+			for (final StockInventory stockInventory : inventory.getStockInventories()) {
 
 				final Optional<StockInventory> optional = foundInventory.getStockInventories().stream()
-				        .filter(foundStockInventory -> foundStockInventory.getStock().getUuid()
-				                .equals(stockInventory.getStock().getUuid()))
-				        .findFirst();
+						.filter(foundStockInventory -> foundStockInventory.getStock().getUuid()
+								.equals(stockInventory.getStock().getUuid()))
+						.findFirst();
 
 				if (optional.isPresent()) {
-
 					final StockInventory activeStockInventory = optional.get();
 					activeStockInventory.setFisicalInventory(stockInventory.getFisicalInventory());
-					this.updateStockInventory(userContext, activeStockInventory);
 
-					return;
+					this.stockInventoryService.updateStockInventory(userContext, stockInventory);
+				} else {
+					stockInventory.setInventory(foundInventory);
+
+					this.stockInventoryService.createStockInventory(userContext, stockInventory);
 				}
-
-				this.createStockInventory(userContext, foundInventory, stockInventory);
-			});
+			}
 
 			return foundInventory;
-		}
-		catch (final BusinessException exception) {
+
+		} catch (final BusinessException exception) {
 			this.createInventory(userContext, inventory);
 
-			inventory.getStockInventories().forEach(stockInventory -> {
-				this.createStockInventory(userContext, inventory, stockInventory);
-			});
+			for (final StockInventory stockInventory : inventory.getStockInventories()) {
+
+				stockInventory.setInventory(inventory);
+				this.stockInventoryService.createStockInventory(userContext, stockInventory);
+			}
 
 			return inventory;
 		}
 	}
 
-	private void updateStockInventory(final UserContext userContext, final StockInventory stockInventory) {
-		try {
-			this.stockInventoryService.updateStockInventory(userContext, stockInventory);
-		}
-		catch (final BusinessException e) {
-			e.printStackTrace();
-		}
-	}
-
-	private void createStockInventory(final UserContext userContext, final Inventory inventory,
-	        final StockInventory stockInventory) {
-		try {
-			stockInventory.setInventory(inventory);
-			this.stockInventoryService.createStockInventory(userContext, stockInventory);
-		}
-		catch (final BusinessException e) {
-			e.printStackTrace();
-		}
-	}
-
 	@Override
 	public Inventory approveInventory(final UserContext userContext, final String inventoryUuid)
-	        throws BusinessException {
+			throws BusinessException {
 
 		final Inventory inventory = this.inventoryQueryService.fetchInventoryUuid(inventoryUuid);
 
@@ -126,28 +108,19 @@ public class InventoryServiceImpl extends AbstractService implements InventorySe
 		inventory.approveInventory();
 		this.updateInventory(userContext, inventory);
 
-		inventory.getStockInventories().forEach(stockInventory -> {
+		for (final StockInventory stockInventory : inventory.getStockInventories()) {
 			final Stock stock = stockInventory.getStock();
 			stock.setQuantity(stockInventory.getFisicalInventory());
 
-			this.updateStock(userContext, stock);
-		});
+			this.stockService.updateStock(userContext, stock);
+		}
 
 		return inventory;
 	}
 
-	private void updateStock(final UserContext userContext, final Stock stock) {
-		try {
-			this.stockService.updateStock(userContext, stock);
-		}
-		catch (final BusinessException e) {
-			e.printStackTrace();
-		}
-	}
-
 	@Override
 	public Inventory updateInventory(final UserContext userContext, final Inventory inventory)
-	        throws BusinessException {
+			throws BusinessException {
 		this.inventoryDAO.update(userContext, inventory);
 		return inventory;
 	}
