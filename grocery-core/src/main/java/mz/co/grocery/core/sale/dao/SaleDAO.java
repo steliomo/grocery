@@ -19,17 +19,18 @@ import mz.co.msaude.boot.frameworks.model.EntityStatus;
 public interface SaleDAO extends GenericDAO<Sale, Long> {
 
 	class QUERY {
-		public static final String findLast7DaysSale = "SELECT NEW mz.co.grocery.core.sale.model.SaleReport(s.saleDate, SUM(s.profit), SUM(s.total)) FROM Sale s INNER JOIN s.grocery g WHERE g.uuid = :groceryUuid AND s.entityStatus = :entityStatus GROUP BY s.saleDate ORDER BY s.saleDate DESC";
-		public static final String findPerPeriod = "SELECT NEW mz.co.grocery.core.sale.model.SaleReport(s.saleDate, SUM(s.profit), SUM(s.total)) FROM Sale s INNER JOIN s.grocery g WHERE g.uuid = :groceryUuid AND s.saleDate >= :startDate AND s.saleDate <= :endDate AND s.entityStatus = :entityStatus GROUP BY s.saleDate ORDER BY s.saleDate ASC";
+		public static final String findPerPeriod = "SELECT NEW mz.co.grocery.core.sale.model.SaleReport(s.saleDate, SUM(s.billing), SUM(s.total)) FROM Sale s INNER JOIN s.grocery g WHERE g.uuid = :groceryUuid AND s.saleDate >= :startDate AND s.saleDate <= :endDate AND s.entityStatus = :entityStatus GROUP BY s.saleDate ORDER BY s.saleDate ASC";
+		public static final String findMonthlyPerPeriod = "SELECT NEW mz.co.grocery.core.sale.model.SaleReport(s.saleDate, SUM(s.billing), SUM(s.total)) FROM Sale s INNER JOIN s.grocery g WHERE g.uuid = :groceryUuid AND s.saleDate >= :startDate AND s.saleDate <= :endDate AND s.entityStatus = :entityStatus GROUP BY MONTH(s.saleDate) ORDER BY MONTH(s.saleDate) ASC";
 	}
 
 	class QUERY_NAME {
-		public static final String findLast7DaysSale = "Sale.findLast7DaysSale";
 		public static final String findPerPeriod = "Sale.findPerPeriod";
+		public static final String findMonthlyPerPeriod = "Sale.findMonthlyPerPeriod";
 	}
 
-	List<SaleReport> findLast7DaysSale(String groceryUuid, EntityStatus entityStatus) throws BusinessException;
-
 	List<SaleReport> findPerPeriod(String groceryUuid, LocalDate startDate, LocalDate endDate,
-	        EntityStatus entityStatus) throws BusinessException;
+			EntityStatus entityStatus) throws BusinessException;
+
+	List<SaleReport> findMonthlyPerPeriod(String groceryUuid, LocalDate startDate, LocalDate endDate,
+			EntityStatus entityStatus) throws BusinessException;
 }

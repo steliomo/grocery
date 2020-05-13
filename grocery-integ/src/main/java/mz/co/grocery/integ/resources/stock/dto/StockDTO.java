@@ -3,8 +3,6 @@
  */
 package mz.co.grocery.integ.resources.stock.dto;
 
-import static mz.co.grocery.integ.resources.util.ProxyUtil.isInitialized;
-
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
@@ -14,6 +12,7 @@ import mz.co.grocery.core.stock.model.Stock;
 import mz.co.grocery.integ.resources.dto.GenericDTO;
 import mz.co.grocery.integ.resources.grocery.dto.GroceryDTO;
 import mz.co.grocery.integ.resources.product.dto.ProductDescriptionDTO;
+import mz.co.grocery.integ.resources.util.ProxyUtil;
 
 /**
  * @author Stélio Moiane
@@ -33,6 +32,8 @@ public class StockDTO extends GenericDTO<Stock> {
 
 	private LocalDate expireDate;
 
+	private BigDecimal minimumStock;
+
 	public StockDTO() {
 	}
 
@@ -45,12 +46,12 @@ public class StockDTO extends GenericDTO<Stock> {
 	public void mapper(final Stock stock) {
 
 		final Grocery grocery = stock.getGrocery();
-		if (isInitialized(grocery)) {
+		if (ProxyUtil.isInitialized(grocery)) {
 			this.groceryDTO = new GroceryDTO(grocery);
 		}
 
 		final ProductDescription productDescription = stock.getProductDescription();
-		if (isInitialized(productDescription)) {
+		if (ProxyUtil.isInitialized(productDescription)) {
 			this.productDescriptionDTO = new ProductDescriptionDTO(productDescription);
 		}
 
@@ -61,6 +62,8 @@ public class StockDTO extends GenericDTO<Stock> {
 		this.quantity = stock.getQuantity();
 
 		this.expireDate = stock.getExpireDate();
+
+		this.minimumStock = stock.getMinimumStock();
 	}
 
 	@Override
@@ -72,6 +75,7 @@ public class StockDTO extends GenericDTO<Stock> {
 		stock.setSalePrice(this.salePrice);
 		stock.setQuantity(this.quantity);
 		stock.setExpireDate(this.expireDate);
+		stock.setMinimumStock(this.minimumStock);
 
 		return stock;
 	}
@@ -98,5 +102,9 @@ public class StockDTO extends GenericDTO<Stock> {
 
 	public GroceryDTO getGroceryDTO() {
 		return this.groceryDTO;
+	}
+
+	public BigDecimal getMinimumStock() {
+		return this.minimumStock;
 	}
 }

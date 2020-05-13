@@ -28,8 +28,8 @@ import mz.co.msaude.boot.frameworks.model.GenericEntity;
  * @author Stélio Moiane
  *
  */
-@NamedQueries({ @NamedQuery(name = SaleDAO.QUERY_NAME.findLast7DaysSale, query = SaleDAO.QUERY.findLast7DaysSale),
-        @NamedQuery(name = SaleDAO.QUERY_NAME.findPerPeriod, query = SaleDAO.QUERY.findPerPeriod) })
+@NamedQueries({ @NamedQuery(name = SaleDAO.QUERY_NAME.findPerPeriod, query = SaleDAO.QUERY.findPerPeriod),
+	@NamedQuery(name = SaleDAO.QUERY_NAME.findMonthlyPerPeriod, query = SaleDAO.QUERY.findMonthlyPerPeriod) })
 @Entity
 @Table(name = "SALES")
 public class Sale extends GenericEntity {
@@ -46,8 +46,8 @@ public class Sale extends GenericEntity {
 	private LocalDate saleDate;
 
 	@NotNull
-	@Column(name = "PROFIT", nullable = false)
-	private BigDecimal profit = BigDecimal.ZERO;
+	@Column(name = "BILLING", nullable = false)
+	private BigDecimal billing = BigDecimal.ZERO;
 
 	@NotNull
 	@Column(name = "TOTAL", nullable = false)
@@ -76,8 +76,8 @@ public class Sale extends GenericEntity {
 		return this.total;
 	}
 
-	public BigDecimal getProfit() {
-		return this.profit;
+	public BigDecimal getBilling() {
+		return this.billing;
 	}
 
 	public Set<SaleItem> getItems() {
@@ -97,7 +97,7 @@ public class Sale extends GenericEntity {
 		this.total = this.items.stream().map(SaleItem::getTotalSaleItem).reduce(BigDecimal.ZERO, BigDecimal::add);
 	}
 
-	public void calculateProfit() {
-		this.profit = this.items.stream().map(SaleItem::getTotalProfit).reduce(BigDecimal.ZERO, BigDecimal::add);
+	public void calculateBilling() {
+		this.billing = this.items.stream().map(SaleItem::getTotalBilling).reduce(BigDecimal.ZERO, BigDecimal::add);
 	}
 }

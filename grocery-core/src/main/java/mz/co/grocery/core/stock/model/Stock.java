@@ -9,6 +9,8 @@ import java.time.LocalDate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -28,11 +30,12 @@ import mz.co.msaude.boot.frameworks.model.GenericEntity;
  *
  */
 @NamedQueries({ @NamedQuery(name = StockDAO.QUERY_NAME.findAllIds, query = StockDAO.QUERY.findAllIds),
-        @NamedQuery(name = StockDAO.QUERY_NAME.fetchAll, query = StockDAO.QUERY.fetchAll),
-        @NamedQuery(name = StockDAO.QUERY_NAME.fetchByUuid, query = StockDAO.QUERY.fetchByUuid),
-        @NamedQuery(name = StockDAO.QUERY_NAME.fetchByProductDescription, query = StockDAO.QUERY.fetchByProductDescription),
-        @NamedQuery(name = StockDAO.QUERY_NAME.fetchByGroceryAndProduct, query = StockDAO.QUERY.fetchByGroceryAndProduct),
-        @NamedQuery(name = StockDAO.QUERY_NAME.fetchByGrocery, query = StockDAO.QUERY.fetchByGrocery) })
+	@NamedQuery(name = StockDAO.QUERY_NAME.fetchAll, query = StockDAO.QUERY.fetchAll),
+	@NamedQuery(name = StockDAO.QUERY_NAME.fetchByUuid, query = StockDAO.QUERY.fetchByUuid),
+	@NamedQuery(name = StockDAO.QUERY_NAME.fetchByProductDescription, query = StockDAO.QUERY.fetchByProductDescription),
+	@NamedQuery(name = StockDAO.QUERY_NAME.fetchByGroceryAndProduct, query = StockDAO.QUERY.fetchByGroceryAndProduct),
+	@NamedQuery(name = StockDAO.QUERY_NAME.fetchByGrocery, query = StockDAO.QUERY.fetchByGrocery),
+	@NamedQuery(name = StockDAO.QUERY_NAME.fetchByGroceryAndSalePeriod, query = StockDAO.QUERY.fetchByGroceryAndSalePeriod) })
 @Entity
 @Table(name = "STOCKS")
 public class Stock extends GenericEntity {
@@ -63,6 +66,15 @@ public class Stock extends GenericEntity {
 
 	@Column(name = "EXPIRE_DATE")
 	private LocalDate expireDate;
+
+	@NotNull
+	@Column(name = "MINIMUM_STOCK", nullable = false)
+	private BigDecimal minimumStock;
+
+	@NotNull
+	@Enumerated(EnumType.STRING)
+	@Column(name = "STOCK_STATUS", nullable = false, length = 20)
+	private StockStatus stockStatus = StockStatus.GOOD;
 
 	public Grocery getGrocery() {
 		return this.grocery;
@@ -119,14 +131,43 @@ public class Stock extends GenericEntity {
 			final BigDecimal result = saleItem.getSaleItemValue().divide(this.salePrice, 2, RoundingMode.HALF_UP);
 
 			this.quantity = this.quantity.subtract(result);
+			this.setStockStatus();
 
 			return;
 		}
 
 		this.quantity = this.quantity.subtract(saleItem.getQuantity());
+		this.setStockStatus();
 	}
 
 	public void addQuantity(final BigDecimal quantity) {
 		this.quantity = this.quantity.add(quantity);
+	}
+
+	public BigDecimal getMinimumStock() {
+		return this.minimumStock;
+	}
+
+	public void setMinimumStock(final BigDecimal minimumStock) {
+		this.minimumStock = minimumStock;
+		this.setStockStatus();
+	}
+
+	public StockStatus getStockStatus() {
+		return this.stockStatus;
+	}
+
+	public void setStockStatus() {
+
+		final int result = this.quantity.compareTo(this.minimumStock);
+
+		if (result <= 0) {
+			this.stockStatus = StockStatus.LOW;
+			return;
+		}
+
+		if (result > 0) {
+			this.stockStatus = StockStatus.GOOD;
+		}
 	}
 }

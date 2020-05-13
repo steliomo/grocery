@@ -43,6 +43,6 @@ public class SaleItemTest extends AbstractUnitServiceTest {
 				.subtract(this.saleItem.getStock().getPurchasePrice()).multiply(this.saleItem.getQuantity())
 				.subtract(this.saleItem.getDiscount());
 
-		assertEquals(totalProfit, this.saleItem.getTotalProfit());
+		assertEquals(totalProfit, this.saleItem.getTotalBilling());
 	}
 }

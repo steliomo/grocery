@@ -3,6 +3,7 @@
  */
 package mz.co.grocery.core.stock.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -54,7 +55,7 @@ public class StockQueryServiceImpl implements StockQueryService {
 
 	@Override
 	public List<Stock> fetchStockByGroceryAndProduct(final String groceryUuid, final String productUuid)
-	        throws BusinessException {
+			throws BusinessException {
 		return this.stockDAO.fetchByGroceryAndProduct(groceryUuid, productUuid, EntityStatus.ACTIVE);
 	}
 
@@ -63,4 +64,10 @@ public class StockQueryServiceImpl implements StockQueryService {
 		return this.stockDAO.fetchByGrocery(groceryUuid, EntityStatus.ACTIVE);
 	}
 
+	@Override
+	public List<Stock> fetchLowStocksByGroceryAndSalePeriod(final String groceryUuid, final LocalDate startDate,
+			final LocalDate endDate)
+					throws BusinessException {
+		return this.stockDAO.fetchByGroceryAndSalePeriod(groceryUuid, startDate, endDate, EntityStatus.ACTIVE);
+	}
 }
