@@ -8,13 +8,19 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
 
+import mz.co.grocery.core.expense.dao.ExpenseDAO;
 import mz.co.grocery.core.grocery.model.Grocery;
 import mz.co.msaude.boot.frameworks.model.GenericEntity;
 
+@NamedQueries({
+	@NamedQuery(name = ExpenseDAO.QUERY_NAME.findValueByGroceryAndPeriod, query = ExpenseDAO.QUERY.findValueByGroceryAndPeriod),
+	@NamedQuery(name = ExpenseDAO.QUERY_NAME.findMonthlyByGroceryAndPeriod, query = ExpenseDAO.QUERY.findMonthlyByGroceryAndPeriod) })
 @Entity
 @Table(name = "EXPENSES")
 public class Expense extends GenericEntity {

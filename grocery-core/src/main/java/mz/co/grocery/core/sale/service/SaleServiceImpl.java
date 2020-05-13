@@ -54,7 +54,7 @@ public class SaleServiceImpl extends AbstractService implements SaleService {
 		}
 
 		sale.calculateTotal();
-		sale.calculateProfit();
+		sale.calculateBilling();
 
 		return sale;
 	}

@@ -22,10 +22,10 @@ import mz.co.msaude.boot.frameworks.model.GenericEntity;
  *
  */
 @NamedQueries({
-        @NamedQuery(name = ProductDescriptionDAO.QUERY_NAME.fetchdAll, query = ProductDescriptionDAO.QUERY.fetchdAll),
-        @NamedQuery(name = ProductDescriptionDAO.QUERY_NAME.count, query = ProductDescriptionDAO.QUERY.count),
-        @NamedQuery(name = ProductDescriptionDAO.QUERY_NAME.fetchByDescription, query = ProductDescriptionDAO.QUERY.fetchByDescription),
-        @NamedQuery(name = ProductDescriptionDAO.QUERY_NAME.fetchByUuid, query = ProductDescriptionDAO.QUERY.fetchByUuid) })
+	@NamedQuery(name = ProductDescriptionDAO.QUERY_NAME.fetchdAll, query = ProductDescriptionDAO.QUERY.fetchdAll),
+	@NamedQuery(name = ProductDescriptionDAO.QUERY_NAME.count, query = ProductDescriptionDAO.QUERY.count),
+	@NamedQuery(name = ProductDescriptionDAO.QUERY_NAME.fetchByDescription, query = ProductDescriptionDAO.QUERY.fetchByDescription),
+	@NamedQuery(name = ProductDescriptionDAO.QUERY_NAME.fetchByUuid, query = ProductDescriptionDAO.QUERY.fetchByUuid) })
 @Entity
 @Table(name = "PRODUCT_DESCRIPTIONS")
 public class ProductDescription extends GenericEntity {
@@ -43,7 +43,7 @@ public class ProductDescription extends GenericEntity {
 
 	@NotNull
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "PRODUCT_UNIT", nullable = false)
+	@JoinColumn(name = "PRODUCT_UNIT_ID", nullable = false)
 	private ProductUnit productUnit;
 
 	public Product getProduct() {

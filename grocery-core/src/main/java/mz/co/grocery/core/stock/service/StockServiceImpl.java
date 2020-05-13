@@ -53,8 +53,8 @@ public class StockServiceImpl extends AbstractService implements StockService {
 			throw new BusinessException("The stock quantity cannot be less than 1");
 		}
 
-		if ((BigDecimal.ZERO.doubleValue() == stock.getPurchasePrice().doubleValue())
-		        || (BigDecimal.ZERO.doubleValue() == stock.getSalePrice().doubleValue())) {
+		if (BigDecimal.ZERO.doubleValue() == stock.getPurchasePrice().doubleValue()
+				|| BigDecimal.ZERO.doubleValue() == stock.getSalePrice().doubleValue()) {
 			throw new BusinessException("The prices cannot be 0");
 		}
 
@@ -63,6 +63,7 @@ public class StockServiceImpl extends AbstractService implements StockService {
 		stockToUpdate.setPurchasePrice(stock.getPurchasePrice());
 		stockToUpdate.setSalePrice(stock.getSalePrice());
 		stockToUpdate.addQuantity(stock.getQuantity());
+		stockToUpdate.setMinimumStock(stock.getMinimumStock());
 
 		this.stockDAO.update(userContext, stockToUpdate);
 

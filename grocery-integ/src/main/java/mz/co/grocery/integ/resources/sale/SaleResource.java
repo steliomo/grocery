@@ -3,6 +3,8 @@
  */
 package mz.co.grocery.integ.resources.sale;
 
+import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -10,7 +12,6 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
-import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
@@ -18,12 +19,17 @@ import javax.ws.rs.core.Response;
 
 import org.springframework.stereotype.Service;
 
+import mz.co.grocery.core.expense.model.ExpenseReport;
+import mz.co.grocery.core.expense.service.ExpenseQueryService;
+import mz.co.grocery.core.grocery.model.GroceryUser;
+import mz.co.grocery.core.grocery.service.GroceryUserQueryService;
 import mz.co.grocery.core.sale.model.Sale;
 import mz.co.grocery.core.sale.model.SaleReport;
 import mz.co.grocery.core.sale.service.SaleQueryService;
 import mz.co.grocery.core.sale.service.SaleService;
 import mz.co.grocery.integ.resources.AbstractResource;
 import mz.co.grocery.integ.resources.sale.dto.SaleDTO;
+import mz.co.grocery.integ.resources.sale.dto.SalesDTO;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.util.LocalDateAdapter;
 
@@ -43,6 +49,12 @@ public class SaleResource extends AbstractResource {
 	@Inject
 	private SaleQueryService saleQueryService;
 
+	@Inject
+	private ExpenseQueryService expenseQueryService;
+
+	@Inject
+	private GroceryUserQueryService groceryUserQueryService;
+
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
@@ -52,25 +64,46 @@ public class SaleResource extends AbstractResource {
 	}
 
 	@GET
-	@Path("last-7-days/{groceryUuid}")
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response findLast7DaysSales(@PathParam("groceryUuid") final String groceryUuid) throws BusinessException {
-		final List<SaleReport> sales = this.saleQueryService.findLast7DaysSale(groceryUuid);
-		return Response.ok(sales).build();
-	}
-
-	@GET
 	@Path("per-period")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response findSalesPerPeriod(@QueryParam("groceryUuid") final String groceryUuid,
-	        @QueryParam("startDate") final String startDate, @QueryParam("endDate") final String endDate)
-	        throws BusinessException {
+			@QueryParam("startDate") final String startDate, @QueryParam("endDate") final String endDate)
+					throws BusinessException {
+
+		final GroceryUser user = this.groceryUserQueryService.fetchGroceryUserByUser(this.getContext().getUuid());
 
 		final LocalDateAdapter dateAdapter = new LocalDateAdapter();
+		final LocalDate sDate = dateAdapter.unmarshal(startDate);
+		final LocalDate eDate = dateAdapter.unmarshal(endDate);
 
-		final List<SaleReport> sales = this.saleQueryService.findSalesPerPeriod(groceryUuid,
-		        dateAdapter.unmarshal(startDate), dateAdapter.unmarshal(endDate));
+		final List<SaleReport> sales = this.saleQueryService.findSalesPerPeriod(groceryUuid, sDate, eDate);
+		final BigDecimal expense = this.expenseQueryService.findExpensesValueByGroceryAndPeriod(groceryUuid, sDate,
+				eDate);
 
-		return Response.ok(sales).build();
+		return Response.ok(new SalesDTO(user).setSalesReport(sales).setExpense(expense)).build();
+	}
+
+	@GET
+	@Path("monthly-per-period")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response findMonthySalesPerPeriod(@QueryParam("groceryUuid") final String groceryUuid,
+			@QueryParam("startDate") final String startDate, @QueryParam("endDate") final String endDate)
+					throws BusinessException {
+
+		final GroceryUser user = this.groceryUserQueryService.fetchGroceryUserByUser(this.getContext().getUuid());
+
+		final LocalDateAdapter dateAdapter = new LocalDateAdapter();
+		final LocalDate sDate = dateAdapter.unmarshal(startDate);
+		final LocalDate eDate = dateAdapter.unmarshal(endDate);
+
+		final List<SaleReport> sales = this.saleQueryService.findMonthlySalesPerPeriod(groceryUuid, sDate, eDate);
+		final List<ExpenseReport> expenses = this.expenseQueryService.findMonthyExpensesByGroceryAndPeriod(groceryUuid,
+				sDate,
+				eDate);
+
+		final SalesDTO salesDTO = new SalesDTO(user).setSalesReport(sales).addSalesMissingMonths().setExpenses(expenses)
+				.addExpensesMissingMonths().calculateMonthlyProfit();
+
+		return Response.ok(salesDTO).build();
 	}
 }

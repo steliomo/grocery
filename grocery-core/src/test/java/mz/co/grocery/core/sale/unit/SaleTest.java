@@ -44,11 +44,11 @@ public class SaleTest extends AbstractUnitServiceTest {
 	@Test
 	public void shouldCalculateTotalProfitSale() {
 
-		final BigDecimal totalProfit = this.sale.getItems().stream().map(SaleItem::getTotalProfit)
+		final BigDecimal totalProfit = this.sale.getItems().stream().map(SaleItem::getTotalBilling)
 		        .reduce(BigDecimal.ZERO, BigDecimal::add);
 
-		this.sale.calculateProfit();
+		this.sale.calculateBilling();
 
-		assertEquals(totalProfit, this.sale.getProfit());
+		assertEquals(totalProfit, this.sale.getBilling());
 	}
 }

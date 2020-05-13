@@ -26,7 +26,7 @@ public class SaleDTO extends GenericDTO<Sale> {
 	@XmlJavaTypeAdapter(LocalDateAdapter.class)
 	private LocalDate saleDate;
 
-	private BigDecimal profit = BigDecimal.ZERO;
+	private BigDecimal billing = BigDecimal.ZERO;
 
 	private BigDecimal total = BigDecimal.ZERO;
 
@@ -44,7 +44,7 @@ public class SaleDTO extends GenericDTO<Sale> {
 	public void mapper(final Sale sale) {
 		this.groceryDTO = new GroceryDTO(sale.getGrocery());
 		this.saleDate = sale.getSaleDate();
-		this.profit = sale.getProfit();
+		this.billing = sale.getBilling();
 		this.total = sale.getTotal();
 		this.saleItemsDTO = sale.getItems().stream().map(saleItem -> new SaleItemDTO(saleItem))
 		        .collect(Collectors.toSet());
@@ -76,12 +76,12 @@ public class SaleDTO extends GenericDTO<Sale> {
 		this.saleDate = saleDate;
 	}
 
-	public BigDecimal getProfit() {
-		return this.profit;
+	public BigDecimal getBilling() {
+		return this.billing;
 	}
 
-	public void setProfit(final BigDecimal profit) {
-		this.profit = profit;
+	public void setBilling(final BigDecimal profit) {
+		this.billing = profit;
 	}
 
 	public BigDecimal getTotal() {

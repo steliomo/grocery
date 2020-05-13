@@ -3,6 +3,7 @@
  */
 package mz.co.grocery.core.stock.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import mz.co.grocery.core.stock.model.Stock;
@@ -28,4 +29,7 @@ public interface StockQueryService {
 	List<Stock> fetchStockByGroceryAndProduct(String groceryUuid, String productUuid) throws BusinessException;
 
 	List<Stock> fetchStocksByGrocery(String groceryUuid) throws BusinessException;
+
+	List<Stock> fetchLowStocksByGroceryAndSalePeriod(String groceryUuid, LocalDate startDate, LocalDate endDate)
+			throws BusinessException;
 }

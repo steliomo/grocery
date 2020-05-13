@@ -3,13 +3,12 @@
  */
 package mz.co.grocery.core.sale.integ;
 
-import static org.junit.Assert.assertFalse;
-
 import java.time.LocalDate;
 import java.util.List;
 
 import javax.inject.Inject;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -71,15 +70,14 @@ public class SaleQueryServiceTest extends AbstractIntegServiceTest {
 
 			try {
 				this.productService.createProduct(this.getUserContext(),
-				        saleItem.getStock().getProductDescription().getProduct());
+						saleItem.getStock().getProductDescription().getProduct());
 				this.productSizeService.createProductUnit(this.getUserContext(),
-				        saleItem.getStock().getProductDescription().getProductUnit());
+						saleItem.getStock().getProductDescription().getProductUnit());
 				this.productDescriptionService.createProductDescription(this.getUserContext(),
-				        saleItem.getStock().getProductDescription());
+						saleItem.getStock().getProductDescription());
 				this.groceryService.createGrocery(this.getUserContext(), saleItem.getStock().getGrocery());
 				this.stockService.createStock(this.getUserContext(), saleItem.getStock());
-			}
-			catch (final BusinessException e) {
+			} catch (final BusinessException e) {
 				e.printStackTrace();
 			}
 
@@ -90,15 +88,14 @@ public class SaleQueryServiceTest extends AbstractIntegServiceTest {
 
 			try {
 				this.productService.createProduct(this.getUserContext(),
-				        saleItem.getStock().getProductDescription().getProduct());
+						saleItem.getStock().getProductDescription().getProduct());
 				this.productSizeService.createProductUnit(this.getUserContext(),
-				        saleItem.getStock().getProductDescription().getProductUnit());
+						saleItem.getStock().getProductDescription().getProductUnit());
 				this.productDescriptionService.createProductDescription(this.getUserContext(),
-				        saleItem.getStock().getProductDescription());
+						saleItem.getStock().getProductDescription());
 				this.groceryService.createGrocery(this.getUserContext(), saleItem.getStock().getGrocery());
 				this.stockService.createStock(this.getUserContext(), saleItem.getStock());
-			}
-			catch (final BusinessException e) {
+			} catch (final BusinessException e) {
 				e.printStackTrace();
 			}
 
@@ -106,22 +103,27 @@ public class SaleQueryServiceTest extends AbstractIntegServiceTest {
 		});
 
 		this.grocery = this.groceryService.createGrocery(this.getUserContext(),
-		        EntityFactory.gimme(Grocery.class, GroceryTemplate.VALID));
+				EntityFactory.gimme(Grocery.class, GroceryTemplate.VALID));
 		sale.setGrocery(this.grocery);
 
 		this.saleService.registSale(this.getUserContext(), sale);
 	}
 
 	@Test
-	public void shouldFindLast7DaysSale() throws BusinessException {
-		final List<SaleReport> sales = this.saleQueryService.findLast7DaysSale(this.grocery.getUuid());
-		assertFalse(sales.isEmpty());
+	public void shouldFindSalePerPeriod() throws BusinessException {
+		final List<SaleReport> sales = this.saleQueryService.findSalesPerPeriod(this.grocery.getUuid(), LocalDate.now(),
+				LocalDate.now());
+		Assert.assertFalse(sales.isEmpty());
 	}
 
 	@Test
-	public void shouldFindSalePerPeriod() throws BusinessException {
-		final List<SaleReport> sales = this.saleQueryService.findSalesPerPeriod(this.grocery.getUuid(), LocalDate.now(),
-		        LocalDate.now());
-		assertFalse(sales.isEmpty());
+	public void shouldFindMonthlySalePerPeriod() throws BusinessException {
+
+		final List<SaleReport> sales = this.saleQueryService.findMonthlySalesPerPeriod(this.grocery.getUuid(),
+				LocalDate.now(),
+				LocalDate.now());
+
+		Assert.assertFalse(sales.isEmpty());
+		Assert.assertEquals(1, sales.size());
 	}
 }
