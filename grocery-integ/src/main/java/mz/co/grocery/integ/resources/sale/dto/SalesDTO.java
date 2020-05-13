@@ -131,12 +131,22 @@ public class SalesDTO {
 		this.expenses = expenses;
 
 		this.expense = expenses.stream().map(ExpenseReport::getExpenseValue).reduce(BigDecimal.ZERO, BigDecimal::add);
+
+		if (UserRole.OPERATOR.equals(this.user.getUserRole())) {
+			this.profit = BigDecimal.ZERO;
+			return this;
+		}
+
 		this.profit = this.billing.subtract(this.expense);
 
 		return this;
 	}
 
 	public SalesDTO calculateMonthlyProfit() {
+
+		if (UserRole.OPERATOR.equals(this.user.getUserRole())) {
+			return this;
+		}
 
 		this.expenses.forEach(expense -> {
 			this.salesReport.stream().filter(saleReport -> expense.getMonth().equals(saleReport.getMonth())).findFirst()
