@@ -4,7 +4,7 @@
 
 	<groupId>mz.co.grocery</groupId>
 	<artifactId>grocery</artifactId>
-	<version>1.0.2-SNAPSHOT</version>
+	<version>1.2.0</version>
 	<packaging>pom</packaging>
 
 	<modules>
@@ -21,7 +21,7 @@
 
 	<scm>
 		<connection>scm:git:https://github.com/steliomo/grocery.git</connection>
-	  <tag>HEAD</tag>
+	  <tag>grocery-1.2.0</tag>
   </scm>
 
 	<properties>
