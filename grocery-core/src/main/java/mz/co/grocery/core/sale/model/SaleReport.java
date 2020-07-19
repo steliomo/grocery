@@ -27,6 +27,7 @@ public class SaleReport {
 		this.saleDate = saleDate;
 		this.billing = billing;
 		this.sale = sale;
+		this.profit = BigDecimal.ZERO;
 	}
 
 	public SaleReport(final Month month) {

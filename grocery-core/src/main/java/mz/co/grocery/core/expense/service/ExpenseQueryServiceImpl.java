@@ -13,6 +13,7 @@ import org.springframework.stereotype.Service;
 
 import mz.co.grocery.core.expense.dao.ExpenseDAO;
 import mz.co.grocery.core.expense.model.ExpenseReport;
+import mz.co.grocery.core.expense.model.ExpenseTypeCategory;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.model.EntityStatus;
 
@@ -33,6 +34,7 @@ public class ExpenseQueryServiceImpl implements ExpenseQueryService {
 			final LocalDate endDate) throws BusinessException {
 
 		final BigDecimal expenses = this.expenseDAO.findValueByGroceryAndPeriod(groceryUuid, startDate, endDate,
+				ExpenseTypeCategory.EXPENSE,
 				EntityStatus.ACTIVE);
 
 		if (expenses == null) {
@@ -46,7 +48,8 @@ public class ExpenseQueryServiceImpl implements ExpenseQueryService {
 	public List<ExpenseReport> findMonthyExpensesByGroceryAndPeriod(final String groceryUuid, final LocalDate startDate,
 			final LocalDate endDate) throws BusinessException {
 
-		return this.expenseDAO.findMonthlyByGroceryAndPeriod(groceryUuid, startDate, endDate, EntityStatus.ACTIVE);
+		return this.expenseDAO.findMonthlyByGroceryAndPeriod(groceryUuid, startDate, endDate,
+				ExpenseTypeCategory.EXPENSE, EntityStatus.ACTIVE);
 	}
 
 }
