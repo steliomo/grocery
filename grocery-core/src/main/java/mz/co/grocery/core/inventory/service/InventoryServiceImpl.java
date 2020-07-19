@@ -72,7 +72,7 @@ public class InventoryServiceImpl extends AbstractService implements InventorySe
 					final StockInventory activeStockInventory = optional.get();
 					activeStockInventory.setFisicalInventory(stockInventory.getFisicalInventory());
 
-					this.stockInventoryService.updateStockInventory(userContext, stockInventory);
+					this.stockInventoryService.updateStockInventory(userContext, activeStockInventory);
 				} else {
 					stockInventory.setInventory(foundInventory);
 

@@ -1,6 +1,7 @@
 package mz.co.grocery.integ.resources.expense.dto;
 
 import mz.co.grocery.core.expense.model.ExpenseType;
+import mz.co.grocery.core.expense.model.ExpenseTypeCategory;
 import mz.co.grocery.integ.resources.dto.GenericDTO;
 
 /**
@@ -8,6 +9,8 @@ import mz.co.grocery.integ.resources.dto.GenericDTO;
  *
  */
 public class ExpenseTypeDTO extends GenericDTO<ExpenseType> {
+
+	private ExpenseTypeCategory expenseTypeCategory;
 
 	private String name;
 
@@ -23,6 +26,7 @@ public class ExpenseTypeDTO extends GenericDTO<ExpenseType> {
 
 	@Override
 	public void mapper(final ExpenseType expenseType) {
+		this.expenseTypeCategory = expenseType.getExpenseTypeCategory();
 		this.name = expenseType.getName();
 		this.description = expenseType.getDescription();
 	}
@@ -30,9 +34,14 @@ public class ExpenseTypeDTO extends GenericDTO<ExpenseType> {
 	@Override
 	public ExpenseType get() {
 		final ExpenseType expenseType = this.get(new ExpenseType());
+		expenseType.setExpenseTypeCategory(this.expenseTypeCategory);
 		expenseType.setName(this.name);
 		expenseType.setDescription(this.description);
 		return expenseType;
+	}
+
+	public ExpenseTypeCategory getExpenseTypeCategory() {
+		return this.expenseTypeCategory;
 	}
 
 	public String getName() {

@@ -8,6 +8,7 @@ import org.springframework.stereotype.Repository;
 
 import mz.co.grocery.core.expense.model.Expense;
 import mz.co.grocery.core.expense.model.ExpenseReport;
+import mz.co.grocery.core.expense.model.ExpenseTypeCategory;
 import mz.co.msaude.boot.frameworks.dao.GenericDAOImpl;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.model.EntityStatus;
@@ -20,22 +21,24 @@ public class ExpenseDAOImpl extends GenericDAOImpl<Expense, Long> implements Exp
 
 	@Override
 	public BigDecimal findValueByGroceryAndPeriod(final String groceryUuid, final LocalDate startDate,
-			final LocalDate endDate,
+			final LocalDate endDate, final ExpenseTypeCategory expenseTypeCategory,
 			final EntityStatus entityStatus) throws BusinessException {
 
 		return this.findSingleByNamedQuery(ExpenseDAO.QUERY_NAME.findValueByGroceryAndPeriod,
 				new ParamBuilder().add("groceryUuid", groceryUuid).add("startDate", startDate)
-				.add("endDate", endDate).add("entityStatus", entityStatus).process(),
+				.add("endDate", endDate).add("expenseTypeCategory", expenseTypeCategory)
+				.add("entityStatus", entityStatus).process(),
 				BigDecimal.class);
 	}
 
 	@Override
 	public List<ExpenseReport> findMonthlyByGroceryAndPeriod(final String groceryUuid, final LocalDate startDate,
-			final LocalDate endDate,
+			final LocalDate endDate, final ExpenseTypeCategory expenseTypeCategory,
 			final EntityStatus entityStatus) throws BusinessException {
 
 		return this.findByNamedQuery(ExpenseDAO.QUERY_NAME.findMonthlyByGroceryAndPeriod,
 				new ParamBuilder().add("groceryUuid", groceryUuid).add("startDate", startDate).add("endDate", endDate)
+				.add("expenseTypeCategory", expenseTypeCategory)
 				.add("entityStatus", entityStatus).process(),
 				ExpenseReport.class);
 	}
