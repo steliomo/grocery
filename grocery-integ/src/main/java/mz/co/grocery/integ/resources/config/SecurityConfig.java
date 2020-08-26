@@ -16,6 +16,7 @@ import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.ui.freemarker.FreeMarkerConfigurationFactoryBean;
 
 /**
  * @author Stélio Moiane
@@ -35,9 +36,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 
 	@Override
 	protected void configure(final HttpSecurity http) throws Exception {
-		http.csrf().disable().authorizeRequests().antMatchers("/services/users/login").permitAll().anyRequest()
-		        .authenticated().and().httpBasic().and().sessionManagement()
-		        .sessionCreationPolicy(SessionCreationPolicy.STATELESS);
+		http.csrf().disable().authorizeRequests().antMatchers("/services/users/login").permitAll()
+		.antMatchers("/services/users/reset-password").permitAll().antMatchers("/services/users/signup")
+		.permitAll()
+		.anyRequest()
+		.authenticated().and().httpBasic().and().sessionManagement()
+		.sessionCreationPolicy(SessionCreationPolicy.STATELESS);
 	}
 
 	@Bean
@@ -51,5 +55,12 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 	@Bean
 	public PasswordEncoder passwordEncoder() {
 		return new BCryptPasswordEncoder();
+	}
+
+	@Bean
+	public FreeMarkerConfigurationFactoryBean getFreeMarkerConfiguration() {
+		final FreeMarkerConfigurationFactoryBean freeMarkerConfigurationFactoryBean = new FreeMarkerConfigurationFactoryBean();
+		freeMarkerConfigurationFactoryBean.setTemplateLoaderPath("classpath:/templates/");
+		return freeMarkerConfigurationFactoryBean;
 	}
 }

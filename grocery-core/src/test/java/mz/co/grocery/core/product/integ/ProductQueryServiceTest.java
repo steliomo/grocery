@@ -3,12 +3,11 @@
  */
 package mz.co.grocery.core.product.integ;
 
-import static org.junit.Assert.assertFalse;
-
 import java.util.List;
 
 import javax.inject.Inject;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
@@ -63,8 +62,7 @@ public class ProductQueryServiceTest extends AbstractIntegServiceTest {
 		this.products.forEach(product -> {
 			try {
 				this.productService.createProduct(this.getUserContext(), product);
-			}
-			catch (final BusinessException e) {
+			} catch (final BusinessException e) {
 				e.printStackTrace();
 			}
 		});
@@ -73,7 +71,7 @@ public class ProductQueryServiceTest extends AbstractIntegServiceTest {
 	@Test
 	public void shouldFindAllProducts() throws BusinessException {
 		final List<Product> products = this.productQueryService.findAllProducts();
-		assertFalse(products.isEmpty());
+		Assert.assertFalse(products.isEmpty());
 	}
 
 	@Test
@@ -81,7 +79,7 @@ public class ProductQueryServiceTest extends AbstractIntegServiceTest {
 
 		final List<Product> products = this.productQueryService.findProductByName(this.products.get(0).getName());
 
-		assertFalse(products.isEmpty());
+		Assert.assertFalse(products.isEmpty());
 	}
 
 	@Test
@@ -89,7 +87,7 @@ public class ProductQueryServiceTest extends AbstractIntegServiceTest {
 
 		final List<Stock> stocks = EntityFactory.gimme(Stock.class, 10, StockTemplate.VALID);
 		this.grocery = this.groceryService.createGrocery(this.getUserContext(),
-		        EntityFactory.gimme(Grocery.class, GroceryTemplate.VALID));
+				EntityFactory.gimme(Grocery.class, GroceryTemplate.VALID));
 
 		stocks.forEach(stock -> {
 			this.createStock(stock);
@@ -97,7 +95,30 @@ public class ProductQueryServiceTest extends AbstractIntegServiceTest {
 
 		final List<Product> products = this.productQueryService.findProductsByGrocery(this.grocery);
 
-		assertFalse(products.isEmpty());
+		Assert.assertFalse(products.isEmpty());
+	}
+
+	@Test
+	public void shouldFindProductsNotInThisGrocery() throws BusinessException {
+
+		final Grocery grocery = EntityFactory.gimme(Grocery.class, GroceryTemplate.VALID);
+		this.groceryService.createGrocery(this.getUserContext(), grocery);
+
+		final List<Stock> stocks = EntityFactory.gimme(Stock.class, 10, StockTemplate.VALID);
+		this.grocery = this.groceryService.createGrocery(this.getUserContext(),
+				EntityFactory.gimme(Grocery.class, GroceryTemplate.VALID));
+
+		stocks.forEach(stock -> {
+			this.createStock(stock);
+		});
+
+		final List<Product> products = this.productQueryService.findProductsNotInThisGrocery(grocery);
+
+		Assert.assertFalse(products.isEmpty());
+
+		stocks.forEach(stock -> {
+			Assert.assertNotEquals(grocery.getUuid(), stock.getGrocery().getUuid());
+		});
 	}
 
 	private void createStock(final Stock stock) {
@@ -105,13 +126,12 @@ public class ProductQueryServiceTest extends AbstractIntegServiceTest {
 			this.productService.createProduct(this.getUserContext(), stock.getProductDescription().getProduct());
 
 			this.productUnitService.createProductUnit(this.getUserContext(),
-			        stock.getProductDescription().getProductUnit());
+					stock.getProductDescription().getProductUnit());
 			this.productDescriptionService.createProductDescription(this.getUserContext(),
-			        stock.getProductDescription());
+					stock.getProductDescription());
 			stock.setGrocery(this.grocery);
 			this.stockService.createStock(this.getUserContext(), stock);
-		}
-		catch (final BusinessException e) {
+		} catch (final BusinessException e) {
 			e.printStackTrace();
 		}
 	}

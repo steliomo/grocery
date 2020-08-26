@@ -18,8 +18,9 @@ import mz.co.msaude.boot.frameworks.model.GenericEntity;
  *
  */
 @NamedQueries({ @NamedQuery(name = ProductDAO.QUERY_NAME.findAll, query = ProductDAO.QUERY.findAll),
-        @NamedQuery(name = ProductDAO.QUERY_NAME.findByName, query = ProductDAO.QUERY.findByName),
-        @NamedQuery(name = ProductDAO.QUERY_NAME.findByGrocery, query = ProductDAO.QUERY.findByGrocery) })
+	@NamedQuery(name = ProductDAO.QUERY_NAME.findByName, query = ProductDAO.QUERY.findByName),
+	@NamedQuery(name = ProductDAO.QUERY_NAME.findByGrocery, query = ProductDAO.QUERY.findByGrocery),
+	@NamedQuery(name = ProductDAO.QUERY_NAME.findNotInThisGrocery, query = ProductDAO.QUERY.findNotInThisGrocery) })
 @Entity
 @Table(name = "PRODUCTS")
 public class Product extends GenericEntity {

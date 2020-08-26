@@ -110,19 +110,11 @@ public class StockResource extends AbstractResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response addStockQuantity(final List<StockDTO> stocksDTO) throws BusinessException {
 
-		stocksDTO.forEach(stockDTO -> {
-			this.updateStocksAndPrices(stockDTO.get());
-		});
+		for (final StockDTO stockDTO : stocksDTO) {
+			this.stockService.updateStocksAndPrices(this.getContext(), stockDTO.get());
+		}
 
 		return Response.ok().build();
-	}
-
-	private void updateStocksAndPrices(final Stock stock) {
-		try {
-			this.stockService.updateStocksAndPrices(this.getContext(), stock);
-		} catch (final BusinessException e) {
-			e.printStackTrace();
-		}
 	}
 
 	@GET
@@ -166,5 +158,31 @@ public class StockResource extends AbstractResource {
 		final List<StockDTO> stocksDTO = stocks.stream().map(stock -> new StockDTO(stock)).collect(Collectors.toList());
 
 		return Response.ok(stocksDTO).build();
+	}
+
+	@GET
+	@Path("not-in-this-grocery-by-product")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response fecthStocksNotInThisByGroceryByProduct(@QueryParam("groceryUuid") final String groceryUuid,
+			@QueryParam("productUuid") final String productUuid) throws BusinessException {
+
+		final List<Stock> stocks = this.stockQueryService.fetchStockNotInthisGroceryByProduct(groceryUuid, productUuid);
+
+		final List<StockDTO> stocksDTO = stocks.stream().map(stock -> new StockDTO(stock)).collect(Collectors.toList());
+
+		return Response.ok(stocksDTO).build();
+	}
+
+	@POST
+	@Path("add-stock-products")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response addStockProducts(final List<StockDTO> stocksDTO) throws BusinessException {
+
+		for (final StockDTO stockDTO : stocksDTO) {
+			this.stockService.createStock(this.getContext(), stockDTO.get());
+		}
+
+		return Response.ok().build();
 	}
 }

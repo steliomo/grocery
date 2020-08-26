@@ -33,6 +33,8 @@ public interface StockDAO extends GenericDAO<Stock, Long> {
 
 		public static final String fetchByGroceryAndSalePeriod = "SELECT s FROM SaleItem si INNER JOIN si.stock s INNER JOIN si.sale sa INNER JOIN s.grocery g INNER JOIN FETCH s.productDescription pd INNER JOIN FETCH pd.product p INNER JOIN FETCH pd.productUnit "
 				+ "WHERE g.uuid = :groceryUuid AND s.entityStatus = :entityStatus and s.stockStatus = 'LOW' AND sa.saleDate BETWEEN :startDate AND :endDate GROUP BY s.id ORDER BY SUM((s.salePrice - s.purchasePrice) * si.quantity - si.discount) DESC";
+
+		public static final String fetchNotInThisGroceryByProduct = "SELECT s FROM Stock s INNER JOIN FETCH s.grocery g INNER JOIN FETCH s.productDescription pd INNER JOIN FETCH pd.product p INNER JOIN FETCH pd.productUnit WHERE NOT EXISTS (SELECT st FROM Stock st INNER JOIN st.productDescription pdn WHERE st.grocery.uuid = :groceryUuid AND pdn.id = pd.id) AND p.uuid = :productUuid AND s.entityStatus = :entityStatus GROUP BY pd.id ORDER BY p.name, pd.description";
 	}
 
 	class QUERY_NAME {
@@ -50,6 +52,8 @@ public interface StockDAO extends GenericDAO<Stock, Long> {
 		public static final String fetchByGrocery = "Stock.fetchByGrocery";
 
 		public static final String fetchByGroceryAndSalePeriod = "Stock.fetchByGroceryAndSalePeriod";
+
+		public static final String fetchNotInThisGroceryByProduct = "Stock.fetchNotInThisGroceryByProduct";
 	}
 
 	List<Stock> fetchAll(int currentPage, int maxResult, EntityStatus entityStatus) throws BusinessException;
@@ -67,4 +71,6 @@ public interface StockDAO extends GenericDAO<Stock, Long> {
 			EntityStatus entityStatus)
 					throws BusinessException;
 
+	List<Stock> fetchNotInThisGroceryByProduct(String groceryUuid, String productUuid, EntityStatus entityStatus)
+			throws BusinessException;
 }

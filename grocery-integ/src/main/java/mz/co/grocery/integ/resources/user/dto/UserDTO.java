@@ -3,6 +3,9 @@
  */
 package mz.co.grocery.integ.resources.user.dto;
 
+import java.util.HashMap;
+import java.util.Map;
+
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
@@ -30,6 +33,8 @@ public class UserDTO {
 	private GroceryUserDTO groceryUserDTO;
 
 	private String email;
+
+	private Map<String, Object> properties;
 
 	public String getUuid() {
 		return this.uuid;
@@ -85,5 +90,18 @@ public class UserDTO {
 
 	public void setEmail(final String email) {
 		this.email = email;
+	}
+
+	public void setProperties(final String key, final Object value) {
+
+		if (this.properties == null) {
+			this.properties = new HashMap<>();
+		}
+
+		this.properties.put(key, value);
+	}
+
+	public Map<String, Object> getProperties() {
+		return this.properties;
 	}
 }

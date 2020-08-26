@@ -77,4 +77,12 @@ public class StockDAOImpl extends GenericDAOImpl<Stock, Long> implements StockDA
 				.add("groceryUuid", groceryUuid).add("startDate", startDate).add("endDate", endDate)
 				.add("entityStatus", entityStatus).process());
 	}
+
+	@Override
+	public List<Stock> fetchNotInThisGroceryByProduct(final String groceryUuid, final String productUuid, final EntityStatus entityStatus)
+			throws BusinessException {
+		return this.findByNamedQuery(StockDAO.QUERY_NAME.fetchNotInThisGroceryByProduct,
+				new ParamBuilder().add("groceryUuid", groceryUuid).add("productUuid", productUuid)
+				.add("entityStatus", entityStatus).process());
+	}
 }

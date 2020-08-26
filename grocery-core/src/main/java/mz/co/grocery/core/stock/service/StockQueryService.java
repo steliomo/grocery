@@ -32,4 +32,6 @@ public interface StockQueryService {
 
 	List<Stock> fetchLowStocksByGroceryAndSalePeriod(String groceryUuid, LocalDate startDate, LocalDate endDate)
 			throws BusinessException;
+
+	List<Stock> fetchStockNotInthisGroceryByProduct(String groceryUuid, String productUuid) throws BusinessException;
 }

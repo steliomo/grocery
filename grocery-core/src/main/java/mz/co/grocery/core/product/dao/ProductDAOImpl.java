@@ -26,20 +26,27 @@ public class ProductDAOImpl extends GenericDAOImpl<Product, Long> implements Pro
 	@Override
 	public List<Product> findAll(final EntityStatus entityStatus) throws BusinessException {
 		return this.findByNamedQuery(ProductDAO.QUERY_NAME.findAll,
-		        new ParamBuilder().add("entityStatus", entityStatus).process());
+				new ParamBuilder().add("entityStatus", entityStatus).process());
 	}
 
 	@Override
 	public List<Product> findByName(final String name, final EntityStatus entityStatus) throws BusinessException {
 
 		return this.findByNamedQuery(ProductDAO.QUERY_NAME.findByName,
-		        new ParamBuilder().add("name", "%" + name + "%").add("entityStatus", entityStatus).process());
+				new ParamBuilder().add("name", "%" + name + "%").add("entityStatus", entityStatus).process());
 	}
 
 	@Override
 	public List<Product> findByGrocery(final Grocery grocery, final EntityStatus entityStatus)
-	        throws BusinessException {
+			throws BusinessException {
 		return this.findByNamedQuery(ProductDAO.QUERY_NAME.findByGrocery,
-		        new ParamBuilder().add("groceryUuid", grocery.getUuid()).add("entityStatus", entityStatus).process());
+				new ParamBuilder().add("groceryUuid", grocery.getUuid()).add("entityStatus", entityStatus).process());
+	}
+
+	@Override
+	public List<Product> findNotInThisGrocery(final Grocery grocery, final EntityStatus entityStatus)
+			throws BusinessException {
+		return this.findByNamedQuery(ProductDAO.QUERY_NAME.findNotInThisGrocery,
+				new ParamBuilder().add("groceryUuid", grocery.getUuid()).add("entityStatus", entityStatus).process());
 	}
 }

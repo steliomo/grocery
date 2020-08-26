@@ -204,4 +204,21 @@ public class StockQueryServiceTest extends AbstractIntegServiceTest {
 			Assert.assertNotNull(st.getProductDescription().getProductUnit());
 		});
 	}
+
+	@Test
+	public void shouldFecthStockNotInThisGroceryByProduct() throws BusinessException {
+		final Grocery grocery = EntityFactory.gimme(Grocery.class, GroceryTemplate.VALID);
+		this.groceryService.createGrocery(this.getUserContext(), grocery);
+
+		final List<Stock> stocks = this.stockQueryService.fetchStockNotInthisGroceryByProduct(grocery.getUuid(),
+				this.product.getUuid());
+
+		Assert.assertFalse(stocks.isEmpty());
+
+		stocks.forEach(stock -> {
+			Assert.assertNotNull(stock.getProductDescription().getProduct());
+			Assert.assertEquals(this.product.getUuid(), stock.getProductDescription().getProduct().getUuid());
+			Assert.assertNotEquals(grocery.getUuid(), stock.getGrocery().getUuid());
+		});
+	}
 }

@@ -1,0 +1,72 @@
+<html>
+<body>
+<head>
+ 	<style>
+ 		body, ul, li, a, table, label, p, tr, td, span, textarea, input {
+			font: 11px "Lucida Grande", Georgia, "Times New Roman", Times, serif;
+        }
+        
+        table {
+        	border-collapse: collapse;
+        	margin-left: 1px;
+        	margin-bottom: 15px;
+        	cursor: pointer;
+        }
+        
+        table th {
+        	border: 1px solid #017a84;;
+        	padding: 7px;
+        }
+        
+        table td {
+        	border: 1px solid #017a84;
+        	padding: 7px;
+        }
+        
+        table th{
+        	background: #017a84;
+        	color: #fff;
+        }
+        
+        table td:first-child{
+        	background: #FFCDD2;
+        	font-weight: bold;
+        }
+        
+        
+ 	</style>
+  	<meta charset="UTF-8">
+</head>
+<p>O(A) Utilizador(a) <b>${fullName}</b> foi cadastrado con sucesso conforme os detalhes abaixo:</p>
+<table>
+	<tr>
+		<th colspan="2">Detalhes do Utilizador</th>
+	</tr>
+	<tr>
+		<td width="120px">Nome do utilizador</td>
+		<td width="400px">${username}</td>
+	</tr>
+	<tr>
+		<td>Senha</td>
+		<td>${password}</td>
+	</tr>
+	<tr>
+		<td>Email</td>
+		<td>${email}</td>
+	</tr>
+	<tr>
+		<th colspan="2">Detalhes da Mercearia</th>
+	</tr>
+	<tr>
+		<td>Nome da Mercearia</td>
+		<td>${grocery}</td>
+	</tr>
+	<tr>
+		<td>Endereço</td>
+		<td>${address}</td>
+	</tr>
+</table>
+<p>Obrigado</p>
+<p>Mercearias Online © 2020 ©</p>
+</body>
+</html>

@@ -18,4 +18,6 @@ public interface GroceryQueryService {
 
 	Long count() throws BusinessException;
 
+	Grocery findByUuid(String groceryUuid) throws BusinessException;
+
 }
