@@ -27,7 +27,6 @@ public class JerseyConfig extends ResourceConfig {
 
 	public JerseyConfig() {
 		this.register(CORSFilter.class);
-		this.register(ExceptionHandler.class);
 		this.register(ProductResource.class);
 		this.register(ProductUnitResource.class);
 		this.register(ProductDescriptionResource.class);
@@ -39,5 +38,9 @@ public class JerseyConfig extends ResourceConfig {
 		this.register(InventoryResource.class);
 		this.register(ExpenseTypeResource.class);
 		this.register(ExpenseResource.class);
+
+		this.register(ApiExceptionMapper.class);
+		this.register(BusinessExceptionMapper.class);
+		this.register(NoResultExceptionMapper.class);
 	}
 }

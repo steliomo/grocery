@@ -3,12 +3,11 @@
  */
 package mz.co.grocery.integ.resources.user.service;
 
-import static mz.co.grocery.integ.resources.user.service.ResourceOwnerServiceImpl.NAME;
-
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
 import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Response;
 
 import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.security.core.userdetails.UserDetailsService;
@@ -24,7 +23,7 @@ import mz.co.msaude.boot.frameworks.model.UserContext;
  * @author Stélio Moiane
  *
  */
-@Service(NAME)
+@Service(ResourceOwnerServiceImpl.NAME)
 public class ResourceOwnerServiceImpl implements UserDetailsService, ResourceOnwnerService {
 
 	public static final String NAME = "mz.co.grocery.integ.resources.user.service.ResourceOwnerServiceImpl";
@@ -36,12 +35,19 @@ public class ResourceOwnerServiceImpl implements UserDetailsService, ResourceOnw
 		user.setUsername(username);
 
 		final Client client = ClientBuilder.newClient();
-		final UserDTO get = client.target(UrlTargets.ACCOUNT_MODULE).path("users/user/" + username)
-		        .request(MediaType.APPLICATION_JSON).get(UserDTO.class);
 
-		user.setPassword(get.getPassword());
-		user.setUuid(get.getUuid());
-		user.setFullName(get.getFullName());
+		final Response response = client.target(UrlTargets.ACCOUNT_MODULE).path("users/user/" + username)
+				.request(MediaType.APPLICATION_JSON).get();
+
+		if (response.getStatusInfo() == Response.Status.NOT_FOUND) {
+			throw new UsernameNotFoundException("Username does not exsit");
+		}
+
+		final UserDTO userDTO = response.readEntity(UserDTO.class);
+
+		user.setPassword(userDTO.getPassword());
+		user.setUuid(userDTO.getUuid());
+		user.setFullName(userDTO.getFullName());
 
 		return new ResourceOwner(user);
 	}
@@ -55,10 +61,11 @@ public class ResourceOwnerServiceImpl implements UserDetailsService, ResourceOnw
 		context.setFullName(userDTO.getFullName());
 		context.setUsername(userDTO.getUsername());
 		context.setPassword(userDTO.getPassword());
+		context.setEmail(userDTO.getEmail());
 
 		final UserContext post = client.target(UrlTargets.ACCOUNT_MODULE).path("users/create")
-		        .request(MediaType.APPLICATION_JSON)
-		        .post(Entity.entity(context, MediaType.APPLICATION_JSON), UserContext.class);
+				.request(MediaType.APPLICATION_JSON)
+				.post(Entity.entity(context, MediaType.APPLICATION_JSON), UserContext.class);
 
 		return post.getUuid();
 	}

@@ -70,4 +70,10 @@ public class StockQueryServiceImpl implements StockQueryService {
 					throws BusinessException {
 		return this.stockDAO.fetchByGroceryAndSalePeriod(groceryUuid, startDate, endDate, EntityStatus.ACTIVE);
 	}
+
+	@Override
+	public List<Stock> fetchStockNotInthisGroceryByProduct(final String groceryUuid, final String productUuid)
+			throws BusinessException {
+		return this.stockDAO.fetchNotInThisGroceryByProduct(groceryUuid, productUuid, EntityStatus.ACTIVE);
+	}
 }

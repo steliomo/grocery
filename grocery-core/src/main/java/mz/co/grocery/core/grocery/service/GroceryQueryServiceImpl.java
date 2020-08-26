@@ -36,4 +36,9 @@ public class GroceryQueryServiceImpl implements GroceryQueryService {
 		return this.groceryDAO.count(EntityStatus.ACTIVE);
 	}
 
+	@Override
+	public Grocery findByUuid(final String groceryUuid) throws BusinessException {
+		return this.groceryDAO.findByUuid(groceryUuid);
+	}
+
 }

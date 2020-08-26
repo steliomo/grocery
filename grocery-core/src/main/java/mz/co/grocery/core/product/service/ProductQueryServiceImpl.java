@@ -46,4 +46,9 @@ public class ProductQueryServiceImpl implements ProductQueryService {
 	public List<Product> findProductsByGrocery(final Grocery grocery) throws BusinessException {
 		return this.productDAO.findByGrocery(grocery, EntityStatus.ACTIVE);
 	}
+
+	@Override
+	public List<Product> findProductsNotInThisGrocery(final Grocery grocery) throws BusinessException {
+		return this.productDAO.findNotInThisGrocery(grocery, EntityStatus.ACTIVE);
+	}
 }

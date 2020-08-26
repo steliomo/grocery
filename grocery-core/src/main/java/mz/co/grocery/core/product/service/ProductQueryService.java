@@ -22,4 +22,6 @@ public interface ProductQueryService {
 	Product findProductByUuid(String uuid) throws BusinessException;
 
 	List<Product> findProductsByGrocery(Grocery grocery) throws BusinessException;
+
+	List<Product> findProductsNotInThisGrocery(Grocery grocery) throws BusinessException;
 }

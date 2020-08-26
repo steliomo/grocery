@@ -58,7 +58,7 @@ public class ProductResource extends AbstractResource {
 		final List<Product> products = this.productQueryService.findAllProducts();
 
 		final List<ProductDTO> productsDTO = products.stream().map(product -> new ProductDTO(product))
-		        .collect(Collectors.toList());
+				.collect(Collectors.toList());
 
 		return Response.ok(productsDTO).build();
 	}
@@ -70,7 +70,7 @@ public class ProductResource extends AbstractResource {
 		final List<Product> products = this.productQueryService.findProductByName(name);
 
 		final List<ProductDTO> productsDTO = products.stream().map(product -> new ProductDTO(product))
-		        .collect(Collectors.toList());
+				.collect(Collectors.toList());
 
 		return Response.ok(productsDTO).build();
 	}
@@ -95,13 +95,13 @@ public class ProductResource extends AbstractResource {
 	@Path("by-grocery/{groceryUuid}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response findProductByGroceryUuid(@PathParam("groceryUuid") final String groceryUuid)
-	        throws BusinessException {
+			throws BusinessException {
 
 		final GroceryDTO groceryDTO = new GroceryDTO(groceryUuid);
 		final List<Product> products = this.productQueryService.findProductsByGrocery(groceryDTO.get());
 
 		final List<ProductDTO> productsDTO = products.stream().map(product -> new ProductDTO(product))
-		        .collect(Collectors.toList());
+				.collect(Collectors.toList());
 
 		return Response.ok(productsDTO).build();
 	}
@@ -113,5 +113,20 @@ public class ProductResource extends AbstractResource {
 		final Product product = this.productQueryService.findProductByUuid(productUuid);
 		this.producService.removeProduct(this.getContext(), product);
 		return Response.ok(new ProductDTO(product)).build();
+	}
+
+	@GET
+	@Path("not-in-this-grocery/{groceryUuid}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response findProductsNotInThisGroceryUuid(@PathParam("groceryUuid") final String groceryUuid)
+			throws BusinessException {
+
+		final GroceryDTO groceryDTO = new GroceryDTO(groceryUuid);
+		final List<Product> products = this.productQueryService.findProductsNotInThisGrocery(groceryDTO.get());
+
+		final List<ProductDTO> productsDTO = products.stream().map(product -> new ProductDTO(product))
+				.collect(Collectors.toList());
+
+		return Response.ok(productsDTO).build();
 	}
 }
