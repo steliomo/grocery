@@ -8,6 +8,7 @@ import java.math.BigDecimal;
 import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.Rule;
 import br.com.six2six.fixturefactory.loader.TemplateLoader;
+import mz.co.grocery.core.product.model.ServiceItem;
 import mz.co.grocery.core.sale.model.SaleItem;
 import mz.co.grocery.core.stock.model.Stock;
 
@@ -17,23 +18,25 @@ import mz.co.grocery.core.stock.model.Stock;
  */
 public class SaleItemTemplate implements TemplateLoader {
 
-	public static final String VALID = "VALID";
-	public static final String SALE_VALUE = "SALE_VALUE";
+	public static final String PRODUCT = "PRODUCT";
+	public static final String SERVICE = "SERVICE";
 
 	@Override
 	public void load() {
-		Fixture.of(SaleItem.class).addTemplate(VALID, new Rule() {
+		Fixture.of(SaleItem.class).addTemplate(SaleItemTemplate.PRODUCT, new Rule() {
 			{
 				this.add("stock", this.one(Stock.class, StockTemplate.VALID));
-				this.add("quantity", this.random(BigDecimal.class, this.range(1.0, 50.0)));
-				this.add("discount", this.random(BigDecimal.class, this.range(1.0, 50.0)));
+				this.add("quantity", this.random(BigDecimal.class, this.range(10.0, 50.0)));
+				this.add("discount", this.random(BigDecimal.class, this.range(1.0, 10.0)));
+				this.add("saleItemValue", this.random(BigDecimal.class, this.range(100.0, 500.0)));
 			}
 		});
 
-		Fixture.of(SaleItem.class).addTemplate(SALE_VALUE).inherits(VALID, new Rule() {
+		Fixture.of(SaleItem.class).addTemplate(SaleItemTemplate.SERVICE, new Rule() {
 			{
-				this.add("stock", this.one(Stock.class, StockTemplate.VALID));
-				this.add("quantity", BigDecimal.ZERO);
+				this.add("serviceItem", this.one(ServiceItem.class, ServiceItemTemplate.VALID));
+				this.add("quantity", this.random(BigDecimal.class, this.range(10.0, 50.0)));
+				this.add("discount", this.random(BigDecimal.class, this.range(1.0, 10.0)));
 				this.add("saleItemValue", this.random(BigDecimal.class, this.range(100.0, 500.0)));
 			}
 		});

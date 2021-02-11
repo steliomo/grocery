@@ -4,6 +4,7 @@
 package mz.co.grocery.core.fixturefactory;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 
 import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.Rule;
@@ -23,16 +24,17 @@ public class SaleTemplate implements TemplateLoader {
 
 	@Override
 	public void load() {
-		Fixture.of(Sale.class).addTemplate(VALID, new Rule() {
+		Fixture.of(Sale.class).addTemplate(SaleTemplate.VALID, new Rule() {
 			{
 				this.add("grocery", this.one(Grocery.class, GroceryTemplate.VALID));
 				this.add("saleDate", LocalDate.now());
+				this.add("items", new HashSet<SaleItem>());
 			}
 		});
 
-		Fixture.of(Sale.class).addTemplate(WITH_ITEMS).inherits(VALID, new Rule() {
+		Fixture.of(Sale.class).addTemplate(SaleTemplate.WITH_ITEMS).inherits(SaleTemplate.VALID, new Rule() {
 			{
-				this.add("items", this.has(10).of(SaleItem.class, SaleTemplate.VALID));
+				this.add("items", this.has(10).of(SaleItem.class, SaleItemTemplate.PRODUCT));
 			}
 		});
 	}

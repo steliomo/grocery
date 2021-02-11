@@ -5,9 +5,13 @@ package mz.co.grocery.integ.resources.sale.dto;
 
 import java.math.BigDecimal;
 
+import mz.co.grocery.core.product.model.ServiceItem;
 import mz.co.grocery.core.sale.model.SaleItem;
+import mz.co.grocery.core.stock.model.Stock;
 import mz.co.grocery.integ.resources.dto.GenericDTO;
+import mz.co.grocery.integ.resources.product.dto.ServiceItemDTO;
 import mz.co.grocery.integ.resources.stock.dto.StockDTO;
+import mz.co.grocery.integ.resources.util.ProxyUtil;
 
 /**
  * @author Stélio Moiane
@@ -16,6 +20,8 @@ import mz.co.grocery.integ.resources.stock.dto.StockDTO;
 public class SaleItemDTO extends GenericDTO<SaleItem> {
 
 	private StockDTO stockDTO;
+
+	private ServiceItemDTO serviceItemDTO;
 
 	private BigDecimal quantity;
 
@@ -33,7 +39,18 @@ public class SaleItemDTO extends GenericDTO<SaleItem> {
 
 	@Override
 	public void mapper(final SaleItem saleItem) {
-		this.stockDTO = new StockDTO(saleItem.getStock());
+		final Stock stock = saleItem.getStock();
+
+		if (ProxyUtil.isInitialized(stock)) {
+			this.stockDTO = new StockDTO(stock);
+		}
+
+		final ServiceItem serviceItem = saleItem.getServiceItem();
+
+		if (ProxyUtil.isInitialized(serviceItem)) {
+			this.serviceItemDTO = new ServiceItemDTO(serviceItem);
+		}
+
 		this.quantity = saleItem.getQuantity();
 		this.saleItemValue = saleItem.getSaleItemValue();
 		this.discount = saleItem.getDiscount();
@@ -42,7 +59,15 @@ public class SaleItemDTO extends GenericDTO<SaleItem> {
 	@Override
 	public SaleItem get() {
 		final SaleItem saleItem = this.get(new SaleItem());
-		saleItem.setStock(this.stockDTO.get());
+
+		if (this.stockDTO != null) {
+			saleItem.setStock(this.stockDTO.get());
+		}
+
+		if (this.serviceItemDTO != null) {
+			saleItem.setServiceItem(this.serviceItemDTO.get());
+		}
+
 		saleItem.setQuantity(this.quantity);
 		saleItem.setSaleItemValue(this.saleItemValue);
 		saleItem.setDiscount(this.discount);
@@ -52,6 +77,10 @@ public class SaleItemDTO extends GenericDTO<SaleItem> {
 
 	public StockDTO getStockDTO() {
 		return this.stockDTO;
+	}
+
+	public ServiceItemDTO getServiceItemDTO() {
+		return this.serviceItemDTO;
 	}
 
 	public BigDecimal getQuantity() {

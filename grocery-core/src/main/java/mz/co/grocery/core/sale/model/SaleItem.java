@@ -14,6 +14,7 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlTransient;
 
+import mz.co.grocery.core.product.model.ServiceItem;
 import mz.co.grocery.core.stock.model.Stock;
 import mz.co.msaude.boot.frameworks.model.GenericEntity;
 
@@ -33,10 +34,13 @@ public class SaleItem extends GenericEntity {
 	@JoinColumn(name = "SALE_ID", nullable = false)
 	private Sale sale;
 
-	@NotNull
 	@ManyToOne(fetch = FetchType.LAZY)
 	@JoinColumn(name = "STOCK_ID")
 	private Stock stock;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "SERVICE_ITEM_ID")
+	private ServiceItem serviceItem;
 
 	@NotNull
 	@Column(name = "QUANTITY", nullable = false)
@@ -64,6 +68,14 @@ public class SaleItem extends GenericEntity {
 
 	public void setStock(final Stock stock) {
 		this.stock = stock;
+	}
+
+	public ServiceItem getServiceItem() {
+		return this.serviceItem;
+	}
+
+	public void setServiceItem(final ServiceItem serviceItem) {
+		this.serviceItem = serviceItem;
 	}
 
 	public BigDecimal getQuantity() {
@@ -95,7 +107,15 @@ public class SaleItem extends GenericEntity {
 	}
 
 	public BigDecimal getTotalBilling() {
-		return this.stock.getSalePrice().subtract(this.stock.getPurchasePrice()).multiply(this.quantity)
-				.subtract(this.discount);
+
+		if (this.isProduct()) {
+			return this.stock.getSalePrice().subtract(this.stock.getPurchasePrice()).multiply(this.quantity).subtract(this.discount);
+		}
+
+		return this.serviceItem.getSalePrice().multiply(this.quantity).subtract(this.discount);
+	}
+
+	public Boolean isProduct() {
+		return this.stock != null;
 	}
 }

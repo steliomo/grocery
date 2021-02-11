@@ -26,14 +26,13 @@ public class InventoryDAOImpl extends GenericDAOImpl<Inventory, Long> implements
 
 	@Override
 	public Inventory fetchByGroceryAndStatus(final Grocery grocery, final InventoryStatus inventoryStatus,
-	        final EntityStatus entityStatus) throws BusinessException {
+			final EntityStatus entityStatus) throws BusinessException {
 		try {
 
 			return this.findSingleByNamedQuery(InventoryDAO.QUERY_NAME.fetchByGroceryAndStatus,
-			        new ParamBuilder().add("groceryUuid", grocery.getUuid()).add("inventoryStatus", inventoryStatus)
-			                .add("entityStatus", entityStatus).process());
-		}
-		catch (final NoResultException exception) {
+					new ParamBuilder().add("groceryUuid", grocery.getUuid()).add("inventoryStatus", inventoryStatus)
+					.add("entityStatus", entityStatus).process());
+		} catch (final NoResultException exception) {
 			throw new BusinessException("Inventory not found");
 		}
 	}
@@ -41,7 +40,7 @@ public class InventoryDAOImpl extends GenericDAOImpl<Inventory, Long> implements
 	@Override
 	public Inventory fetchByUuid(final String inventoryUuid, final EntityStatus entityStatus) throws BusinessException {
 		return this.findSingleByNamedQuery(InventoryDAO.QUERY_NAME.fetchByUuid,
-		        new ParamBuilder().add("inventoryUuid", inventoryUuid).add("entityStatus", entityStatus).process());
+				new ParamBuilder().add("inventoryUuid", inventoryUuid).add("entityStatus", entityStatus).process());
 	}
 
 }

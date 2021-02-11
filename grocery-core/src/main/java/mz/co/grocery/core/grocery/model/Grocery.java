@@ -5,11 +5,14 @@ package mz.co.grocery.core.grocery.model;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
+import javax.validation.constraints.NotNull;
 
 import mz.co.grocery.core.grocery.dao.GroceryDAO;
 import mz.co.msaude.boot.frameworks.model.GenericEntity;
@@ -19,7 +22,7 @@ import mz.co.msaude.boot.frameworks.model.GenericEntity;
  *
  */
 @NamedQueries({ @NamedQuery(name = GroceryDAO.QUERY_NAME.findAllIds, query = GroceryDAO.QUERY.findAllIds),
-        @NamedQuery(name = GroceryDAO.QUERY_NAME.findAll, query = GroceryDAO.QUERY.findAll) })
+	@NamedQuery(name = GroceryDAO.QUERY_NAME.findAll, query = GroceryDAO.QUERY.findAll) })
 @Entity
 @Table(name = "GROCERIES")
 public class Grocery extends GenericEntity {
@@ -44,6 +47,11 @@ public class Grocery extends GenericEntity {
 	@Email
 	@Column(name = "EMAIL", length = 50)
 	private String email;
+
+	@NotNull
+	@Enumerated(EnumType.STRING)
+	@Column(name = "UNIT_TYPE", nullable = false, length = 30)
+	private UnitType unitType;
 
 	public String getName() {
 		return this.name;
@@ -83,5 +91,13 @@ public class Grocery extends GenericEntity {
 
 	public void setEmail(final String email) {
 		this.email = email;
+	}
+
+	public UnitType getUnitType() {
+		return this.unitType;
+	}
+
+	public void setUnitType(final UnitType unitType) {
+		this.unitType = unitType;
 	}
 }

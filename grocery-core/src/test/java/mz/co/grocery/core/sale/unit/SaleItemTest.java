@@ -25,7 +25,7 @@ public class SaleItemTest extends AbstractUnitServiceTest {
 
 	@Before
 	public void before() {
-		this.saleItem = EntityFactory.gimme(SaleItem.class, SaleItemTemplate.VALID);
+		this.saleItem = EntityFactory.gimme(SaleItem.class, SaleItemTemplate.PRODUCT);
 	}
 
 	@Test

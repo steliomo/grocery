@@ -20,6 +20,9 @@ import mz.co.grocery.core.grocery.service.GroceryService;
 import mz.co.grocery.core.product.service.ProductDescriptionService;
 import mz.co.grocery.core.product.service.ProductService;
 import mz.co.grocery.core.product.service.ProductUnitService;
+import mz.co.grocery.core.product.service.ServiceDescriptionService;
+import mz.co.grocery.core.product.service.ServiceItemService;
+import mz.co.grocery.core.product.service.ServiceService;
 import mz.co.grocery.core.sale.model.Sale;
 import mz.co.grocery.core.sale.model.SaleItem;
 import mz.co.grocery.core.sale.model.SaleReport;
@@ -56,6 +59,15 @@ public class SaleQueryServiceTest extends AbstractIntegServiceTest {
 	@Inject
 	private GroceryService groceryService;
 
+	@Inject
+	private ServiceService serviceService;
+
+	@Inject
+	private ServiceDescriptionService serviceDescriptionService;
+
+	@Inject
+	private ServiceItemService serviceItemService;
+
 	private Grocery grocery;
 
 	@Before
@@ -63,10 +75,10 @@ public class SaleQueryServiceTest extends AbstractIntegServiceTest {
 		final Sale sale = new Sale();
 		sale.setSaleDate(LocalDate.now());
 
-		final List<SaleItem> saleItems = EntityFactory.gimme(SaleItem.class, 10, SaleItemTemplate.VALID);
-		final List<SaleItem> saleItemsValues = EntityFactory.gimme(SaleItem.class, 10, SaleItemTemplate.SALE_VALUE);
+		final List<SaleItem> products = EntityFactory.gimme(SaleItem.class, 10, SaleItemTemplate.PRODUCT);
+		final List<SaleItem> services = EntityFactory.gimme(SaleItem.class, 10, SaleItemTemplate.SERVICE);
 
-		saleItems.forEach(saleItem -> {
+		products.forEach(saleItem -> {
 
 			try {
 				this.productService.createProduct(this.getUserContext(),
@@ -84,22 +96,19 @@ public class SaleQueryServiceTest extends AbstractIntegServiceTest {
 			sale.addItem(saleItem);
 		});
 
-		saleItemsValues.forEach(saleItem -> {
+		services.forEach(service -> {
 
 			try {
-				this.productService.createProduct(this.getUserContext(),
-						saleItem.getStock().getProductDescription().getProduct());
-				this.productSizeService.createProductUnit(this.getUserContext(),
-						saleItem.getStock().getProductDescription().getProductUnit());
-				this.productDescriptionService.createProductDescription(this.getUserContext(),
-						saleItem.getStock().getProductDescription());
-				this.groceryService.createGrocery(this.getUserContext(), saleItem.getStock().getGrocery());
-				this.stockService.createStock(this.getUserContext(), saleItem.getStock());
+				this.serviceService.createService(this.getUserContext(), service.getServiceItem().getServiceDescription().getService());
+				this.serviceDescriptionService.createServiceDescription(this.getUserContext(), service.getServiceItem().getServiceDescription());
+				this.groceryService.createGrocery(this.getUserContext(), service.getServiceItem().getUnit());
+				this.serviceItemService.createServiceItem(this.getUserContext(), service.getServiceItem());
+
 			} catch (final BusinessException e) {
 				e.printStackTrace();
 			}
 
-			sale.addItem(saleItem);
+			sale.addItem(service);
 		});
 
 		this.grocery = this.groceryService.createGrocery(this.getUserContext(),
