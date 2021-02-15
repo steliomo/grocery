@@ -45,4 +45,13 @@ public class ServiceDescriptionTest extends AbstractIntegServiceTest {
 
 		TestUtil.assertCreation(this.serviceDescription);
 	}
+
+	@Test
+	public void updateServiceDescription() throws BusinessException {
+
+		this.serviceDescriptionService.createServiceDescription(this.getUserContext(), this.serviceDescription);
+		this.serviceDescriptionService.updateServiceDescription(this.getUserContext(), this.serviceDescription);
+
+		TestUtil.assertUpdate(this.serviceDescription);
+	}
 }

@@ -80,4 +80,13 @@ public class ServiceResource extends AbstractResource {
 		this.serviceService.updateService(this.getContext(), serviceDTO.get());
 		return Response.ok(serviceDTO).build();
 	}
+
+	@GET
+	@Path("by-name/{serviceName}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response findProductByName(@PathParam("serviceName") final String serviceName) throws BusinessException {
+		final List<mz.co.grocery.core.product.model.Service> services = this.serviceQueryService.findServicesByName(serviceName);
+		return Response.ok(new ServicesDTO(services, 0L)).build();
+	}
 }

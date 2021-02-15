@@ -1,7 +1,7 @@
 /**
  *
  */
-package mz.co.grocery.core.product.integ;
+package mz.co.grocery.core.stock.integ;
 
 import javax.inject.Inject;
 
@@ -11,10 +11,10 @@ import org.junit.Test;
 import mz.co.grocery.core.config.AbstractIntegServiceTest;
 import mz.co.grocery.core.fixturefactory.ServiceItemTemplate;
 import mz.co.grocery.core.grocery.service.GroceryService;
-import mz.co.grocery.core.product.model.ServiceItem;
 import mz.co.grocery.core.product.service.ServiceDescriptionService;
-import mz.co.grocery.core.product.service.ServiceItemService;
 import mz.co.grocery.core.product.service.ServiceService;
+import mz.co.grocery.core.stock.model.ServiceItem;
+import mz.co.grocery.core.stock.service.ServiceItemService;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.fixturefactory.EntityFactory;
 import mz.co.msaude.boot.frameworks.util.TestUtil;
@@ -54,5 +54,14 @@ public class ServiceItemServiceTest extends AbstractIntegServiceTest {
 		this.serviceItemService.createServiceItem(this.getUserContext(), this.serviceItem);
 
 		TestUtil.assertCreation(this.serviceItem);
+	}
+
+	@Test
+	public void updateServiceItem() throws BusinessException {
+
+		this.serviceItemService.createServiceItem(this.getUserContext(), this.serviceItem);
+		this.serviceItemService.updateServiceItem(this.getUserContext(), this.serviceItem);
+
+		TestUtil.assertUpdate(this.serviceItem);
 	}
 }

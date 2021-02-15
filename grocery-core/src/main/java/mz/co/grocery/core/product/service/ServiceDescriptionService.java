@@ -16,4 +16,6 @@ public interface ServiceDescriptionService {
 	ServiceDescription createServiceDescription(UserContext userContext, ServiceDescription serviceDescription)
 			throws BusinessException;
 
+	ServiceDescription updateServiceDescription(UserContext userContext, ServiceDescription serviceDescription) throws BusinessException;
+
 }

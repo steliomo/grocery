@@ -19,4 +19,6 @@ public interface ServiceQueryService {
 	Long countServices() throws BusinessException;
 
 	Service findServiceByUuid(String serviceUuid) throws BusinessException;
+
+	List<Service> findServicesByName(String serviceName) throws BusinessException;
 }

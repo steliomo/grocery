@@ -54,4 +54,11 @@ public class ServiceQueryServiceTest extends AbstractIntegServiceTest {
 		Assert.assertFalse(services.isEmpty());
 		Assert.assertEquals(services.size(), maxResult);
 	}
+
+	@Test
+	public void shouldFindServiceByName() throws BusinessException {
+
+		final List<Service> services = this.serviceQueryService.findServicesByName("Corte de");
+		Assert.assertFalse(services.isEmpty());
+	}
 }

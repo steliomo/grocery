@@ -55,4 +55,8 @@ public class ServiceDescriptionDTO extends GenericDTO<ServiceDescription> {
 	public String getDescription() {
 		return this.description;
 	}
+
+	public String getName() {
+		return this.serviceDTO.getName() + " " + this.description;
+	}
 }

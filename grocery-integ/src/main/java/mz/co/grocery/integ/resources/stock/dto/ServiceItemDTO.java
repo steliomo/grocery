@@ -1,15 +1,16 @@
 /**
  *
  */
-package mz.co.grocery.integ.resources.product.dto;
+package mz.co.grocery.integ.resources.stock.dto;
 
 import java.math.BigDecimal;
 
 import mz.co.grocery.core.grocery.model.Grocery;
 import mz.co.grocery.core.product.model.ServiceDescription;
-import mz.co.grocery.core.product.model.ServiceItem;
+import mz.co.grocery.core.stock.model.ServiceItem;
 import mz.co.grocery.integ.resources.dto.GenericDTO;
 import mz.co.grocery.integ.resources.grocery.dto.GroceryDTO;
+import mz.co.grocery.integ.resources.product.dto.ServiceDescriptionDTO;
 import mz.co.grocery.integ.resources.util.ProxyUtil;
 
 /**
@@ -70,5 +71,9 @@ public class ServiceItemDTO extends GenericDTO<ServiceItem> {
 
 	public BigDecimal getSalePrice() {
 		return this.salePrice;
+	}
+
+	public String getName() {
+		return this.serviceDescriptionDTO.getName();
 	}
 }

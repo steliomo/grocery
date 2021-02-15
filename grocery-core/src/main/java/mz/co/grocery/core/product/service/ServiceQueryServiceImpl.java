@@ -40,4 +40,9 @@ public class ServiceQueryServiceImpl implements ServiceQueryService {
 	public mz.co.grocery.core.product.model.Service findServiceByUuid(final String serviceUuid) throws BusinessException {
 		return this.serviceDAO.findByUuid(serviceUuid);
 	}
+
+	@Override
+	public List<mz.co.grocery.core.product.model.Service> findServicesByName(final String serviceName) throws BusinessException {
+		return this.serviceDAO.findByName(serviceName, EntityStatus.ACTIVE);
+	}
 }

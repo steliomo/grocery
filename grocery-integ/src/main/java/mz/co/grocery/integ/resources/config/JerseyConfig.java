@@ -15,9 +15,9 @@ import mz.co.grocery.integ.resources.product.ProductDescriptionResource;
 import mz.co.grocery.integ.resources.product.ProductResource;
 import mz.co.grocery.integ.resources.product.ProductUnitResource;
 import mz.co.grocery.integ.resources.product.ServiceDescriptionResource;
-import mz.co.grocery.integ.resources.product.ServiceItemResource;
 import mz.co.grocery.integ.resources.product.ServiceResource;
 import mz.co.grocery.integ.resources.sale.SaleResource;
+import mz.co.grocery.integ.resources.stock.ServiceItemResource;
 import mz.co.grocery.integ.resources.stock.StockResource;
 import mz.co.grocery.integ.resources.user.UserResource;
 

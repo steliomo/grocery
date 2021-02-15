@@ -8,15 +8,20 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import mz.co.grocery.core.product.dao.ServiceDescriptionDAO;
 import mz.co.msaude.boot.frameworks.model.GenericEntity;
 
 /**
  * @author Stélio Moiane
  *
  */
+@NamedQueries({ @NamedQuery(name = ServiceDescriptionDAO.QUERY_NAME.findAll, query = ServiceDescriptionDAO.QUERY.findAll),
+	@NamedQuery(name = ServiceDescriptionDAO.QUERY_NAME.fetchByUuid, query = ServiceDescriptionDAO.QUERY.fetchByUuid) })
 @Entity
 @Table(name = "SERVICE_DESCRIPTIONS")
 public class ServiceDescription extends GenericEntity {

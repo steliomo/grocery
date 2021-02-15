@@ -30,4 +30,10 @@ public class ServiceDescriptionServiceImpl extends AbstractService implements Se
 			throws BusinessException {
 		return this.serviceDescriptionDAO.create(userContext, serviceDescription);
 	}
+
+	@Override
+	public ServiceDescription updateServiceDescription(final UserContext userContext, final ServiceDescription serviceDescription)
+			throws BusinessException {
+		return this.serviceDescriptionDAO.update(userContext, serviceDescription);
+	}
 }

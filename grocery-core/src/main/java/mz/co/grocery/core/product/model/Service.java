@@ -17,7 +17,8 @@ import mz.co.msaude.boot.frameworks.model.GenericEntity;
  * @author Stélio Moiane
  *
  */
-@NamedQueries({ @NamedQuery(name = ServiceDAO.QUERY_NAME.findAll, query = ServiceDAO.QUERY.findAll) })
+@NamedQueries({ @NamedQuery(name = ServiceDAO.QUERY_NAME.findAll, query = ServiceDAO.QUERY.findAll),
+	@NamedQuery(name = ServiceDAO.QUERY_NAME.findByName, query = ServiceDAO.QUERY.findByName) })
 @Entity
 @Table(name = "SERVICES")
 public class Service extends GenericEntity {

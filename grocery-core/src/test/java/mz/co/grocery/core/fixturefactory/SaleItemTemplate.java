@@ -8,8 +8,8 @@ import java.math.BigDecimal;
 import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.Rule;
 import br.com.six2six.fixturefactory.loader.TemplateLoader;
-import mz.co.grocery.core.product.model.ServiceItem;
 import mz.co.grocery.core.sale.model.SaleItem;
+import mz.co.grocery.core.stock.model.ServiceItem;
 import mz.co.grocery.core.stock.model.Stock;
 
 /**
