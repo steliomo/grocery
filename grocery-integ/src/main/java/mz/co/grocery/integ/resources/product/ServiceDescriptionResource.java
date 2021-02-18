@@ -84,4 +84,18 @@ public class ServiceDescriptionResource extends AbstractResource {
 
 		return Response.ok(serviceDescriptionDTO).build();
 	}
+
+	@GET
+	@Path("by-name")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response findAllServiceDescriptions(@QueryParam("serviceDescriptionName") final String serviceDescriptionName)
+			throws BusinessException {
+
+		final List<ServiceDescription> serviceDescriptions = this.serviceDescriptionQueryService
+				.fetchServiceDescriptionByName(serviceDescriptionName);
+		final Long totalServiceDescriptions = this.serviceDescriptionQueryService.countServiceDescriptions();
+
+		return Response.ok(new ServiceDescriptionsDTO(serviceDescriptions, totalServiceDescriptions)).build();
+	}
 }

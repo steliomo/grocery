@@ -21,7 +21,8 @@ import mz.co.msaude.boot.frameworks.model.GenericEntity;
  *
  */
 @NamedQueries({ @NamedQuery(name = ServiceDescriptionDAO.QUERY_NAME.findAll, query = ServiceDescriptionDAO.QUERY.findAll),
-	@NamedQuery(name = ServiceDescriptionDAO.QUERY_NAME.fetchByUuid, query = ServiceDescriptionDAO.QUERY.fetchByUuid) })
+	@NamedQuery(name = ServiceDescriptionDAO.QUERY_NAME.fetchByUuid, query = ServiceDescriptionDAO.QUERY.fetchByUuid),
+	@NamedQuery(name = ServiceDescriptionDAO.QUERY_NAME.fetchByName, query = ServiceDescriptionDAO.QUERY.fetchByName) })
 @Entity
 @Table(name = "SERVICE_DESCRIPTIONS")
 public class ServiceDescription extends GenericEntity {
@@ -50,5 +51,9 @@ public class ServiceDescription extends GenericEntity {
 
 	public void setDescription(final String description) {
 		this.description = description;
+	}
+
+	public String getName() {
+		return this.service.getName() + " " + this.description;
 	}
 }

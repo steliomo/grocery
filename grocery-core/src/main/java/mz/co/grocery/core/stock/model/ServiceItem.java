@@ -27,7 +27,8 @@ import mz.co.msaude.boot.frameworks.model.GenericEntity;
 
 @NamedQueries({ @NamedQuery(name = ServiceItemDAO.QUERY_NAME.findAllIds, query = ServiceItemDAO.QUERY.findAllIds),
 	@NamedQuery(name = ServiceItemDAO.QUERY_NAME.fetchAll, query = ServiceItemDAO.QUERY.fetchAll),
-	@NamedQuery(name = ServiceItemDAO.QUERY_NAME.fetchByUuid, query = ServiceItemDAO.QUERY.fetchByUuid) })
+	@NamedQuery(name = ServiceItemDAO.QUERY_NAME.fetchByUuid, query = ServiceItemDAO.QUERY.fetchByUuid),
+	@NamedQuery(name = ServiceItemDAO.QUERY_NAME.fetchByName, query = ServiceItemDAO.QUERY.fetchByName) })
 @Entity
 @Table(name = "SERVICE_ITEMS")
 public class ServiceItem extends GenericEntity {

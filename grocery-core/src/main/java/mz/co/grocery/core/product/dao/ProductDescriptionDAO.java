@@ -21,7 +21,7 @@ public interface ProductDescriptionDAO extends GenericDAO<ProductDescription, Lo
 
 		public static final String count = "SELECT COUNT(pd.id) FROM ProductDescription pd WHERE pd.entityStatus = :entityStatus";
 
-		public static final String fetchByDescription = "SELECT pd FROM ProductDescription pd INNER JOIN FETCH pd.product INNER JOIN FETCH pd.productUnit WHERE pd.description LIKE :description AND pd.entityStatus = :entityStatus GROUP BY pd.id ORDER BY pd.product.name";
+		public static final String fetchByDescription = "SELECT pd FROM ProductDescription pd INNER JOIN FETCH pd.product p INNER JOIN FETCH pd.productUnit WHERE CONCAT(p.name, ' ', pd.description) LIKE :description AND pd.entityStatus = :entityStatus GROUP BY pd.id ORDER BY pd.product.name";
 
 		public static final String fetchByUuid = "SELECT pd FROM ProductDescription pd INNER JOIN FETCH pd.product INNER JOIN FETCH pd.productUnit WHERE pd.uuid = :productDescriptionUuid AND pd.entityStatus = :entityStatus";
 	}
@@ -37,8 +37,9 @@ public interface ProductDescriptionDAO extends GenericDAO<ProductDescription, Lo
 	}
 
 	List<ProductDescription> fetchdAll(int currentPage, int maxResult, EntityStatus entityStatus)
-	        throws BusinessException;
+			throws BusinessException;
 
+	@Override
 	Long count(EntityStatus entityStatus) throws BusinessException;
 
 	List<ProductDescription> fetchByDescription(String description, EntityStatus entityStatus) throws BusinessException;

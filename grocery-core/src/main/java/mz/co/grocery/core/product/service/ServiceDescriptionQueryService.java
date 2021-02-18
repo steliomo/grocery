@@ -20,4 +20,6 @@ public interface ServiceDescriptionQueryService {
 
 	ServiceDescription fetchServiceDescriptionByUuid(String serviceDescriptionUuid) throws BusinessException;
 
+	List<ServiceDescription> fetchServiceDescriptionByName(String serviceDescriptionName) throws BusinessException;
+
 }

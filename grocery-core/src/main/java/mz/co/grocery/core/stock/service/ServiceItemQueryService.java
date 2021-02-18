@@ -20,4 +20,6 @@ public interface ServiceItemQueryService {
 
 	ServiceItem fetchServiceItemByUuid(String serviceItemUuid) throws BusinessException;
 
+	List<ServiceItem> fetchServiceItemByName(String serviceItemName) throws BusinessException;
+
 }

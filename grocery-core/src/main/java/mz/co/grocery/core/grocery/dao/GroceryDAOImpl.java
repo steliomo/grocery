@@ -25,19 +25,25 @@ public class GroceryDAOImpl extends GenericDAOImpl<Grocery, Long> implements Gro
 
 	@Override
 	public List<Grocery> findAll(final int currentPage, final int maxReult, final EntityStatus entityStatus)
-	        throws BusinessException {
+			throws BusinessException {
 
 		final List<Long> groceryIds = this
-		        .findByQuery(GroceryDAO.QUERY_NAME.findAllIds,
-		                new ParamBuilder().add("entityStatus", entityStatus).process(), Long.class)
-		        .setFirstResult(currentPage * maxReult).setMaxResults(maxReult).getResultList();
+				.findByQuery(GroceryDAO.QUERY_NAME.findAllIds,
+						new ParamBuilder().add("entityStatus", entityStatus).process(), Long.class)
+				.setFirstResult(currentPage * maxReult).setMaxResults(maxReult).getResultList();
 
 		if (groceryIds.isEmpty()) {
 			return new ArrayList<>();
 		}
 
 		return this.findByNamedQuery(GroceryDAO.QUERY_NAME.findAll,
-		        new ParamBuilder().add("groceryIds", groceryIds).process());
+				new ParamBuilder().add("groceryIds", groceryIds).process());
+	}
+
+	@Override
+	public List<Grocery> findByName(final String unitName, final EntityStatus entityStatus) throws BusinessException {
+		return this.findByNamedQuery(GroceryDAO.QUERY_NAME.findByName,
+				new ParamBuilder().add("unitName", "%" + unitName + "%").add("entityStatus", entityStatus).process());
 	}
 
 }

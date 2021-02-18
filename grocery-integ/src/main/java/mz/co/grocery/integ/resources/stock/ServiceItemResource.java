@@ -81,4 +81,17 @@ public class ServiceItemResource extends AbstractResource {
 
 		return Response.ok(new ServiceItemDTO(serviceItem)).build();
 	}
+
+	@GET
+	@Path("by-name")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response fetchServiceItemsByName(@QueryParam("serviceItemName") final String serviceItemName)
+			throws BusinessException {
+
+		final List<ServiceItem> serviceItems = this.serviceItemQueryService.fetchServiceItemByName(serviceItemName);
+		final Long totalItems = this.serviceItemQueryService.countServiceItems();
+
+		return Response.ok(new ServiceItemsDTO(serviceItems, totalItems)).build();
+	}
 }

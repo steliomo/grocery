@@ -37,6 +37,8 @@ public class ServiceDescriptionQueryServiceTest extends AbstractIntegServiceTest
 
 	private String serviceDescriptionUuid;
 
+	private String serviceDescriptionName;
+
 	@Before
 	public void setup() {
 		EntityFactory.gimme(ServiceDescription.class, 10, ServiceDescriptionTemplate.VALID, result -> {
@@ -48,6 +50,7 @@ public class ServiceDescriptionQueryServiceTest extends AbstractIntegServiceTest
 					this.serviceService.createService(this.getUserContext(), serviceDescription.getService());
 					this.serviceDescriptionService.createServiceDescription(this.getUserContext(), serviceDescription);
 					this.serviceDescriptionUuid = serviceDescription.getUuid();
+					this.serviceDescriptionName = serviceDescription.getName();
 				} catch (final BusinessException e) {
 					e.printStackTrace();
 				}
@@ -73,5 +76,20 @@ public class ServiceDescriptionQueryServiceTest extends AbstractIntegServiceTest
 
 		Assert.assertNotNull(serviceDescription.getService());
 		Assert.assertEquals(this.serviceDescriptionUuid, serviceDescription.getUuid());
+	}
+
+	@Test
+	public void shouldFetchServiceDescriptionByName() throws BusinessException {
+
+		final List<ServiceDescription> serviceDescriptions = this.serviceDescriptionQueryService
+				.fetchServiceDescriptionByName(this.serviceDescriptionName);
+
+		Assert.assertFalse(serviceDescriptions.isEmpty());
+
+		serviceDescriptions.forEach(serviceDescription -> {
+			Assert.assertTrue(serviceDescription.getName().contains(this.serviceDescriptionName));
+			Assert.assertNotNull(serviceDescription.getService());
+		});
+
 	}
 }

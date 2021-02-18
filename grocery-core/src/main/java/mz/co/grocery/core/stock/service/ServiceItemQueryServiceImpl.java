@@ -40,4 +40,9 @@ public class ServiceItemQueryServiceImpl implements ServiceItemQueryService {
 	public ServiceItem fetchServiceItemByUuid(final String serviceItemUuid) throws BusinessException {
 		return this.serviceItemDAO.fetchByUuid(serviceItemUuid);
 	}
+
+	@Override
+	public List<ServiceItem> fetchServiceItemByName(final String serviceItemName) throws BusinessException {
+		return this.serviceItemDAO.fetchByName(serviceItemName, EntityStatus.ACTIVE);
+	}
 }

@@ -35,4 +35,10 @@ implements ServiceDescriptionDAO {
 		return this.findSingleByNamedQuery(ServiceDescriptionDAO.QUERY_NAME.fetchByUuid,
 				new ParamBuilder().add("serviceDescriptionUuid", serviceDescriptionUuid).process());
 	}
+
+	@Override
+	public List<ServiceDescription> fetchByName(final String serviceDescriptionName, final EntityStatus entityStatus) throws BusinessException {
+		return this.findByNamedQuery(ServiceDescriptionDAO.QUERY_NAME.fetchByName,
+				new ParamBuilder().add("serviceDescriptionName", "%" + serviceDescriptionName + "%").add("entityStatus", entityStatus).process());
+	}
 }

@@ -19,13 +19,16 @@ public interface GroceryDAO extends GenericDAO<Grocery, Long> {
 	class QUERY {
 		public static final String findAllIds = "SELECT g.id FROM Grocery g WHERE g.entityStatus = :entityStatus";
 		public static final String findAll = "SELECT g FROM Grocery g WHERE g.id IN (:groceryIds)";
+		public static final String findByName = "SELECT g FROM Grocery g WHERE g.name LIKE :unitName AND g.entityStatus = :entityStatus";
 	}
 
 	class QUERY_NAME {
 		public static final String findAllIds = "Grocery.findAllIds";
 		public static final String findAll = "Grocery.findAll";
+		public static final String findByName = "Grocery.findByName";
 	}
 
 	List<Grocery> findAll(int currentPage, int maxResul, EntityStatus entityStatus) throws BusinessException;
 
+	List<Grocery> findByName(String unitName, EntityStatus entityStatus) throws BusinessException;
 }

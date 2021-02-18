@@ -45,6 +45,8 @@ public class ServiceItemQueryServiceTest extends AbstractIntegServiceTest {
 
 	private String serviceItemUuid;
 
+	private String serviceItemName;
+
 	@Before
 	public void setup() throws BusinessException {
 		EntityFactory.gimme(ServiceItem.class, 10, ServiceItemTemplate.VALID, result -> {
@@ -57,6 +59,7 @@ public class ServiceItemQueryServiceTest extends AbstractIntegServiceTest {
 					this.serviceDescriptionService.createServiceDescription(this.getUserContext(), serviceItem.getServiceDescription());
 					this.serviceItemService.createServiceItem(this.getUserContext(), serviceItem);
 					this.serviceItemUuid = serviceItem.getUuid();
+					this.serviceItemName = serviceItem.getServiceDescription().getName();
 				} catch (final BusinessException e) {
 					e.printStackTrace();
 				}
@@ -84,7 +87,7 @@ public class ServiceItemQueryServiceTest extends AbstractIntegServiceTest {
 	}
 
 	@Test
-	public void shoulServiceItemByUuid() throws BusinessException {
+	public void shoulFetchServiceItemByUuid() throws BusinessException {
 
 		final ServiceItem serviceItem = this.serviceItemQueryService.fetchServiceItemByUuid(this.serviceItemUuid);
 
@@ -93,5 +96,21 @@ public class ServiceItemQueryServiceTest extends AbstractIntegServiceTest {
 		Assert.assertNotNull(serviceItem.getServiceDescription());
 		Assert.assertNotNull(serviceItem.getServiceDescription().getService());
 		Assert.assertNotNull(serviceItem.getUnit());
+	}
+
+	@Test
+	public void shoulFetchServiceItemByName() throws BusinessException {
+
+		final List<ServiceItem> serviceItems = this.serviceItemQueryService.fetchServiceItemByName(this.serviceItemName);
+
+		Assert.assertFalse(serviceItems.isEmpty());
+
+		serviceItems.forEach(serviceItem -> {
+			Assert.assertTrue(serviceItem.getServiceDescription().getName().contains(this.serviceItemName));
+			Assert.assertNotNull(serviceItem.getServiceDescription());
+			Assert.assertNotNull(serviceItem.getServiceDescription().getService());
+			Assert.assertNotNull(serviceItem.getUnit());
+
+		});
 	}
 }

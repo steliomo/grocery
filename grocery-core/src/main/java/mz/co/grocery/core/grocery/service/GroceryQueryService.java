@@ -20,4 +20,6 @@ public interface GroceryQueryService {
 
 	Grocery findByUuid(String groceryUuid) throws BusinessException;
 
+	List<Grocery> findUnitsByName(String unitName) throws BusinessException;
+
 }

@@ -40,4 +40,9 @@ public class ServiceDescriptionQueryServiceImpl implements ServiceDescriptionQue
 	public ServiceDescription fetchServiceDescriptionByUuid(final String serviceDescriptionUuid) throws BusinessException {
 		return this.serviceDescriptionDAO.fetchByUuid(serviceDescriptionUuid);
 	}
+
+	@Override
+	public List<ServiceDescription> fetchServiceDescriptionByName(final String serviceDescriptionName) throws BusinessException {
+		return this.serviceDescriptionDAO.fetchByName(serviceDescriptionName, EntityStatus.ACTIVE);
+	}
 }

@@ -18,7 +18,7 @@ public interface ServiceDAO extends GenericDAO<Service, Long> {
 
 	class QUERY {
 		public static final String findAll = "SELECT s FROM Service s WHERE s.entityStatus = :entityStatus ORDER BY s.name";
-		public static final String findByName = "SELECT s FROM Service s WHERE s.entityStatus = :entityStatus AND s.name LIKE CONCAT('%', :serviceName, '%') ORDER BY s.name";
+		public static final String findByName = "SELECT s FROM Service s WHERE s.entityStatus = :entityStatus AND s.name LIKE :serviceName ORDER BY s.name";
 	}
 
 	class QUERY_NAME {

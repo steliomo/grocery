@@ -41,4 +41,9 @@ public class GroceryQueryServiceImpl implements GroceryQueryService {
 		return this.groceryDAO.findByUuid(groceryUuid);
 	}
 
+	@Override
+	public List<Grocery> findUnitsByName(final String unitName) throws BusinessException {
+		return this.groceryDAO.findByName(unitName, EntityStatus.ACTIVE);
+	}
+
 }

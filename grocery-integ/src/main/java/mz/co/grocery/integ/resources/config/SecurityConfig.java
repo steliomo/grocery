@@ -5,8 +5,10 @@ package mz.co.grocery.integ.resources.config;
 
 import javax.inject.Inject;
 
+import org.springframework.context.MessageSource;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.context.support.ReloadableResourceBundleMessageSource;
 import org.springframework.security.authentication.dao.DaoAuthenticationProvider;
 import org.springframework.security.config.annotation.authentication.builders.AuthenticationManagerBuilder;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
@@ -62,5 +64,13 @@ public class SecurityConfig extends WebSecurityConfigurerAdapter {
 		final FreeMarkerConfigurationFactoryBean freeMarkerConfigurationFactoryBean = new FreeMarkerConfigurationFactoryBean();
 		freeMarkerConfigurationFactoryBean.setTemplateLoaderPath("classpath:/templates/");
 		return freeMarkerConfigurationFactoryBean;
+	}
+
+	@Bean
+	public MessageSource messageSource() {
+		final ReloadableResourceBundleMessageSource messageSource = new ReloadableResourceBundleMessageSource();
+		messageSource.setBasename("classpath:messages");
+		messageSource.setDefaultEncoding("UTF-8");
+		return messageSource;
 	}
 }

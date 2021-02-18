@@ -42,7 +42,13 @@ public class ServiceItemDAOImpl extends GenericDAOImpl<ServiceItem, Long> implem
 
 	@Override
 	public ServiceItem fetchByUuid(final String serviceItemUuid) throws BusinessException {
-		return this.findSingleByNamedQuery(ServiceItemDAO.QUERY_NAME.fetchByUuid, new ParamBuilder().add("serviceItemUuid", serviceItemUuid).process());
+		return this.findSingleByNamedQuery(ServiceItemDAO.QUERY_NAME.fetchByUuid,
+				new ParamBuilder().add("serviceItemUuid", serviceItemUuid).process());
 	}
 
+	@Override
+	public List<ServiceItem> fetchByName(final String serviceItemName, final EntityStatus entityStatus) throws BusinessException {
+		return this.findByNamedQuery(ServiceItemDAO.QUERY_NAME.fetchByName,
+				new ParamBuilder().add("serviceItemName", "%" + serviceItemName + "%").add("entityStatus", entityStatus).process());
+	}
 }

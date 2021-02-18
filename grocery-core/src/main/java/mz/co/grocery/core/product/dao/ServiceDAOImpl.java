@@ -32,7 +32,7 @@ public class ServiceDAOImpl extends GenericDAOImpl<Service, Long> implements Ser
 	@Override
 	public List<Service> findByName(final String serviceName, final EntityStatus entityStatus) throws BusinessException {
 		return this.findByNamedQuery(ServiceDAO.QUERY_NAME.findByName,
-				new ParamBuilder().add("serviceName", serviceName).add("entityStatus", entityStatus).process());
+				new ParamBuilder().add("serviceName", "%" + serviceName + "%").add("entityStatus", entityStatus).process());
 	}
 
 }
