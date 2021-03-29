@@ -76,4 +76,8 @@ public class ServiceItemDTO extends GenericDTO<ServiceItem> {
 	public String getName() {
 		return this.serviceDescriptionDTO.getName();
 	}
+
+	public void setUnitDTO(final GroceryDTO unitDTO) {
+		this.unitDTO = unitDTO;
+	}
 }

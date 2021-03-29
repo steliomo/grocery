@@ -22,6 +22,10 @@ public class ServiceDTO extends GenericDTO<Service> {
 		this.mapper(service);
 	}
 
+	public ServiceDTO(final String serviceUuid) {
+		this.setUuid(serviceUuid);
+	}
+
 	@Override
 	public void mapper(final Service service) {
 		this.name = service.getName();

@@ -9,6 +9,7 @@ import javax.inject.Inject;
 
 import org.springframework.stereotype.Service;
 
+import mz.co.grocery.core.grocery.model.Grocery;
 import mz.co.grocery.core.stock.dao.ServiceItemDAO;
 import mz.co.grocery.core.stock.model.ServiceItem;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
@@ -44,5 +45,17 @@ public class ServiceItemQueryServiceImpl implements ServiceItemQueryService {
 	@Override
 	public List<ServiceItem> fetchServiceItemByName(final String serviceItemName) throws BusinessException {
 		return this.serviceItemDAO.fetchByName(serviceItemName, EntityStatus.ACTIVE);
+	}
+
+	@Override
+	public List<ServiceItem> fetchServiceItemsByServiceAndUnit(final mz.co.grocery.core.product.model.Service service, final Grocery unit)
+			throws BusinessException {
+		return this.serviceItemDAO.fetchByServiceAndUnit(service, unit, EntityStatus.ACTIVE);
+	}
+
+	@Override
+	public List<ServiceItem> fetchServiceItemsNotInThisUnitByService(final mz.co.grocery.core.product.model.Service service, final Grocery unit)
+			throws BusinessException {
+		return this.serviceItemDAO.fetchNotInThisUnitByService(service, unit, EntityStatus.ACTIVE);
 	}
 }

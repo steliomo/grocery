@@ -7,6 +7,7 @@ import java.util.List;
 
 import org.springframework.stereotype.Repository;
 
+import mz.co.grocery.core.grocery.model.Grocery;
 import mz.co.grocery.core.product.model.Service;
 import mz.co.msaude.boot.frameworks.dao.GenericDAOImpl;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
@@ -35,4 +36,15 @@ public class ServiceDAOImpl extends GenericDAOImpl<Service, Long> implements Ser
 				new ParamBuilder().add("serviceName", "%" + serviceName + "%").add("entityStatus", entityStatus).process());
 	}
 
+	@Override
+	public List<Service> findByUnit(final Grocery unit, final EntityStatus entityStatus) throws BusinessException {
+		return this.findByNamedQuery(ServiceDAO.QUERY_NAME.findByUnit,
+				new ParamBuilder().add("unitUuid", unit.getUuid()).add("entityStatus", entityStatus).process());
+	}
+
+	@Override
+	public List<Service> findNotInThisUnit(final Grocery unit, final EntityStatus entityStatus) throws BusinessException {
+		return this.findByNamedQuery(ServiceDAO.QUERY_NAME.findNotInThisUnit,
+				new ParamBuilder().add("unitUuid", unit.getUuid()).add("entityStatus", entityStatus).process());
+	}
 }

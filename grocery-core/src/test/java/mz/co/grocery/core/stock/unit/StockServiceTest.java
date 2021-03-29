@@ -3,15 +3,14 @@
  */
 package mz.co.grocery.core.stock.unit;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.when;
-
 import java.math.BigDecimal;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 
 import mz.co.grocery.core.config.AbstractUnitServiceTest;
 import mz.co.grocery.core.fixturefactory.StockTemplate;
@@ -46,12 +45,12 @@ public class StockServiceTest extends AbstractUnitServiceTest {
 	@Test
 	public void shouldRemoveStock() throws BusinessException {
 		this.stockService.removeStock(this.getUserContext(), this.stock);
-		assertEquals(EntityStatus.INACTIVE, this.stock.getEntityStatus());
+		Assert.assertEquals(EntityStatus.INACTIVE, this.stock.getEntityStatus());
 	}
 
 	@Test
 	public void shouldUpdateStockAndPrices() throws BusinessException {
-		when(this.stockDAO.findByUuid(this.stock.getUuid())).thenReturn(this.stock);
+		Mockito.when(this.stockDAO.findByUuid(this.stock.getUuid())).thenReturn(this.stock);
 
 		final BigDecimal purchasePrice = this.stock.getPurchasePrice();
 		final BigDecimal salePrice = this.stock.getSalePrice();
@@ -59,16 +58,9 @@ public class StockServiceTest extends AbstractUnitServiceTest {
 
 		this.stockService.updateStocksAndPrices(this.getUserContext(), this.stock);
 
-		assertEquals(purchasePrice, this.stock.getPurchasePrice());
-		assertEquals(salePrice, this.stock.getSalePrice());
-		assertEquals(quantity.multiply(new BigDecimal(2)), this.stock.getQuantity());
-	}
-
-	@Test(expected = BusinessException.class)
-	public void shouldNotUpdateStockAndPricesWithQuantityZero() throws BusinessException {
-		this.stock.setQuantity(BigDecimal.ZERO);
-
-		this.stockService.updateStocksAndPrices(this.getUserContext(), this.stock);
+		Assert.assertEquals(purchasePrice, this.stock.getPurchasePrice());
+		Assert.assertEquals(salePrice, this.stock.getSalePrice());
+		Assert.assertEquals(quantity.multiply(new BigDecimal(2)), this.stock.getQuantity());
 	}
 
 	@Test(expected = BusinessException.class)
@@ -82,10 +74,10 @@ public class StockServiceTest extends AbstractUnitServiceTest {
 	@Test
 	public void shouldSetMinimumStock() {
 
-		BigDecimal minimumStock = new BigDecimal(10);
-		stock.setMinimumStock(minimumStock);
+		final BigDecimal minimumStock = new BigDecimal(10);
+		this.stock.setMinimumStock(minimumStock);
 
-		assertEquals(minimumStock, stock.getMinimumStock());
-		assertEquals(StockStatus.GOOD, stock.getStockStatus());
+		Assert.assertEquals(minimumStock, this.stock.getMinimumStock());
+		Assert.assertEquals(StockStatus.GOOD, this.stock.getStockStatus());
 	}
 }

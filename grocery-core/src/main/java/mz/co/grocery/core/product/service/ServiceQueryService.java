@@ -5,6 +5,7 @@ package mz.co.grocery.core.product.service;
 
 import java.util.List;
 
+import mz.co.grocery.core.grocery.model.Grocery;
 import mz.co.grocery.core.product.model.Service;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 
@@ -21,4 +22,8 @@ public interface ServiceQueryService {
 	Service findServiceByUuid(String serviceUuid) throws BusinessException;
 
 	List<Service> findServicesByName(String serviceName) throws BusinessException;
+
+	List<Service> findServicesByUnit(Grocery unit) throws BusinessException;
+
+	List<Service> findServicesNotInthisUnit(Grocery unit) throws BusinessException;
 }

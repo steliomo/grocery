@@ -107,4 +107,8 @@ public class StockDTO extends GenericDTO<Stock> {
 	public BigDecimal getMinimumStock() {
 		return this.minimumStock;
 	}
+
+	public void setGroceryDTO(final GroceryDTO groceryDTO) {
+		this.groceryDTO = groceryDTO;
+	}
 }

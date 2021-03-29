@@ -22,6 +22,7 @@ import org.springframework.stereotype.Service;
 import mz.co.grocery.core.product.service.ServiceQueryService;
 import mz.co.grocery.core.product.service.ServiceService;
 import mz.co.grocery.integ.resources.AbstractResource;
+import mz.co.grocery.integ.resources.grocery.dto.GroceryDTO;
 import mz.co.grocery.integ.resources.product.dto.ServiceDTO;
 import mz.co.grocery.integ.resources.product.dto.ServicesDTO;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
@@ -68,7 +69,7 @@ public class ServiceResource extends AbstractResource {
 	@Path("{serviceUuid}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response findProductByUuid(@PathParam("serviceUuid") final String serviceUuid) throws BusinessException {
+	public Response findServiceByUuid(@PathParam("serviceUuid") final String serviceUuid) throws BusinessException {
 		final mz.co.grocery.core.product.model.Service service = this.serviceQueryService.findServiceByUuid(serviceUuid);
 		return Response.ok(new ServiceDTO(service)).build();
 	}
@@ -85,8 +86,33 @@ public class ServiceResource extends AbstractResource {
 	@Path("by-name/{serviceName}")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response findProductByName(@PathParam("serviceName") final String serviceName) throws BusinessException {
+	public Response findServiceByName(@PathParam("serviceName") final String serviceName) throws BusinessException {
 		final List<mz.co.grocery.core.product.model.Service> services = this.serviceQueryService.findServicesByName(serviceName);
 		return Response.ok(new ServicesDTO(services, 0L)).build();
+	}
+
+	@GET
+	@Path("by-unit/{unitUuid}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response findServiceByUnitUuid(@PathParam("unitUuid") final String unitUuid) throws BusinessException {
+
+		final GroceryDTO unit = new GroceryDTO(unitUuid);
+		final List<mz.co.grocery.core.product.model.Service> services = this.serviceQueryService.findServicesByUnit(unit.get());
+
+		return Response.ok(new ServicesDTO(services, 0L).getServicesDTO()).build();
+	}
+
+	@GET
+	@Path("not-in-this-unit/{unitUuid}")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response findServiceNotInThisUnit(@PathParam("unitUuid") final String unitUuid) throws BusinessException {
+
+		final GroceryDTO unit = new GroceryDTO(unitUuid);
+
+		final List<mz.co.grocery.core.product.model.Service> services = this.serviceQueryService.findServicesNotInthisUnit(unit.get());
+
+		return Response.ok(new ServicesDTO(services, 0L).getServicesDTO()).build();
 	}
 }

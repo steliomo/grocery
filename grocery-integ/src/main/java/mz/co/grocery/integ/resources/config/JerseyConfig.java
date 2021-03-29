@@ -17,6 +17,7 @@ import mz.co.grocery.integ.resources.product.ProductUnitResource;
 import mz.co.grocery.integ.resources.product.ServiceDescriptionResource;
 import mz.co.grocery.integ.resources.product.ServiceResource;
 import mz.co.grocery.integ.resources.sale.SaleResource;
+import mz.co.grocery.integ.resources.saleable.SaleableResource;
 import mz.co.grocery.integ.resources.stock.ServiceItemResource;
 import mz.co.grocery.integ.resources.stock.StockResource;
 import mz.co.grocery.integ.resources.user.UserResource;
@@ -44,6 +45,7 @@ public class JerseyConfig extends ResourceConfig {
 		this.register(ServiceResource.class);
 		this.register(ServiceDescriptionResource.class);
 		this.register(ServiceItemResource.class);
+		this.register(SaleableResource.class);
 
 		this.register(ApiExceptionMapper.class);
 		this.register(BusinessExceptionMapper.class);

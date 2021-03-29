@@ -49,10 +49,6 @@ public class StockServiceImpl extends AbstractService implements StockService {
 	@Override
 	public Stock updateStocksAndPrices(final UserContext userContext, final Stock stock) throws BusinessException {
 
-		if (BigDecimal.ZERO.doubleValue() == stock.getQuantity().doubleValue()) {
-			throw new BusinessException("The stock quantity cannot be less than 1");
-		}
-
 		if (BigDecimal.ZERO.doubleValue() == stock.getPurchasePrice().doubleValue()
 				|| BigDecimal.ZERO.doubleValue() == stock.getSalePrice().doubleValue()) {
 			throw new BusinessException("The prices cannot be 0");

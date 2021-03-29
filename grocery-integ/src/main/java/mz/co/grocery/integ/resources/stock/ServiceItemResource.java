@@ -23,6 +23,8 @@ import mz.co.grocery.core.stock.model.ServiceItem;
 import mz.co.grocery.core.stock.service.ServiceItemQueryService;
 import mz.co.grocery.core.stock.service.ServiceItemService;
 import mz.co.grocery.integ.resources.AbstractResource;
+import mz.co.grocery.integ.resources.grocery.dto.GroceryDTO;
+import mz.co.grocery.integ.resources.product.dto.ServiceDTO;
 import mz.co.grocery.integ.resources.stock.dto.ServiceItemDTO;
 import mz.co.grocery.integ.resources.stock.dto.ServiceItemsDTO;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
@@ -93,5 +95,37 @@ public class ServiceItemResource extends AbstractResource {
 		final Long totalItems = this.serviceItemQueryService.countServiceItems();
 
 		return Response.ok(new ServiceItemsDTO(serviceItems, totalItems)).build();
+	}
+
+	@GET
+	@Path("by-service-and-unit")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response fetchServiceItemsByServiceAndUnit(@QueryParam("serviceUuid") final String serviceUuid,
+			@QueryParam("unitUuid") final String unitUuid)
+					throws BusinessException {
+
+		final ServiceDTO serviceDTO = new ServiceDTO(serviceUuid);
+		final GroceryDTO unitDTO = new GroceryDTO(unitUuid);
+
+		final List<ServiceItem> serviceItems = this.serviceItemQueryService.fetchServiceItemsByServiceAndUnit(serviceDTO.get(), unitDTO.get());
+
+		return Response.ok(new ServiceItemsDTO(serviceItems, 0L).getServiceItemsDTO()).build();
+	}
+
+	@GET
+	@Path("not-in-this-unit-by-service")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response fetchServiceItemsNotInThisUnitByService(@QueryParam("serviceUuid") final String serviceUuid,
+			@QueryParam("unitUuid") final String unitUuid)
+					throws BusinessException {
+
+		final ServiceDTO serviceDTO = new ServiceDTO(serviceUuid);
+		final GroceryDTO unitDTO = new GroceryDTO(unitUuid);
+
+		final List<ServiceItem> serviceItems = this.serviceItemQueryService.fetchServiceItemsNotInThisUnitByService(serviceDTO.get(), unitDTO.get());
+
+		return Response.ok(new ServiceItemsDTO(serviceItems, 0L).getServiceItemsDTO()).build();
 	}
 }

@@ -8,6 +8,8 @@ import java.util.List;
 
 import org.springframework.stereotype.Repository;
 
+import mz.co.grocery.core.grocery.model.Grocery;
+import mz.co.grocery.core.product.model.Service;
 import mz.co.grocery.core.stock.model.ServiceItem;
 import mz.co.msaude.boot.frameworks.dao.GenericDAOImpl;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
@@ -50,5 +52,19 @@ public class ServiceItemDAOImpl extends GenericDAOImpl<ServiceItem, Long> implem
 	public List<ServiceItem> fetchByName(final String serviceItemName, final EntityStatus entityStatus) throws BusinessException {
 		return this.findByNamedQuery(ServiceItemDAO.QUERY_NAME.fetchByName,
 				new ParamBuilder().add("serviceItemName", "%" + serviceItemName + "%").add("entityStatus", entityStatus).process());
+	}
+
+	@Override
+	public List<ServiceItem> fetchByServiceAndUnit(final Service service, final Grocery unit, final EntityStatus entityStatus)
+			throws BusinessException {
+		return this.findByNamedQuery(ServiceItemDAO.QUERY_NAME.fetchByServiceAndUnit,
+				new ParamBuilder().add("serviceUuid", service.getUuid()).add("unitUuid", unit.getUuid()).add("entityStatus", entityStatus).process());
+	}
+
+	@Override
+	public List<ServiceItem> fetchNotInThisUnitByService(final Service service, final Grocery unit, final EntityStatus entityStatus)
+			throws BusinessException {
+		return this.findByNamedQuery(ServiceItemDAO.QUERY_NAME.fetchNotInThisUnitByService,
+				new ParamBuilder().add("serviceUuid", service.getUuid()).add("unitUuid", unit.getUuid()).add("entityStatus", entityStatus).process());
 	}
 }

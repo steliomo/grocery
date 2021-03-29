@@ -4,6 +4,7 @@
 package mz.co.grocery.integ.resources.grocery.dto;
 
 import mz.co.grocery.core.grocery.model.Grocery;
+import mz.co.grocery.core.grocery.model.UnitType;
 import mz.co.grocery.integ.resources.dto.GenericDTO;
 
 /**
@@ -21,6 +22,8 @@ public class GroceryDTO extends GenericDTO<Grocery> {
 	private String phoneNumberOptional;
 
 	private String email;
+
+	private UnitType unitType;
 
 	public GroceryDTO() {
 	}
@@ -41,6 +44,7 @@ public class GroceryDTO extends GenericDTO<Grocery> {
 		this.phoneNumber = grocery.getPhoneNumber();
 		this.phoneNumberOptional = grocery.getPhoneNumberOptional();
 		this.email = grocery.getEmail();
+		this.unitType = grocery.getUnitType();
 	}
 
 	@Override
@@ -51,6 +55,7 @@ public class GroceryDTO extends GenericDTO<Grocery> {
 		grocery.setPhoneNumber(this.phoneNumber);
 		grocery.setPhoneNumberOptional(this.phoneNumberOptional);
 		grocery.setEmail(this.email);
+		grocery.setUnitType(this.unitType);
 
 		return grocery;
 	}
@@ -75,4 +80,7 @@ public class GroceryDTO extends GenericDTO<Grocery> {
 		return this.email;
 	}
 
+	public UnitType getUnitType() {
+		return this.unitType;
+	}
 }
