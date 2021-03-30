@@ -9,8 +9,8 @@ import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.Rule;
 import br.com.six2six.fixturefactory.loader.TemplateLoader;
 import mz.co.grocery.core.sale.model.SaleItem;
-import mz.co.grocery.core.stock.model.ServiceItem;
-import mz.co.grocery.core.stock.model.Stock;
+import mz.co.grocery.core.saleable.model.ServiceItem;
+import mz.co.grocery.core.saleable.model.Stock;
 
 /**
  * @author Stélio Moiane

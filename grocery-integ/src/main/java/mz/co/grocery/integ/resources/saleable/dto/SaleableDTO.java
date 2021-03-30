@@ -6,9 +6,6 @@ package mz.co.grocery.integ.resources.saleable.dto;
 import java.util.ArrayList;
 import java.util.List;
 
-import mz.co.grocery.integ.resources.stock.dto.ServiceItemDTO;
-import mz.co.grocery.integ.resources.stock.dto.StockDTO;
-
 /**
  * @author Stélio Moiane
  *

@@ -14,8 +14,8 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 import javax.xml.bind.annotation.XmlTransient;
 
-import mz.co.grocery.core.stock.model.ServiceItem;
-import mz.co.grocery.core.stock.model.Stock;
+import mz.co.grocery.core.saleable.model.ServiceItem;
+import mz.co.grocery.core.saleable.model.Stock;
 import mz.co.msaude.boot.frameworks.model.GenericEntity;
 
 /**

@@ -6,8 +6,8 @@ package mz.co.grocery.core.fixturefactory;
 import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.Rule;
 import br.com.six2six.fixturefactory.loader.TemplateLoader;
-import mz.co.grocery.core.product.model.Service;
-import mz.co.grocery.core.product.model.ServiceDescription;
+import mz.co.grocery.core.item.model.Service;
+import mz.co.grocery.core.item.model.ServiceDescription;
 
 /**
  * @author Stélio Moiane

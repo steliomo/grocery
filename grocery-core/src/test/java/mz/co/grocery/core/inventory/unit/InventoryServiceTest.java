@@ -20,7 +20,7 @@ import mz.co.grocery.core.inventory.service.InventoryQueryService;
 import mz.co.grocery.core.inventory.service.InventoryService;
 import mz.co.grocery.core.inventory.service.InventoryServiceImpl;
 import mz.co.grocery.core.inventory.service.StockInventoryService;
-import mz.co.grocery.core.stock.service.StockService;
+import mz.co.grocery.core.saleable.service.StockService;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.fixturefactory.EntityFactory;
 import mz.co.msaude.boot.frameworks.model.UserContext;

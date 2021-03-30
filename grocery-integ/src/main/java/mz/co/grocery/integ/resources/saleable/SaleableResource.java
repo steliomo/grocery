@@ -14,12 +14,12 @@ import javax.ws.rs.core.Response;
 
 import org.springframework.stereotype.Service;
 
-import mz.co.grocery.core.stock.service.ServiceItemService;
-import mz.co.grocery.core.stock.service.StockService;
+import mz.co.grocery.core.saleable.service.ServiceItemService;
+import mz.co.grocery.core.saleable.service.StockService;
 import mz.co.grocery.integ.resources.AbstractResource;
 import mz.co.grocery.integ.resources.saleable.dto.SaleableDTO;
-import mz.co.grocery.integ.resources.stock.dto.ServiceItemDTO;
-import mz.co.grocery.integ.resources.stock.dto.StockDTO;
+import mz.co.grocery.integ.resources.saleable.dto.ServiceItemDTO;
+import mz.co.grocery.integ.resources.saleable.dto.StockDTO;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 
 /**

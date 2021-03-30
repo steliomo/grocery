@@ -10,7 +10,7 @@ import br.com.six2six.fixturefactory.Rule;
 import br.com.six2six.fixturefactory.loader.TemplateLoader;
 import mz.co.grocery.core.inventory.model.Inventory;
 import mz.co.grocery.core.inventory.model.StockInventory;
-import mz.co.grocery.core.stock.model.Stock;
+import mz.co.grocery.core.saleable.model.Stock;
 
 /**
  * @author Stélio Moiane

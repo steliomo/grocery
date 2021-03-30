@@ -8,9 +8,9 @@ import static mz.co.grocery.integ.resources.util.ProxyUtil.isInitialized;
 import java.math.BigDecimal;
 
 import mz.co.grocery.core.inventory.model.StockInventory;
-import mz.co.grocery.core.stock.model.Stock;
+import mz.co.grocery.core.saleable.model.Stock;
 import mz.co.grocery.integ.resources.dto.GenericDTO;
-import mz.co.grocery.integ.resources.stock.dto.StockDTO;;
+import mz.co.grocery.integ.resources.saleable.dto.StockDTO;;
 
 /**
  * @author Stélio Moiane

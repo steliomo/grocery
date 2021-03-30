@@ -11,15 +11,15 @@ import mz.co.grocery.integ.resources.expense.ExpenseTypeResource;
 import mz.co.grocery.integ.resources.grocery.GroceryResource;
 import mz.co.grocery.integ.resources.grocery.GroceryUserResource;
 import mz.co.grocery.integ.resources.inventory.InventoryResource;
-import mz.co.grocery.integ.resources.product.ProductDescriptionResource;
-import mz.co.grocery.integ.resources.product.ProductResource;
-import mz.co.grocery.integ.resources.product.ProductUnitResource;
-import mz.co.grocery.integ.resources.product.ServiceDescriptionResource;
-import mz.co.grocery.integ.resources.product.ServiceResource;
+import mz.co.grocery.integ.resources.item.ProductDescriptionResource;
+import mz.co.grocery.integ.resources.item.ProductResource;
+import mz.co.grocery.integ.resources.item.ProductUnitResource;
+import mz.co.grocery.integ.resources.item.ServiceDescriptionResource;
+import mz.co.grocery.integ.resources.item.ServiceResource;
 import mz.co.grocery.integ.resources.sale.SaleResource;
 import mz.co.grocery.integ.resources.saleable.SaleableResource;
-import mz.co.grocery.integ.resources.stock.ServiceItemResource;
-import mz.co.grocery.integ.resources.stock.StockResource;
+import mz.co.grocery.integ.resources.saleable.ServiceItemResource;
+import mz.co.grocery.integ.resources.saleable.StockResource;
 import mz.co.grocery.integ.resources.user.UserResource;
 
 /**

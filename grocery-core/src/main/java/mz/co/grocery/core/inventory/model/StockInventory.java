@@ -13,7 +13,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
-import mz.co.grocery.core.stock.model.Stock;
+import mz.co.grocery.core.saleable.model.Stock;
 import mz.co.msaude.boot.frameworks.model.GenericEntity;
 
 /**

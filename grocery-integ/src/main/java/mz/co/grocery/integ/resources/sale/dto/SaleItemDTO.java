@@ -6,11 +6,11 @@ package mz.co.grocery.integ.resources.sale.dto;
 import java.math.BigDecimal;
 
 import mz.co.grocery.core.sale.model.SaleItem;
-import mz.co.grocery.core.stock.model.ServiceItem;
-import mz.co.grocery.core.stock.model.Stock;
+import mz.co.grocery.core.saleable.model.ServiceItem;
+import mz.co.grocery.core.saleable.model.Stock;
 import mz.co.grocery.integ.resources.dto.GenericDTO;
-import mz.co.grocery.integ.resources.stock.dto.ServiceItemDTO;
-import mz.co.grocery.integ.resources.stock.dto.StockDTO;
+import mz.co.grocery.integ.resources.saleable.dto.ServiceItemDTO;
+import mz.co.grocery.integ.resources.saleable.dto.StockDTO;
 import mz.co.grocery.integ.resources.util.ProxyUtil;
 
 /**

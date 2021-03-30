@@ -9,8 +9,8 @@ import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.Rule;
 import br.com.six2six.fixturefactory.loader.TemplateLoader;
 import mz.co.grocery.core.grocery.model.Grocery;
-import mz.co.grocery.core.product.model.ProductDescription;
-import mz.co.grocery.core.stock.model.Stock;
+import mz.co.grocery.core.item.model.ProductDescription;
+import mz.co.grocery.core.saleable.model.Stock;
 import mz.co.msaude.boot.frameworks.util.UuidFactory;
 
 /**
