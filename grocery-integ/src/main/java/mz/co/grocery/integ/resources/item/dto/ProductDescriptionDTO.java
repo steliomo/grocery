@@ -1,14 +1,14 @@
+
 /**
  *
  */
 package mz.co.grocery.integ.resources.item.dto;
 
-import static mz.co.grocery.integ.resources.util.ProxyUtil.isInitialized;
-
 import mz.co.grocery.core.item.model.Product;
 import mz.co.grocery.core.item.model.ProductDescription;
 import mz.co.grocery.core.item.model.ProductUnit;
 import mz.co.grocery.integ.resources.dto.GenericDTO;
+import mz.co.grocery.integ.resources.util.ProxyUtil;
 
 /**
  * @author Stélio Moiane
@@ -35,7 +35,7 @@ public class ProductDescriptionDTO extends GenericDTO<ProductDescription> {
 
 		final Product product = productDescription.getProduct();
 
-		if (isInitialized(product)) {
+		if (ProxyUtil.isInitialized(product)) {
 			this.productDTO = new ProductDTO(product);
 		}
 
@@ -43,7 +43,7 @@ public class ProductDescriptionDTO extends GenericDTO<ProductDescription> {
 
 		final ProductUnit productUnit = productDescription.getProductUnit();
 
-		if (isInitialized(productUnit)) {
+		if (ProxyUtil.isInitialized(productUnit)) {
 			this.productUnitDTO = new ProductUnitDTO(productUnit);
 		}
 	}
@@ -54,7 +54,10 @@ public class ProductDescriptionDTO extends GenericDTO<ProductDescription> {
 
 		productDescription.setProduct(this.productDTO.get());
 		productDescription.setDescription(this.description);
-		productDescription.setProductUnit(this.productUnitDTO.get());
+
+		if (this.productUnitDTO != null) {
+			productDescription.setProductUnit(this.productUnitDTO.get());
+		}
 
 		return productDescription;
 	}
@@ -72,9 +75,17 @@ public class ProductDescriptionDTO extends GenericDTO<ProductDescription> {
 	}
 
 	public String getName() {
-		final StringBuilder builder = new StringBuilder();
-		builder.append(this.productDTO.getName()).append(" ").append(this.description).append(" ")
-		        .append(this.productUnitDTO.getUnit()).append(" ").append(this.productUnitDTO.getProductUnitType());
-		return builder.toString();
+
+		if (this.productUnitDTO == null) {
+			return "";
+		}
+
+		return new StringBuilder()
+				.append(this.productDTO.getName())
+				.append(" ")
+				.append(this.description).append(" ")
+				.append(this.productUnitDTO.getUnit()).append(" ")
+				.append(this.productUnitDTO.getProductUnitType())
+				.toString();
 	}
 }

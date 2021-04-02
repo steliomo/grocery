@@ -20,7 +20,7 @@ public class BusinessExceptionMapper implements ExceptionMapper<BusinessExceptio
 	@Override
 	public Response toResponse(final BusinessException exception) {
 
-		final ErrorMessage errorMessage = new ErrorMessage(Response.Status.BAD_REQUEST.getStatusCode(),
+		final ErrorMessage errorMessage = new ErrorMessage(Response.Status.NOT_ACCEPTABLE.getStatusCode(),
 				exception.getMessage(), "There was and issue in the business logic");
 
 		return Response.status(errorMessage.getStatusCode()).entity(errorMessage).type(MediaType.APPLICATION_JSON).build();
