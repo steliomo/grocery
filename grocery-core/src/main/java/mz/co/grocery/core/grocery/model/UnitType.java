@@ -15,5 +15,7 @@ public enum UnitType {
 
 	SERVICE_STATION,
 
-	BOTTLE_STORE;
+	BOTTLE_STORE,
+
+	HARDWARE;
 }
