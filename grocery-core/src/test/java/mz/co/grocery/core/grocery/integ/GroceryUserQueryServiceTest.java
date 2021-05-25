@@ -3,20 +3,18 @@
  */
 package mz.co.grocery.core.grocery.integ;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertFalse;
-import static org.junit.Assert.assertNotNull;
-
 import java.util.List;
 
 import javax.inject.Inject;
 
+import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
 
 import mz.co.grocery.core.config.AbstractIntegServiceTest;
 import mz.co.grocery.core.fixturefactory.GroceryUserTemplate;
 import mz.co.grocery.core.grocery.model.GroceryUser;
+import mz.co.grocery.core.grocery.model.UnitDetail;
 import mz.co.grocery.core.grocery.service.GroceryService;
 import mz.co.grocery.core.grocery.service.GroceryUserQueryService;
 import mz.co.grocery.core.grocery.service.GroceryUserService;
@@ -38,6 +36,8 @@ public class GroceryUserQueryServiceTest extends AbstractIntegServiceTest {
 	@Inject
 	private GroceryUserQueryService groceryUserQueryService;
 
+	private String unitUuid;
+
 	@Before
 	public void setup() {
 
@@ -50,9 +50,9 @@ public class GroceryUserQueryServiceTest extends AbstractIntegServiceTest {
 		groceryUsers.forEach(groceryUser -> {
 			try {
 				this.groceryService.createGrocery(this.getUserContext(), groceryUser.getGrocery());
+				this.unitUuid = groceryUser.getGrocery().getUuid();
 				this.groceryUserService.createGroceryUser(this.getUserContext(), groceryUser);
-			}
-			catch (final BusinessException e) {
+			} catch (final BusinessException e) {
 				e.printStackTrace();
 			}
 		});
@@ -65,13 +65,13 @@ public class GroceryUserQueryServiceTest extends AbstractIntegServiceTest {
 		final int maxResult = 8;
 
 		final List<GroceryUser> groceryUsers = this.groceryUserQueryService.fetchAllGroceryUsers(currentPage,
-		        maxResult);
+				maxResult);
 
-		assertFalse(groceryUsers.isEmpty());
-		assertEquals(maxResult, groceryUsers.size());
+		Assert.assertFalse(groceryUsers.isEmpty());
+		Assert.assertEquals(maxResult, groceryUsers.size());
 
 		groceryUsers.forEach(groceryUser -> {
-			assertNotNull(groceryUser.getGrocery());
+			Assert.assertNotNull(groceryUser.getGrocery());
 		});
 	}
 
@@ -86,8 +86,15 @@ public class GroceryUserQueryServiceTest extends AbstractIntegServiceTest {
 
 		final GroceryUser groceryUserFound = this.groceryUserQueryService.fetchGroceryUserByUser(groceryUser.getUser());
 
-		assertEquals(groceryUser.getUser(), groceryUserFound.getUser());
-		assertNotNull(groceryUserFound.getGrocery());
+		Assert.assertEquals(groceryUser.getUser(), groceryUserFound.getUser());
+		Assert.assertNotNull(groceryUserFound.getGrocery());
 
+	}
+
+	@Test
+	public void shouldFindUnitDetails() throws BusinessException {
+		final UnitDetail groceryDetail = this.groceryUserQueryService.findUnitDetailsByUuid(this.unitUuid);
+
+		Assert.assertEquals(groceryDetail.getUuid(), this.unitUuid);
 	}
 }

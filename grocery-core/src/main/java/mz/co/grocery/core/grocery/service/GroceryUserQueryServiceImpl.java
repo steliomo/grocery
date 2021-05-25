@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import mz.co.grocery.core.grocery.dao.GroceryUserDAO;
 import mz.co.grocery.core.grocery.model.GroceryUser;
+import mz.co.grocery.core.grocery.model.UnitDetail;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.model.EntityStatus;
 
@@ -41,4 +42,8 @@ public class GroceryUserQueryServiceImpl implements GroceryUserQueryService {
 		return this.groceryUserDAO.fetchByUser(user, EntityStatus.ACTIVE);
 	}
 
+	@Override
+	public UnitDetail findUnitDetailsByUuid(final String unitUuid) throws BusinessException {
+		return this.groceryUserDAO.findUnitDetailByUuid(unitUuid, EntityStatus.ACTIVE);
+	}
 }

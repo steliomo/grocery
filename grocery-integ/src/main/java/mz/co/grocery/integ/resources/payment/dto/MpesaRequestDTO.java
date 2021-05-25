@@ -9,6 +9,8 @@ package mz.co.grocery.integ.resources.payment.dto;
  */
 public class MpesaRequestDTO {
 
+	private static final String AREA_CODE = "258";
+
 	private String input_TransactionReference;
 
 	private String input_CustomerMSISDN;
@@ -26,7 +28,7 @@ public class MpesaRequestDTO {
 			final String input_ThirdPartyReference,
 			final String input_ServiceProviderCode) {
 		this.input_TransactionReference = input_TransactionReference;
-		this.input_CustomerMSISDN = input_CustomerMSISDN;
+		this.input_CustomerMSISDN = MpesaRequestDTO.AREA_CODE + input_CustomerMSISDN;
 		this.input_Amount = input_Amount;
 		this.input_ThirdPartyReference = input_ThirdPartyReference;
 		this.input_ServiceProviderCode = input_ServiceProviderCode;

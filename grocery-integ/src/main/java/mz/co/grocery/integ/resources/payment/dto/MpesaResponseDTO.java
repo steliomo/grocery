@@ -19,6 +19,8 @@ public class MpesaResponseDTO {
 
 	private String output_TransactionID;
 
+	private String output_error;
+
 	public String getOutput_ConversationID() {
 		return this.output_ConversationID;
 	}
@@ -39,4 +41,7 @@ public class MpesaResponseDTO {
 		return this.output_TransactionID;
 	}
 
+	public String getOutput_error() {
+		return this.output_error;
+	}
 }

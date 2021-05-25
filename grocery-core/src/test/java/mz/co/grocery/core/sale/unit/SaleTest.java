@@ -21,6 +21,7 @@ import mz.co.grocery.core.fixturefactory.StockTemplate;
 import mz.co.grocery.core.inventory.dao.InventoryDAO;
 import mz.co.grocery.core.inventory.model.Inventory;
 import mz.co.grocery.core.inventory.model.InventoryStatus;
+import mz.co.grocery.core.payment.service.PaymentService;
 import mz.co.grocery.core.sale.dao.SaleDAO;
 import mz.co.grocery.core.sale.dao.SaleItemDAO;
 import mz.co.grocery.core.sale.model.Sale;
@@ -53,6 +54,9 @@ public class SaleTest extends AbstractUnitServiceTest {
 
 	@Mock
 	private InventoryDAO inventoryDAO;
+
+	@Mock
+	private PaymentService paymentService;
 
 	private Sale sale;
 

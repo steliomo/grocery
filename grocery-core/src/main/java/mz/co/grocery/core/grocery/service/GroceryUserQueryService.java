@@ -6,6 +6,7 @@ package mz.co.grocery.core.grocery.service;
 import java.util.List;
 
 import mz.co.grocery.core.grocery.model.GroceryUser;
+import mz.co.grocery.core.grocery.model.UnitDetail;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 
 /**
@@ -19,4 +20,6 @@ public interface GroceryUserQueryService {
 	Long count() throws BusinessException;
 
 	GroceryUser fetchGroceryUserByUser(String user) throws BusinessException;
+
+	UnitDetail findUnitDetailsByUuid(String unitUuid) throws BusinessException;
 }

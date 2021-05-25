@@ -10,6 +10,7 @@ import org.springframework.stereotype.Service;
 import mz.co.grocery.core.inventory.dao.InventoryDAO;
 import mz.co.grocery.core.inventory.model.Inventory;
 import mz.co.grocery.core.inventory.model.InventoryStatus;
+import mz.co.grocery.core.payment.service.PaymentService;
 import mz.co.grocery.core.sale.dao.SaleDAO;
 import mz.co.grocery.core.sale.dao.SaleItemDAO;
 import mz.co.grocery.core.sale.model.Sale;
@@ -42,10 +43,13 @@ public class SaleServiceImpl extends AbstractService implements SaleService {
 	@Inject
 	private InventoryDAO inventoryDAO;
 
+	@Inject
+	private PaymentService paymentService;
+
 	@Override
 	public Sale registSale(final UserContext userContext, final Sale sale) throws BusinessException {
 
-		verifyPendingInventory(sale);
+		this.verifyPendingInventory(sale);
 
 		if (sale.getItems().isEmpty()) {
 			throw new BusinessException("cannot create a sale without items");
@@ -67,6 +71,8 @@ public class SaleServiceImpl extends AbstractService implements SaleService {
 
 		sale.calculateTotal();
 		sale.calculateBilling();
+
+		this.paymentService.debitTransaction(userContext, sale.getGrocery().getUuid());
 
 		return sale;
 	}

@@ -26,8 +26,9 @@ import mz.co.msaude.boot.frameworks.model.GenericEntity;
  *
  */
 @NamedQueries({ @NamedQuery(name = GroceryUserDAO.QUERY_NAME.findAllIds, query = GroceryUserDAO.QUERY.findAllIds),
-        @NamedQuery(name = GroceryUserDAO.QUERY_NAME.fetchAll, query = GroceryUserDAO.QUERY.fetchAll),
-        @NamedQuery(name = GroceryUserDAO.QUERY_NAME.fetchByUser, query = GroceryUserDAO.QUERY.fetchByUser) })
+	@NamedQuery(name = GroceryUserDAO.QUERY_NAME.fetchAll, query = GroceryUserDAO.QUERY.fetchAll),
+	@NamedQuery(name = GroceryUserDAO.QUERY_NAME.fetchByUser, query = GroceryUserDAO.QUERY.fetchByUser),
+	@NamedQuery(name = GroceryUserDAO.QUERY_NAME.findUnitDetailByUuid, query = GroceryUserDAO.QUERY.findUnitDetailByUuid) })
 @Entity
 @Table(name = "GROCERY_USERS")
 public class GroceryUser extends GenericEntity {

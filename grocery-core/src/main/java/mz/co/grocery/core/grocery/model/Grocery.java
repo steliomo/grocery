@@ -3,6 +3,8 @@
  */
 package mz.co.grocery.core.grocery.model;
 
+import java.math.BigDecimal;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -21,7 +23,8 @@ import mz.co.msaude.boot.frameworks.model.GenericEntity;
  * @author Stélio Moiane
  *
  */
-@NamedQueries({ @NamedQuery(name = GroceryDAO.QUERY_NAME.findAllIds, query = GroceryDAO.QUERY.findAllIds),
+@NamedQueries({
+	@NamedQuery(name = GroceryDAO.QUERY_NAME.findAllIds, query = GroceryDAO.QUERY.findAllIds),
 	@NamedQuery(name = GroceryDAO.QUERY_NAME.findAll, query = GroceryDAO.QUERY.findAll),
 	@NamedQuery(name = GroceryDAO.QUERY_NAME.findByName, query = GroceryDAO.QUERY.findByName) })
 @Entity
@@ -53,6 +56,10 @@ public class Grocery extends GenericEntity {
 	@Enumerated(EnumType.STRING)
 	@Column(name = "UNIT_TYPE", nullable = false, length = 30)
 	private UnitType unitType;
+
+	@NotNull
+	@Column(name = "BALANCE", nullable = false)
+	private BigDecimal balance = BigDecimal.ZERO;
 
 	public String getName() {
 		return this.name;
@@ -100,5 +107,17 @@ public class Grocery extends GenericEntity {
 
 	public void setUnitType(final UnitType unitType) {
 		this.unitType = unitType;
+	}
+
+	public void setBalance(final BigDecimal balance) {
+		this.balance = this.balance.add(balance);
+	}
+
+	public BigDecimal getBalance() {
+		return this.balance;
+	}
+
+	public synchronized void debitTransaction(final BigDecimal defaultDebit) {
+		this.balance = this.balance.subtract(defaultDebit);
 	}
 }

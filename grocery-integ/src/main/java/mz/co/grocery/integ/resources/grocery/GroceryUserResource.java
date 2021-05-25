@@ -13,6 +13,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.client.Client;
@@ -24,6 +25,7 @@ import org.springframework.stereotype.Service;
 
 import mz.co.grocery.core.grocery.model.Grocery;
 import mz.co.grocery.core.grocery.model.GroceryUser;
+import mz.co.grocery.core.grocery.model.UnitDetail;
 import mz.co.grocery.core.grocery.model.UserRole;
 import mz.co.grocery.core.grocery.service.GroceryQueryService;
 import mz.co.grocery.core.grocery.service.GroceryUserQueryService;
@@ -149,5 +151,15 @@ public class GroceryUserResource extends AbstractResource {
 		this.mailSenderService.send(this.mail);
 
 		return Response.ok(userDTO).build();
+	}
+
+	@GET
+	@Path("unit-detail/{unitUuid}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response getUntDetails(@PathParam("unitUuid") final String unitUuid) throws BusinessException {
+
+		final UnitDetail unitDetail = this.groceryUserQueryService.findUnitDetailsByUuid(unitUuid);
+
+		return Response.ok(unitDetail).build();
 	}
 }
