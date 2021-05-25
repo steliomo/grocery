@@ -18,5 +18,7 @@ public enum ProductUnitType {
 
 	MT,
 
-	W;
+	W,
+
+	MG;
 }
