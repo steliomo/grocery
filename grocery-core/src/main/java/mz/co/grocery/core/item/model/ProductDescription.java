@@ -69,4 +69,8 @@ public class ProductDescription extends GenericEntity {
 	public void setProductUnit(final ProductUnit productUnit) {
 		this.productUnit = productUnit;
 	}
+
+	public String getName() {
+		return this.product.getName() + " " + this.description + " " + this.productUnit.getUnit() + " " + this.productUnit.getProductUnitType();
+	}
 }

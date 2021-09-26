@@ -29,6 +29,7 @@ public class StockServiceImpl extends AbstractService implements StockService {
 
 	@Override
 	public Stock createStock(final UserContext userContext, final Stock stock) throws BusinessException {
+		stock.setStockStatus();
 		this.stockDAO.create(userContext, stock);
 		return stock;
 	}
@@ -49,8 +50,8 @@ public class StockServiceImpl extends AbstractService implements StockService {
 	@Override
 	public Stock updateStocksAndPrices(final UserContext userContext, final Stock stock) throws BusinessException {
 
-		if (BigDecimal.ZERO.doubleValue() == stock.getPurchasePrice().doubleValue()
-				|| BigDecimal.ZERO.doubleValue() == stock.getSalePrice().doubleValue()) {
+		if (BigDecimal.ZERO.compareTo(stock.getPurchasePrice()) == BigDecimal.ZERO.intValue()
+				|| BigDecimal.ZERO.compareTo(stock.getSalePrice()) == BigDecimal.ZERO.intValue()) {
 			throw new BusinessException("The prices cannot be 0");
 		}
 
@@ -61,7 +62,7 @@ public class StockServiceImpl extends AbstractService implements StockService {
 		stockToUpdate.addQuantity(stock.getQuantity());
 		stockToUpdate.setMinimumStock(stock.getMinimumStock());
 
-		this.stockDAO.update(userContext, stockToUpdate);
+		this.updateStock(userContext, stockToUpdate);
 
 		return stockToUpdate;
 	}

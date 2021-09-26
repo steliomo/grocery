@@ -16,6 +16,8 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 import mz.co.grocery.core.grocery.model.Grocery;
+import mz.co.grocery.core.item.model.Item;
+import mz.co.grocery.core.item.model.ItemType;
 import mz.co.grocery.core.item.model.ServiceDescription;
 import mz.co.grocery.core.saleable.dao.ServiceItemDAO;
 import mz.co.msaude.boot.frameworks.model.GenericEntity;
@@ -33,7 +35,7 @@ import mz.co.msaude.boot.frameworks.model.GenericEntity;
 	@NamedQuery(name = ServiceItemDAO.QUERY_NAME.fetchNotInThisUnitByService, query = ServiceItemDAO.QUERY.fetchNotInThisUnitByService) })
 @Entity
 @Table(name = "SERVICE_ITEMS")
-public class ServiceItem extends GenericEntity {
+public class ServiceItem extends GenericEntity implements Item {
 
 	private static final long serialVersionUID = 1L;
 
@@ -67,11 +69,27 @@ public class ServiceItem extends GenericEntity {
 		this.unit = unit;
 	}
 
+	@Override
 	public BigDecimal getSalePrice() {
 		return this.salePrice;
 	}
 
 	public void setSalePrice(final BigDecimal salePrice) {
 		this.salePrice = salePrice;
+	}
+
+	@Override
+	public ItemType getType() {
+		return ItemType.SERVICE;
+	}
+
+	@Override
+	public Boolean isReturnable() {
+		return Boolean.FALSE;
+	}
+
+	@Override
+	public String getName() {
+		return this.serviceDescription.getName();
 	}
 }

@@ -20,6 +20,8 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 import mz.co.grocery.core.grocery.model.Grocery;
+import mz.co.grocery.core.item.model.Item;
+import mz.co.grocery.core.item.model.ItemType;
 import mz.co.grocery.core.item.model.ProductDescription;
 import mz.co.grocery.core.sale.model.SaleItem;
 import mz.co.grocery.core.saleable.dao.StockDAO;
@@ -39,7 +41,7 @@ import mz.co.msaude.boot.frameworks.model.GenericEntity;
 	@NamedQuery(name = StockDAO.QUERY_NAME.fetchNotInThisGroceryByProduct, query = StockDAO.QUERY.fetchNotInThisGroceryByProduct) })
 @Entity
 @Table(name = "STOCKS")
-public class Stock extends GenericEntity {
+public class Stock extends GenericEntity implements Item {
 
 	private static final long serialVersionUID = 1L;
 
@@ -75,7 +77,7 @@ public class Stock extends GenericEntity {
 	@NotNull
 	@Enumerated(EnumType.STRING)
 	@Column(name = "STOCK_STATUS", nullable = false, length = 20)
-	private StockStatus stockStatus = StockStatus.GOOD;
+	private StockStatus stockStatus;
 
 	public Grocery getGrocery() {
 		return this.grocery;
@@ -101,6 +103,7 @@ public class Stock extends GenericEntity {
 		this.purchasePrice = purchasePrice;
 	}
 
+	@Override
 	public BigDecimal getSalePrice() {
 		return this.salePrice;
 	}
@@ -125,7 +128,7 @@ public class Stock extends GenericEntity {
 		this.expireDate = expireDate;
 	}
 
-	public void updateStock(final SaleItem saleItem) {
+	public synchronized void updateStock(final SaleItem saleItem) {
 
 		if (saleItem.getSaleItemValue() != BigDecimal.ZERO) {
 
@@ -141,7 +144,12 @@ public class Stock extends GenericEntity {
 		this.setStockStatus();
 	}
 
-	public void addQuantity(final BigDecimal quantity) {
+	public synchronized void subtractStock(final BigDecimal quantity) {
+		this.quantity = this.quantity.subtract(quantity);
+		this.setStockStatus();
+	}
+
+	public synchronized void addQuantity(final BigDecimal quantity) {
 		this.quantity = this.quantity.add(quantity);
 	}
 
@@ -160,15 +168,26 @@ public class Stock extends GenericEntity {
 
 	public void setStockStatus() {
 
-		final int result = this.quantity.compareTo(this.minimumStock);
-
-		if (result <= 0) {
+		if (this.quantity.compareTo(this.minimumStock) == BigDecimal.ONE.negate().intValue()) {
 			this.stockStatus = StockStatus.LOW;
 			return;
 		}
 
-		if (result > 0) {
-			this.stockStatus = StockStatus.GOOD;
-		}
+		this.stockStatus = StockStatus.GOOD;
+	}
+
+	@Override
+	public ItemType getType() {
+		return ItemType.PRODUCT;
+	}
+
+	@Override
+	public Boolean isReturnable() {
+		return Boolean.TRUE;
+	}
+
+	@Override
+	public String getName() {
+		return this.productDescription.getName();
 	}
 }

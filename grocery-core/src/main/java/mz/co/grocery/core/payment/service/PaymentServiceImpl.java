@@ -27,7 +27,7 @@ public class PaymentServiceImpl extends AbstractService implements PaymentServic
 
 	private static final String MPESA_SUCCESS = "INS-0";
 
-	private static final BigDecimal DEFAULT_DEBIT = new BigDecimal(1);
+	private static final BigDecimal DEFAULT_DEBIT = BigDecimal.ONE;
 
 	@Inject
 	private GroceryDAO unitDAO;
@@ -52,7 +52,7 @@ public class PaymentServiceImpl extends AbstractService implements PaymentServic
 
 		final Grocery unit = this.unitDAO.findByUuid(unitUuid);
 
-		if (PaymentServiceImpl.DEFAULT_DEBIT.doubleValue() > unit.getBalance().doubleValue()) {
+		if (PaymentServiceImpl.DEFAULT_DEBIT.compareTo(unit.getBalance()) == BigDecimal.ONE.intValue()) {
 			throw new BusinessException("Insufficient funds");
 		}
 

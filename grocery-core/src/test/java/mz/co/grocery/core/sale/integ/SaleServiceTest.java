@@ -46,7 +46,7 @@ public class SaleServiceTest extends AbstractIntegServiceTest {
 	private ProductService productService;
 
 	@Inject
-	private ProductUnitService productSizeService;
+	private ProductUnitService productUnitService;
 
 	@Inject
 	private ProductDescriptionService productDescriptionService;
@@ -76,7 +76,7 @@ public class SaleServiceTest extends AbstractIntegServiceTest {
 
 			try {
 				this.productService.createProduct(this.getUserContext(), product.getStock().getProductDescription().getProduct());
-				this.productSizeService.createProductUnit(this.getUserContext(), product.getStock().getProductDescription().getProductUnit());
+				this.productUnitService.createProductUnit(this.getUserContext(), product.getStock().getProductDescription().getProductUnit());
 				this.productDescriptionService.createProductDescription(this.getUserContext(), product.getStock().getProductDescription());
 				this.groceryService.createGrocery(this.getUserContext(), product.getStock().getGrocery());
 				this.stockService.createStock(this.getUserContext(), product.getStock());
