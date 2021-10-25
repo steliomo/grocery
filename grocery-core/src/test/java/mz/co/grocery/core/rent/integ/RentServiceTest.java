@@ -22,11 +22,10 @@ import mz.co.msaude.boot.frameworks.util.TestUtil;
 public class RentServiceTest extends AbstractIntegServiceTest {
 
 	@Inject
-	private RentService rentService;
-
-	@Inject
 	private RentBuilder rentBuilder;
 
+	@Inject
+	private RentService rentService;
 
 	private Rent rent;
 

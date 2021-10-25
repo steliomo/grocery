@@ -47,11 +47,19 @@ public class ExpenseQueryServiceTest extends AbstractIntegServiceTest {
 
 	private Grocery grocery;
 
+	private LocalDate startDate;
+
+	private LocalDate endDate;
+
 	@Before
 	public void setup() throws BusinessException {
+		this.startDate = LocalDate.now();
+		this.endDate = LocalDate.now();
+
 		final List<Expense> expenses = EntityFactory.gimme(Expense.class, 10, ExpenseTemplate.VALID);
 		this.grocery = this.groceryService.createGrocery(this.getUserContext(), expenses.get(0).getGrocery());
 		this.expectedValue = BigDecimal.ZERO;
+
 		for (final Expense expense : expenses) {
 			this.expenseTypeService.createExpenseType(this.getUserContext(), expense.getExpenseType());
 			expense.setGrocery(this.grocery);
@@ -62,12 +70,12 @@ public class ExpenseQueryServiceTest extends AbstractIntegServiceTest {
 
 	@Test
 	public void shouldFindExpensesValueByGroceryAndPeriod() throws BusinessException {
-		final LocalDate startDate = LocalDate.now(), endDate = LocalDate.now();
 
 		final BigDecimal expensesValue = this.expenseQueryService.findExpensesValueByGroceryAndPeriod(
 				this.grocery.getUuid(),
-				startDate,
-				endDate);
+				this.startDate,
+				this.endDate);
+
 		Assert.assertNotNull(expensesValue);
 
 		Assert.assertEquals(this.expectedValue.doubleValue(), expensesValue.doubleValue(), 0);
@@ -75,15 +83,23 @@ public class ExpenseQueryServiceTest extends AbstractIntegServiceTest {
 
 	@Test
 	public void shouldFindMonthlyExpensesValueByGroceryAndPeriod() throws BusinessException {
-		final LocalDate startDate = LocalDate.now(), endDate = LocalDate.now();
 
 		final List<ExpenseReport> expenses = this.expenseQueryService.findMonthyExpensesByGroceryAndPeriod(
 				this.grocery.getUuid(),
-				startDate,
-				endDate);
+				this.startDate,
+				this.endDate);
 
 		Assert.assertFalse(expenses.isEmpty());
 		Assert.assertEquals(1, expenses.size());
-		Assert.assertEquals(startDate.getMonth(), expenses.get(0).getMonth());
+		Assert.assertEquals(this.startDate.getMonth(), expenses.get(0).getMonth());
+	}
+
+	@Test
+	public void shouldFindExpensesByUnitAndPeriod() throws BusinessException {
+
+		final List<ExpenseReport> expenses = this.expenseQueryService.findExpensesByUnitAndPeriod(this.grocery.getUuid(), this.startDate,
+				this.endDate);
+
+		Assert.assertFalse(expenses.isEmpty());
 	}
 }

@@ -52,4 +52,8 @@ public class ExpenseQueryServiceImpl implements ExpenseQueryService {
 				ExpenseTypeCategory.EXPENSE, EntityStatus.ACTIVE);
 	}
 
+	@Override
+	public List<ExpenseReport> findExpensesByUnitAndPeriod(final String unitUuid, final LocalDate startDate, final LocalDate endDate) throws BusinessException {
+		return this.expenseDAO.findExpensesByUnitAndPeriod(unitUuid, startDate, endDate, EntityStatus.ACTIVE);
+	}
 }

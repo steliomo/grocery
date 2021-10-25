@@ -15,6 +15,7 @@ import mz.co.grocery.core.rent.model.RentItem;
 import mz.co.grocery.core.rent.model.ReturnItem;
 import mz.co.grocery.core.saleable.dao.StockDAO;
 import mz.co.grocery.core.saleable.model.Stock;
+import mz.co.grocery.core.util.ApplicationTranslator;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.model.UserContext;
 import mz.co.msaude.boot.frameworks.service.AbstractService;
@@ -35,7 +36,10 @@ public class ReturnServiceImpl extends AbstractService implements ReturnService 
 	private ReturnItemDAO returnItemDAO;
 
 	@Inject
-	StockDAO stockDAO;
+	private ApplicationTranslator translator;
+
+	@Inject
+	private StockDAO stockDAO;
 
 	@Override
 	public List<ReturnItem> returnItems(final UserContext userContext, final List<ReturnItem> returnItems) throws BusinessException {
@@ -43,7 +47,8 @@ public class ReturnServiceImpl extends AbstractService implements ReturnService 
 		for (final ReturnItem returnItem : returnItems) {
 
 			if (!returnItem.getRentItem().isReturnable()) {
-				throw new BusinessException("This item is not returnable!");
+				throw new BusinessException(
+						this.translator.getTranslation("this.item.is.not.returnable", new String[] { returnItem.getRentItem().getItem().getName() }));
 			}
 
 			final RentItem rentItem = this.rentItemDAO.fetchByUuid(returnItem.getRentItem().getUuid());

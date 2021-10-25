@@ -15,13 +15,13 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
 import mz.co.grocery.core.grocery.model.Grocery;
 import mz.co.grocery.core.grocery.model.UnitType;
 import mz.co.grocery.core.grocery.service.GroceryQueryService;
 import mz.co.grocery.core.grocery.service.GroceryService;
+import mz.co.grocery.core.util.ApplicationTranslator;
 import mz.co.grocery.integ.resources.AbstractResource;
 import mz.co.grocery.integ.resources.grocery.dto.GroceriesDTO;
 import mz.co.grocery.integ.resources.util.EnumsDTO;
@@ -44,7 +44,7 @@ public class GroceryResource extends AbstractResource {
 	private GroceryQueryService groceryQueryService;
 
 	@Inject
-	private MessageSource messageSource;
+	private ApplicationTranslator translator;
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -80,7 +80,7 @@ public class GroceryResource extends AbstractResource {
 	@Path("unit-types")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response findUnitTypes() throws BusinessException {
-		final EnumsDTO<UnitType> enumsDTO = new EnumsDTO<>(this.messageSource, UnitType.values());
+		final EnumsDTO<UnitType> enumsDTO = new EnumsDTO<>(this.translator, UnitType.values());
 		return Response.ok(enumsDTO).build();
 	}
 }

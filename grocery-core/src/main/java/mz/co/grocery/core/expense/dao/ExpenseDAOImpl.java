@@ -43,4 +43,12 @@ public class ExpenseDAOImpl extends GenericDAOImpl<Expense, Long> implements Exp
 				ExpenseReport.class);
 	}
 
+	@Override
+	public List<ExpenseReport> findExpensesByUnitAndPeriod(final String unitUuid, final LocalDate startDate, final LocalDate endDate, final EntityStatus entityStatus)
+			throws BusinessException {
+
+		return this.findByNamedQuery(ExpenseDAO.QUERY_NAME.findExpensesByUnitAndPeriod, new ParamBuilder().add("unitUuid", unitUuid)
+				.add("startDate", startDate).add("endDate", endDate).add("entityStatus", entityStatus).process(), ExpenseReport.class);
+	}
+
 }

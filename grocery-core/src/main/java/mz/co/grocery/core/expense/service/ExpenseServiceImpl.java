@@ -8,6 +8,7 @@ import org.springframework.stereotype.Service;
 
 import mz.co.grocery.core.expense.dao.ExpenseDAO;
 import mz.co.grocery.core.expense.model.Expense;
+import mz.co.grocery.core.util.ApplicationTranslator;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.model.UserContext;
 import mz.co.msaude.boot.frameworks.service.AbstractService;
@@ -24,6 +25,9 @@ public class ExpenseServiceImpl extends AbstractService implements ExpenseServic
 	@Inject
 	private ExpenseDAO expenseDAO;
 
+	@Inject
+	private ApplicationTranslator translator;
+
 	@Override
 	public Expense createExpense(final UserContext userContext, final Expense expense) throws BusinessException {
 		this.expenseDAO.create(userContext, expense);
@@ -35,7 +39,7 @@ public class ExpenseServiceImpl extends AbstractService implements ExpenseServic
 			throws BusinessException {
 
 		if (expenses.isEmpty()) {
-			throw new BusinessException("Please add at least one expense to be registed!");
+			throw new BusinessException(this.translator.getTranslation("add.at.least.one.expense.to.be.registed"));
 		}
 
 		for (final Expense expense : expenses) {

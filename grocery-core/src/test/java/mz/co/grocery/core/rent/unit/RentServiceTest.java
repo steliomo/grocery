@@ -27,10 +27,11 @@ import mz.co.grocery.core.rent.dao.RentItemDAO;
 import mz.co.grocery.core.rent.model.PaymentStatus;
 import mz.co.grocery.core.rent.model.Rent;
 import mz.co.grocery.core.rent.model.RentItem;
-import mz.co.grocery.core.rent.service.RentServiceImpl;
 import mz.co.grocery.core.rent.service.RentService;
+import mz.co.grocery.core.rent.service.RentServiceImpl;
 import mz.co.grocery.core.saleable.dao.StockDAO;
 import mz.co.grocery.core.saleable.model.Stock;
+import mz.co.grocery.core.util.ApplicationTranslator;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.fixturefactory.EntityFactory;
 import mz.co.msaude.boot.frameworks.model.UserContext;
@@ -55,6 +56,9 @@ public class RentServiceTest extends AbstractUnitServiceTest {
 
 	@Mock
 	private PaymentService paymentService;
+
+	@Mock
+	private ApplicationTranslator translator;
 
 	private Rent rent;
 

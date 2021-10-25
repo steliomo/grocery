@@ -5,8 +5,11 @@ package mz.co.grocery.integ.resources.sale.dto;
 
 import java.math.BigDecimal;
 import java.time.Month;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
+import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import mz.co.grocery.core.expense.model.ExpenseReport;
 import mz.co.grocery.core.grocery.model.GroceryUser;
@@ -33,30 +36,20 @@ public class SalesDTO {
 
 	private GroceryUser user;
 
+	private List<SaleReport> salesBalance;
+
+	private List<SaleReport> rentsBalance;
+
 	public SalesDTO() {
 	}
 
 	public SalesDTO(final GroceryUser user) {
 		this.user = user;
-	}
-
-	public SalesDTO setSalesReport(final List<SaleReport> salesReport) {
-		this.salesReport = salesReport;
-
-		salesReport.forEach(saleReport -> {
-			if (UserRole.OPERATOR.equals(this.user.getUserRole())) {
-				saleReport.setBilling(BigDecimal.ZERO);
-			}
-
-			this.billing = this.billing.add(saleReport.getBilling());
-			this.sales = this.sales.add(saleReport.getSale());
-		});
-
-		return this;
+		this.salesBalance = new ArrayList<>();
+		this.rentsBalance = new ArrayList<>();
 	}
 
 	public List<SaleReport> getSalesReport() {
-		this.salesReport.sort((s1, s2) -> s1.getMonth().compareTo(s2.getMonth()));
 		return this.salesReport;
 	}
 
@@ -70,12 +63,6 @@ public class SalesDTO {
 
 	public SalesDTO setExpense(final BigDecimal expense) {
 		this.expense = expense;
-		this.profit = this.billing.subtract(this.expense);
-
-		if (this.profit.doubleValue() < 0) {
-			this.profit = BigDecimal.ZERO;
-		}
-
 		return this;
 	}
 
@@ -90,14 +77,14 @@ public class SalesDTO {
 
 	public BigDecimal getProfit() {
 
-		if (UserRole.OPERATOR.equals(this.user.getUserRole())) {
+		if (UserRole.OPERATOR.equals(this.user.getUserRole()) || BigDecimal.ZERO.compareTo(this.profit) == BigDecimal.ONE.intValue()) {
 			return BigDecimal.ZERO;
 		}
 
 		return this.profit;
 	}
 
-	public SalesDTO addSalesMissingMonths() {
+	public void addSalesMissingMonths() {
 
 		for (final Month month : Month.values()) {
 
@@ -108,11 +95,9 @@ public class SalesDTO {
 				this.salesReport.add(new SaleReport(month));
 			}
 		}
-
-		return this;
 	}
 
-	public SalesDTO addExpensesMissingMonths() {
+	public void addExpensesMissingMonths() {
 
 		for (final Month month : Month.values()) {
 
@@ -123,14 +108,87 @@ public class SalesDTO {
 				this.expenses.add(new ExpenseReport(month));
 			}
 		}
-
-		return this;
 	}
 
 	public SalesDTO setExpenses(final List<ExpenseReport> expenses) {
 		this.expenses = expenses;
+		return this;
+	}
 
-		this.expense = expenses.stream().map(ExpenseReport::getExpenseValue).reduce(BigDecimal.ZERO, BigDecimal::add);
+	public void calculateMonthlyProfit() {
+
+		if (UserRole.OPERATOR.equals(this.user.getUserRole())) {
+			return;
+		}
+
+		this.expenses.forEach(expense -> {
+			this.salesReport.stream().filter(saleReport -> expense.getMonth().equals(saleReport.getMonth())).findFirst()
+			.get().setProfit(expense.getExpenseValue());
+		});
+	}
+
+	public SalesDTO setSalesBalance(final List<SaleReport> salesBalance) {
+		this.salesBalance = salesBalance;
+		return this;
+	}
+
+	public SalesDTO setRentsBalance(final List<SaleReport> rentsBalance) {
+		this.rentsBalance = rentsBalance;
+		return this;
+	}
+
+	public SalesDTO buildPeriod() {
+
+		this.salesReport = Stream.concat(this.salesBalance.stream(), this.rentsBalance.stream()).collect(Collectors.toList()).stream()
+				.collect(Collectors.groupingBy(saleReport -> saleReport.getSaleDate())).entrySet().stream()
+				.map(value -> value.getValue().stream().reduce((sale, rent) -> new SaleReport(sale.getSaleDate(),
+						sale.getBilling().add(rent.getBilling()), sale.getSale().add(rent.getSale()))))
+				.map(value -> value.get()).collect(Collectors.toList());
+
+		this.salesReport.forEach(saleReport -> {
+			if (UserRole.OPERATOR.equals(this.user.getUserRole())) {
+				saleReport.setBilling(BigDecimal.ZERO);
+			}
+
+			this.billing = this.billing.add(saleReport.getBilling());
+			this.sales = this.sales.add(saleReport.getSale());
+		});
+
+		this.profit = this.billing.subtract(this.expense);
+
+		if (this.profit.doubleValue() < 0) {
+			this.profit = BigDecimal.ZERO;
+		}
+
+		this.salesReport.sort((s1, s2) -> s1.getSaleDate().compareTo(s2.getSaleDate()));
+
+		return this;
+	}
+
+	public SalesDTO buildMonthly() {
+
+		this.salesReport = Stream.concat(this.salesBalance.stream(), this.rentsBalance.stream()).collect(Collectors.toList()).stream()
+				.collect(Collectors.groupingBy(saleReport -> saleReport.getMonth())).entrySet().stream()
+				.map(value -> value.getValue().stream().reduce((sale, rent) -> new SaleReport(sale.getSaleDate(),
+						sale.getBilling().add(rent.getBilling()), sale.getSale().add(rent.getSale()))))
+				.map(value -> value.get()).collect(Collectors.toList());
+
+		this.addSalesMissingMonths();
+
+		this.addExpensesMissingMonths();
+
+		this.calculateMonthlyProfit();
+
+		this.salesReport.forEach(saleReport -> {
+			if (UserRole.OPERATOR.equals(this.user.getUserRole())) {
+				saleReport.setBilling(BigDecimal.ZERO);
+			}
+
+			this.billing = this.billing.add(saleReport.getBilling());
+			this.sales = this.sales.add(saleReport.getSale());
+		});
+
+		this.expense = this.expenses.stream().map(ExpenseReport::getExpenseValue).reduce(BigDecimal.ZERO, BigDecimal::add);
 
 		if (UserRole.OPERATOR.equals(this.user.getUserRole())) {
 			this.profit = BigDecimal.ZERO;
@@ -139,19 +197,7 @@ public class SalesDTO {
 
 		this.profit = this.billing.subtract(this.expense);
 
-		return this;
-	}
-
-	public SalesDTO calculateMonthlyProfit() {
-
-		if (UserRole.OPERATOR.equals(this.user.getUserRole())) {
-			return this;
-		}
-
-		this.expenses.forEach(expense -> {
-			this.salesReport.stream().filter(saleReport -> expense.getMonth().equals(saleReport.getMonth())).findFirst()
-			.get().setProfit(expense.getExpenseValue());
-		});
+		this.salesReport.sort((s1, s2) -> s1.getMonth().compareTo(s2.getMonth()));
 
 		return this;
 	}

@@ -28,6 +28,7 @@ import mz.co.grocery.core.grocery.model.UserRole;
 import mz.co.grocery.core.grocery.service.GroceryService;
 import mz.co.grocery.core.grocery.service.GroceryUserQueryService;
 import mz.co.grocery.core.grocery.service.GroceryUserService;
+import mz.co.grocery.core.util.ApplicationTranslator;
 import mz.co.grocery.integ.resources.AbstractResource;
 import mz.co.grocery.integ.resources.grocery.dto.GroceryUserDTO;
 import mz.co.grocery.integ.resources.mail.Mail;
@@ -73,6 +74,9 @@ public class UserResource extends AbstractResource {
 	@Inject
 	private Mail mail;
 
+	@Inject
+	private ApplicationTranslator translator;
+
 	@POST
 	@Path("login")
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -85,11 +89,11 @@ public class UserResource extends AbstractResource {
 			authenticate = this.authenticationProvider.authenticate(
 					new UsernamePasswordAuthenticationToken(context.getUsername(), context.getPassword()));
 		} catch (final BadCredentialsException e) {
-			throw new BusinessException("Invalid credentials");
+			throw new BusinessException(this.translator.getTranslation("invalid.credentials"));
 		}
 
 		if (!authenticate.isAuthenticated()) {
-			throw new BusinessException("Invalid credentials");
+			throw new BusinessException(this.translator.getTranslation("invalid.credentials"));
 		}
 
 		final ResourceOwner resourceOwner = (ResourceOwner) authenticate.getPrincipal();

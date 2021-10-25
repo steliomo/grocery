@@ -11,6 +11,7 @@ import javax.inject.Inject;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.mockito.Mock;
 
 import mz.co.grocery.core.config.AbstractIntegServiceTest;
 import mz.co.grocery.core.fixturefactory.GroceryTemplate;
@@ -29,6 +30,7 @@ import mz.co.grocery.core.sale.service.SaleQueryService;
 import mz.co.grocery.core.sale.service.SaleService;
 import mz.co.grocery.core.saleable.service.ServiceItemService;
 import mz.co.grocery.core.saleable.service.StockService;
+import mz.co.grocery.core.util.ApplicationTranslator;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.fixturefactory.EntityFactory;
 
@@ -67,6 +69,9 @@ public class SaleQueryServiceTest extends AbstractIntegServiceTest {
 
 	@Inject
 	private ServiceItemService serviceItemService;
+
+	@Mock
+	private ApplicationTranslator translator;
 
 	private Grocery grocery;
 

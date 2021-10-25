@@ -17,6 +17,7 @@ import mz.co.grocery.core.saleable.dao.ServiceItemDAO;
 import mz.co.grocery.core.saleable.model.ServiceItem;
 import mz.co.grocery.core.saleable.service.ServiceItemService;
 import mz.co.grocery.core.saleable.service.ServiceItemServiceImpl;
+import mz.co.grocery.core.util.ApplicationTranslator;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.fixturefactory.EntityFactory;
 
@@ -31,6 +32,9 @@ public class ServiceItemServiceTest extends AbstractUnitServiceTest {
 
 	@Mock
 	private ServiceItemDAO serviceItemDAO;
+
+	@Mock
+	private ApplicationTranslator translator;
 
 	@Test
 	public void shouldUpdateServiceItemPrice() throws BusinessException {

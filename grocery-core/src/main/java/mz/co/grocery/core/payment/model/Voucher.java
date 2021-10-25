@@ -15,6 +15,12 @@ import mz.co.grocery.core.payment.UptoFiveHundredDiscount;
  */
 public enum Voucher {
 
+	TEN(new NoDiscount(new BigDecimal(10))),
+
+	TWENTY(new NoDiscount(new BigDecimal(20))),
+
+	FIFTY(new NoDiscount(new BigDecimal(50))),
+
 	HUNDRED(new NoDiscount(new BigDecimal(100))),
 
 	TWO_HUNDRED(new NoDiscount(new BigDecimal(200))),

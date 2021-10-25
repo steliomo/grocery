@@ -19,6 +19,8 @@ public class ExpenseReport {
 
 	private Month month;
 
+	private String name;
+
 	public ExpenseReport(final BigDecimal expenseValue, final LocalDate datePerformed) {
 		this.expenseValue = expenseValue;
 		this.datePerformed = datePerformed;
@@ -27,6 +29,11 @@ public class ExpenseReport {
 	public ExpenseReport(final Month month) {
 		this.month = month;
 		this.expenseValue = BigDecimal.ZERO;
+	}
+
+	public ExpenseReport(final String name, final BigDecimal expenseValue) {
+		this.name = name;
+		this.expenseValue = expenseValue;
 	}
 
 	public BigDecimal getExpenseValue() {
@@ -44,5 +51,9 @@ public class ExpenseReport {
 		}
 
 		return this.month;
+	}
+
+	public String getName() {
+		return this.name;
 	}
 }

@@ -15,6 +15,7 @@ import mz.co.grocery.core.inventory.model.InventoryStatus;
 import mz.co.grocery.core.inventory.model.StockInventory;
 import mz.co.grocery.core.saleable.model.Stock;
 import mz.co.grocery.core.saleable.service.StockService;
+import mz.co.grocery.core.util.ApplicationTranslator;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.model.UserContext;
 import mz.co.msaude.boot.frameworks.service.AbstractService;
@@ -40,6 +41,9 @@ public class InventoryServiceImpl extends AbstractService implements InventorySe
 	@Inject
 	private InventoryQueryService inventoryQueryService;
 
+	@Inject
+	private ApplicationTranslator translator;
+
 	@Override
 	public Inventory createInventory(final UserContext userContext, final Inventory inventory)
 			throws BusinessException {
@@ -52,7 +56,7 @@ public class InventoryServiceImpl extends AbstractService implements InventorySe
 			throws BusinessException {
 
 		if (inventory.getStockInventories().isEmpty()) {
-			throw new BusinessException("Cannot perform inventory without stock items...");
+			throw new BusinessException(this.translator.getTranslation("cannot.perform.inventory.without.stock.items"));
 		}
 
 		try {
@@ -102,7 +106,7 @@ public class InventoryServiceImpl extends AbstractService implements InventorySe
 		final Inventory inventory = this.inventoryQueryService.fetchInventoryUuid(inventoryUuid);
 
 		if (InventoryStatus.APPROVED == inventory.getInventoryStatus()) {
-			throw new BusinessException("Cannot perform this operation on approved inventories...");
+			throw new BusinessException(this.translator.getTranslation("cannot.perform.aproval.for.approved.inventory"));
 		}
 
 		inventory.approveInventory();

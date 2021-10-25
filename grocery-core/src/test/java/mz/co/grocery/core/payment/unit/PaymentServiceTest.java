@@ -22,6 +22,7 @@ import mz.co.grocery.core.payment.model.Payment;
 import mz.co.grocery.core.payment.model.Voucher;
 import mz.co.grocery.core.payment.service.PaymentService;
 import mz.co.grocery.core.payment.service.PaymentServiceImpl;
+import mz.co.grocery.core.util.ApplicationTranslator;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.fixturefactory.EntityFactory;
 import mz.co.msaude.boot.frameworks.model.UserContext;
@@ -40,6 +41,9 @@ public class PaymentServiceTest extends AbstractUnitServiceTest {
 
 	@Captor
 	private ArgumentCaptor<Grocery> unitCaptor;
+
+	@Mock
+	private ApplicationTranslator translator;
 
 	@Test(expected = BusinessException.class)
 	public void shouldNotUpdateSubscription() throws BusinessException {

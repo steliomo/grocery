@@ -22,6 +22,9 @@ public interface ExpenseDAO extends GenericDAO<Expense, Long> {
 
 		public static final String findMonthlyByGroceryAndPeriod = "SELECT new mz.co.grocery.core.expense.model.ExpenseReport(SUM(e.expenseValue), e.datePerformed) FROM Expense e WHERE e.grocery.uuid = :groceryUuid AND e.datePerformed BETWEEN :startDate AND :endDate AND e.expenseType.expenseTypeCategory = :expenseTypeCategory AND e.entityStatus = :entityStatus"
 				+ " GROUP BY MONTH(e.datePerformed) ORDER BY MONTH(e.datePerformed) ASC";
+
+		public static final String findExpensesByUnitAndPeriod = "SELECT new mz.co.grocery.core.expense.model.ExpenseReport(e.expenseType.name, SUM(e.expenseValue)) FROM Expense e WHERE e.grocery.uuid = :unitUuid AND e.datePerformed BETWEEN :startDate AND :endDate AND e.entityStatus = :entityStatus"
+				+ " GROUP BY e.expenseType.id ORDER BY SUM(e.expenseValue) DESC";
 	}
 
 	class QUERY_NAME {
@@ -29,6 +32,8 @@ public interface ExpenseDAO extends GenericDAO<Expense, Long> {
 		public static final String findValueByGroceryAndPeriod = "Expense.findValueByGroceryAndPeriod";
 
 		public static final String findMonthlyByGroceryAndPeriod = "Expense.findMonthlyByGroceryAndPeriod";
+
+		public static final String findExpensesByUnitAndPeriod = "Expense.findExpensesByUnitAndPeriod";
 
 	}
 
@@ -40,4 +45,7 @@ public interface ExpenseDAO extends GenericDAO<Expense, Long> {
 	List<ExpenseReport> findMonthlyByGroceryAndPeriod(String groceryUuid, LocalDate startDate, LocalDate endDate,
 			ExpenseTypeCategory expenseTypeCategory,
 			EntityStatus entityStatus) throws BusinessException;
+
+	List<ExpenseReport> findExpensesByUnitAndPeriod(String unitUuid, LocalDate startDate, LocalDate endDate, EntityStatus entityStatus)
+			throws BusinessException;
 }

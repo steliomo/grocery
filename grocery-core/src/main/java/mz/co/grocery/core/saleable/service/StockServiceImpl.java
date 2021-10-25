@@ -11,6 +11,7 @@ import org.springframework.stereotype.Service;
 
 import mz.co.grocery.core.saleable.dao.StockDAO;
 import mz.co.grocery.core.saleable.model.Stock;
+import mz.co.grocery.core.util.ApplicationTranslator;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.model.UserContext;
 import mz.co.msaude.boot.frameworks.service.AbstractService;
@@ -26,6 +27,9 @@ public class StockServiceImpl extends AbstractService implements StockService {
 
 	@Inject
 	private StockDAO stockDAO;
+
+	@Inject
+	private ApplicationTranslator translator;
 
 	@Override
 	public Stock createStock(final UserContext userContext, final Stock stock) throws BusinessException {
@@ -52,7 +56,7 @@ public class StockServiceImpl extends AbstractService implements StockService {
 
 		if (BigDecimal.ZERO.compareTo(stock.getPurchasePrice()) == BigDecimal.ZERO.intValue()
 				|| BigDecimal.ZERO.compareTo(stock.getSalePrice()) == BigDecimal.ZERO.intValue()) {
-			throw new BusinessException("The prices cannot be 0");
+			throw new BusinessException(this.translator.getTranslation("the.prices.cannot.be.zero"));
 		}
 
 		final Stock stockToUpdate = this.stockDAO.findByUuid(stock.getUuid());

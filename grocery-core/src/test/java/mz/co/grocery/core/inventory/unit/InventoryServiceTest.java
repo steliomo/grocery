@@ -3,13 +3,11 @@
  */
 package mz.co.grocery.core.inventory.unit;
 
-import static org.junit.Assert.assertEquals;
-import static org.mockito.Mockito.verify;
-import static org.mockito.Mockito.when;
-
+import org.junit.Assert;
 import org.junit.Test;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
+import org.mockito.Mockito;
 
 import mz.co.grocery.core.config.AbstractUnitServiceTest;
 import mz.co.grocery.core.fixturefactory.InventoryTemplate;
@@ -21,6 +19,7 @@ import mz.co.grocery.core.inventory.service.InventoryService;
 import mz.co.grocery.core.inventory.service.InventoryServiceImpl;
 import mz.co.grocery.core.inventory.service.StockInventoryService;
 import mz.co.grocery.core.saleable.service.StockService;
+import mz.co.grocery.core.util.ApplicationTranslator;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.fixturefactory.EntityFactory;
 import mz.co.msaude.boot.frameworks.model.UserContext;
@@ -46,6 +45,9 @@ public class InventoryServiceTest extends AbstractUnitServiceTest {
 	@Mock
 	private InventoryQueryService inventoryQueryService;
 
+	@Mock
+	private ApplicationTranslator translator;
+
 	@Test
 	public void shouldPerformInventory() throws BusinessException {
 
@@ -53,16 +55,16 @@ public class InventoryServiceTest extends AbstractUnitServiceTest {
 
 		final UserContext userContext = this.getUserContext();
 
-		when(this.inventoryQueryService.fetchInventoryByGroceryAndStatus(inventory.getGrocery(),
-		        InventoryStatus.PENDING)).thenThrow(new BusinessException());
+		Mockito.when(this.inventoryQueryService.fetchInventoryByGroceryAndStatus(inventory.getGrocery(),
+				InventoryStatus.PENDING)).thenThrow(new BusinessException());
 
 		this.inventoryService.performInventory(userContext, inventory);
 
-		verify(this.inventoryDAO).create(userContext, inventory);
+		Mockito.verify(this.inventoryDAO).create(userContext, inventory);
 
-		assertEquals(InventoryStatus.PENDING, inventory.getInventoryStatus());
+		Assert.assertEquals(InventoryStatus.PENDING, inventory.getInventoryStatus());
 		inventory.getStockInventories().forEach(stockInventory -> {
-			assertEquals(inventory.getInventoryDate(), stockInventory.getInventory().getInventoryDate());
+			Assert.assertEquals(inventory.getInventoryDate(), stockInventory.getInventory().getInventoryDate());
 		});
 
 	}
@@ -81,16 +83,16 @@ public class InventoryServiceTest extends AbstractUnitServiceTest {
 
 		final UserContext userContext = this.getUserContext();
 
-		when(this.inventoryQueryService.fetchInventoryByGroceryAndStatus(inventory.getGrocery(),
-		        InventoryStatus.PENDING)).thenReturn(inventory);
+		Mockito.when(this.inventoryQueryService.fetchInventoryByGroceryAndStatus(inventory.getGrocery(),
+				InventoryStatus.PENDING)).thenReturn(inventory);
 
 		this.inventoryService.performInventory(userContext, inventory);
 
-		verify(this.inventoryDAO).update(userContext, inventory);
+		Mockito.verify(this.inventoryDAO).update(userContext, inventory);
 
-		assertEquals(InventoryStatus.PENDING, inventory.getInventoryStatus());
+		Assert.assertEquals(InventoryStatus.PENDING, inventory.getInventoryStatus());
 		inventory.getStockInventories().forEach(stockInventory -> {
-			assertEquals(inventory.getInventoryDate(), stockInventory.getInventory().getInventoryDate());
+			Assert.assertEquals(inventory.getInventoryDate(), stockInventory.getInventory().getInventoryDate());
 		});
 	}
 
@@ -99,7 +101,7 @@ public class InventoryServiceTest extends AbstractUnitServiceTest {
 
 		final Inventory inventory = EntityFactory.gimme(Inventory.class, InventoryTemplate.WITH_STOCKS);
 		inventory.approveInventory();
-		when(this.inventoryQueryService.fetchInventoryUuid(inventory.getUuid())).thenReturn(inventory);
+		Mockito.when(this.inventoryQueryService.fetchInventoryUuid(inventory.getUuid())).thenReturn(inventory);
 		this.inventoryService.approveInventory(this.getUserContext(), inventory.getUuid());
 	}
 
@@ -108,10 +110,10 @@ public class InventoryServiceTest extends AbstractUnitServiceTest {
 
 		final Inventory inventory = EntityFactory.gimme(Inventory.class, InventoryTemplate.WITH_STOCKS);
 
-		when(this.inventoryQueryService.fetchInventoryUuid(inventory.getUuid())).thenReturn(inventory);
+		Mockito.when(this.inventoryQueryService.fetchInventoryUuid(inventory.getUuid())).thenReturn(inventory);
 
 		this.inventoryService.approveInventory(this.getUserContext(), inventory.getUuid());
 
-		assertEquals(InventoryStatus.APPROVED, inventory.getInventoryStatus());
+		Assert.assertEquals(InventoryStatus.APPROVED, inventory.getInventoryStatus());
 	}
 }

@@ -28,7 +28,8 @@ import mz.co.msaude.boot.frameworks.model.GenericEntity;
  * @author Stélio Moiane
  *
  */
-@NamedQueries({ @NamedQuery(name = SaleDAO.QUERY_NAME.findPerPeriod, query = SaleDAO.QUERY.findPerPeriod),
+@NamedQueries({
+	@NamedQuery(name = SaleDAO.QUERY_NAME.findPerPeriod, query = SaleDAO.QUERY.findPerPeriod),
 	@NamedQuery(name = SaleDAO.QUERY_NAME.findMonthlyPerPeriod, query = SaleDAO.QUERY.findMonthlyPerPeriod) })
 @Entity
 @Table(name = "SALES")
@@ -54,7 +55,7 @@ public class Sale extends GenericEntity {
 	private BigDecimal total = BigDecimal.ZERO;
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sale")
-	private Set<SaleItem> items;
+	private Set<SaleItem> items = new HashSet<>();
 
 	public Grocery getGrocery() {
 		return this.grocery;

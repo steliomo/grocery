@@ -41,6 +41,7 @@ public class RentPaymentServiceImpl extends AbstractService implements RentPayme
 
 		this.rentPaymentDAO.create(userContext, rentPayment);
 
+		rent.setTotalPaid(rentPayment.getPaymentValue());
 		rent.setPaymentStatus();
 		this.rentDAO.update(userContext, rent);
 

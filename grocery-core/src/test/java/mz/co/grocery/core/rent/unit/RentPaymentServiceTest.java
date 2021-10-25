@@ -72,13 +72,14 @@ public class RentPaymentServiceTest extends AbstractUnitServiceTest {
 				Rent.addRentItem(rentItem);
 			});
 		});
-
 	}
 
 	@Test
 	public void shouldMakeFullRentPayment() throws BusinessException {
 
 		final RentPayment rentPayment = EntityFactory.gimme(RentPayment.class, RentPaymentTemplate.VALID);
+		this.rent.setTotalRent();
+
 		rentPayment.setRent(this.rent);
 		this.rent.addRentPayment(rentPayment);
 		rentPayment.setPaymentValue(this.rent.getTotalRent());
@@ -93,7 +94,9 @@ public class RentPaymentServiceTest extends AbstractUnitServiceTest {
 	public void shouldMakePartialRentPayment() throws BusinessException {
 
 		final RentPayment rentPayment = EntityFactory.gimme(RentPayment.class, RentPaymentTemplate.VALID);
+		this.rent.setTotalRent();
 		rentPayment.setRent(this.rent);
+
 		this.rent.addRentPayment(rentPayment);
 
 		Mockito.when(this.rentDAO.findByUuid(this.rent.getUuid())).thenReturn(this.rent);
@@ -101,5 +104,4 @@ public class RentPaymentServiceTest extends AbstractUnitServiceTest {
 		this.rentService.makeRentPayment(this.getUserContext(), rentPayment);
 		Assert.assertEquals(PaymentStatus.INCOMPLETE, rentPayment.getPaymentStatus());
 	}
-
 }

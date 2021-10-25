@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 import mz.co.grocery.core.grocery.dao.GroceryDAO;
 import mz.co.grocery.core.grocery.model.Grocery;
 import mz.co.grocery.core.payment.model.Payment;
+import mz.co.grocery.core.util.ApplicationTranslator;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.model.UserContext;
 import mz.co.msaude.boot.frameworks.service.AbstractService;
@@ -31,6 +32,9 @@ public class PaymentServiceImpl extends AbstractService implements PaymentServic
 
 	@Inject
 	private GroceryDAO unitDAO;
+
+	@Inject
+	private ApplicationTranslator translator;
 
 	@Override
 	public Payment updateSubscription(final UserContext userContext, final Payment payment) throws BusinessException {
@@ -53,7 +57,7 @@ public class PaymentServiceImpl extends AbstractService implements PaymentServic
 		final Grocery unit = this.unitDAO.findByUuid(unitUuid);
 
 		if (PaymentServiceImpl.DEFAULT_DEBIT.compareTo(unit.getBalance()) == BigDecimal.ONE.intValue()) {
-			throw new BusinessException("Insufficient funds");
+			throw new BusinessException(this.translator.getTranslation("no.funds.available"));
 		}
 
 		unit.debitTransaction(PaymentServiceImpl.DEFAULT_DEBIT);

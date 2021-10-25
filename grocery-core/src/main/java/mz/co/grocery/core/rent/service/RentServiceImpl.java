@@ -17,6 +17,7 @@ import mz.co.grocery.core.rent.model.Rent;
 import mz.co.grocery.core.rent.model.RentItem;
 import mz.co.grocery.core.saleable.dao.StockDAO;
 import mz.co.grocery.core.saleable.model.Stock;
+import mz.co.grocery.core.util.ApplicationTranslator;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.model.UserContext;
 import mz.co.msaude.boot.frameworks.service.AbstractService;
@@ -42,14 +43,16 @@ public class RentServiceImpl extends AbstractService implements RentService {
 	@Inject
 	private PaymentService paymentService;
 
+	@Inject
+	private ApplicationTranslator translator;
+
 	@Override
 	public Rent rent(final UserContext userContext, final Rent rent) throws BusinessException {
 
 		if (rent.getRentItems().isEmpty()) {
-			throw new BusinessException("Cannot create a rent without items");
+			throw new BusinessException(this.translator.getTranslation("cannot.create.rent.without.items"));
 		}
 
-		rent.setPaymentStatus();
 		this.rentDAO.create(userContext, rent);
 
 		for (final RentItem rentItem : rent.getRentItems()) {
@@ -62,7 +65,7 @@ public class RentServiceImpl extends AbstractService implements RentService {
 				final Stock stock = this.stockDAO.findByUuid(rentItem.getItem().getUuid());
 
 				if (rentItem.getQuantity().doubleValue() > stock.getQuantity().doubleValue()) {
-					throw new BusinessException("The product quantity is not available");
+					throw new BusinessException(this.translator.getTranslation("product.quantity.unavailable", new String[] { stock.getName() }));
 				}
 
 				stock.subtractStock(rentItem.getQuantity());
@@ -72,6 +75,9 @@ public class RentServiceImpl extends AbstractService implements RentService {
 			rentItem.setRent(rent);
 			this.rentItemDAO.create(userContext, rentItem);
 		}
+
+		rent.setTotalRent();
+		rent.setPaymentStatus();
 
 		this.paymentService.debitTransaction(userContext, rent.getUnit().getUuid());
 		return rent;

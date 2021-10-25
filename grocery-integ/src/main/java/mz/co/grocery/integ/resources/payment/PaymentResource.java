@@ -13,12 +13,12 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.springframework.context.MessageSource;
 import org.springframework.stereotype.Service;
 
 import mz.co.grocery.core.payment.model.Payment;
 import mz.co.grocery.core.payment.model.Voucher;
 import mz.co.grocery.core.payment.service.PaymentService;
+import mz.co.grocery.core.util.ApplicationTranslator;
 import mz.co.grocery.integ.resources.AbstractResource;
 import mz.co.grocery.integ.resources.payment.dto.MpesaRequestDTO;
 import mz.co.grocery.integ.resources.payment.dto.MpesaResponseDTO;
@@ -38,7 +38,7 @@ public class PaymentResource extends AbstractResource {
 	public static final String NAME = "mz.co.grocery.integ.resources.payment.PaymentResource";
 
 	@Inject
-	private MessageSource messageSource;
+	private ApplicationTranslator translator;
 
 	@Inject
 	private PaymentService paymentService;
@@ -50,7 +50,7 @@ public class PaymentResource extends AbstractResource {
 	@Path("vouchers")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getPaymentTypes() {
-		final EnumsDTO<Voucher> paymentTypes = new EnumsDTO<>(this.messageSource, Voucher.values());
+		final EnumsDTO<Voucher> paymentTypes = new EnumsDTO<>(this.translator, Voucher.values());
 		return Response.ok(paymentTypes).build();
 	}
 
@@ -73,6 +73,10 @@ public class PaymentResource extends AbstractResource {
 						new MpesaRequestDTO(this.getContext().getUsername(), payment.getMpesaNumber(), payment.getTotal().toPlainString(),
 								this.mpesa.getThirtPartyReference(),
 								this.mpesa.getProviderCode()));
+
+		if ("INS-10".equals(mpesaResponseDTO.getOutput_ResponseCode())) {
+			throw new BusinessException(this.translator.getTranslation("duplicated.transaction"));
+		}
 
 		payment.setStatus(mpesaResponseDTO.getOutput_ResponseCode());
 		payment.setStatusDescription(mpesaResponseDTO.getOutput_ResponseDesc());

@@ -28,6 +28,7 @@ import mz.co.grocery.core.rent.service.ReturnService;
 import mz.co.grocery.core.rent.service.ReturnServiceImpl;
 import mz.co.grocery.core.saleable.dao.StockDAO;
 import mz.co.grocery.core.saleable.model.Stock;
+import mz.co.grocery.core.util.ApplicationTranslator;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.fixturefactory.EntityFactory;
 import mz.co.msaude.boot.frameworks.model.UserContext;
@@ -55,6 +56,9 @@ public class ReturnServiceTest extends AbstractUnitServiceTest {
 
 	@Captor
 	private ArgumentCaptor<RentItem> rentItemCaptor;
+
+	@Mock
+	private ApplicationTranslator translator;
 
 	@Test
 	public void shouldReturnRentItems() throws BusinessException {

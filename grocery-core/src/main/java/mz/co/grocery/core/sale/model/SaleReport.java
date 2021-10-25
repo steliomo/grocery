@@ -3,6 +3,7 @@
  */
 package mz.co.grocery.core.sale.model;
 
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.Month;
@@ -11,7 +12,9 @@ import java.time.Month;
  * @author Stélio Moiane
  *
  */
-public class SaleReport {
+public class SaleReport implements Serializable {
+
+	private static final long serialVersionUID = 1L;
 
 	private LocalDate saleDate;
 

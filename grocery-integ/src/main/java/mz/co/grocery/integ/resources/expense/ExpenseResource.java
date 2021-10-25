@@ -3,25 +3,31 @@
  */
 package mz.co.grocery.integ.resources.expense;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
+import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.springframework.stereotype.Service;
 
 import mz.co.grocery.core.expense.model.Expense;
+import mz.co.grocery.core.expense.model.ExpenseReport;
+import mz.co.grocery.core.expense.service.ExpenseQueryService;
 import mz.co.grocery.core.expense.service.ExpenseService;
 import mz.co.grocery.integ.resources.AbstractResource;
 import mz.co.grocery.integ.resources.expense.dto.ExpenseDTO;
 import mz.co.grocery.integ.resources.expense.dto.ExpensesDTO;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
+import mz.co.msaude.boot.frameworks.util.LocalDateAdapter;
 
 /**
  * @author Stélio Moiane
@@ -35,6 +41,9 @@ public class ExpenseResource extends AbstractResource {
 
 	@Inject
 	private ExpenseService expenseService;
+
+	@Inject
+	private ExpenseQueryService expenseQueryService;
 
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
@@ -50,6 +59,25 @@ public class ExpenseResource extends AbstractResource {
 				.collect(Collectors.toList());
 
 		return Response.ok(expensesDTO.setExpenseDTOs(expenseDTOs)).build();
+	}
+
+	@Path("by-unit-and-period")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response findExpensesReportByUnitAndPeriod(@QueryParam("unitUuid") final String unitUuid, @QueryParam("startDate") final String startDate,
+			@QueryParam("endDate") final String endDate)
+					throws BusinessException {
+
+		final LocalDateAdapter dateAdapter = new LocalDateAdapter();
+		final LocalDate sDate = dateAdapter.unmarshal(startDate);
+		final LocalDate eDate = dateAdapter.unmarshal(endDate);
+
+		final List<ExpenseReport> expenses = this.expenseQueryService.findExpensesByUnitAndPeriod(unitUuid, sDate, eDate);
+
+		final ExpensesDTO expensesDTO = new ExpensesDTO();
+		expensesDTO.setExpensesReport(expenses);
+
+		return Response.ok(expensesDTO).build();
 	}
 
 }

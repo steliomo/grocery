@@ -21,4 +21,6 @@ public interface ExpenseQueryService {
 
 	List<ExpenseReport> findMonthyExpensesByGroceryAndPeriod(String groceryUuid, LocalDate startDate,
 			LocalDate endDate) throws BusinessException;
+
+	List<ExpenseReport> findExpensesByUnitAndPeriod(String unitUuid, LocalDate startDate, LocalDate endDate) throws BusinessException;
 }

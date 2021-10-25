@@ -19,6 +19,7 @@ import mz.co.grocery.core.saleable.model.Stock;
 import mz.co.grocery.core.saleable.model.StockStatus;
 import mz.co.grocery.core.saleable.service.StockService;
 import mz.co.grocery.core.saleable.service.StockServiceImpl;
+import mz.co.grocery.core.util.ApplicationTranslator;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.fixturefactory.EntityFactory;
 import mz.co.msaude.boot.frameworks.model.EntityStatus;
@@ -34,6 +35,9 @@ public class StockServiceTest extends AbstractUnitServiceTest {
 
 	@InjectMocks
 	private final StockService stockService = new StockServiceImpl();
+
+	@Mock
+	private ApplicationTranslator translator;
 
 	private Stock stock;
 

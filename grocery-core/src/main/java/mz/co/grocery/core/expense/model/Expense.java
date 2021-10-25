@@ -20,7 +20,8 @@ import mz.co.msaude.boot.frameworks.model.GenericEntity;
 
 @NamedQueries({
 	@NamedQuery(name = ExpenseDAO.QUERY_NAME.findValueByGroceryAndPeriod, query = ExpenseDAO.QUERY.findValueByGroceryAndPeriod),
-	@NamedQuery(name = ExpenseDAO.QUERY_NAME.findMonthlyByGroceryAndPeriod, query = ExpenseDAO.QUERY.findMonthlyByGroceryAndPeriod) })
+	@NamedQuery(name = ExpenseDAO.QUERY_NAME.findMonthlyByGroceryAndPeriod, query = ExpenseDAO.QUERY.findMonthlyByGroceryAndPeriod),
+	@NamedQuery(name = ExpenseDAO.QUERY_NAME.findExpensesByUnitAndPeriod, query = ExpenseDAO.QUERY.findExpensesByUnitAndPeriod) })
 @Entity
 @Table(name = "EXPENSES")
 public class Expense extends GenericEntity {

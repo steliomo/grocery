@@ -23,6 +23,7 @@ import mz.co.grocery.core.expense.model.ExpenseReport;
 import mz.co.grocery.core.expense.service.ExpenseQueryService;
 import mz.co.grocery.core.grocery.model.GroceryUser;
 import mz.co.grocery.core.grocery.service.GroceryUserQueryService;
+import mz.co.grocery.core.rent.service.RentPaymentQueryService;
 import mz.co.grocery.core.sale.model.Sale;
 import mz.co.grocery.core.sale.model.SaleReport;
 import mz.co.grocery.core.sale.service.SaleQueryService;
@@ -55,6 +56,9 @@ public class SaleResource extends AbstractResource {
 	@Inject
 	private GroceryUserQueryService groceryUserQueryService;
 
+	@Inject
+	private RentPaymentQueryService rentPaymentQueryService;
+
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
@@ -77,10 +81,15 @@ public class SaleResource extends AbstractResource {
 		final LocalDate eDate = dateAdapter.unmarshal(endDate);
 
 		final List<SaleReport> sales = this.saleQueryService.findSalesPerPeriod(groceryUuid, sDate, eDate);
+
+		final List<SaleReport> rents = this.rentPaymentQueryService.findSalesByUnitAndPeriod(groceryUuid, sDate, eDate);
+
 		final BigDecimal expense = this.expenseQueryService.findExpensesValueByGroceryAndPeriod(groceryUuid, sDate,
 				eDate);
 
-		return Response.ok(new SalesDTO(user).setSalesReport(sales).setExpense(expense)).build();
+		final SalesDTO buildMonthly = new SalesDTO(user).setSalesBalance(sales).setRentsBalance(rents).setExpense(expense).buildPeriod();
+
+		return Response.ok(buildMonthly).build();
 	}
 
 	@GET
@@ -97,12 +106,14 @@ public class SaleResource extends AbstractResource {
 		final LocalDate eDate = dateAdapter.unmarshal(endDate);
 
 		final List<SaleReport> sales = this.saleQueryService.findMonthlySalesPerPeriod(groceryUuid, sDate, eDate);
+
+		final List<SaleReport> rents = this.rentPaymentQueryService.findSalesByUnitAndMonthlyPeriod(groceryUuid, sDate, eDate);
+
 		final List<ExpenseReport> expenses = this.expenseQueryService.findMonthyExpensesByGroceryAndPeriod(groceryUuid,
 				sDate,
 				eDate);
 
-		final SalesDTO salesDTO = new SalesDTO(user).setSalesReport(sales).addSalesMissingMonths().setExpenses(expenses)
-				.addExpensesMissingMonths().calculateMonthlyProfit();
+		final SalesDTO salesDTO = new SalesDTO(user).setSalesBalance(sales).setRentsBalance(rents).setExpenses(expenses).buildMonthly();
 
 		return Response.ok(salesDTO).build();
 	}

@@ -11,9 +11,12 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import mz.co.grocery.core.rent.dao.RentPaymentDAO;
 import mz.co.msaude.boot.frameworks.model.GenericEntity;
 
 /**
@@ -21,6 +24,8 @@ import mz.co.msaude.boot.frameworks.model.GenericEntity;
  *
  */
 
+@NamedQueries({ @NamedQuery(name = RentPaymentDAO.QUERY_NAME.findSalesByUnitAndPeriod, query = RentPaymentDAO.QUERY.findSalesByUnitAndPeriod),
+	@NamedQuery(name = RentPaymentDAO.QUERY_NAME.findSalesByUnitAndMonthlyPeriod, query = RentPaymentDAO.QUERY.findSalesByUnitAndMonthlyPeriod) })
 @Entity
 @Table(name = "RENT_PAYMENTS")
 public class RentPayment extends GenericEntity {

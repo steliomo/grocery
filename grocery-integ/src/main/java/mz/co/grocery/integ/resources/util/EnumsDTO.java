@@ -5,9 +5,8 @@ package mz.co.grocery.integ.resources.util;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Locale;
 
-import org.springframework.context.MessageSource;
+import mz.co.grocery.core.util.ApplicationTranslator;
 
 /**
  * @author Stélio Moiane
@@ -16,10 +15,10 @@ import org.springframework.context.MessageSource;
 public class EnumsDTO<T> {
 
 	private final T[] values;
-	private final MessageSource messageSource;
+	private final ApplicationTranslator applicationTranslator;
 
-	public EnumsDTO(final MessageSource messageSource, final T[] values) {
-		this.messageSource = messageSource;
+	public EnumsDTO(final ApplicationTranslator applicationTranslator, final T[] values) {
+		this.applicationTranslator = applicationTranslator;
 		this.values = values;
 	}
 
@@ -27,7 +26,7 @@ public class EnumsDTO<T> {
 		final List<EnumDTO> values = new ArrayList<>();
 
 		for (final T t : this.values) {
-			values.add(new EnumDTO(t.toString(), this.messageSource.getMessage(t.toString(), null, new Locale("pt"))));
+			values.add(new EnumDTO(t.toString(), this.applicationTranslator.getTranslation(t.toString())));
 		}
 
 		return values;

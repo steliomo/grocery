@@ -56,7 +56,15 @@ public class Rent extends GenericEntity {
 
 	@Enumerated(EnumType.STRING)
 	@Column(name = "PAYMENT_STATUS", nullable = false, length = 15)
-	private PaymentStatus paymentStatus;
+	private PaymentStatus paymentStatus = PaymentStatus.PENDING;
+
+	@NotNull
+	@Column(name = "TOTAL_RENT", nullable = false)
+	private BigDecimal totalRent = BigDecimal.ZERO;
+
+	@NotNull
+	@Column(name = "TOTAL_PAID", nullable = false)
+	private BigDecimal totalPaid = BigDecimal.ZERO;
 
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "rent")
 	private final Set<RentItem> rentItems = new HashSet<>();
@@ -109,29 +117,34 @@ public class Rent extends GenericEntity {
 	}
 
 	public BigDecimal getTotalRent() {
-		return this.rentItems.stream().map(RentItem::getTotal).reduce(BigDecimal.ZERO, BigDecimal::add);
+		return this.totalRent;
 	}
 
 	public BigDecimal getTotalPayment() {
-		return this.rentPayments.stream().map(RentPayment::getPaymentValue).reduce(BigDecimal.ZERO, BigDecimal::add);
+		return this.totalPaid;
 	}
 
 	public BigDecimal getTotalToPay() {
-		return this.getTotalRent().subtract(this.getTotalPayment());
+		return this.totalRent.subtract(this.totalPaid);
 	}
 
 	public void setPaymentStatus() {
 
-		if (this.rentPayments.isEmpty()) {
-			this.paymentStatus = PaymentStatus.PENDING;
-			return;
-		}
-
-		if (this.getTotalPayment().compareTo(this.getTotalRent()) == BigDecimal.ZERO.intValue()) {
+		if (this.totalRent.compareTo(this.totalPaid) == BigDecimal.ZERO.intValue()) {
 			this.paymentStatus = PaymentStatus.COMPLETE;
 			return;
 		}
 
-		this.paymentStatus = PaymentStatus.INCOMPLETE;
+		if (this.totalPaid.intValue() != BigDecimal.ZERO.intValue() && this.totalPaid.compareTo(this.totalRent) == -BigDecimal.ONE.intValue()) {
+			this.paymentStatus = PaymentStatus.INCOMPLETE;
+		}
+	}
+
+	public void setTotalRent() {
+		this.totalRent = this.rentItems.stream().map(RentItem::getTotal).reduce(BigDecimal.ZERO, BigDecimal::add);
+	}
+
+	public void setTotalPaid(final BigDecimal paymentValue) {
+		this.totalPaid = this.totalPaid.add(paymentValue);
 	}
 }

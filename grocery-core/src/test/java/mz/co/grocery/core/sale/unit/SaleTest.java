@@ -30,6 +30,7 @@ import mz.co.grocery.core.sale.service.SaleService;
 import mz.co.grocery.core.sale.service.SaleServiceImpl;
 import mz.co.grocery.core.saleable.dao.StockDAO;
 import mz.co.grocery.core.saleable.model.Stock;
+import mz.co.grocery.core.util.ApplicationTranslator;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.fixturefactory.EntityFactory;
 import mz.co.msaude.boot.frameworks.model.EntityStatus;
@@ -57,6 +58,9 @@ public class SaleTest extends AbstractUnitServiceTest {
 
 	@Mock
 	private PaymentService paymentService;
+
+	@Mock
+	private ApplicationTranslator translator;
 
 	private Sale sale;
 

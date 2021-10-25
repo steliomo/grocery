@@ -17,6 +17,7 @@ import mz.co.grocery.core.sale.model.Sale;
 import mz.co.grocery.core.sale.model.SaleItem;
 import mz.co.grocery.core.saleable.dao.StockDAO;
 import mz.co.grocery.core.saleable.model.Stock;
+import mz.co.grocery.core.util.ApplicationTranslator;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.model.EntityStatus;
 import mz.co.msaude.boot.frameworks.model.UserContext;
@@ -46,13 +47,16 @@ public class SaleServiceImpl extends AbstractService implements SaleService {
 	@Inject
 	private PaymentService paymentService;
 
+	@Inject
+	private ApplicationTranslator translator;
+
 	@Override
 	public Sale registSale(final UserContext userContext, final Sale sale) throws BusinessException {
 
 		this.verifyPendingInventory(sale);
 
 		if (sale.getItems().isEmpty()) {
-			throw new BusinessException("cannot create a sale without items");
+			throw new BusinessException(this.translator.getTranslation("cannot.create.sale.without.items"));
 		}
 
 		this.saleDAO.create(userContext, sale);
@@ -86,7 +90,7 @@ public class SaleServiceImpl extends AbstractService implements SaleService {
 		}
 
 		if (inventory != null) {
-			throw new BusinessException("cannot registe a sale with a pendind inventory");
+			throw new BusinessException(this.translator.getTranslation("cannot.registe.sale.with.pendind.inventory"));
 		}
 	}
 }
