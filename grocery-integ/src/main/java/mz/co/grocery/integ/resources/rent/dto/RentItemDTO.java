@@ -94,6 +94,8 @@ public class RentItemDTO extends GenericDTO<RentItem> {
 		rentItem.setEndDate(this.endDate);
 		rentItem.setDiscount(this.discount);
 
+		rentItem.setTotal();
+
 		return rentItem;
 	}
 

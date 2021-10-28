@@ -129,7 +129,9 @@ public class RentResource extends AbstractResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response processQuotation(final RentDTO rentDTO) throws BusinessException, JRException, FileNotFoundException {
 
-		final RentReport rentReport = new RentReport(rentDTO.get());
+		final Rent rent = rentDTO.get();
+
+		final RentReport rentReport = new RentReport(rent);
 
 		final JasperReport jasperReport = JasperCompileManager.compileReport(new FileInputStream(this.FILE_DIR + "reports/quotation.jrxml"));
 

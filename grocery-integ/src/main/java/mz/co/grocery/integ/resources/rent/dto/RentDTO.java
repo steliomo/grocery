@@ -82,6 +82,7 @@ public class RentDTO extends GenericDTO<Rent> {
 		this.rentItemsDTO.forEach(rentItemDTO -> rent.addRentItem(rentItemDTO.get()));
 		this.rentPaymentsDTO.forEach(rentPaymentsDTO -> rent.addRentPayment(rentPaymentsDTO.get()));
 
+		rent.setTotalRent();
 		return rent;
 	}
 
