@@ -197,6 +197,10 @@ public class SalesDTO {
 
 		this.profit = this.billing.subtract(this.expense);
 
+		if (this.profit.doubleValue() < 0) {
+			this.profit = BigDecimal.ZERO;
+		}
+
 		this.salesReport.sort((s1, s2) -> s1.getMonth().compareTo(s2.getMonth()));
 
 		return this;
