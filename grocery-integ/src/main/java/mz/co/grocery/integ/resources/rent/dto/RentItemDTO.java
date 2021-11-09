@@ -70,14 +70,14 @@ public class RentItemDTO extends GenericDTO<RentItem> {
 			this.toReturn = rentItem.toReturn();
 
 			this.returnable = rentItem.isReturnable();
-
-			if (ItemType.PRODUCT.equals(rentItem.getType())) {
-				this.stockDTO = new StockDTO((Stock) rentItem.getItem());
-				return;
-			}
-
-			this.serviceItemDTO = new ServiceItemDTO((ServiceItem) rentItem.getItem());
 		}
+
+		if (ItemType.PRODUCT.equals(rentItem.getType())) {
+			this.stockDTO = new StockDTO((Stock) rentItem.getItem());
+			return;
+		}
+
+		this.serviceItemDTO = new ServiceItemDTO((ServiceItem) rentItem.getItem());
 	}
 
 	@Override
