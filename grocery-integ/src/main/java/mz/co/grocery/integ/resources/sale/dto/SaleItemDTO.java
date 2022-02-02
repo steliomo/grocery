@@ -34,7 +34,6 @@ public class SaleItemDTO extends GenericDTO<SaleItem> {
 
 	public SaleItemDTO(final SaleItem saleItem) {
 		super(saleItem);
-		this.mapper(saleItem);
 	}
 
 	@Override

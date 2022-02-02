@@ -76,4 +76,9 @@ public class StockQueryServiceImpl implements StockQueryService {
 			throws BusinessException {
 		return this.stockDAO.fetchNotInThisGroceryByProduct(groceryUuid, productUuid, EntityStatus.ACTIVE);
 	}
+
+	@Override
+	public List<Stock> fetchStocksInAnalysisByUnit(final String unitUuid) throws BusinessException {
+		return this.stockDAO.fetchInAnalysisByUnitUuid(unitUuid, EntityStatus.ACTIVE);
+	}
 }

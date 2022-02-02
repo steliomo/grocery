@@ -35,7 +35,6 @@ public class ExpenseDTO extends GenericDTO<Expense> {
 
 	public ExpenseDTO(final Expense expense) {
 		super(expense);
-		this.mapper(expense);
 	}
 
 	@Override

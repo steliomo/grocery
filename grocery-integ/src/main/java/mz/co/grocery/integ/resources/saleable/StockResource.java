@@ -185,4 +185,16 @@ public class StockResource extends AbstractResource {
 
 		return Response.ok().build();
 	}
+
+	@GET
+	@Path("in-analysis")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response fetchStocksInAnalysis(@QueryParam("unitUuid") final String unitUuid) throws BusinessException {
+
+		final List<Stock> stocksInAnalysis = this.stockQueryService.fetchStocksInAnalysisByUnit(unitUuid);
+		final List<StockDTO> stocksAnalysisDTOs = stocksInAnalysis.stream().map(stock -> new StockDTO(stock)).collect(Collectors.toList());
+
+		return Response.ok(stocksAnalysisDTOs).build();
+	}
 }

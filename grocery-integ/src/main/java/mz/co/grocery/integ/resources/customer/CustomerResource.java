@@ -3,6 +3,7 @@
  */
 package mz.co.grocery.integ.resources.customer;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -26,6 +27,7 @@ import mz.co.grocery.integ.resources.AbstractResource;
 import mz.co.grocery.integ.resources.customer.dto.CustomerDTO;
 import mz.co.grocery.integ.resources.customer.dto.CustomersDTO;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
+import mz.co.msaude.boot.frameworks.util.LocalDateAdapter;
 
 /**
  * @author Stélio Moiane
@@ -96,6 +98,26 @@ public class CustomerResource extends AbstractResource {
 		final List<CustomerDTO> customerDTOs = customers.stream().map(customer -> new CustomerDTO(customer)).collect(Collectors.toList());
 
 		final Long totalCustomers = this.customerQueryService.countCustomersWithPendingDevolutionsByUnit(unitUuid);
+
+		return Response.ok(new CustomersDTO(customerDTOs, totalCustomers)).build();
+	}
+
+	@Path("pending-contract-payment-by-unit/{unitUuid}")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response findCustomersWithContractPendingPaymentByUnit(@PathParam("unitUuid") final String unitUuid,
+			@QueryParam("currentPage") final int currentPage,
+			@QueryParam("maxResult") final int maxResult, @QueryParam("currentDate") final String currentDate) throws BusinessException {
+
+		final LocalDateAdapter adapter = new LocalDateAdapter();
+		final LocalDate localDate = adapter.unmarshal(currentDate);
+
+		final List<Customer> customers = this.customerQueryService.findCustomersWithContractPendingPaymentByUnit(unitUuid, currentPage, maxResult,
+				localDate);
+
+		final List<CustomerDTO> customerDTOs = customers.stream().map(customer -> new CustomerDTO(customer)).collect(Collectors.toList());
+
+		final Long totalCustomers = this.customerQueryService.countCustomersWithContractPendingPaymentByUnit(unitUuid, localDate);
 
 		return Response.ok(new CustomersDTO(customerDTOs, totalCustomers)).build();
 	}

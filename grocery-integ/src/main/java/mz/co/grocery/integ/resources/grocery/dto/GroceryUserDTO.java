@@ -29,7 +29,6 @@ public class GroceryUserDTO extends GenericDTO<GroceryUser> {
 
 	public GroceryUserDTO(final GroceryUser groceryUser) {
 		super(groceryUser);
-		this.mapper(groceryUser);
 	}
 
 	@Override

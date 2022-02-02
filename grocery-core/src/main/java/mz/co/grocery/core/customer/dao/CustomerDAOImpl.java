@@ -3,6 +3,7 @@
  */
 package mz.co.grocery.core.customer.dao;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import org.springframework.stereotype.Repository;
@@ -64,5 +65,22 @@ public class CustomerDAOImpl extends GenericDAOImpl<Customer, Long> implements C
 	public Long countPendingDevolutionByUnit(final String unitUuid, final EntityStatus entityStatus) throws BusinessException {
 		return this.findSingleByNamedQuery(CustomerDAO.QUERY_NAME.countPendingDevolutionByUnit,
 				new ParamBuilder().add("unitUuid", unitUuid).add("entityStatus", entityStatus).process(), Long.class);
+	}
+
+	@Override
+	public List<Customer> findWithContractPendingPaymentByUnit(final String unitUuid, final int currentPage, final int maxResult,
+			final LocalDate currentDate,
+			final EntityStatus entityStatus) throws BusinessException {
+		return this.findByQuery(CustomerDAO.QUERY_NAME.findWithContractPendingPaymentByUnit,
+				new ParamBuilder().add("unitUuid", unitUuid).add("currentDate", currentDate).add("entityStatus", entityStatus).process())
+				.setFirstResult(currentPage * maxResult)
+				.setMaxResults(maxResult).getResultList();
+	}
+
+	@Override
+	public Long countCustomersWithContractPendingPaymentByUnit(final String unitUuid, final LocalDate currentDate, final EntityStatus entityStatus)
+			throws BusinessException {
+		return this.findSingleByNamedQuery(CustomerDAO.QUERY_NAME.countCustomersWithContractPendingPaymentByUnit,
+				new ParamBuilder().add("unitUuid", unitUuid).add("currentDate", currentDate).add("entityStatus", entityStatus).process(), Long.class);
 	}
 }

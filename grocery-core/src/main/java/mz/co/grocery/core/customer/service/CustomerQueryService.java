@@ -3,6 +3,7 @@
  */
 package mz.co.grocery.core.customer.service;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import mz.co.grocery.core.customer.model.Customer;
@@ -25,4 +26,9 @@ public interface CustomerQueryService {
 	List<Customer> findCustomersWithPendingDevolutionsByUnit(String unitUuid, int currentPage, int maxResult) throws BusinessException;
 
 	Long countCustomersWithPendingDevolutionsByUnit(String unitUuid) throws BusinessException;
+
+	List<Customer> findCustomersWithContractPendingPaymentByUnit(String unitUuid, int currentPage, int maxResult, LocalDate currentDate)
+			throws BusinessException;
+
+	Long countCustomersWithContractPendingPaymentByUnit(String unitUuid, LocalDate currentDate) throws BusinessException;
 }

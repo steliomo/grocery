@@ -4,5 +4,7 @@ public enum StockStatus {
 
 	LOW,
 
-	GOOD
+	GOOD,
+
+	BAD
 }

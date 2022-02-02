@@ -6,6 +6,7 @@ package mz.co.grocery.integ.resources.config;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.springframework.stereotype.Service;
 
+import mz.co.grocery.integ.resources.contract.ContractResource;
 import mz.co.grocery.integ.resources.customer.CustomerResource;
 import mz.co.grocery.integ.resources.expense.ExpenseResource;
 import mz.co.grocery.integ.resources.expense.ExpenseTypeResource;
@@ -52,6 +53,7 @@ public class JerseyConfig extends ResourceConfig {
 		this.register(PaymentResource.class);
 		this.register(RentResource.class);
 		this.register(CustomerResource.class);
+		this.register(ContractResource.class);
 
 		this.register(ApiExceptionMapper.class);
 		this.register(BusinessExceptionMapper.class);

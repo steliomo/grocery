@@ -85,4 +85,10 @@ public class StockDAOImpl extends GenericDAOImpl<Stock, Long> implements StockDA
 				new ParamBuilder().add("groceryUuid", groceryUuid).add("productUuid", productUuid)
 				.add("entityStatus", entityStatus).process());
 	}
+
+	@Override
+	public List<Stock> fetchInAnalysisByUnitUuid(final String unitUuid, final EntityStatus entityStatus) throws BusinessException {
+		return this.findByNamedQuery(StockDAO.QUERY_NAME.fetchInAnalysisByUnitUuid,
+				new ParamBuilder().add("unitUuid", unitUuid).add("entityStatus", entityStatus).process());
+	}
 }

@@ -3,6 +3,7 @@
  */
 package mz.co.grocery.core.customer.dao;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import mz.co.grocery.core.customer.model.Customer;
@@ -28,7 +29,11 @@ public interface CustomerDAO extends GenericDAO<Customer, Long> {
 
 		public static final String findPendingDevolutionByUnit = "SELECT c FROM Rent r INNER JOIN r.customer c INNER JOIN r.rentItems ri WHERE c.unit.uuid = :unitUuid AND ri.returnable = true AND ri.returnStatus = 'PENDING' AND c.entityStatus = :entityStatus GROUP BY c.id ORDER BY c.name";
 
-		public static final String countPendingDevolutionByUnit = "SELECT COUNT(DISTINCT c) FROM Rent r INNER JOIN r.customer c INNER JOIN r.rentItems ri WHERE c.unit.uuid = :unitUuid AND ri.returnable = TRUE AND ri.returnStatus = 'PENDING' AND c.entityStatus = :entityStatus ORDER BY c.name";
+		public static final String countPendingDevolutionByUnit = "SELECT COUNT(DISTINCT c) FROM Rent r INNER JOIN r.customer c INNER JOIN r.rentItems ri WHERE c.unit.uuid = :unitUuid AND ri.returnable = TRUE AND ri.returnStatus = 'PENDING' AND c.entityStatus = :entityStatus";
+
+		public static final String findWithContractPendingPaymentByUnit = "SELECT c FROM Contract ct INNER JOIN ct.customer c WHERE ct.unit.uuid = :unitUuid AND ct.referencePaymentDate <= :currentDate AND ct.entityStatus = :entityStatus GROUP BY c.id ORDER BY c.name";
+
+		public static final String countCustomersWithContractPendingPaymentByUnit = "SELECT COUNT(DISTINCT c) FROM Contract ct INNER JOIN ct.customer c WHERE ct.unit.uuid = :unitUuid AND ct.referencePaymentDate <= :currentDate AND ct.entityStatus = :entityStatus";
 	}
 
 	class QUERY_NAME {
@@ -45,6 +50,9 @@ public interface CustomerDAO extends GenericDAO<Customer, Long> {
 
 		public static final String countPendingDevolutionByUnit = "Customer.countPendingDevolutionByUnit";
 
+		public static final String findWithContractPendingPaymentByUnit = "Customer.findWithContractPendingPaymentByUnit";
+
+		public static final String countCustomersWithContractPendingPaymentByUnit = "Customer.countCustomersWithContractPendingPaymentByUnit";
 	}
 
 	Long countByUnit(String unitUuid, EntityStatus entityStatus) throws BusinessException;
@@ -58,4 +66,9 @@ public interface CustomerDAO extends GenericDAO<Customer, Long> {
 	List<Customer> findPendingDevolutionByUnit(String unitUuid, int currentPage, int maxResult, EntityStatus entityStatus) throws BusinessException;
 
 	Long countPendingDevolutionByUnit(String unitUuid, EntityStatus entityStatus) throws BusinessException;
+
+	List<Customer> findWithContractPendingPaymentByUnit(String unitUuid, int currentPage, int maxResult, LocalDate currentDate,
+			EntityStatus entityStatus) throws BusinessException;
+
+	Long countCustomersWithContractPendingPaymentByUnit(String unitUuid, LocalDate currentDate, EntityStatus entityStatus) throws BusinessException;
 }

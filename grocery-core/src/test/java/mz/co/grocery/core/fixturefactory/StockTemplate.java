@@ -4,6 +4,7 @@
 package mz.co.grocery.core.fixturefactory;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.Rule;
@@ -11,6 +12,7 @@ import br.com.six2six.fixturefactory.loader.TemplateLoader;
 import mz.co.grocery.core.grocery.model.Grocery;
 import mz.co.grocery.core.item.model.ProductDescription;
 import mz.co.grocery.core.saleable.model.Stock;
+import mz.co.grocery.core.saleable.model.StockStatus;
 import mz.co.msaude.boot.frameworks.util.UuidFactory;
 
 /**
@@ -22,6 +24,7 @@ public class StockTemplate implements TemplateLoader {
 	public static final String VALID = "VALID";
 	public static final String WITH_UUID = "WITH_UUID";
 	public static final String UNAVAILABLE = "UNAVAILABLE";
+	public static final String IN_ANALYSIS = "IN_ANALYSIS";
 
 	@Override
 	public void load() {
@@ -46,6 +49,15 @@ public class StockTemplate implements TemplateLoader {
 		Fixture.of(Stock.class).addTemplate(StockTemplate.UNAVAILABLE).inherits(StockTemplate.VALID, new Rule() {
 			{
 				this.add("quantity", BigDecimal.ZERO);
+			}
+		});
+
+		Fixture.of(Stock.class).addTemplate(StockTemplate.IN_ANALYSIS).inherits(StockTemplate.VALID, new Rule() {
+			{
+				this.add("quantity", this.random(BigDecimal.class, this.range(new BigDecimal(0), new BigDecimal(10))));
+				this.add("inventoryDate", LocalDate.now());
+				this.add("inventoryQuantity", this.random(BigDecimal.class, this.range(new BigDecimal(11), new BigDecimal(20))));
+				this.add("productStockStatus", StockStatus.BAD);
 			}
 		});
 	}

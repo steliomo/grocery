@@ -25,10 +25,7 @@ public class CustomerTemplate implements TemplateLoader {
 				this.add("address", "Bairro Djuba, Q2, casa nr.375, Matola-rio Boane");
 				this.add("contact", "+258840546824");
 				this.add("email", "steliomo@gmail.com");
-				this.add("vehicleNumberPlate", "AGE-769-MC");
 			}
 		});
-
 	}
-
 }

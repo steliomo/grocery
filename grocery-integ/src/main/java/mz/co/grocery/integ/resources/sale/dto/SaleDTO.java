@@ -37,7 +37,6 @@ public class SaleDTO extends GenericDTO<Sale> {
 
 	public SaleDTO(final Sale sale) {
 		super(sale);
-		this.mapper(sale);
 	}
 
 	@Override
@@ -47,7 +46,7 @@ public class SaleDTO extends GenericDTO<Sale> {
 		this.billing = sale.getBilling();
 		this.total = sale.getTotal();
 		this.saleItemsDTO = sale.getItems().stream().map(saleItem -> new SaleItemDTO(saleItem))
-		        .collect(Collectors.toSet());
+				.collect(Collectors.toSet());
 	}
 
 	@Override

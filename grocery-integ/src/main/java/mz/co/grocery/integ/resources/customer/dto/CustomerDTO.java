@@ -25,21 +25,11 @@ public class CustomerDTO extends GenericDTO<Customer> {
 
 	private String email;
 
-	private String vehicleNumberPlate;
-
 	public CustomerDTO() {
 	}
 
 	public CustomerDTO(final Customer customer) {
 		super(customer);
-		this.mapper(customer);
-	}
-
-	/**
-	 * @param customerUuid
-	 */
-	public CustomerDTO(final String customerUuid) {
-		// TODO Auto-generated constructor stub
 	}
 
 	@Override
@@ -55,7 +45,6 @@ public class CustomerDTO extends GenericDTO<Customer> {
 		this.address = customer.getAddress();
 		this.contact = customer.getContact();
 		this.email = customer.getEmail();
-		this.vehicleNumberPlate = customer.getVehicleNumberPlate();
 	}
 
 	@Override
@@ -71,7 +60,6 @@ public class CustomerDTO extends GenericDTO<Customer> {
 		customer.setAddress(this.address);
 		customer.setContact(this.contact);
 		customer.setEmail(this.email);
-		customer.setVehicleNumberPlate(this.vehicleNumberPlate);
 
 		return customer;
 	}
@@ -94,9 +82,5 @@ public class CustomerDTO extends GenericDTO<Customer> {
 
 	public String getEmail() {
 		return this.email;
-	}
-
-	public String getVehicleNumberPlate() {
-		return this.vehicleNumberPlate;
 	}
 }

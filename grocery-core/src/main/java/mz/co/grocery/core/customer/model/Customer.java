@@ -27,7 +27,9 @@ import mz.co.msaude.boot.frameworks.model.GenericEntity;
 	@NamedQuery(name = CustomerDAO.QUERY_NAME.findPendingPaymentsByUnit, query = CustomerDAO.QUERY.findPendingPaymentsByUnit),
 	@NamedQuery(name = CustomerDAO.QUERY_NAME.countPendingPaymentsByUnit, query = CustomerDAO.QUERY.countPendingPaymentsByUnit),
 	@NamedQuery(name = CustomerDAO.QUERY_NAME.findPendingDevolutionByUnit, query = CustomerDAO.QUERY.findPendingDevolutionByUnit),
-	@NamedQuery(name = CustomerDAO.QUERY_NAME.countPendingDevolutionByUnit, query = CustomerDAO.QUERY.countPendingDevolutionByUnit) })
+	@NamedQuery(name = CustomerDAO.QUERY_NAME.countPendingDevolutionByUnit, query = CustomerDAO.QUERY.countPendingDevolutionByUnit),
+	@NamedQuery(name = CustomerDAO.QUERY_NAME.findWithContractPendingPaymentByUnit, query = CustomerDAO.QUERY.findWithContractPendingPaymentByUnit),
+	@NamedQuery(name = CustomerDAO.QUERY_NAME.countCustomersWithContractPendingPaymentByUnit, query = CustomerDAO.QUERY.countCustomersWithContractPendingPaymentByUnit) })
 @Entity
 @Table(name = "CUSTOMERS")
 public class Customer extends GenericEntity {
@@ -53,9 +55,6 @@ public class Customer extends GenericEntity {
 
 	@Column(name = "EMAIL", length = 30)
 	private String email;
-
-	@Column(name = "VEHICLE_NUMBER_PLATE", length = 15)
-	private String vehicleNumberPlate;
 
 	public Grocery getUnit() {
 		return this.unit;
@@ -95,13 +94,5 @@ public class Customer extends GenericEntity {
 
 	public void setEmail(final String email) {
 		this.email = email;
-	}
-
-	public String getVehicleNumberPlate() {
-		return this.vehicleNumberPlate;
-	}
-
-	public void setVehicleNumberPlate(final String vehicleNumberPlate) {
-		this.vehicleNumberPlate = vehicleNumberPlate;
 	}
 }

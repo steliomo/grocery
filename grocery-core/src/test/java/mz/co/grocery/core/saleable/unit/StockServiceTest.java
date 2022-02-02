@@ -65,6 +65,10 @@ public class StockServiceTest extends AbstractUnitServiceTest {
 		Assert.assertEquals(purchasePrice, this.stock.getPurchasePrice());
 		Assert.assertEquals(salePrice, this.stock.getSalePrice());
 		Assert.assertEquals(quantity.multiply(new BigDecimal(2)), this.stock.getQuantity());
+
+		Assert.assertNotNull(this.stock.getStockUpdateDate());
+		Assert.assertNotNull(this.stock.getStockUpdateQuantity());
+		Assert.assertEquals(this.stock.getStockUpdateQuantity(), this.stock.getQuantity());
 	}
 
 	@Test(expected = BusinessException.class)

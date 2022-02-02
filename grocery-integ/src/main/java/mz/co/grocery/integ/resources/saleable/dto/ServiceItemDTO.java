@@ -30,7 +30,6 @@ public class ServiceItemDTO extends GenericDTO<ServiceItem> {
 
 	public ServiceItemDTO(final ServiceItem serviceItem) {
 		super(serviceItem);
-		this.mapper(serviceItem);
 	}
 
 	@Override

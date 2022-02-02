@@ -3,14 +3,13 @@
  */
 package mz.co.grocery.integ.resources.inventory.dto;
 
-import static mz.co.grocery.integ.resources.util.ProxyUtil.isInitialized;
-
 import java.math.BigDecimal;
 
 import mz.co.grocery.core.inventory.model.StockInventory;
 import mz.co.grocery.core.saleable.model.Stock;
 import mz.co.grocery.integ.resources.dto.GenericDTO;
-import mz.co.grocery.integ.resources.saleable.dto.StockDTO;;
+import mz.co.grocery.integ.resources.saleable.dto.StockDTO;
+import mz.co.grocery.integ.resources.util.ProxyUtil;;
 
 /**
  * @author Stélio Moiane
@@ -27,7 +26,6 @@ public class StockInventoryDTO extends GenericDTO<StockInventory> {
 
 	public StockInventoryDTO(final StockInventory stockInventory) {
 		super(stockInventory);
-		this.mapper(stockInventory);
 	}
 
 	@Override
@@ -35,7 +33,7 @@ public class StockInventoryDTO extends GenericDTO<StockInventory> {
 
 		final Stock stock = stockInventory.getStock();
 
-		if (isInitialized(stock)) {
+		if (ProxyUtil.isInitialized(stock)) {
 			this.stockDTO = new StockDTO(stock);
 		}
 

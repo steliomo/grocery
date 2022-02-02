@@ -3,6 +3,7 @@
  */
 package mz.co.grocery.core.customer.integ;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -12,9 +13,12 @@ import org.junit.Before;
 import org.junit.Test;
 
 import mz.co.grocery.core.config.AbstractIntegServiceTest;
+import mz.co.grocery.core.contract.model.Contract;
+import mz.co.grocery.core.contract.service.ContractService;
 import mz.co.grocery.core.customer.model.Customer;
 import mz.co.grocery.core.customer.service.CustomerQueryService;
 import mz.co.grocery.core.customer.service.CustomerService;
+import mz.co.grocery.core.fixturefactory.ContractTemplate;
 import mz.co.grocery.core.fixturefactory.CustomerTemplate;
 import mz.co.grocery.core.fixturefactory.GroceryTemplate;
 import mz.co.grocery.core.grocery.model.Grocery;
@@ -45,6 +49,12 @@ public class CustomerQueryServiceTest extends AbstractIntegServiceTest {
 
 	@Inject
 	private RentBuilder rentBuilder;
+
+	@Inject
+	private GroceryService unitService;
+
+	@Inject
+	private ContractService contractService;
 
 	private Grocery unit;
 
@@ -133,6 +143,57 @@ public class CustomerQueryServiceTest extends AbstractIntegServiceTest {
 		this.rentService.rent(this.getUserContext(), rent);
 
 		final Long customers = this.customerQueryService.countCustomersWithPendingDevolutionsByUnit(rent.getUnit().getUuid());
+
+		Assert.assertTrue(customers > 0);
+	}
+
+	@Test
+	public void shouldFindCustomersWithPendingContractPaymentByUnit() throws BusinessException {
+
+		final Contract contract = EntityFactory.gimme(Contract.class, ContractTemplate.VALID, processor -> {
+			if (processor instanceof Contract) {
+				final Contract c = (Contract) processor;
+				try {
+					this.unitService.createGrocery(this.getUserContext(), c.getUnit());
+					c.getCustomer().setUnit(c.getUnit());
+					this.customerService.createCustomer(this.getUserContext(), c.getCustomer());
+				} catch (final BusinessException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+
+		this.contractService.celebrateContract(this.getUserContext(), contract);
+
+		final List<Customer> customers = this.customerQueryService.findCustomersWithContractPendingPaymentByUnit(contract.getUnit().getUuid(), 0, 10,
+				LocalDate.now());
+
+		Assert.assertFalse(customers.isEmpty());
+		customers.forEach(customer -> {
+			Assert.assertEquals(contract.getCustomer().getUuid(), customer.getUuid());
+		});
+	}
+
+	@Test
+	public void shouldCountCustomersWithPendingContractPaymentByUnit() throws BusinessException {
+
+		final Contract contract = EntityFactory.gimme(Contract.class, ContractTemplate.VALID, processor -> {
+			if (processor instanceof Contract) {
+				final Contract c = (Contract) processor;
+				try {
+					this.unitService.createGrocery(this.getUserContext(), c.getUnit());
+					c.getCustomer().setUnit(c.getUnit());
+					this.customerService.createCustomer(this.getUserContext(), c.getCustomer());
+				} catch (final BusinessException e) {
+					e.printStackTrace();
+				}
+			}
+		});
+
+		this.contractService.celebrateContract(this.getUserContext(), contract);
+
+		final Long customers = this.customerQueryService.countCustomersWithContractPendingPaymentByUnit(contract.getUnit().getUuid(),
+				LocalDate.now());
 
 		Assert.assertTrue(customers > 0);
 	}

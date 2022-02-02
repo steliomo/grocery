@@ -25,7 +25,6 @@ public class ProductUnitDTO extends GenericDTO<ProductUnit> {
 
 	public ProductUnitDTO(final ProductUnit productUnit) {
 		super(productUnit);
-		this.mapper(productUnit);
 	}
 
 	@Override

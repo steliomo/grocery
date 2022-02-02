@@ -27,7 +27,6 @@ public class ProductDescriptionDTO extends GenericDTO<ProductDescription> {
 
 	public ProductDescriptionDTO(final ProductDescription productDescription) {
 		super(productDescription);
-		this.mapper(productDescription);
 	}
 
 	@Override

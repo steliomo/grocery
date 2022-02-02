@@ -23,7 +23,6 @@ public class ServiceDescriptionDTO extends GenericDTO<ServiceDescription> {
 
 	public ServiceDescriptionDTO(final ServiceDescription serviceDescription) {
 		super(serviceDescription);
-		this.mapper(serviceDescription);
 	}
 
 	@Override

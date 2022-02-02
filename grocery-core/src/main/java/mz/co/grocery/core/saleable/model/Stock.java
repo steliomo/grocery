@@ -38,7 +38,8 @@ import mz.co.msaude.boot.frameworks.model.GenericEntity;
 	@NamedQuery(name = StockDAO.QUERY_NAME.fetchByGroceryAndProduct, query = StockDAO.QUERY.fetchByGroceryAndProduct),
 	@NamedQuery(name = StockDAO.QUERY_NAME.fetchByGrocery, query = StockDAO.QUERY.fetchByGrocery),
 	@NamedQuery(name = StockDAO.QUERY_NAME.fetchByGroceryAndSalePeriod, query = StockDAO.QUERY.fetchByGroceryAndSalePeriod),
-	@NamedQuery(name = StockDAO.QUERY_NAME.fetchNotInThisGroceryByProduct, query = StockDAO.QUERY.fetchNotInThisGroceryByProduct) })
+	@NamedQuery(name = StockDAO.QUERY_NAME.fetchNotInThisGroceryByProduct, query = StockDAO.QUERY.fetchNotInThisGroceryByProduct),
+	@NamedQuery(name = StockDAO.QUERY_NAME.fetchInAnalysisByUnitUuid, query = StockDAO.QUERY.fetchInAnalysisByUnitUuid) })
 @Entity
 @Table(name = "STOCKS")
 public class Stock extends GenericEntity implements Item {
@@ -78,6 +79,23 @@ public class Stock extends GenericEntity implements Item {
 	@Enumerated(EnumType.STRING)
 	@Column(name = "STOCK_STATUS", nullable = false, length = 20)
 	private StockStatus stockStatus;
+
+	@Column(name = "INVENTORY_DATE")
+	private LocalDate inventoryDate;
+
+	@Column(name = "INVENTORY_QUANTITY")
+	private BigDecimal inventoryQuantity;
+
+	@Column(name = "STOCK_UPDATE_DATE")
+	private LocalDate stockUpdateDate;
+
+	@Column(name = "STOCK_UPDATE_QUANTITY")
+	private BigDecimal stockUpdateQuantity;
+
+	@NotNull
+	@Enumerated(EnumType.STRING)
+	@Column(name = "PRODUCT_STOCK_STATUS")
+	private StockStatus productStockStatus;
 
 	public Grocery getGrocery() {
 		return this.grocery;
@@ -128,23 +146,27 @@ public class Stock extends GenericEntity implements Item {
 		this.expireDate = expireDate;
 	}
 
-	public synchronized void updateStock(final SaleItem saleItem) {
+	public void updateStock(final SaleItem saleItem) {
 
 		if (saleItem.getSaleItemValue() != BigDecimal.ZERO) {
 
 			final BigDecimal result = saleItem.getSaleItemValue().divide(this.salePrice, 2, RoundingMode.HALF_UP);
-
-			this.quantity = this.quantity.subtract(result);
-			this.setStockStatus();
-
+			this.subtractStock(result);
 			return;
 		}
 
-		this.quantity = this.quantity.subtract(saleItem.getQuantity());
-		this.setStockStatus();
+		this.subtractStock(saleItem.getQuantity());
 	}
 
 	public synchronized void subtractStock(final BigDecimal quantity) {
+
+		if (StockStatus.BAD.equals(this.productStockStatus)) {
+			this.quantity = this.quantity.subtract(quantity);
+			this.inventoryQuantity = this.inventoryQuantity.subtract(quantity);
+			this.setStockStatus();
+			return;
+		}
+
 		this.quantity = this.quantity.subtract(quantity);
 		this.setStockStatus();
 	}
@@ -189,5 +211,50 @@ public class Stock extends GenericEntity implements Item {
 	@Override
 	public String getName() {
 		return this.productDescription.getName();
+	}
+
+	public LocalDate getInventoryDate() {
+		return this.inventoryDate;
+	}
+
+	public void setInventoryDate(final LocalDate inventoryDate) {
+		this.inventoryDate = inventoryDate;
+	}
+
+	public BigDecimal getInventoryQuantity() {
+		return this.inventoryQuantity;
+	}
+
+	public void setInventoryQuantity(final BigDecimal inventoryQuantity) {
+		this.inventoryQuantity = inventoryQuantity;
+	}
+
+	public LocalDate getStockUpdateDate() {
+		return this.stockUpdateDate;
+	}
+
+	public void setStockUpdateDate(final LocalDate stockUpdateDate) {
+		this.stockUpdateDate = stockUpdateDate;
+	}
+
+	public BigDecimal getStockUpdateQuantity() {
+		return this.stockUpdateQuantity;
+	}
+
+	public void setStockUpdateQuantity(final BigDecimal stockUpdateQuantity) {
+		this.stockUpdateQuantity = stockUpdateQuantity;
+	}
+
+	public StockStatus getProductStockStatus() {
+		return this.productStockStatus;
+	}
+
+	public void setProductStockStatus() {
+		if (this.quantity.compareTo(this.inventoryQuantity) == BigDecimal.ONE.intValue()) {
+			this.productStockStatus = StockStatus.BAD;
+			return;
+		}
+
+		this.productStockStatus = StockStatus.GOOD;
 	}
 }

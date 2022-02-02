@@ -19,7 +19,6 @@ public class ServiceDTO extends GenericDTO<Service> {
 
 	public ServiceDTO(final Service service) {
 		super(service);
-		this.mapper(service);
 	}
 
 	public ServiceDTO(final String serviceUuid) {

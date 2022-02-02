@@ -34,12 +34,19 @@ public class StockDTO extends GenericDTO<Stock> {
 
 	private BigDecimal minimumStock;
 
+	private LocalDate inventoryDate;
+
+	private BigDecimal inventoryQuantity;
+
+	private LocalDate stockUpdateDate;
+
+	private BigDecimal stockUpdateQuantity;
+
 	public StockDTO() {
 	}
 
 	public StockDTO(final Stock stock) {
 		super(stock);
-		this.mapper(stock);
 	}
 
 	@Override
@@ -64,6 +71,14 @@ public class StockDTO extends GenericDTO<Stock> {
 		this.expireDate = stock.getExpireDate();
 
 		this.minimumStock = stock.getMinimumStock();
+
+		this.inventoryDate = stock.getInventoryDate();
+
+		this.inventoryQuantity = stock.getInventoryQuantity();
+
+		this.stockUpdateDate = stock.getStockUpdateDate();
+
+		this.stockUpdateQuantity = stock.getStockUpdateQuantity();
 	}
 
 	@Override
@@ -76,6 +91,10 @@ public class StockDTO extends GenericDTO<Stock> {
 		stock.setQuantity(this.quantity);
 		stock.setExpireDate(this.expireDate);
 		stock.setMinimumStock(this.minimumStock);
+		stock.setInventoryDate(this.inventoryDate);
+		stock.setInventoryQuantity(this.inventoryQuantity);
+		stock.setStockUpdateDate(this.stockUpdateDate);
+		stock.setStockUpdateDate(this.stockUpdateDate);
 
 		return stock;
 	}
@@ -110,5 +129,21 @@ public class StockDTO extends GenericDTO<Stock> {
 
 	public void setGroceryDTO(final GroceryDTO groceryDTO) {
 		this.groceryDTO = groceryDTO;
+	}
+
+	public LocalDate getInventoryDate() {
+		return this.inventoryDate;
+	}
+
+	public BigDecimal getInventoryQuantity() {
+		return this.inventoryQuantity;
+	}
+
+	public LocalDate getStockUpdateDate() {
+		return this.stockUpdateDate;
+	}
+
+	public BigDecimal getStockUpdateQuantity() {
+		return this.stockUpdateQuantity;
 	}
 }

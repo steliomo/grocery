@@ -47,6 +47,8 @@ public class RentItemDTO extends GenericDTO<RentItem> {
 
 	private BigDecimal toReturn;
 
+	private String description;
+
 	public RentItemDTO() {
 	}
 
@@ -62,6 +64,7 @@ public class RentItemDTO extends GenericDTO<RentItem> {
 		this.startDate = rentItem.getStartDate();
 		this.endDate = rentItem.getEndDate();
 		this.discount = rentItem.getDiscount();
+		this.description = rentItem.getDescription();
 		this.total = rentItem.getTotal();
 
 		if (ProxyUtil.isInitialized(rentItem.getReturnItems())) {
@@ -93,6 +96,7 @@ public class RentItemDTO extends GenericDTO<RentItem> {
 		rentItem.setStartDate(this.startDate);
 		rentItem.setEndDate(this.endDate);
 		rentItem.setDiscount(this.discount);
+		rentItem.setDescription(this.description);
 
 		rentItem.setTotal();
 
@@ -137,5 +141,9 @@ public class RentItemDTO extends GenericDTO<RentItem> {
 
 	public Boolean isReturnable() {
 		return this.returnable;
+	}
+
+	public String getDescription() {
+		return this.description;
 	}
 }

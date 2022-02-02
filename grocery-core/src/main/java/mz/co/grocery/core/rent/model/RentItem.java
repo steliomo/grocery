@@ -79,6 +79,9 @@ public class RentItem extends GenericEntity {
 	@Column(name = "RETURN_STATUS", nullable = false, length = 15)
 	private ReturnStatus returnStatus;
 
+	@Column(name = "DESCRIPTION", length = 150)
+	private String description;
+
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "rentItem")
 	private final Set<ReturnItem> returnItems = new HashSet<>();
 
@@ -155,6 +158,14 @@ public class RentItem extends GenericEntity {
 	public RentItem setReturnable() {
 		this.returnable = this.getItem().isReturnable();
 		return this;
+	}
+
+	public String getDescription() {
+		return this.description;
+	}
+
+	public void setDescription(final String description) {
+		this.description = description;
 	}
 
 	public Boolean isReturnable() {

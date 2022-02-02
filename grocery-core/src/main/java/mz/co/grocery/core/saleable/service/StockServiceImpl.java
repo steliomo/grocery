@@ -4,6 +4,7 @@
 package mz.co.grocery.core.saleable.service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import javax.inject.Inject;
 
@@ -65,6 +66,9 @@ public class StockServiceImpl extends AbstractService implements StockService {
 		stockToUpdate.setSalePrice(stock.getSalePrice());
 		stockToUpdate.addQuantity(stock.getQuantity());
 		stockToUpdate.setMinimumStock(stock.getMinimumStock());
+
+		stockToUpdate.setStockUpdateDate(LocalDate.now());
+		stockToUpdate.setStockUpdateQuantity(stockToUpdate.getQuantity());
 
 		this.updateStock(userContext, stockToUpdate);
 

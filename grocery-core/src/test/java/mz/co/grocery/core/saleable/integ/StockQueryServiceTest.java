@@ -25,6 +25,7 @@ import mz.co.grocery.core.item.service.ProductUnitService;
 import mz.co.grocery.core.sale.model.Sale;
 import mz.co.grocery.core.sale.model.SaleItem;
 import mz.co.grocery.core.sale.service.SaleService;
+import mz.co.grocery.core.saleable.builder.StockBuilder;
 import mz.co.grocery.core.saleable.model.Stock;
 import mz.co.grocery.core.saleable.model.StockStatus;
 import mz.co.grocery.core.saleable.service.StockQueryService;
@@ -59,39 +60,27 @@ public class StockQueryServiceTest extends AbstractIntegServiceTest {
 	@Inject
 	private SaleService saleService;
 
+	@Inject
+	private StockBuilder stockBuilder;
+
 	private String stockUuid;
 
 	private Product product;
 
-	private Grocery grocery;
+	private Grocery unit;
 
 	@Before
 	public void before() throws BusinessException {
 
-		final List<Stock> stocks = EntityFactory.gimme(Stock.class, 10, StockTemplate.VALID);
-		this.grocery = this.groceryService.createGrocery(this.getUserContext(),
+		this.unit = this.groceryService.createGrocery(this.getUserContext(),
 				EntityFactory.gimme(Grocery.class, GroceryTemplate.VALID));
 
+		final List<Stock> stocks = this.stockBuilder.quantity(10).unit(this.unit).valid().build();
+
 		stocks.forEach(stock -> {
-			this.createStock(stock);
+			this.product = stock.getProductDescription().getProduct();
 			this.stockUuid = stock.getUuid();
 		});
-	}
-
-	private void createStock(final Stock stock) {
-		try {
-			this.product = stock.getProductDescription().getProduct();
-
-			this.productService.createProduct(this.getUserContext(), stock.getProductDescription().getProduct());
-			this.productUnitService.createProductUnit(this.getUserContext(),
-					stock.getProductDescription().getProductUnit());
-			this.productDescriptionService.createProductDescription(this.getUserContext(),
-					stock.getProductDescription());
-			stock.setGrocery(this.grocery);
-			this.stockService.createStock(this.getUserContext(), stock);
-		} catch (final BusinessException e) {
-			e.printStackTrace();
-		}
 	}
 
 	@Test
@@ -139,7 +128,7 @@ public class StockQueryServiceTest extends AbstractIntegServiceTest {
 
 	@Test
 	public void shouldFecthStockByProduct() throws BusinessException {
-		final List<Stock> stocks = this.stockQueryService.fetchStockByGroceryAndProduct(this.grocery.getUuid(),
+		final List<Stock> stocks = this.stockQueryService.fetchStockByGroceryAndProduct(this.unit.getUuid(),
 				this.product.getUuid());
 
 		Assert.assertFalse(stocks.isEmpty());
@@ -153,7 +142,7 @@ public class StockQueryServiceTest extends AbstractIntegServiceTest {
 	@Test
 	public void shouldFecthStocksByGrocery() throws BusinessException {
 
-		final List<Stock> stocks = this.stockQueryService.fetchStocksByGrocery(this.grocery.getUuid());
+		final List<Stock> stocks = this.stockQueryService.fetchStocksByGrocery(this.unit.getUuid());
 
 		Assert.assertFalse(stocks.isEmpty());
 
@@ -168,7 +157,7 @@ public class StockQueryServiceTest extends AbstractIntegServiceTest {
 	public void shouldFetchLowStockByGroceryAndSalePeriod() throws BusinessException {
 
 		final Stock stock = EntityFactory.gimme(Stock.class, StockTemplate.VALID);
-		stock.setGrocery(this.grocery);
+		stock.setGrocery(this.unit);
 
 		this.productService.createProduct(this.getUserContext(), stock.getProductDescription().getProduct());
 		this.productUnitService.createProductUnit(this.getUserContext(),
@@ -220,5 +209,21 @@ public class StockQueryServiceTest extends AbstractIntegServiceTest {
 			Assert.assertEquals(this.product.getUuid(), stock.getProductDescription().getProduct().getUuid());
 			Assert.assertNotEquals(grocery.getUuid(), stock.getGrocery().getUuid());
 		});
+	}
+
+	@Test
+	public void shouldFindStocksInAnalysis() throws BusinessException {
+		this.stockBuilder.quantity(10).unit(this.unit).inAnalysis().build();
+		final List<Stock> stocksInAnalysis = this.stockQueryService.fetchStocksInAnalysisByUnit(this.unit.getUuid());
+
+		Assert.assertFalse(stocksInAnalysis.isEmpty());
+
+		stocksInAnalysis.forEach(stock -> {
+			Assert.assertEquals(StockStatus.BAD, stock.getProductStockStatus());
+			Assert.assertNotNull(stock.getProductDescription());
+			Assert.assertNotNull(stock.getProductDescription().getProduct());
+			Assert.assertNotNull(stock.getProductDescription().getProductUnit());
+		});
+
 	}
 }

@@ -36,7 +36,6 @@ public class InventoryDTO extends GenericDTO<Inventory> {
 
 	public InventoryDTO(final Inventory inventory) {
 		super(inventory);
-		this.mapper(inventory);
 	}
 
 	@Override
@@ -50,7 +49,7 @@ public class InventoryDTO extends GenericDTO<Inventory> {
 		this.inventoryStatus = inventory.getInventoryStatus();
 
 		this.stockInventoriesDTO = inventory.getStockInventories().stream()
-		        .map(stockInventory -> new StockInventoryDTO(stockInventory)).collect(Collectors.toSet());
+				.map(stockInventory -> new StockInventoryDTO(stockInventory)).collect(Collectors.toSet());
 	}
 
 	@Override

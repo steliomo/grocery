@@ -30,7 +30,6 @@ public class GroceryDTO extends GenericDTO<Grocery> {
 
 	public GroceryDTO(final Grocery grocery) {
 		super(grocery);
-		this.mapper(grocery);
 	}
 
 	public GroceryDTO(final String groceryUuid) {

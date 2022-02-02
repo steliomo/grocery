@@ -34,4 +34,6 @@ public interface StockQueryService {
 			throws BusinessException;
 
 	List<Stock> fetchStockNotInthisGroceryByProduct(String groceryUuid, String productUuid) throws BusinessException;
+
+	List<Stock> fetchStocksInAnalysisByUnit(String unitUuid) throws BusinessException;
 }
