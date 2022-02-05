@@ -82,7 +82,7 @@ public class StockServiceImpl extends AbstractService implements StockService {
 
 		stockToRegularize.setQuantity(stock.getInventoryQuantity());
 		stockToRegularize.setStockUpdateDate(LocalDate.now());
-		stockToRegularize.setStockUpdateQuantity(stock.getQuantity());
+		stockToRegularize.setStockUpdateQuantity(stock.getInventoryQuantity());
 		stockToRegularize.setStockStatus();
 		stockToRegularize.setProductStockStatus();
 
