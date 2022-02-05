@@ -21,4 +21,6 @@ public interface StockService {
 
 	Stock updateStocksAndPrices(UserContext userContext, Stock stock) throws BusinessException;
 
+	Stock regularize(UserContext userContext, Stock stock) throws BusinessException;
+
 }

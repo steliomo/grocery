@@ -84,7 +84,11 @@ public class StockDTO extends GenericDTO<Stock> {
 	@Override
 	public Stock get() {
 		final Stock stock = this.get(new Stock());
-		stock.setGrocery(this.groceryDTO.get());
+
+		if (this.groceryDTO != null) {
+			stock.setGrocery(this.groceryDTO.get());
+		}
+
 		stock.setProductDescription(this.productDescriptionDTO.get());
 		stock.setPurchasePrice(this.purchasePrice);
 		stock.setSalePrice(this.salePrice);

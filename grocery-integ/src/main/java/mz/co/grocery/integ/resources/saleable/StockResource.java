@@ -197,4 +197,13 @@ public class StockResource extends AbstractResource {
 
 		return Response.ok(stocksAnalysisDTOs).build();
 	}
+
+	@POST
+	@Path("regularize")
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response regulizeStock(final StockDTO stockDTO) throws BusinessException {
+		final Stock stock = this.stockService.regularize(this.getContext(), stockDTO.get());
+		return Response.ok(new StockDTO(stock)).build();
+	}
 }

@@ -4,6 +4,7 @@
 package mz.co.grocery.core.saleable.unit;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -87,5 +88,19 @@ public class StockServiceTest extends AbstractUnitServiceTest {
 
 		Assert.assertEquals(minimumStock, this.stock.getMinimumStock());
 		Assert.assertEquals(StockStatus.GOOD, this.stock.getStockStatus());
+	}
+
+	@Test
+	public void shouldRegularizeStock() throws BusinessException {
+
+		final Stock stock = EntityFactory.gimme(Stock.class, StockTemplate.IN_ANALYSIS);
+		Mockito.when(this.stockDAO.findByUuid(stock.getUuid())).thenReturn(stock);
+
+		this.stockService.regularize(this.getUserContext(), stock);
+
+		Assert.assertEquals(stock.getQuantity(), stock.getInventoryQuantity());
+		Assert.assertEquals(StockStatus.GOOD, stock.getStockStatus());
+		Assert.assertEquals(stock.getStockUpdateQuantity(), stock.getQuantity());
+		Assert.assertEquals(LocalDate.now(), stock.getStockUpdateDate());
 	}
 }

@@ -75,4 +75,17 @@ public class StockServiceImpl extends AbstractService implements StockService {
 		return stockToUpdate;
 	}
 
+	@Override
+	public Stock regularize(final UserContext userContext, final Stock stock) throws BusinessException {
+
+		final Stock stockToRegularize = this.stockDAO.findByUuid(stock.getUuid());
+
+		stockToRegularize.setQuantity(stock.getInventoryQuantity());
+		stockToRegularize.setStockUpdateDate(LocalDate.now());
+		stockToRegularize.setStockUpdateQuantity(stock.getQuantity());
+		stockToRegularize.setStockStatus();
+		stockToRegularize.setProductStockStatus();
+
+		return stockToRegularize;
+	}
 }
