@@ -104,19 +104,6 @@ public class StockResource extends AbstractResource {
 		return Response.ok(new StockDTO(stock)).build();
 	}
 
-	@PUT
-	@Path("update-stocks-and-prices")
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response addStockQuantity(final List<StockDTO> stocksDTO) throws BusinessException {
-
-		for (final StockDTO stockDTO : stocksDTO) {
-			this.stockService.updateStocksAndPrices(this.getContext(), stockDTO.get());
-		}
-
-		return Response.ok().build();
-	}
-
 	@GET
 	@Path("by-grocery-and-product")
 	@Produces(MediaType.APPLICATION_JSON)
@@ -171,19 +158,6 @@ public class StockResource extends AbstractResource {
 		final List<StockDTO> stocksDTO = stocks.stream().map(stock -> new StockDTO(stock)).collect(Collectors.toList());
 
 		return Response.ok(stocksDTO).build();
-	}
-
-	@POST
-	@Path("add-stock-products")
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response addStockProducts(final List<StockDTO> stocksDTO) throws BusinessException {
-
-		for (final StockDTO stockDTO : stocksDTO) {
-			this.stockService.createStock(this.getContext(), stockDTO.get());
-		}
-
-		return Response.ok().build();
 	}
 
 	@GET

@@ -103,4 +103,22 @@ public class StockServiceTest extends AbstractUnitServiceTest {
 		Assert.assertEquals(stock.getStockUpdateQuantity(), stock.getQuantity());
 		Assert.assertEquals(LocalDate.now(), stock.getStockUpdateDate());
 	}
+
+	@Test(expected = BusinessException.class)
+	public void shouldNotUpdateStockWithPurchasePriceGreaterThanSalePrice() throws BusinessException {
+		final Stock stock = EntityFactory.gimme(Stock.class, StockTemplate.VALID);
+		stock.setPurchasePrice(new BigDecimal(100));
+		stock.setSalePrice(new BigDecimal(10));
+
+		this.stockService.updateStocksAndPrices(this.getUserContext(), stock);
+	}
+
+	@Test(expected = BusinessException.class)
+	public void shouldNotUpdateStockWithPurchasePriceEqualToSalePrice() throws BusinessException {
+		final Stock stock = EntityFactory.gimme(Stock.class, StockTemplate.VALID);
+		stock.setPurchasePrice(new BigDecimal(100));
+		stock.setSalePrice(new BigDecimal(100));
+
+		this.stockService.updateStocksAndPrices(this.getUserContext(), stock);
+	}
 }

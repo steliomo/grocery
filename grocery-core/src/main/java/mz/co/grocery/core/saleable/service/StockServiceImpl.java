@@ -60,6 +60,11 @@ public class StockServiceImpl extends AbstractService implements StockService {
 			throw new BusinessException(this.translator.getTranslation("the.prices.cannot.be.zero"));
 		}
 
+		if (stock.getPurchasePrice().compareTo(stock.getSalePrice()) >= BigDecimal.ZERO.intValue()) {
+			throw new BusinessException(
+					this.translator.getTranslation("purchase.price.cannot.be.greater.than.or.equal.to.sale.price", new String[] { stock.getName() }));
+		}
+
 		final Stock stockToUpdate = this.stockDAO.findByUuid(stock.getUuid());
 
 		stockToUpdate.setPurchasePrice(stock.getPurchasePrice());
