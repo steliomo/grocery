@@ -92,7 +92,6 @@ public class Stock extends GenericEntity implements Item {
 	@Column(name = "STOCK_UPDATE_QUANTITY")
 	private BigDecimal stockUpdateQuantity;
 
-	@NotNull
 	@Enumerated(EnumType.STRING)
 	@Column(name = "PRODUCT_STOCK_STATUS")
 	private StockStatus productStockStatus;
@@ -173,6 +172,10 @@ public class Stock extends GenericEntity implements Item {
 
 	public synchronized void addQuantity(final BigDecimal quantity) {
 		this.quantity = this.quantity.add(quantity);
+
+		if (StockStatus.BAD.equals(this.productStockStatus)) {
+			this.inventoryQuantity = this.inventoryQuantity.add(quantity);
+		}
 	}
 
 	public BigDecimal getMinimumStock() {
@@ -250,6 +253,7 @@ public class Stock extends GenericEntity implements Item {
 	}
 
 	public void setProductStockStatus() {
+
 		if (this.quantity.compareTo(this.inventoryQuantity) == BigDecimal.ONE.intValue()) {
 			this.productStockStatus = StockStatus.BAD;
 			return;
