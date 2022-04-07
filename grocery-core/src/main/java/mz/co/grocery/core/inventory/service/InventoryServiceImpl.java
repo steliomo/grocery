@@ -116,6 +116,7 @@ public class InventoryServiceImpl extends AbstractService implements InventorySe
 			final Stock stock = stockInventory.getStock();
 			stock.setInventoryDate(inventory.getInventoryDate());
 			stock.setInventoryQuantity(stockInventory.getFisicalInventory());
+			stock.adjustNegativeQuantity();
 			stock.setProductStockStatus();
 
 			this.stockService.updateStock(userContext, stock);

@@ -261,4 +261,13 @@ public class Stock extends GenericEntity implements Item {
 
 		this.productStockStatus = StockStatus.GOOD;
 	}
+
+	public void adjustNegativeQuantity() {
+
+		if (this.quantity.compareTo(this.inventoryQuantity) >= BigDecimal.ZERO.intValue()) {
+			return;
+		}
+
+		this.quantity = this.inventoryQuantity;
+	}
 }

@@ -121,4 +121,14 @@ public class StockServiceTest extends AbstractUnitServiceTest {
 
 		this.stockService.updateStocksAndPrices(this.getUserContext(), stock);
 	}
+
+	@Test
+	public void shouldAdjustNegativeQuantityValues() {
+		final Stock stock = EntityFactory.gimme(Stock.class, StockTemplate.IN_ANALYSIS);
+		stock.setQuantity(BigDecimal.ZERO);
+
+		stock.adjustNegativeQuantity();
+
+		Assert.assertEquals(stock.getQuantity(), stock.getInventoryQuantity());
+	}
 }
