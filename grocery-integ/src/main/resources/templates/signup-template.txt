@@ -55,10 +55,10 @@
 		<td>${email}</td>
 	</tr>
 	<tr>
-		<th colspan="2">Detalhes da Mercearia</th>
+		<th colspan="2">Detalhes do Estabelecimento</th>
 	</tr>
 	<tr>
-		<td>Nome da Mercearia</td>
+		<td>Nome do Estabelecimento</td>
 		<td>${grocery}</td>
 	</tr>
 	<tr>
@@ -67,6 +67,6 @@
 	</tr>
 </table>
 <p>Obrigado</p>
-<p>Mercearias Online © 2020 ©</p>
+<p>Negócio na mão (NNM) © 2022 ©</p>
 </body>
 </html>
