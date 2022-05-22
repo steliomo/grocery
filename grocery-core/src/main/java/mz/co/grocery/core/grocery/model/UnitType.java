@@ -17,5 +17,7 @@ public enum UnitType {
 
 	BOTTLE_STORE,
 
-	HARDWARE;
+	HARDWARE,
+
+	RESTAURANT_AND_BAR;
 }
