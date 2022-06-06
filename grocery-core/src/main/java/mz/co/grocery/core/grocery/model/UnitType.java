@@ -19,5 +19,7 @@ public enum UnitType {
 
 	HARDWARE,
 
-	RESTAURANT_AND_BAR;
+	RESTAURANT_AND_BAR,
+
+	STATIONERY;
 }
