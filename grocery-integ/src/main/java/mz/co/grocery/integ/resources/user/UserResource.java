@@ -3,6 +3,7 @@
  */
 package mz.co.grocery.integ.resources.user;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import javax.inject.Inject;
@@ -23,12 +24,14 @@ import org.springframework.security.authentication.UsernamePasswordAuthenticatio
 import org.springframework.security.core.Authentication;
 import org.springframework.stereotype.Service;
 
+import mz.co.grocery.core.grocery.model.Grocery;
 import mz.co.grocery.core.grocery.model.GroceryUser;
 import mz.co.grocery.core.grocery.model.UserRole;
 import mz.co.grocery.core.grocery.service.GroceryService;
 import mz.co.grocery.core.grocery.service.GroceryUserQueryService;
 import mz.co.grocery.core.grocery.service.GroceryUserService;
 import mz.co.grocery.core.util.ApplicationTranslator;
+import mz.co.grocery.core.util.Balance;
 import mz.co.grocery.integ.resources.AbstractResource;
 import mz.co.grocery.integ.resources.grocery.dto.GroceryUserDTO;
 import mz.co.grocery.integ.resources.mail.Mail;
@@ -76,6 +79,9 @@ public class UserResource extends AbstractResource {
 
 	@Inject
 	private ApplicationTranslator translator;
+
+	@Inject
+	private Balance balance;
 
 	@POST
 	@Path("login")
@@ -179,7 +185,10 @@ public class UserResource extends AbstractResource {
 		groceryUser.setExpiryDate(LocalDate.now().plusMonths(3));
 		groceryUser.setUser(userId);
 
-		this.groceryService.createGrocery(context, groceryUser.getGrocery());
+		final Grocery unit = groceryUser.getGrocery();
+		unit.setBalance(new BigDecimal(this.balance.getInitial()));
+
+		this.groceryService.createGrocery(context, unit);
 		this.groceryUserService.createGroceryUser(context, groceryUser);
 
 		this.sendSignUpEmail(user, groceryUser);

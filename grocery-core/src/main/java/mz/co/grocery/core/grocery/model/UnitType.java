@@ -21,5 +21,7 @@ public enum UnitType {
 
 	RESTAURANT_AND_BAR,
 
-	STATIONERY;
+	STATIONERY,
+
+	TAKE_AWAY;
 }
