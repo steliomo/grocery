@@ -23,5 +23,9 @@ public enum UnitType {
 
 	STATIONERY,
 
-	TAKE_AWAY;
+	TAKE_AWAY,
+
+	WASTE_COLLECTION,
+
+	BOUTIQUE;
 }
