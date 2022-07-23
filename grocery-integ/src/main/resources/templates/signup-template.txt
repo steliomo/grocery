@@ -37,7 +37,7 @@
  	</style>
   	<meta charset="UTF-8">
 </head>
-<p>O(A) Utilizador(a) <b>${fullName}</b> foi cadastrado con sucesso conforme os detalhes abaixo:</p>
+<p>O(A) Utilizador(a) <b>${fullName}</b> foi cadastrado com sucesso conforme os detalhes abaixo:</p>
 <table>
 	<tr>
 		<th colspan="2">Detalhes do Utilizador</th>
