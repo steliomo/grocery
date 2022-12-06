@@ -3,6 +3,8 @@
  */
 package mz.co.grocery.core.sale.service;
 
+import java.math.BigDecimal;
+
 import javax.inject.Inject;
 
 import org.springframework.stereotype.Service;
@@ -15,6 +17,7 @@ import mz.co.grocery.core.sale.dao.SaleDAO;
 import mz.co.grocery.core.sale.dao.SaleItemDAO;
 import mz.co.grocery.core.sale.model.Sale;
 import mz.co.grocery.core.sale.model.SaleItem;
+import mz.co.grocery.core.sale.model.SaleStatus;
 import mz.co.grocery.core.saleable.dao.StockDAO;
 import mz.co.grocery.core.saleable.model.Stock;
 import mz.co.grocery.core.util.ApplicationTranslator;
@@ -57,6 +60,22 @@ public class SaleServiceImpl extends AbstractService implements SaleService {
 
 		if (sale.getItems().isEmpty()) {
 			throw new BusinessException(this.translator.getTranslation("cannot.create.sale.without.items"));
+		}
+
+		switch (sale.getSaleType()) {
+
+		case INSTALLMENT:
+			if (sale.getCustomer() == null) {
+				throw new BusinessException(this.translator.getTranslation("installment.sale.must.have.customer"));
+			}
+
+			sale.setSaleStatus(SaleStatus.PENDING);
+			sale.setTotalPaid(BigDecimal.ZERO);
+
+			break;
+		case CASH:
+			sale.setSaleStatus(SaleStatus.COMPLETE);
+			break;
 		}
 
 		this.saleDAO.create(userContext, sale);

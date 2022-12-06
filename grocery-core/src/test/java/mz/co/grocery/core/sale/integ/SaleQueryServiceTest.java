@@ -14,6 +14,7 @@ import org.junit.Test;
 import org.mockito.Mock;
 
 import mz.co.grocery.core.config.AbstractIntegServiceTest;
+import mz.co.grocery.core.customer.model.SaleType;
 import mz.co.grocery.core.fixturefactory.GroceryTemplate;
 import mz.co.grocery.core.fixturefactory.SaleItemTemplate;
 import mz.co.grocery.core.grocery.model.Grocery;
@@ -119,6 +120,7 @@ public class SaleQueryServiceTest extends AbstractIntegServiceTest {
 		this.grocery = this.groceryService.createGrocery(this.getUserContext(),
 				EntityFactory.gimme(Grocery.class, GroceryTemplate.VALID));
 		sale.setGrocery(this.grocery);
+		sale.setSaleType(SaleType.CASH);
 
 		this.saleService.registSale(this.getUserContext(), sale);
 	}
