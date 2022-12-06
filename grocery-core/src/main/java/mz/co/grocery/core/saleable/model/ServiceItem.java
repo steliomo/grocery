@@ -92,4 +92,9 @@ public class ServiceItem extends GenericEntity implements Item {
 	public String getName() {
 		return this.serviceDescription.getName();
 	}
+
+	@Override
+	public BigDecimal getRentPrice() {
+		return BigDecimal.ZERO;
+	}
 }

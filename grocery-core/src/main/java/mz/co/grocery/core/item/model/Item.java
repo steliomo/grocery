@@ -21,4 +21,6 @@ public interface Item {
 	String getUuid();
 
 	String getName();
+
+	BigDecimal getRentPrice();
 }

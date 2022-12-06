@@ -144,7 +144,7 @@ public class RentItem extends GenericEntity {
 
 	public void setTotal() {
 		final long days = Duration.between(this.startDate.atStartOfDay(), this.endDate.atStartOfDay()).toDays();
-		this.total = this.getItem().getSalePrice().multiply(this.quantity).multiply(new BigDecimal(days)).subtract(this.discount);
+		this.total = this.getItem().getRentPrice().multiply(this.quantity).multiply(new BigDecimal(days)).subtract(this.discount);
 	}
 
 	public BigDecimal getTotal() {
