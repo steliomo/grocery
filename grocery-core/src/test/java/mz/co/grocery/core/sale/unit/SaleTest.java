@@ -14,6 +14,9 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import mz.co.grocery.core.config.AbstractUnitServiceTest;
+import mz.co.grocery.core.customer.model.Customer;
+import mz.co.grocery.core.customer.model.SaleType;
+import mz.co.grocery.core.fixturefactory.CustomerTemplate;
 import mz.co.grocery.core.fixturefactory.InventoryTemplate;
 import mz.co.grocery.core.fixturefactory.SaleItemTemplate;
 import mz.co.grocery.core.fixturefactory.SaleTemplate;
@@ -26,6 +29,7 @@ import mz.co.grocery.core.sale.dao.SaleDAO;
 import mz.co.grocery.core.sale.dao.SaleItemDAO;
 import mz.co.grocery.core.sale.model.Sale;
 import mz.co.grocery.core.sale.model.SaleItem;
+import mz.co.grocery.core.sale.model.SaleStatus;
 import mz.co.grocery.core.sale.service.SaleService;
 import mz.co.grocery.core.sale.service.SaleServiceImpl;
 import mz.co.grocery.core.saleable.dao.StockDAO;
@@ -116,6 +120,8 @@ public class SaleTest extends AbstractUnitServiceTest {
 		Mockito.when(this.inventoryDAO.fetchByGroceryAndStatus(sale.getGrocery(), InventoryStatus.PENDING, EntityStatus.ACTIVE))
 		.thenThrow(new BusinessException("Inventory not found..."));
 
+		sale.setSaleType(SaleType.CASH);
+
 		this.saleService.registSale(this.getUserContext(), sale);
 
 		final int compareTo = sale.getTotal().compareTo(BigDecimal.ZERO);
@@ -132,5 +138,30 @@ public class SaleTest extends AbstractUnitServiceTest {
 		.thenReturn(EntityFactory.gimme(Inventory.class, InventoryTemplate.VALID));
 
 		this.saleService.registSale(this.getUserContext(), sale);
+	}
+
+	@Test
+	public void shouldRegistInstallmentSale() throws BusinessException {
+
+		final Sale sale = EntityFactory.gimme(Sale.class, SaleTemplate.WITH_ITEMS, result -> {
+			final List<SaleItem> services = EntityFactory.gimme(SaleItem.class, 10, SaleItemTemplate.SERVICE);
+			services.forEach(service -> {
+				if (result instanceof Sale) {
+					((Sale) result).addItem(service);
+				}
+			});
+		});
+
+		final Stock stock = EntityFactory.gimme(Stock.class, StockTemplate.VALID);
+		Mockito.when(this.stockDAO.findByUuid(stock.getUuid())).thenReturn(stock);
+		sale.setCustomer(EntityFactory.gimme(Customer.class, CustomerTemplate.VALID));
+		sale.setSaleType(SaleType.INSTALLMENT);
+
+		this.saleService.registSale(this.getUserContext(), sale);
+
+		Assert.assertNotNull(sale.getCustomer());
+		Assert.assertEquals(SaleType.INSTALLMENT, sale.getSaleType());
+		Assert.assertEquals(SaleStatus.PENDING, sale.getSaleStatus());
+		Assert.assertEquals(BigDecimal.ZERO, sale.getTotalPaid());
 	}
 }

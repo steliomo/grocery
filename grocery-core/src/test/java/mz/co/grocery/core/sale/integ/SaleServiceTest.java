@@ -13,6 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import mz.co.grocery.core.config.AbstractIntegServiceTest;
+import mz.co.grocery.core.customer.model.SaleType;
 import mz.co.grocery.core.fixturefactory.SaleItemTemplate;
 import mz.co.grocery.core.fixturefactory.SaleTemplate;
 import mz.co.grocery.core.grocery.service.GroceryService;
@@ -107,6 +108,7 @@ public class SaleServiceTest extends AbstractIntegServiceTest {
 
 	@Test
 	public void shouldRegisteSale() throws BusinessException {
+		this.sale.setSaleType(SaleType.CASH);
 
 		this.saleService.registSale(this.getUserContext(), this.sale);
 		final int compareTo = this.sale.getTotal().compareTo(BigDecimal.ZERO);
