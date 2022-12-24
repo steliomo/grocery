@@ -24,12 +24,13 @@ import mz.co.msaude.boot.frameworks.model.GenericEntity;
  */
 @NamedQueries({ @NamedQuery(name = CustomerDAO.QUERY_NAME.countByUnit, query = CustomerDAO.QUERY.countByUnit),
 	@NamedQuery(name = CustomerDAO.QUERY_NAME.findByUnit, query = CustomerDAO.QUERY.findByUnit),
-	@NamedQuery(name = CustomerDAO.QUERY_NAME.findPendingPaymentsByUnit, query = CustomerDAO.QUERY.findPendingPaymentsByUnit),
+	@NamedQuery(name = CustomerDAO.QUERY_NAME.findRentPendingPaymentsByUnit, query = CustomerDAO.QUERY.findRentPendingPaymentsByUnit),
 	@NamedQuery(name = CustomerDAO.QUERY_NAME.countPendingPaymentsByUnit, query = CustomerDAO.QUERY.countPendingPaymentsByUnit),
 	@NamedQuery(name = CustomerDAO.QUERY_NAME.findPendingDevolutionByUnit, query = CustomerDAO.QUERY.findPendingDevolutionByUnit),
 	@NamedQuery(name = CustomerDAO.QUERY_NAME.countPendingDevolutionByUnit, query = CustomerDAO.QUERY.countPendingDevolutionByUnit),
 	@NamedQuery(name = CustomerDAO.QUERY_NAME.findWithContractPendingPaymentByUnit, query = CustomerDAO.QUERY.findWithContractPendingPaymentByUnit),
-	@NamedQuery(name = CustomerDAO.QUERY_NAME.countCustomersWithContractPendingPaymentByUnit, query = CustomerDAO.QUERY.countCustomersWithContractPendingPaymentByUnit) })
+	@NamedQuery(name = CustomerDAO.QUERY_NAME.countCustomersWithContractPendingPaymentByUnit, query = CustomerDAO.QUERY.countCustomersWithContractPendingPaymentByUnit),
+	@NamedQuery(name = CustomerDAO.QUERY_NAME.findCustomersSaleWithPendindOrIncompletePaymentByUnit, query = CustomerDAO.QUERY.findCustomersSaleWithPendindOrIncompletePaymentByUnit) })
 @Entity
 @Table(name = "CUSTOMERS")
 public class Customer extends GenericEntity {

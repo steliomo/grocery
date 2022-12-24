@@ -4,6 +4,7 @@
 package mz.co.grocery.core.sale.unit;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.util.List;
 
 import org.junit.Assert;
@@ -144,6 +145,11 @@ public class SaleTest extends AbstractUnitServiceTest {
 	public void shouldRegistInstallmentSale() throws BusinessException {
 
 		final Sale sale = EntityFactory.gimme(Sale.class, SaleTemplate.WITH_ITEMS, result -> {
+
+			if (result instanceof Sale) {
+				((Sale) result).setDueDate(LocalDate.now().plusDays(30));
+			}
+
 			final List<SaleItem> services = EntityFactory.gimme(SaleItem.class, 10, SaleItemTemplate.SERVICE);
 			services.forEach(service -> {
 				if (result instanceof Sale) {

@@ -16,6 +16,7 @@ import mz.co.grocery.core.config.AbstractIntegServiceTest;
 import mz.co.grocery.core.contract.model.Contract;
 import mz.co.grocery.core.contract.service.ContractService;
 import mz.co.grocery.core.customer.model.Customer;
+import mz.co.grocery.core.customer.model.SaleType;
 import mz.co.grocery.core.customer.service.CustomerQueryService;
 import mz.co.grocery.core.customer.service.CustomerService;
 import mz.co.grocery.core.fixturefactory.ContractTemplate;
@@ -26,6 +27,8 @@ import mz.co.grocery.core.grocery.service.GroceryService;
 import mz.co.grocery.core.rent.builder.RentBuilder;
 import mz.co.grocery.core.rent.model.Rent;
 import mz.co.grocery.core.rent.service.RentService;
+import mz.co.grocery.core.sale.integ.SaleBuilder;
+import mz.co.grocery.core.sale.model.Sale;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.fixturefactory.EntityFactory;
 
@@ -55,6 +58,9 @@ public class CustomerQueryServiceTest extends AbstractIntegServiceTest {
 
 	@Inject
 	private ContractService contractService;
+
+	@Inject
+	SaleBuilder saleBuilder;
 
 	private Grocery unit;
 
@@ -100,12 +106,12 @@ public class CustomerQueryServiceTest extends AbstractIntegServiceTest {
 	}
 
 	@Test
-	public void shouldFindCustomersWithPendingPaymentsByUnit() throws BusinessException {
+	public void shouldFindCustomersWithRentPendingPaymentsByUnit() throws BusinessException {
 
 		final Rent rent = this.rentBuilder.build();
 		this.rentService.rent(this.getUserContext(), rent);
 
-		final List<Customer> customers = this.customerQueryService.findCustomersWithPendingPeymentsByUnit(rent.getUnit().getUuid(), 0, 10);
+		final List<Customer> customers = this.customerQueryService.findCustomersWithRentPendingPeymentsByUnit(rent.getUnit().getUuid(), 0, 10);
 
 		Assert.assertFalse(customers.isEmpty());
 		Assert.assertEquals(1, customers.size());
@@ -196,5 +202,16 @@ public class CustomerQueryServiceTest extends AbstractIntegServiceTest {
 				LocalDate.now());
 
 		Assert.assertTrue(customers > 0);
+	}
+
+	@Test
+	public void shouldFindCustomersSaleWithPendindOrIncompletePaymentByUnit() throws BusinessException {
+
+		final Sale sale = this.saleBuilder.sale().withProducts(5).withServices(5).withUnit().withCustomer().saleType(SaleType.INSTALLMENT)
+				.dueDate(LocalDate.now().plusDays(30)).build();
+
+		final List<Customer> customers = this.customerQueryService.findCustomersSaleWithPendindOrIncompletePaymentByUnit(sale.getGrocery().getUuid());
+
+		Assert.assertFalse(customers.isEmpty());
 	}
 }

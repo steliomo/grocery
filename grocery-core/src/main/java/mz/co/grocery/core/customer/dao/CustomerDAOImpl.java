@@ -39,10 +39,10 @@ public class CustomerDAOImpl extends GenericDAOImpl<Customer, Long> implements C
 	}
 
 	@Override
-	public List<Customer> findPendingPaymentsByUnit(final String unitUuid, final int currentPage, final int maxResult,
+	public List<Customer> findRentPendingPaymentsByUnit(final String unitUuid, final int currentPage, final int maxResult,
 			final EntityStatus entityStatus)
 					throws BusinessException {
-		return this.findByQuery(CustomerDAO.QUERY_NAME.findPendingPaymentsByUnit,
+		return this.findByQuery(CustomerDAO.QUERY_NAME.findRentPendingPaymentsByUnit,
 				new ParamBuilder().add("unitUuid", unitUuid).add("entityStatus", entityStatus).process()).setFirstResult(currentPage * maxResult)
 				.setMaxResults(maxResult).getResultList();
 	}
@@ -82,5 +82,12 @@ public class CustomerDAOImpl extends GenericDAOImpl<Customer, Long> implements C
 			throws BusinessException {
 		return this.findSingleByNamedQuery(CustomerDAO.QUERY_NAME.countCustomersWithContractPendingPaymentByUnit,
 				new ParamBuilder().add("unitUuid", unitUuid).add("currentDate", currentDate).add("entityStatus", entityStatus).process(), Long.class);
+	}
+
+	@Override
+	public List<Customer> findCustomersSaleWithPendindOrIncompletePaymentByUnit(final String unitUuid, final EntityStatus entityStatus)
+			throws BusinessException {
+		return this.findByNamedQuery(CustomerDAO.QUERY_NAME.findCustomersSaleWithPendindOrIncompletePaymentByUnit,
+				new ParamBuilder().add("unitUuid", unitUuid).add("entityStatus", entityStatus).process());
 	}
 }

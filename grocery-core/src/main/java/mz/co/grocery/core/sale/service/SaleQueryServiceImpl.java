@@ -10,7 +10,9 @@ import javax.inject.Inject;
 
 import org.springframework.stereotype.Service;
 
+import mz.co.grocery.core.customer.model.Customer;
 import mz.co.grocery.core.sale.dao.SaleDAO;
+import mz.co.grocery.core.sale.model.Sale;
 import mz.co.grocery.core.sale.model.SaleReport;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.model.EntityStatus;
@@ -37,5 +39,10 @@ public class SaleQueryServiceImpl implements SaleQueryService {
 	public List<SaleReport> findMonthlySalesPerPeriod(final String groceryUuid, final LocalDate startDate,
 			final LocalDate endDate) throws BusinessException {
 		return this.saleDAO.findMonthlyPerPeriod(groceryUuid, startDate, endDate, EntityStatus.ACTIVE);
+	}
+
+	@Override
+	public List<Sale> findPendingOrImpletePaymentSaleStatusByCustomer(final Customer customer) throws BusinessException {
+		return this.saleDAO.findPendingOrImpletePaymentSaleStatusByCustomer(customer.getUuid(), EntityStatus.ACTIVE);
 	}
 }

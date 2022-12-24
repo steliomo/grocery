@@ -3,6 +3,7 @@
  */
 package mz.co.grocery.integ.resources.customer;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
@@ -77,7 +78,7 @@ public class CustomerResource extends AbstractResource {
 			@QueryParam("currentPage") final int currentPage,
 			@QueryParam("maxResult") final int maxResult) throws BusinessException {
 
-		final List<Customer> customers = this.customerQueryService.findCustomersWithPendingPeymentsByUnit(unitUuid, currentPage, maxResult);
+		final List<Customer> customers = this.customerQueryService.findCustomersWithRentPendingPeymentsByUnit(unitUuid, currentPage, maxResult);
 
 		final List<CustomerDTO> customerDTOs = customers.stream().map(customer -> new CustomerDTO(customer)).collect(Collectors.toList());
 
@@ -120,5 +121,17 @@ public class CustomerResource extends AbstractResource {
 		final Long totalCustomers = this.customerQueryService.countCustomersWithContractPendingPaymentByUnit(unitUuid, localDate);
 
 		return Response.ok(new CustomersDTO(customerDTOs, totalCustomers)).build();
+	}
+
+	@Path("find-customers-sale-with-pendind-or-incomplete-payment-by-unit/{unitUuid}")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response findCustomersSaleWithPendindOrIncompletePaymentByUnit(@PathParam("unitUuid") final String unitUuid) throws BusinessException {
+
+		final List<Customer> customers = this.customerQueryService.findCustomersSaleWithPendindOrIncompletePaymentByUnit(unitUuid);
+
+		final List<CustomerDTO> customerDTOs = customers.stream().map(customer -> new CustomerDTO(customer)).collect(Collectors.toList());
+
+		return Response.ok(new CustomersDTO(customerDTOs, BigDecimal.ZERO.longValue())).build();
 	}
 }

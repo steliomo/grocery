@@ -41,4 +41,10 @@ public class SaleDAOImpl extends GenericDAOImpl<Sale, Long> implements SaleDAO {
 				.add("entityStatus", entityStatus).process(),
 				SaleReport.class);
 	}
+
+	@Override
+	public List<Sale> findPendingOrImpletePaymentSaleStatusByCustomer(final String customerUuid, final EntityStatus entityStatus) throws BusinessException {
+		return this.findByNamedQuery(SaleDAO.QUERY_NAME.findPendingOrImpletePaymentSaleStatusByCustomer,
+				new ParamBuilder().add("customerUuid", customerUuid).add("entityStatus", entityStatus).process());
+	}
 }

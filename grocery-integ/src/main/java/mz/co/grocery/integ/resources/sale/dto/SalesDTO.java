@@ -40,6 +40,8 @@ public class SalesDTO {
 
 	private List<SaleReport> rentsBalance;
 
+	private List<SaleDTO> salesDTO;
+
 	public SalesDTO() {
 	}
 
@@ -68,6 +70,10 @@ public class SalesDTO {
 
 	public BigDecimal getExpense() {
 
+		if (this.user == null) {
+			return BigDecimal.ZERO;
+		}
+
 		if (UserRole.OPERATOR.equals(this.user.getUserRole())) {
 			return BigDecimal.ZERO;
 		}
@@ -76,6 +82,10 @@ public class SalesDTO {
 	}
 
 	public BigDecimal getProfit() {
+
+		if (this.user == null) {
+			return BigDecimal.ZERO;
+		}
 
 		if (UserRole.OPERATOR.equals(this.user.getUserRole()) || BigDecimal.ZERO.compareTo(this.profit) == BigDecimal.ONE.intValue()) {
 			return BigDecimal.ZERO;
@@ -204,5 +214,17 @@ public class SalesDTO {
 		this.salesReport.sort((s1, s2) -> s1.getMonth().compareTo(s2.getMonth()));
 
 		return this;
+	}
+
+	public List<SaleDTO> getSalesDTO() {
+		return this.salesDTO;
+	}
+
+	public void addSale(final SaleDTO saleDTO) {
+		if (this.salesDTO == null) {
+			this.salesDTO = new ArrayList<>();
+		}
+
+		this.salesDTO.add(saleDTO);
 	}
 }

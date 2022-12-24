@@ -23,7 +23,7 @@ public interface CustomerDAO extends GenericDAO<Customer, Long> {
 
 		public static final String findByUnit = "SELECT c FROM Customer c WHERE c.unit.uuid = :unitUuid AND c.entityStatus = :entityStatus";
 
-		public static final String findPendingPaymentsByUnit = "SELECT c FROM Rent r INNER JOIN r.customer c WHERE c.unit.uuid = :unitUuid AND c.entityStatus = :entityStatus AND r.paymentStatus IN ('PENDING', 'INCOMPLETE') GROUP BY c.id ORDER BY c.name";
+		public static final String findRentPendingPaymentsByUnit = "SELECT c FROM Rent r INNER JOIN r.customer c WHERE c.unit.uuid = :unitUuid AND c.entityStatus = :entityStatus AND r.paymentStatus IN ('PENDING', 'INCOMPLETE') GROUP BY c.id ORDER BY c.name";
 
 		public static final String countPendingPaymentsByUnit = "SELECT COUNT(DISTINCT c) FROM Rent r INNER JOIN r.customer c WHERE c.unit.uuid = :unitUuid AND c.entityStatus = :entityStatus AND r.paymentStatus = 'PENDING'";
 
@@ -34,6 +34,8 @@ public interface CustomerDAO extends GenericDAO<Customer, Long> {
 		public static final String findWithContractPendingPaymentByUnit = "SELECT c FROM Contract ct INNER JOIN ct.customer c WHERE ct.unit.uuid = :unitUuid AND ct.referencePaymentDate <= :currentDate AND ct.entityStatus = :entityStatus GROUP BY c.id ORDER BY c.name";
 
 		public static final String countCustomersWithContractPendingPaymentByUnit = "SELECT COUNT(DISTINCT c) FROM Contract ct INNER JOIN ct.customer c WHERE ct.unit.uuid = :unitUuid AND ct.referencePaymentDate <= :currentDate AND ct.entityStatus = :entityStatus";
+
+		public static final String findCustomersSaleWithPendindOrIncompletePaymentByUnit = "SELECT c FROM Sale s INNER JOIN s.customer c WHERE s.grocery.uuid = :unitUuid AND s.saleStatus IN ('PENDING','INCOMPLETE') AND s.entityStatus = :entityStatus GROUP BY c.id ORDER BY s.saleDate DESC";
 	}
 
 	class QUERY_NAME {
@@ -42,7 +44,7 @@ public interface CustomerDAO extends GenericDAO<Customer, Long> {
 
 		public static final String findByUnit = "Customer.findByUnit";
 
-		public static final String findPendingPaymentsByUnit = "Customer.findPendingPaymentsByUnit";
+		public static final String findRentPendingPaymentsByUnit = "Customer.findRentPendingPaymentsByUnit";
 
 		public static final String countPendingPaymentsByUnit = "Customer.countPendingPaymentsByUnit";
 
@@ -53,13 +55,15 @@ public interface CustomerDAO extends GenericDAO<Customer, Long> {
 		public static final String findWithContractPendingPaymentByUnit = "Customer.findWithContractPendingPaymentByUnit";
 
 		public static final String countCustomersWithContractPendingPaymentByUnit = "Customer.countCustomersWithContractPendingPaymentByUnit";
+
+		public static final String findCustomersSaleWithPendindOrIncompletePaymentByUnit = "Customer.findCustomersSaleWithPendindOrIncompletePaymentByUnit";
 	}
 
 	Long countByUnit(String unitUuid, EntityStatus entityStatus) throws BusinessException;
 
 	List<Customer> findByUnit(String unitUuid, int currentPage, int maxResult, EntityStatus entityStatus) throws BusinessException;
 
-	List<Customer> findPendingPaymentsByUnit(String unitUuid, int currentPage, int maxResult, EntityStatus entityStatus) throws BusinessException;
+	List<Customer> findRentPendingPaymentsByUnit(String unitUuid, int currentPage, int maxResult, EntityStatus entityStatus) throws BusinessException;
 
 	Long countPendingPaymentsByUnit(String unitUuid, EntityStatus entityStatus) throws BusinessException;
 
@@ -71,4 +75,6 @@ public interface CustomerDAO extends GenericDAO<Customer, Long> {
 			EntityStatus entityStatus) throws BusinessException;
 
 	Long countCustomersWithContractPendingPaymentByUnit(String unitUuid, LocalDate currentDate, EntityStatus entityStatus) throws BusinessException;
+
+	List<Customer> findCustomersSaleWithPendindOrIncompletePaymentByUnit(String unitUuid, EntityStatus entityStatus) throws BusinessException;
 }

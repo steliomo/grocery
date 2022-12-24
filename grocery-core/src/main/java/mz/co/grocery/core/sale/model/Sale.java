@@ -34,7 +34,9 @@ import mz.co.msaude.boot.frameworks.model.GenericEntity;
  */
 @NamedQueries({
 	@NamedQuery(name = SaleDAO.QUERY_NAME.findPerPeriod, query = SaleDAO.QUERY.findPerPeriod),
-	@NamedQuery(name = SaleDAO.QUERY_NAME.findMonthlyPerPeriod, query = SaleDAO.QUERY.findMonthlyPerPeriod) })
+	@NamedQuery(name = SaleDAO.QUERY_NAME.findMonthlyPerPeriod, query = SaleDAO.QUERY.findMonthlyPerPeriod),
+	@NamedQuery(name = SaleDAO.QUERY_NAME.findPendingOrImpletePaymentSaleStatusByCustomer, query = SaleDAO.QUERY.findPendingOrImpletePaymentSaleStatusByCustomer)
+})
 @Entity
 @Table(name = "SALES")
 public class Sale extends GenericEntity {
@@ -62,20 +64,24 @@ public class Sale extends GenericEntity {
 	private Set<SaleItem> items = new HashSet<>();
 
 	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "CUSTOMER_ID")
 	private Customer customer;
 
 	@NotNull
 	@Enumerated(EnumType.STRING)
-	@Column(name = "SALE_TYPE", nullable = false, length = 15)
+	@Column(name = "SALE_TYPE", nullable = false, length = 20)
 	private SaleType saleType;
 
 	@NotNull
 	@Enumerated(EnumType.STRING)
-	@Column(name = "SALE_STATUS", nullable = false, length = 15)
+	@Column(name = "SALE_STATUS", nullable = false, length = 20)
 	private SaleStatus saleStatus;
 
 	@Column(name = "TOTAL_PAID")
 	private BigDecimal totalPaid;
+
+	@Column(name = "DUE_DATE")
+	private LocalDate dueDate;
 
 	public Grocery getGrocery() {
 		return this.grocery;
@@ -152,5 +158,31 @@ public class Sale extends GenericEntity {
 
 	public void setTotalPaid(final BigDecimal totalPaid) {
 		this.totalPaid = totalPaid;
+	}
+
+	public BigDecimal getRemainingPayment() {
+		return this.total.subtract(this.totalPaid);
+	}
+
+	public void updateTotalPaid(final BigDecimal paymentValue) {
+		this.totalPaid = this.totalPaid.add(paymentValue);
+	}
+
+	public void updateSaleStatus() {
+
+		if (this.total.compareTo(this.totalPaid) == BigDecimal.ZERO.intValue()) {
+			this.saleStatus = SaleStatus.COMPLETE;
+			return;
+		}
+
+		this.saleStatus = SaleStatus.INCOMPLETE;
+	}
+
+	public LocalDate getDueDate() {
+		return this.dueDate;
+	}
+
+	public void setDueDate(final LocalDate dueDate) {
+		this.dueDate = dueDate;
 	}
 }

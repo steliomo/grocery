@@ -12,6 +12,7 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
@@ -25,11 +26,16 @@ import mz.co.grocery.core.grocery.model.GroceryUser;
 import mz.co.grocery.core.grocery.service.GroceryUserQueryService;
 import mz.co.grocery.core.rent.service.RentPaymentQueryService;
 import mz.co.grocery.core.sale.model.Sale;
+import mz.co.grocery.core.sale.model.SalePayment;
 import mz.co.grocery.core.sale.model.SaleReport;
+import mz.co.grocery.core.sale.service.SalePaymentService;
 import mz.co.grocery.core.sale.service.SaleQueryService;
 import mz.co.grocery.core.sale.service.SaleService;
+import mz.co.grocery.core.util.ApplicationTranslator;
 import mz.co.grocery.integ.resources.AbstractResource;
+import mz.co.grocery.integ.resources.customer.dto.CustomerDTO;
 import mz.co.grocery.integ.resources.sale.dto.SaleDTO;
+import mz.co.grocery.integ.resources.sale.dto.SalePaymentDTO;
 import mz.co.grocery.integ.resources.sale.dto.SalesDTO;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.util.LocalDateAdapter;
@@ -58,6 +64,12 @@ public class SaleResource extends AbstractResource {
 
 	@Inject
 	private RentPaymentQueryService rentPaymentQueryService;
+
+	@Inject
+	private SalePaymentService salePaymentService;
+
+	@Inject
+	private ApplicationTranslator translator;
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -114,6 +126,38 @@ public class SaleResource extends AbstractResource {
 				eDate);
 
 		final SalesDTO salesDTO = new SalesDTO(user).setSalesBalance(sales).setRentsBalance(rents).setExpenses(expenses).buildMonthly();
+
+		return Response.ok(salesDTO).build();
+	}
+
+	@POST
+	@Path("sale-payment")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response salePayment(final SalePaymentDTO salePaymentDTO) throws BusinessException {
+
+		final SalePayment salePayment = this.salePaymentService.payInstallmentSale(this.getContext(), salePaymentDTO.getSaleUuid(),
+				salePaymentDTO.getPaymentValue(),
+				salePaymentDTO.getPaymentDate());
+
+		return Response.ok(new SalePaymentDTO(salePayment)).build();
+	}
+
+	@GET
+	@Path("find-pending-or-incomplete-sales-by-customer/{customerUuid}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response findPendingOrIncompleteSalesByCustomer(@PathParam("customerUuid") final String customerUuid) throws BusinessException {
+
+		final CustomerDTO customerDTO = new CustomerDTO();
+		customerDTO.setUuid(customerUuid);
+
+		final List<Sale> sales = this.saleQueryService.findPendingOrImpletePaymentSaleStatusByCustomer(customerDTO.get());
+
+		final SalesDTO salesDTO = new SalesDTO();
+
+		sales.forEach(sale -> {
+			salesDTO.addSale(new SaleDTO(sale, this.translator));
+		});
 
 		return Response.ok(salesDTO).build();
 	}

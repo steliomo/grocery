@@ -65,8 +65,13 @@ public class SaleServiceImpl extends AbstractService implements SaleService {
 		switch (sale.getSaleType()) {
 
 		case INSTALLMENT:
+
 			if (sale.getCustomer() == null) {
 				throw new BusinessException(this.translator.getTranslation("installment.sale.must.have.customer"));
+			}
+
+			if (sale.getDueDate() == null) {
+				throw new BusinessException(this.translator.getTranslation("installment.sale.due.date.must.be.specified"));
 			}
 
 			sale.setSaleStatus(SaleStatus.PENDING);

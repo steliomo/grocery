@@ -13,6 +13,7 @@ import org.junit.Before;
 import org.junit.Test;
 
 import mz.co.grocery.core.config.AbstractIntegServiceTest;
+import mz.co.grocery.core.customer.model.SaleType;
 import mz.co.grocery.core.fixturefactory.GroceryTemplate;
 import mz.co.grocery.core.fixturefactory.SaleTemplate;
 import mz.co.grocery.core.fixturefactory.StockTemplate;
@@ -174,6 +175,7 @@ public class StockQueryServiceTest extends AbstractIntegServiceTest {
 		final Sale sale = EntityFactory.gimme(Sale.class, SaleTemplate.VALID);
 		sale.setGrocery(stock.getGrocery());
 		sale.addItem(saleItem);
+		sale.setSaleType(SaleType.CASH);
 
 		this.saleService.registSale(this.getUserContext(), sale);
 

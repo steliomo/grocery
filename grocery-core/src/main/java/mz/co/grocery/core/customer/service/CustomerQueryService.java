@@ -19,7 +19,7 @@ public interface CustomerQueryService {
 
 	Long countCustomersByUnit(String unitUuid) throws BusinessException;
 
-	List<Customer> findCustomersWithPendingPeymentsByUnit(String unitUuid, int currentPage, int maxResult) throws BusinessException;
+	List<Customer> findCustomersWithRentPendingPeymentsByUnit(String unitUuid, int currentPage, int maxResult) throws BusinessException;
 
 	Long countCustomersWithPendingPeymentsByUnit(String unitUuid) throws BusinessException;
 
@@ -31,4 +31,6 @@ public interface CustomerQueryService {
 			throws BusinessException;
 
 	Long countCustomersWithContractPendingPaymentByUnit(String unitUuid, LocalDate currentDate) throws BusinessException;
+
+	List<Customer> findCustomersSaleWithPendindOrIncompletePaymentByUnit(String unitUuid) throws BusinessException;
 }
