@@ -7,6 +7,7 @@ package mz.co.grocery.integ.resources.item.dto;
 import mz.co.grocery.core.item.model.Product;
 import mz.co.grocery.core.item.model.ProductDescription;
 import mz.co.grocery.core.item.model.ProductUnit;
+import mz.co.grocery.core.item.model.ProductUnitType;
 import mz.co.grocery.integ.resources.dto.GenericDTO;
 import mz.co.grocery.integ.resources.util.ProxyUtil;
 
@@ -79,7 +80,15 @@ public class ProductDescriptionDTO extends GenericDTO<ProductDescription> {
 			return "";
 		}
 
-		return new StringBuilder()
+		final StringBuilder builder = new StringBuilder();
+
+		if (ProductUnitType.NA.equals(this.productUnitDTO.getProductUnitType())) {
+			return builder.append(this.productDTO.getName())
+					.append(" ")
+					.append(this.description).toString();
+		}
+
+		return builder
 				.append(this.productDTO.getName())
 				.append(" ")
 				.append(this.description).append(" ")

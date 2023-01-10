@@ -20,5 +20,9 @@ public enum ProductUnitType {
 
 	W,
 
-	MG;
+	MG,
+
+	CM,
+
+	NA; // Non applicable
 }
