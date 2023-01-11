@@ -18,11 +18,13 @@ public enum ProductUnitType {
 
 	MT,
 
-	W,
+	W,  // Watt
 
-	MG,
+	MG, // Milligram
 
-	CM,
+	CM, // Centimeters
+
+	M,  // Meters
 
 	NA; // Non applicable
 }
