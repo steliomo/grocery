@@ -30,7 +30,6 @@ public class RentPaymentDTO extends GenericDTO<RentPayment> {
 
 	public RentPaymentDTO(final RentPayment rentPayment) {
 		super(rentPayment);
-		this.mapper(rentPayment);
 	}
 
 	@Override

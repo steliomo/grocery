@@ -16,6 +16,8 @@ public interface RentQueryService {
 
 	List<Rent> findPendingPaymentRentsByCustomer(String customerUuid) throws BusinessException;
 
-	List<Rent> fetchPendingDevolutionRentsByCustomer(String customerUuid) throws BusinessException;
+	List<Rent> fetchRentsWithPendingOrIncompleteRentItemToLoadByCustomer(String customerUuid) throws BusinessException;
+
+	List<Rent> fetchRentsWithPendingOrIncompleteRentItemToReturnByCustomer(String customerUuid) throws BusinessException;
 
 }

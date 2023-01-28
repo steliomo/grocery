@@ -32,8 +32,17 @@ public class RentDAOImpl extends GenericDAOImpl<Rent, Long> implements RentDAO {
 	}
 
 	@Override
-	public List<Rent> fetchPendingDevolutionsByCustomer(final String customerUuid, final EntityStatus entityStatus) throws BusinessException {
-		return this.findByQuery(RentDAO.QUERY_NAME.fetchPendingDevolutionsByCustomer,
+	public List<Rent> fetchPendingOrIncompleteRentItemToLoadByCustomer(final String customerUuid, final EntityStatus entityStatus)
+			throws BusinessException {
+		return this.findByQuery(RentDAO.QUERY_NAME.fetchPendingOrIncompleteRentItemToLoadByCustomer,
+				new ParamBuilder().add("customerUuid", customerUuid).add("entityStatus", entityStatus).process(), Rent.class)
+				.setHint(QueryHints.HINT_PASS_DISTINCT_THROUGH, false).getResultList();
+	}
+
+	@Override
+	public List<Rent> fetchRentsWithPendingOrIncompleteRentItemToReturnByCustomer(final String customerUuid, final EntityStatus entityStatus)
+			throws BusinessException {
+		return this.findByQuery(RentDAO.QUERY_NAME.fetchRentsWithPendingOrIncompleteRentItemToReturnByCustomer,
 				new ParamBuilder().add("customerUuid", customerUuid).add("entityStatus", entityStatus).process(), Rent.class)
 				.setHint(QueryHints.HINT_PASS_DISTINCT_THROUGH, false).getResultList();
 	}

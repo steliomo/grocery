@@ -33,7 +33,8 @@ import mz.co.msaude.boot.frameworks.model.GenericEntity;
  */
 
 @NamedQueries({ @NamedQuery(name = RentDAO.QUERY_NAME.findPendinPaymentsByCustomer, query = RentDAO.QUERY.findPendinPaymentsByCustomer),
-	@NamedQuery(name = RentDAO.QUERY_NAME.fetchPendingDevolutionsByCustomer, query = RentDAO.QUERY.fetchPendingDevolutionsByCustomer) })
+	@NamedQuery(name = RentDAO.QUERY_NAME.fetchPendingOrIncompleteRentItemToLoadByCustomer, query = RentDAO.QUERY.fetchPendingOrIncompleteRentItemToLoadByCustomer),
+	@NamedQuery(name = RentDAO.QUERY_NAME.fetchRentsWithPendingOrIncompleteRentItemToReturnByCustomer, query = RentDAO.QUERY.fetchRentsWithPendingOrIncompleteRentItemToReturnByCustomer) })
 @Entity
 @Table(name = "RENTS")
 public class Rent extends GenericEntity {
@@ -59,8 +60,12 @@ public class Rent extends GenericEntity {
 	private PaymentStatus paymentStatus = PaymentStatus.PENDING;
 
 	@NotNull
-	@Column(name = "TOTAL_RENT", nullable = false)
-	private BigDecimal totalRent = BigDecimal.ZERO;
+	@Column(name = "TOTAL_ESTIMATED", nullable = false)
+	private BigDecimal totalEstimated = BigDecimal.ZERO;
+
+	@NotNull
+	@Column(name = "TOTAL_CALCULATED", nullable = false)
+	private BigDecimal totalCalculated = BigDecimal.ZERO;
 
 	@NotNull
 	@Column(name = "TOTAL_PAID", nullable = false)
@@ -116,8 +121,16 @@ public class Rent extends GenericEntity {
 		return Collections.unmodifiableSet(this.rentPayments);
 	}
 
-	public BigDecimal getTotalRent() {
-		return this.totalRent;
+	public BigDecimal getTotalEstimated() {
+		return this.totalEstimated;
+	}
+
+	public BigDecimal getTotalCalculated() {
+		return this.totalCalculated;
+	}
+
+	public void setTotalCalculated(final BigDecimal ammount) {
+		this.totalCalculated = this.totalCalculated.add(ammount);
 	}
 
 	public BigDecimal getTotalPayment() {
@@ -125,26 +138,35 @@ public class Rent extends GenericEntity {
 	}
 
 	public BigDecimal getTotalToPay() {
-		return this.totalRent.subtract(this.totalPaid);
+		if (this.totalEstimated.compareTo(this.totalCalculated) == BigDecimal.ONE.intValue()) {
+			return this.totalEstimated.subtract(this.totalPaid);
+		} else if (this.totalEstimated.compareTo(this.totalCalculated) == BigDecimal.ZERO.intValue()) {
+			return this.totalEstimated.subtract(this.totalPaid);
+		}
+		return this.totalCalculated.subtract(this.totalPaid);
 	}
 
-	public void setPaymentStatus() {
-
-		if (this.totalRent.compareTo(this.totalPaid) == BigDecimal.ZERO.intValue()) {
-			this.paymentStatus = PaymentStatus.COMPLETE;
-			return;
-		}
-
-		if (this.totalPaid.intValue() != BigDecimal.ZERO.intValue() && this.totalPaid.compareTo(this.totalRent) == -BigDecimal.ONE.intValue()) {
-			this.paymentStatus = PaymentStatus.INCOMPLETE;
-		}
-	}
-
-	public void setTotalRent() {
-		this.totalRent = this.rentItems.stream().map(RentItem::getTotal).reduce(BigDecimal.ZERO, BigDecimal::add);
+	public void calculateTotalEstimated() {
+		this.totalEstimated = this.rentItems.stream().map(RentItem::getPlannedTotal).reduce(BigDecimal.ZERO, BigDecimal::add);
 	}
 
 	public void setTotalPaid(final BigDecimal paymentValue) {
 		this.totalPaid = this.totalPaid.add(paymentValue);
+	}
+
+	public void setPaymentStatus() {
+		if (this.totalPaid.compareTo(BigDecimal.ZERO) == BigDecimal.ZERO.intValue()) {
+			this.paymentStatus = PaymentStatus.PENDING;
+		} else if (this.totalPaid.compareTo(this.getTotalToPay()) == BigDecimal.ONE.negate().intValue()) {
+			this.paymentStatus = PaymentStatus.INCOMPLETE;
+		} else if (BigDecimal.ZERO.compareTo(this.getTotalToPay()) == BigDecimal.ZERO.intValue()) {
+			this.paymentStatus = PaymentStatus.COMPLETE;
+		} else {
+			this.paymentStatus = PaymentStatus.OVER_PAYMENT;
+		}
+	}
+
+	public void setTotalEstimated(final BigDecimal totalEstimated) {
+		this.totalEstimated = totalEstimated;
 	}
 }

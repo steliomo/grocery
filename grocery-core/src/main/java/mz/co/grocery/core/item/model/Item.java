@@ -16,7 +16,7 @@ public interface Item {
 
 	BigDecimal getSalePrice();
 
-	Boolean isReturnable();
+	Boolean isStockable();
 
 	String getUuid();
 

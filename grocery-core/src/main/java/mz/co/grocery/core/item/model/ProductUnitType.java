@@ -16,7 +16,7 @@ public enum ProductUnitType {
 
 	ML,
 
-	MT,
+	MT, // Moz Metical
 
 	W,  // Watt
 

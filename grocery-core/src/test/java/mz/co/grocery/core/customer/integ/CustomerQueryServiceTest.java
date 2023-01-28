@@ -3,6 +3,7 @@
  */
 package mz.co.grocery.core.customer.integ;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
@@ -11,6 +12,7 @@ import javax.inject.Inject;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import mz.co.grocery.core.config.AbstractIntegServiceTest;
 import mz.co.grocery.core.contract.model.Contract;
@@ -25,8 +27,14 @@ import mz.co.grocery.core.fixturefactory.GroceryTemplate;
 import mz.co.grocery.core.grocery.model.Grocery;
 import mz.co.grocery.core.grocery.service.GroceryService;
 import mz.co.grocery.core.rent.builder.RentBuilder;
+import mz.co.grocery.core.rent.model.Guide;
+import mz.co.grocery.core.rent.model.GuideItem;
+import mz.co.grocery.core.rent.model.GuideType;
 import mz.co.grocery.core.rent.model.Rent;
+import mz.co.grocery.core.rent.service.GuideIssuer;
+import mz.co.grocery.core.rent.service.GuideService;
 import mz.co.grocery.core.rent.service.RentService;
+import mz.co.grocery.core.rent.service.TransportGuideIssuer;
 import mz.co.grocery.core.sale.integ.SaleBuilder;
 import mz.co.grocery.core.sale.model.Sale;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
@@ -60,7 +68,14 @@ public class CustomerQueryServiceTest extends AbstractIntegServiceTest {
 	private ContractService contractService;
 
 	@Inject
-	SaleBuilder saleBuilder;
+	private SaleBuilder saleBuilder;
+
+	@Inject
+	private GuideService guideService;
+
+	@Inject
+	@Qualifier(TransportGuideIssuer.NAME)
+	private GuideIssuer transportGuideIssuer;
 
 	private Grocery unit;
 
@@ -129,12 +144,26 @@ public class CustomerQueryServiceTest extends AbstractIntegServiceTest {
 	}
 
 	@Test
-	public void shouldfindCustomersWithPendindDevolutionsByUnit() throws BusinessException {
+	public void shouldFindCustomersWithPendingOrIncompleteRentItemsToReturnByUnit() throws BusinessException {
 
 		final Rent rent = this.rentBuilder.build();
 		this.rentService.rent(this.getUserContext(), rent);
 
-		final List<Customer> customers = this.customerQueryService.findCustomersWithPendingDevolutionsByUnit(rent.getUnit().getUuid(), 0, 10);
+		final Guide guide = new Guide();
+		guide.setRent(rent);
+		guide.setType(GuideType.TRANSPORT);
+
+		rent.getRentItems().forEach(rentItem -> {
+			final GuideItem guideItem = new GuideItem();
+			guideItem.setQuantity(new BigDecimal(2));
+			guideItem.setRentItem(rentItem);
+			guide.addGuideItem(guideItem);
+		});
+		this.guideService.setGuideIssuer(this.transportGuideIssuer);
+		this.guideService.issueGuide(this.getUserContext(), guide);
+
+		final List<Customer> customers = this.customerQueryService
+				.findCustomersWithPendingOrIncompleteRentItemsToReturnByUnit(rent.getUnit().getUuid(), 0, 10);
 
 		Assert.assertFalse(customers.isEmpty());
 		customers.forEach(customer -> {
@@ -143,12 +172,25 @@ public class CustomerQueryServiceTest extends AbstractIntegServiceTest {
 	}
 
 	@Test
-	public void shouldCountCustomersWithPendindDevolutionsByUnit() throws BusinessException {
+	public void shouldCountCustomersWithPendingOrIncompleteRentItemsToReturnByUnit() throws BusinessException {
 
 		final Rent rent = this.rentBuilder.build();
 		this.rentService.rent(this.getUserContext(), rent);
 
-		final Long customers = this.customerQueryService.countCustomersWithPendingDevolutionsByUnit(rent.getUnit().getUuid());
+		final Guide guide = new Guide();
+		guide.setRent(rent);
+		guide.setType(GuideType.TRANSPORT);
+
+		rent.getRentItems().forEach(rentItem -> {
+			final GuideItem guideItem = new GuideItem();
+			guideItem.setQuantity(new BigDecimal(2));
+			guideItem.setRentItem(rentItem);
+			guide.addGuideItem(guideItem);
+		});
+		this.guideService.setGuideIssuer(this.transportGuideIssuer);
+		this.guideService.issueGuide(this.getUserContext(), guide);
+
+		final Long customers = this.customerQueryService.countCustomersWithPendingOrIncompleteRentItemsToReturnByUnit(rent.getUnit().getUuid());
 
 		Assert.assertTrue(customers > 0);
 	}
@@ -211,6 +253,18 @@ public class CustomerQueryServiceTest extends AbstractIntegServiceTest {
 				.dueDate(LocalDate.now().plusDays(30)).build();
 
 		final List<Customer> customers = this.customerQueryService.findCustomersSaleWithPendindOrIncompletePaymentByUnit(sale.getGrocery().getUuid());
+
+		Assert.assertFalse(customers.isEmpty());
+	}
+
+	@Test
+	public void shouldFindCustomersWithPendingOrInCompleteRentItemsToLoad() throws BusinessException {
+
+		final Rent rent = this.rentBuilder.build();
+		this.rentService.rent(this.getUserContext(), rent);
+
+		final List<Customer> customers = this.customerQueryService
+				.findCustomersWithPendingOrInCompleteRentItemsToLoadByUnit(rent.getUnit().getUuid());
 
 		Assert.assertFalse(customers.isEmpty());
 	}

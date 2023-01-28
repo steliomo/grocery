@@ -3,7 +3,6 @@
  */
 package mz.co.grocery.core.fixturefactory;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import br.com.six2six.fixturefactory.Fixture;
@@ -31,7 +30,6 @@ public class RentTemplate implements TemplateLoader {
 				this.add("rentDate", LocalDate.now());
 				this.add("paymentStatus", PaymentStatus.PENDING);
 				this.add("customer", this.one(Customer.class, CustomerTemplate.VALID));
-				this.add("totalRent", BigDecimal.ZERO);
 			}
 		});
 	}

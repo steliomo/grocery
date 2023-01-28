@@ -13,5 +13,7 @@ public enum PaymentStatus {
 
 	COMPLETE,
 
-	INCOMPLETE;
+	INCOMPLETE,
+
+	OVER_PAYMENT;
 }

@@ -3,10 +3,6 @@
  */
 package mz.co.grocery.core.rent.unit;
 
-import java.util.List;
-import java.util.stream.Collectors;
-import java.util.stream.Stream;
-
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -15,17 +11,13 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import mz.co.grocery.core.config.AbstractUnitServiceTest;
-import mz.co.grocery.core.customer.model.Customer;
-import mz.co.grocery.core.fixturefactory.RentItemTemplate;
 import mz.co.grocery.core.fixturefactory.RentPaymentTemplate;
-import mz.co.grocery.core.fixturefactory.RentTemplate;
-import mz.co.grocery.core.grocery.model.Grocery;
 import mz.co.grocery.core.payment.service.PaymentService;
+import mz.co.grocery.core.rent.builder.RentUnitBuilder;
 import mz.co.grocery.core.rent.dao.RentDAO;
 import mz.co.grocery.core.rent.dao.RentPaymentDAO;
 import mz.co.grocery.core.rent.model.PaymentStatus;
 import mz.co.grocery.core.rent.model.Rent;
-import mz.co.grocery.core.rent.model.RentItem;
 import mz.co.grocery.core.rent.model.RentPayment;
 import mz.co.grocery.core.rent.service.RentPaymentService;
 import mz.co.grocery.core.rent.service.RentPaymentServiceImpl;
@@ -54,39 +46,23 @@ public class RentPaymentServiceTest extends AbstractUnitServiceTest {
 
 	@Before
 	public void setup() {
-
-		this.rent = EntityFactory.gimme(Rent.class, RentTemplate.VALID, result -> {
-
-			if (result instanceof Grocery || result instanceof Customer) {
-				return;
-			}
-
-			final Rent Rent = (Rent) result;
-			final List<RentItem> products = EntityFactory.gimme(RentItem.class, 5, RentItemTemplate.PRODUCT);
-			final List<RentItem> services = EntityFactory.gimme(RentItem.class, 5, RentItemTemplate.SERVICE);
-
-			final List<RentItem> rentItems = Stream.concat(products.stream(), services.stream()).collect(Collectors.toList());
-
-			rentItems.forEach(rentItem -> {
-				rentItem.setTotal();
-				Rent.addRentItem(rentItem);
-			});
-		});
+		this.rent = new RentUnitBuilder().withUnloadedProducts(10).withUnloadedServices(10).calculatePlannedTotal().build();
 	}
 
 	@Test
 	public void shouldMakeFullRentPayment() throws BusinessException {
 
 		final RentPayment rentPayment = EntityFactory.gimme(RentPayment.class, RentPaymentTemplate.VALID);
-		this.rent.setTotalRent();
+		this.rent.calculateTotalEstimated();
 
 		rentPayment.setRent(this.rent);
 		this.rent.addRentPayment(rentPayment);
-		rentPayment.setPaymentValue(this.rent.getTotalRent());
+		rentPayment.setPaymentValue(this.rent.getTotalEstimated());
 
 		Mockito.when(this.rentDAO.findByUuid(this.rent.getUuid())).thenReturn(this.rent);
 
 		this.rentService.makeRentPayment(this.getUserContext(), rentPayment);
+
 		Assert.assertEquals(PaymentStatus.COMPLETE, rentPayment.getPaymentStatus());
 	}
 
@@ -94,7 +70,7 @@ public class RentPaymentServiceTest extends AbstractUnitServiceTest {
 	public void shouldMakePartialRentPayment() throws BusinessException {
 
 		final RentPayment rentPayment = EntityFactory.gimme(RentPayment.class, RentPaymentTemplate.VALID);
-		this.rent.setTotalRent();
+		this.rent.calculateTotalEstimated();
 		rentPayment.setRent(this.rent);
 
 		this.rent.addRentPayment(rentPayment);

@@ -6,8 +6,6 @@ package mz.co.grocery.core.rent.model;
 import java.math.BigDecimal;
 import java.time.Duration;
 import java.time.LocalDate;
-import java.util.HashSet;
-import java.util.Set;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -18,7 +16,6 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
@@ -54,36 +51,46 @@ public class RentItem extends GenericEntity {
 	private ServiceItem serviceItem;
 
 	@NotNull
-	@Column(name = "QUANTITY", nullable = false)
-	private BigDecimal quantity;
+	@Column(name = "PLANNED_QUANTITY", nullable = false)
+	private BigDecimal plannedQuantity;
 
 	@NotNull
-	@Column(name = "START_DATE", nullable = false)
-	private LocalDate startDate;
+	@Column(name = "PLANNED_DAYS", nullable = false)
+	private BigDecimal plannedDays;
 
-	@NotNull
-	@Column(name = "END_DATE", nullable = false)
-	private LocalDate endDate;
+	@Column(name = "LOADED_QUANTITY")
+	private BigDecimal loadedQuantity;
+
+	@Column(name = "LOADING_DATE")
+	private LocalDate loadingDate;
+
+	@Column(name = "RETURNED_QUANTITY")
+	private BigDecimal returnedQuantity;
+
+	@Column(name = "RETURN_DATE")
+	private LocalDate returnDate;
 
 	@Column(name = "DISCOUNT")
 	private BigDecimal discount;
 
-	@Column(name = "TOTAL")
-	private BigDecimal total;
+	@NotNull
+	@Column(name = "PLANNED_TOTAL", nullable = false)
+	private BigDecimal plannedTotal;
+
+	@Column(name = "CALCULATED_TOTAL")
+	private BigDecimal calculatedTotal;
 
 	@NotNull
-	@Column(name = "RETURNABLE", nullable = false)
-	private Boolean returnable;
+	@Column(name = "STOCKABLE", nullable = false)
+	private Boolean stockable;
 
 	@Enumerated(EnumType.STRING)
-	@Column(name = "RETURN_STATUS", nullable = false, length = 15)
+	@Column(name = "LOAD_STATUS", length = 15)
+	private LoadStatus loadStatus;
+
+	@Enumerated(EnumType.STRING)
+	@Column(name = "RETURN_STATUS", length = 15)
 	private ReturnStatus returnStatus;
-
-	@Column(name = "DESCRIPTION", length = 150)
-	private String description;
-
-	@OneToMany(fetch = FetchType.LAZY, mappedBy = "rentItem")
-	private final Set<ReturnItem> returnItems = new HashSet<>();
 
 	public Rent getRent() {
 		return this.rent;
@@ -106,100 +113,156 @@ public class RentItem extends GenericEntity {
 		this.serviceItem = (ServiceItem) item;
 	}
 
-	public BigDecimal getQuantity() {
-		return this.quantity;
-	}
-
-	public void setQuantity(final BigDecimal quantity) {
-		this.quantity = quantity;
-	}
-
-	public LocalDate getStartDate() {
-		return this.startDate;
-	}
-
-	public void setStartDate(final LocalDate startDate) {
-		this.startDate = startDate;
-	}
-
-	public LocalDate getEndDate() {
-		return this.endDate;
-	}
-
-	public void setEndDate(final LocalDate endDate) {
-		this.endDate = endDate;
-	}
-
 	public ItemType getType() {
 		return this.getItem().getType();
 	}
 
-	public void setDiscount(final BigDecimal discount) {
-		this.discount = discount;
+	public RentItem setStockable() {
+		this.stockable = this.getItem().isStockable();
+		return this;
+	}
+
+	public Boolean isStockable() {
+		return this.stockable;
+	}
+
+	public BigDecimal getPlannedQuantity() {
+		return this.plannedQuantity;
+	}
+
+	public void setPlannedQuantity(final BigDecimal plannedQuantity) {
+		this.plannedQuantity = plannedQuantity;
+	}
+
+	public BigDecimal getPlannedDays() {
+		return this.plannedDays;
+	}
+
+	public void setPlannedDays(final BigDecimal plannedDays) {
+		this.plannedDays = plannedDays;
+	}
+
+	public BigDecimal getLoadedQuantity() {
+		return this.loadedQuantity;
+	}
+
+	public void addLoadedQuantity(final BigDecimal quantity) {
+		if (this.loadedQuantity == null) {
+			this.loadedQuantity = BigDecimal.ZERO;
+		}
+
+		this.loadedQuantity = this.loadedQuantity.add(quantity);
+	}
+
+	public BigDecimal getQuantityToLoad() {
+		return this.plannedQuantity.subtract(this.loadedQuantity == null ? BigDecimal.ZERO : this.loadedQuantity);
+	}
+
+	public BigDecimal getReturnedQuantity() {
+		return this.returnedQuantity;
+	}
+
+	public void addReturnedQuantity(final BigDecimal quantity) {
+
+		if (this.returnedQuantity == null) {
+			this.returnedQuantity = BigDecimal.ZERO;
+		}
+
+		this.returnedQuantity = this.returnedQuantity.add(quantity);
+	}
+
+	public LocalDate getLoadingDate() {
+		return this.loadingDate;
+	}
+
+	public void setLoadingDate(final LocalDate loadingDate) {
+		this.loadingDate = loadingDate;
+	}
+
+	public LocalDate getReturnDate() {
+		return this.returnDate;
+	}
+
+	public void setReturnDate(final LocalDate returnDate) {
+		this.returnDate = returnDate;
 	}
 
 	public BigDecimal getDiscount() {
 		return this.discount;
 	}
 
-	public void setTotal() {
-		final long days = Duration.between(this.startDate.atStartOfDay(), this.endDate.atStartOfDay()).toDays();
-		this.total = this.getItem().getRentPrice().multiply(this.quantity).multiply(new BigDecimal(days)).subtract(this.discount);
+	public void setDiscount(final BigDecimal discount) {
+		this.discount = discount;
 	}
 
-	public BigDecimal getTotal() {
-		return this.total;
+	public BigDecimal getPlannedTotal() {
+		return this.plannedTotal;
+	}
+
+	public void calculatePlannedTotal() {
+		this.plannedTotal = this.getItem().getRentPrice().multiply(this.plannedQuantity).multiply(this.plannedDays).subtract(this.discount);
+	}
+
+	public BigDecimal getCalculatedTotal() {
+		return this.calculatedTotal;
+	}
+
+	public void calculateTotalRent(final LocalDate calculatedDate) {
+
+		if (this.calculatedTotal == null || this.loadingDate == null || this.loadedQuantity == null) {
+			this.calculatedTotal = BigDecimal.ZERO;
+			return;
+		}
+
+		final long days = Duration.between(this.loadingDate.atStartOfDay(), calculatedDate.atStartOfDay()).toDays();
+
+		this.calculatedTotal = this.calculatedTotal
+				.add(this.getItem().getRentPrice().multiply(this.getCurrentRentQuantity()).multiply(new BigDecimal(days)));
+	}
+
+	public BigDecimal getCurrentRentQuantity() {
+		return this.loadedQuantity.subtract(this.returnedQuantity == null ? BigDecimal.ZERO : this.returnedQuantity);
+	}
+
+	public LoadStatus getLoadStatus() {
+		return this.loadStatus;
+	}
+
+	public void setLoadStatus() {
+
+		if (this.loadedQuantity == null) {
+			this.loadStatus = LoadStatus.PENDING;
+			return;
+		}
+
+		if (this.loadedQuantity.compareTo(this.plannedQuantity) == BigDecimal.ZERO.intValue()) {
+			this.loadStatus = LoadStatus.COMPLETE;
+			return;
+		}
+
+		this.loadStatus = LoadStatus.INCOMPLETE;
+	}
+
+	public void closeItemLoad() {
+		this.loadStatus = LoadStatus.COMPLETE;
 	}
 
 	public ReturnStatus getReturnStatus() {
 		return this.returnStatus;
 	}
 
-	public RentItem setReturnable() {
-		this.returnable = this.getItem().isReturnable();
-		return this;
-	}
+	public void setReturnStatus() {
 
-	public String getDescription() {
-		return this.description;
-	}
-
-	public void setDescription(final String description) {
-		this.description = description;
-	}
-
-	public Boolean isReturnable() {
-		return this.returnable;
-	}
-
-	public BigDecimal returned() {
-		return this.returnItems.stream().map(ReturnItem::getQuantity).reduce(BigDecimal.ZERO, BigDecimal::add);
-	}
-
-	public BigDecimal toReturn() {
-		return this.quantity.subtract(this.returned());
-	}
-
-	public void setReturnStatus(final BigDecimal quantity) {
-
-		if (!this.isReturnable() && quantity.compareTo(BigDecimal.ZERO) == BigDecimal.ZERO.intValue()) {
-			this.returnStatus = ReturnStatus.NA;
+		if (this.returnedQuantity == null) {
+			this.returnStatus = ReturnStatus.PENDING;
 			return;
 		}
 
-		if (this.quantity.compareTo(this.returned()) == BigDecimal.ZERO.intValue()) {
+		if (this.returnedQuantity.compareTo(this.loadedQuantity) == BigDecimal.ZERO.intValue()) {
 			this.returnStatus = ReturnStatus.COMPLETE;
 			return;
 		}
 
-		this.returnStatus = ReturnStatus.PENDING;
-	}
-
-	public void addReturnItem(final ReturnItem returnItem) {
-		this.returnItems.add(returnItem);
-	}
-
-	public Set<ReturnItem> getReturnItems() {
-		return this.returnItems;
+		this.returnStatus = ReturnStatus.INCOMPLETE;
 	}
 }

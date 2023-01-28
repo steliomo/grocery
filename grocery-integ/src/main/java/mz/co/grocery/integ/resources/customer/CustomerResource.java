@@ -87,18 +87,19 @@ public class CustomerResource extends AbstractResource {
 		return Response.ok(new CustomersDTO(customerDTOs, totalCustomers)).build();
 	}
 
-	@Path("pending-devolutions-by-unit/{unitUuid}")
+	@Path("find-customers-with-pending-or-incomplete-rent-items-to-return-by-unit/{unitUuid}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response findCustomersWithPendingDevolutionsByUnit(@PathParam("unitUuid") final String unitUuid,
+	public Response findCustomersWithPendingOrIncompleteRentItemsToReturnByUnit(@PathParam("unitUuid") final String unitUuid,
 			@QueryParam("currentPage") final int currentPage,
 			@QueryParam("maxResult") final int maxResult) throws BusinessException {
 
-		final List<Customer> customers = this.customerQueryService.findCustomersWithPendingDevolutionsByUnit(unitUuid, currentPage, maxResult);
+		final List<Customer> customers = this.customerQueryService.findCustomersWithPendingOrIncompleteRentItemsToReturnByUnit(unitUuid, currentPage,
+				maxResult);
 
 		final List<CustomerDTO> customerDTOs = customers.stream().map(customer -> new CustomerDTO(customer)).collect(Collectors.toList());
 
-		final Long totalCustomers = this.customerQueryService.countCustomersWithPendingDevolutionsByUnit(unitUuid);
+		final Long totalCustomers = this.customerQueryService.countCustomersWithPendingOrIncompleteRentItemsToReturnByUnit(unitUuid);
 
 		return Response.ok(new CustomersDTO(customerDTOs, totalCustomers)).build();
 	}
@@ -129,6 +130,18 @@ public class CustomerResource extends AbstractResource {
 	public Response findCustomersSaleWithPendindOrIncompletePaymentByUnit(@PathParam("unitUuid") final String unitUuid) throws BusinessException {
 
 		final List<Customer> customers = this.customerQueryService.findCustomersSaleWithPendindOrIncompletePaymentByUnit(unitUuid);
+
+		final List<CustomerDTO> customerDTOs = customers.stream().map(customer -> new CustomerDTO(customer)).collect(Collectors.toList());
+
+		return Response.ok(new CustomersDTO(customerDTOs, BigDecimal.ZERO.longValue())).build();
+	}
+
+	@Path("find-customers-with-pending-or-incomplete-rentitems-to-load-by-unit/{unitUuid}")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response findCustomersWithPendingOrInCompleteRentItemsToLoadByUnit(@PathParam("unitUuid") final String unitUuid) throws BusinessException {
+
+		final List<Customer> customers = this.customerQueryService.findCustomersWithPendingOrInCompleteRentItemsToLoadByUnit(unitUuid);
 
 		final List<CustomerDTO> customerDTOs = customers.stream().map(customer -> new CustomerDTO(customer)).collect(Collectors.toList());
 

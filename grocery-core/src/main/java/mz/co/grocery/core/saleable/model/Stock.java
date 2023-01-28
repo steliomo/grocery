@@ -211,7 +211,7 @@ public class Stock extends GenericEntity implements Item {
 	}
 
 	@Override
-	public Boolean isReturnable() {
+	public Boolean isStockable() {
 		return Boolean.TRUE;
 	}
 

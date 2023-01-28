@@ -4,7 +4,6 @@
 package mz.co.grocery.integ.resources.rent.dto;
 
 import java.math.BigDecimal;
-import java.time.Period;
 
 import mz.co.grocery.core.rent.model.RentItem;
 
@@ -20,21 +19,21 @@ public class RentItemReport {
 
 	private final BigDecimal quantity;
 
-	private final Integer days;
+	private final BigDecimal days;
 
 	private final BigDecimal discount;
 
 	private final BigDecimal value;
 
 	public RentItemReport(final RentItem rentItem) {
-		rentItem.setTotal();
 
 		this.itemName = rentItem.getItem().getName();
 		this.price = rentItem.getItem().getSalePrice();
-		this.quantity = rentItem.getQuantity();
-		this.days = Period.between(rentItem.getStartDate(), rentItem.getEndDate()).getDays();
+		this.quantity = rentItem.getPlannedQuantity();
 		this.discount = rentItem.getDiscount();
-		this.value = rentItem.getTotal();
+		this.days = rentItem.getPlannedDays();
+		rentItem.calculatePlannedTotal();
+		this.value = rentItem.getPlannedTotal();
 	}
 
 	public String getItemName() {
@@ -49,7 +48,7 @@ public class RentItemReport {
 		return this.quantity;
 	}
 
-	public Integer getDays() {
+	public BigDecimal getDays() {
 		return this.days;
 	}
 

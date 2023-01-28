@@ -32,8 +32,13 @@ public class RentQueryServiceImpl implements RentQueryService {
 	}
 
 	@Override
-	public List<Rent> fetchPendingDevolutionRentsByCustomer(final String customerUuid) throws BusinessException {
-		return this.rentDAO.fetchPendingDevolutionsByCustomer(customerUuid, EntityStatus.ACTIVE);
+	public List<Rent> fetchRentsWithPendingOrIncompleteRentItemToLoadByCustomer(final String customerUuid) throws BusinessException {
+		return this.rentDAO.fetchPendingOrIncompleteRentItemToLoadByCustomer(customerUuid, EntityStatus.ACTIVE);
+	}
+
+	@Override
+	public List<Rent> fetchRentsWithPendingOrIncompleteRentItemToReturnByCustomer(final String customerUuid) throws BusinessException {
+		return this.rentDAO.fetchRentsWithPendingOrIncompleteRentItemToReturnByCustomer(customerUuid, EntityStatus.ACTIVE);
 	}
 
 }

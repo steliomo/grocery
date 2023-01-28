@@ -54,16 +54,16 @@ public class CustomerDAOImpl extends GenericDAOImpl<Customer, Long> implements C
 	}
 
 	@Override
-	public List<Customer> findPendingDevolutionByUnit(final String unitUuid, final int currentPage, final int maxResult,
+	public List<Customer> findCustomersWithPendingOrIncompleteRentItemsToReturnByUnit(final String unitUuid, final int currentPage, final int maxResult,
 			final EntityStatus entityStatus) throws BusinessException {
-		return this.findByQuery(CustomerDAO.QUERY_NAME.findPendingDevolutionByUnit,
+		return this.findByQuery(CustomerDAO.QUERY_NAME.findCustomersWithPendingOrIncompleteRentItemsToReturnByUnit,
 				new ParamBuilder().add("unitUuid", unitUuid).add("entityStatus", entityStatus).process()).setFirstResult(currentPage * maxResult)
 				.setMaxResults(maxResult).getResultList();
 	}
 
 	@Override
-	public Long countPendingDevolutionByUnit(final String unitUuid, final EntityStatus entityStatus) throws BusinessException {
-		return this.findSingleByNamedQuery(CustomerDAO.QUERY_NAME.countPendingDevolutionByUnit,
+	public Long countCustomersWithPendingOrIncompleteRentItemsToReturnByUnit(final String unitUuid, final EntityStatus entityStatus) throws BusinessException {
+		return this.findSingleByNamedQuery(CustomerDAO.QUERY_NAME.countCustomersWithPendingOrIncompleteRentItemsToReturnByUnit,
 				new ParamBuilder().add("unitUuid", unitUuid).add("entityStatus", entityStatus).process(), Long.class);
 	}
 
@@ -88,6 +88,13 @@ public class CustomerDAOImpl extends GenericDAOImpl<Customer, Long> implements C
 	public List<Customer> findCustomersSaleWithPendindOrIncompletePaymentByUnit(final String unitUuid, final EntityStatus entityStatus)
 			throws BusinessException {
 		return this.findByNamedQuery(CustomerDAO.QUERY_NAME.findCustomersSaleWithPendindOrIncompletePaymentByUnit,
+				new ParamBuilder().add("unitUuid", unitUuid).add("entityStatus", entityStatus).process());
+	}
+
+	@Override
+	public List<Customer> findCustomersWithPendingOrInCompleteRentItemsToLoadByUnit(final String unitUuid, final EntityStatus entityStatus)
+			throws BusinessException {
+		return this.findByNamedQuery(CustomerDAO.QUERY_NAME.findCustomersWithPendingOrInCompleteRentItemsToLoadByUnit,
 				new ParamBuilder().add("unitUuid", unitUuid).add("entityStatus", entityStatus).process());
 	}
 }

@@ -11,7 +11,7 @@ public enum ReturnStatus {
 
 	PENDING,
 
-	COMPLETE,
+	INCOMPLETE,
 
-	NA;
+	COMPLETE;
 }

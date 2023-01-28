@@ -49,14 +49,14 @@ public class CustomerQueryServiceImpl implements CustomerQueryService {
 	}
 
 	@Override
-	public List<Customer> findCustomersWithPendingDevolutionsByUnit(final String unitUuid, final int currentPage, final int maxResult)
+	public List<Customer> findCustomersWithPendingOrIncompleteRentItemsToReturnByUnit(final String unitUuid, final int currentPage, final int maxResult)
 			throws BusinessException {
-		return this.customerDAO.findPendingDevolutionByUnit(unitUuid, currentPage, maxResult, EntityStatus.ACTIVE);
+		return this.customerDAO.findCustomersWithPendingOrIncompleteRentItemsToReturnByUnit(unitUuid, currentPage, maxResult, EntityStatus.ACTIVE);
 	}
 
 	@Override
-	public Long countCustomersWithPendingDevolutionsByUnit(final String unitUuid) throws BusinessException {
-		return this.customerDAO.countPendingDevolutionByUnit(unitUuid, EntityStatus.ACTIVE);
+	public Long countCustomersWithPendingOrIncompleteRentItemsToReturnByUnit(final String unitUuid) throws BusinessException {
+		return this.customerDAO.countCustomersWithPendingOrIncompleteRentItemsToReturnByUnit(unitUuid, EntityStatus.ACTIVE);
 	}
 
 	@Override
@@ -74,5 +74,10 @@ public class CustomerQueryServiceImpl implements CustomerQueryService {
 	@Override
 	public List<Customer> findCustomersSaleWithPendindOrIncompletePaymentByUnit(final String unitUuid) throws BusinessException {
 		return this.customerDAO.findCustomersSaleWithPendindOrIncompletePaymentByUnit(unitUuid, EntityStatus.ACTIVE);
+	}
+
+	@Override
+	public List<Customer> findCustomersWithPendingOrInCompleteRentItemsToLoadByUnit(final String unitUuid) throws BusinessException {
+		return this.customerDAO.findCustomersWithPendingOrInCompleteRentItemsToLoadByUnit(unitUuid, EntityStatus.ACTIVE);
 	}
 }

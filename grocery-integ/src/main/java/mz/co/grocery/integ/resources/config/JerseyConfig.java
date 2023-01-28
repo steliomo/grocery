@@ -10,6 +10,7 @@ import mz.co.grocery.integ.resources.contract.ContractResource;
 import mz.co.grocery.integ.resources.customer.CustomerResource;
 import mz.co.grocery.integ.resources.expense.ExpenseResource;
 import mz.co.grocery.integ.resources.expense.ExpenseTypeResource;
+import mz.co.grocery.integ.resources.files.FileResource;
 import mz.co.grocery.integ.resources.grocery.GroceryResource;
 import mz.co.grocery.integ.resources.grocery.GroceryUserResource;
 import mz.co.grocery.integ.resources.inventory.InventoryResource;
@@ -58,5 +59,7 @@ public class JerseyConfig extends ResourceConfig {
 		this.register(ApiExceptionMapper.class);
 		this.register(BusinessExceptionMapper.class);
 		this.register(NoResultExceptionMapper.class);
+
+		this.register(FileResource.class);
 	}
 }

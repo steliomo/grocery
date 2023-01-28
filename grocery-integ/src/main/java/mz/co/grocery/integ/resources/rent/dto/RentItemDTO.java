@@ -15,7 +15,6 @@ import mz.co.grocery.core.saleable.model.Stock;
 import mz.co.grocery.integ.resources.dto.GenericDTO;
 import mz.co.grocery.integ.resources.saleable.dto.ServiceItemDTO;
 import mz.co.grocery.integ.resources.saleable.dto.StockDTO;
-import mz.co.grocery.integ.resources.util.ProxyUtil;
 import mz.co.msaude.boot.frameworks.util.LocalDateAdapter;
 
 /**
@@ -28,52 +27,39 @@ public class RentItemDTO extends GenericDTO<RentItem> {
 
 	private ServiceItemDTO serviceItemDTO;
 
-	private BigDecimal quantity;
+	private BigDecimal plannedQuantity;
 
-	@XmlJavaTypeAdapter(LocalDateAdapter.class)
-	private LocalDate startDate;
+	private BigDecimal plannedDays;
 
-	@XmlJavaTypeAdapter(LocalDateAdapter.class)
-	private LocalDate endDate;
-
-	@XmlJavaTypeAdapter(LocalDateAdapter.class)
 	private BigDecimal discount;
 
-	private Boolean returnable;
+	private BigDecimal loadedQuantity;
 
-	private BigDecimal total;
+	@XmlJavaTypeAdapter(LocalDateAdapter.class)
+	private LocalDate loadingDate;
 
-	private BigDecimal returned;
+	private BigDecimal returnedQuantity;
 
-	private BigDecimal toReturn;
-
-	private String description;
+	@XmlJavaTypeAdapter(LocalDateAdapter.class)
+	private LocalDate returnDate;
 
 	public RentItemDTO() {
 	}
 
 	public RentItemDTO(final RentItem rentItem) {
 		super(rentItem);
-		this.mapper(rentItem);
 	}
 
 	@Override
 	public void mapper(final RentItem rentItem) {
 		super.get(rentItem);
-		this.quantity = rentItem.getQuantity();
-		this.startDate = rentItem.getStartDate();
-		this.endDate = rentItem.getEndDate();
+		this.plannedQuantity = rentItem.getPlannedQuantity();
+		this.plannedDays = rentItem.getPlannedDays();
 		this.discount = rentItem.getDiscount();
-		this.description = rentItem.getDescription();
-		this.total = rentItem.getTotal();
-
-		if (ProxyUtil.isInitialized(rentItem.getReturnItems())) {
-
-			this.returned = rentItem.returned();
-			this.toReturn = rentItem.toReturn();
-
-			this.returnable = rentItem.isReturnable();
-		}
+		this.loadedQuantity = rentItem.getLoadedQuantity();
+		this.loadingDate = rentItem.getLoadingDate();
+		this.returnedQuantity = rentItem.getReturnedQuantity();
+		this.returnDate = rentItem.getReturnDate();
 
 		if (ItemType.PRODUCT.equals(rentItem.getType())) {
 			this.stockDTO = new StockDTO((Stock) rentItem.getItem());
@@ -89,34 +75,14 @@ public class RentItemDTO extends GenericDTO<RentItem> {
 
 		if (this.stockDTO != null || this.serviceItemDTO != null) {
 			rentItem.setItem(this.stockDTO != null ? this.stockDTO.get() : this.serviceItemDTO.get());
-			rentItem.setReturnable();
+			rentItem.setStockable();
 		}
 
-		rentItem.setQuantity(this.quantity);
-		rentItem.setStartDate(this.startDate);
-		rentItem.setEndDate(this.endDate);
+		rentItem.setPlannedQuantity(this.plannedQuantity);
+		rentItem.setPlannedDays(this.plannedDays);
 		rentItem.setDiscount(this.discount);
-		rentItem.setDescription(this.description);
-
-		rentItem.setTotal();
 
 		return rentItem;
-	}
-
-	public BigDecimal getQuantity() {
-		return this.quantity;
-	}
-
-	public LocalDate getStartDate() {
-		return this.startDate;
-	}
-
-	public LocalDate getEndDate() {
-		return this.endDate;
-	}
-
-	public BigDecimal getDiscount() {
-		return this.discount;
 	}
 
 	public StockDTO getStockDTO() {
@@ -127,23 +93,35 @@ public class RentItemDTO extends GenericDTO<RentItem> {
 		return this.serviceItemDTO;
 	}
 
-	public BigDecimal getTotal() {
-		return this.total;
+	public BigDecimal getPlannedQuantity() {
+		return this.plannedQuantity;
 	}
 
-	public BigDecimal getReturned() {
-		return this.returned;
+	public BigDecimal getPlannedDays() {
+		return this.plannedDays;
 	}
 
-	public BigDecimal getToReturn() {
-		return this.toReturn;
+	public BigDecimal getDiscount() {
+		return this.discount;
 	}
 
-	public Boolean isReturnable() {
-		return this.returnable;
+	public BigDecimal getLoadedQuantity() {
+		return this.loadedQuantity;
 	}
 
-	public String getDescription() {
-		return this.description;
+	public LocalDate getLoadingDate() {
+		return this.loadingDate;
+	}
+
+	public BigDecimal getReturnedQuantity() {
+		return this.returnedQuantity;
+	}
+
+	public LocalDate getReturnDate() {
+		return this.returnDate;
+	}
+
+	public String getName() {
+		return this.stockDTO != null ? this.stockDTO.getProductDescriptionDTO().getName() : this.serviceItemDTO.getName();
 	}
 }

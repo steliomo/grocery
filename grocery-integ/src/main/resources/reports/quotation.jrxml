@@ -40,7 +40,7 @@
 	<field name="itemName" class="java.lang.String"/>
 	<field name="price" class="java.math.BigDecimal"/>
 	<field name="quantity" class="java.math.BigDecimal"/>
-	<field name="days" class="java.lang.Integer"/>
+	<field name="days" class="java.math.BigDecimal"/>
 	<field name="discount" class="java.math.BigDecimal"/>
 	<field name="value" class="java.math.BigDecimal"/>
 	<title>

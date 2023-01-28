@@ -7,7 +7,9 @@ import java.math.BigDecimal;
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
 import java.util.Collections;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.stream.Collectors;
 
 import mz.co.grocery.core.rent.model.Rent;
@@ -18,6 +20,8 @@ import mz.co.grocery.core.rent.model.RentItem;
  *
  */
 public class RentReport {
+
+	public static final String REPORT_XML_NAME = "reports/quotation.jrxml";
 
 	private String name;
 
@@ -43,14 +47,10 @@ public class RentReport {
 	}
 
 	public RentReport(final Rent rent) {
-		this.name = "cotacao_" + LocalDateTime.now();
+		final String time = String.valueOf(LocalDateTime.now()).replace("-", "").replace("/", "").replace(".", "").replace(":", "").replace(":", "")
+				.replace("T", "");
 
-		this.name = this.name.replace("-", "");
-		this.name = this.name.replace("/", "");
-		this.name = this.name.replace(".", "");
-		this.name = this.name.replace(":", "");
-		this.name = this.name + ".pdf";
-
+		this.name = "QUOTATION_" + time + ".pdf";
 		this.reportDate = rent.getRentDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
 		this.unitName = rent.getUnit().getName();
 		this.address = rent.getUnit().getAddress();
@@ -59,47 +59,29 @@ public class RentReport {
 		this.customerName = rent.getCustomer().getName();
 		this.totalDiscount = rent.getRentItems().stream().map(RentItem::getDiscount).reduce(BigDecimal.ZERO, BigDecimal::add);
 		this.rentItemsReport = rent.getRentItems().stream().map(rentItem -> new RentItemReport(rentItem)).collect(Collectors.toList());
-		this.grandTotal = rent.getTotalRent();
+		this.grandTotal = rent.getRentItems().stream().map(RentItem::getPlannedTotal).reduce(BigDecimal.ZERO, BigDecimal::add);
 	}
 
 	public String getName() {
 		return this.name;
 	}
 
-	public String getReportDate() {
-		return this.reportDate;
-	}
-
-	public String getUnitName() {
-		return this.unitName;
-	}
-
-	public String getAddress() {
-		return this.address;
-	}
-
-	public String getPhoneNumber() {
-		return this.phoneNumber;
-	}
-
-	public String getEmail() {
-		return this.email;
-	}
-
-	public String getCustomerName() {
-		return this.customerName;
-	}
-
-	public BigDecimal getTotalDiscount() {
-		return this.totalDiscount;
-	}
-
-	public BigDecimal getGrandTotal() {
-		return this.grandTotal;
-	}
-
 	public List<RentItemReport> getRentItemsReport() {
 		return Collections.unmodifiableList(this.rentItemsReport);
 	}
 
+	public Map<String, Object> getParameters() {
+		final HashMap<String, Object> parameters = new HashMap<>();
+
+		parameters.put("quotationDate", this.reportDate);
+		parameters.put("unitName", this.unitName);
+		parameters.put("address", this.address);
+		parameters.put("phoneNumber", this.phoneNumber);
+		parameters.put("email", this.email);
+		parameters.put("customerName", this.customerName);
+		parameters.put("totalDiscount", this.totalDiscount);
+		parameters.put("grandTotal", this.grandTotal);
+
+		return parameters;
+	}
 }

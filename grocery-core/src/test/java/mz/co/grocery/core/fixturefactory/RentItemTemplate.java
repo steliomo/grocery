@@ -4,7 +4,6 @@
 package mz.co.grocery.core.fixturefactory;
 
 import java.math.BigDecimal;
-import java.time.LocalDate;
 
 import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.Rule;
@@ -27,10 +26,9 @@ public class RentItemTemplate implements TemplateLoader {
 	public void load() {
 		Fixture.of(RentItem.class).addTemplate(RentItemTemplate.VALID, new Rule() {
 			{
-				this.add("quantity", this.random(BigDecimal.class, this.range(5, 10)));
-				this.add("startDate", LocalDate.now().minusDays(1));
-				this.add("endDate", LocalDate.now());
-				this.add("discount", BigDecimal.ZERO);
+				this.add("plannedQuantity", this.random(BigDecimal.class, this.range(10, 50)));
+				this.add("plannedDays", this.random(BigDecimal.class, this.range(1, 30)));
+				this.add("discount", this.random(BigDecimal.class, this.range(0, 10)));
 			}
 		});
 
@@ -42,7 +40,7 @@ public class RentItemTemplate implements TemplateLoader {
 
 		Fixture.of(RentItem.class).addTemplate(RentItemTemplate.SERVICE).inherits(RentItemTemplate.VALID, new Rule() {
 			{
-				this.add("serviceItem", this.one(ServiceItem.class, StockTemplate.VALID));
+				this.add("serviceItem", this.one(ServiceItem.class, ServiceTemplate.VALID));
 			}
 		});
 	}

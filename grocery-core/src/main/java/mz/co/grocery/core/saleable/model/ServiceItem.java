@@ -84,7 +84,7 @@ public class ServiceItem extends GenericEntity implements Item {
 	}
 
 	@Override
-	public Boolean isReturnable() {
+	public Boolean isStockable() {
 		return Boolean.FALSE;
 	}
 
@@ -95,6 +95,6 @@ public class ServiceItem extends GenericEntity implements Item {
 
 	@Override
 	public BigDecimal getRentPrice() {
-		return BigDecimal.ZERO;
+		return this.salePrice;
 	}
 }

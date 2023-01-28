@@ -3,13 +3,8 @@
  */
 package mz.co.grocery.integ.resources.rent;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.util.HashMap;
+import java.io.IOException;
 import java.util.List;
-import java.util.Map;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -21,28 +16,30 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import mz.co.grocery.core.rent.model.Guide;
 import mz.co.grocery.core.rent.model.Rent;
-import mz.co.grocery.core.rent.model.ReturnItem;
+import mz.co.grocery.core.rent.service.GuideIssuer;
+import mz.co.grocery.core.rent.service.GuideService;
 import mz.co.grocery.core.rent.service.RentPaymentService;
 import mz.co.grocery.core.rent.service.RentQueryService;
 import mz.co.grocery.core.rent.service.RentService;
-import mz.co.grocery.core.rent.service.ReturnService;
+import mz.co.grocery.core.rent.service.ReturnGuideIssuer;
+import mz.co.grocery.core.rent.service.TransportGuideIssuer;
+import mz.co.grocery.core.util.ApplicationTranslator;
 import mz.co.grocery.integ.resources.AbstractResource;
+import mz.co.grocery.integ.resources.rent.dto.GuideDTO;
+import mz.co.grocery.integ.resources.rent.dto.GuideReport;
 import mz.co.grocery.integ.resources.rent.dto.RentDTO;
 import mz.co.grocery.integ.resources.rent.dto.RentPaymentDTO;
 import mz.co.grocery.integ.resources.rent.dto.RentReport;
 import mz.co.grocery.integ.resources.rent.dto.RentsDTO;
-import mz.co.grocery.integ.resources.rent.dto.ReturnItemDTO;
+import mz.co.grocery.integ.resources.util.FileGeneratorUtil;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import net.sf.jasperreports.engine.JRException;
-import net.sf.jasperreports.engine.JasperCompileManager;
-import net.sf.jasperreports.engine.JasperExportManager;
-import net.sf.jasperreports.engine.JasperFillManager;
-import net.sf.jasperreports.engine.JasperPrint;
-import net.sf.jasperreports.engine.JasperReport;
-import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 
 /**
  * @author Stélio Moiane
@@ -55,8 +52,6 @@ public class RentResource extends AbstractResource {
 
 	public static final String NAME = "mz.co.grocery.integ.resources.rent.RentResource";
 
-	private final String FILE_DIR = "/opt/grocery/data/";
-
 	@Inject
 	private RentService rentService;
 
@@ -67,7 +62,18 @@ public class RentResource extends AbstractResource {
 	private RentPaymentService rentPaymentService;
 
 	@Inject
-	private ReturnService returnService;
+	private GuideService guideService;
+
+	@Autowired
+	@Qualifier(TransportGuideIssuer.NAME)
+	private GuideIssuer transportGuideIssuer;
+
+	@Autowired
+	@Qualifier(ReturnGuideIssuer.NAME)
+	private GuideIssuer returnGuideIssuer;
+
+	@Inject
+	private ApplicationTranslator translator;
 
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
@@ -79,14 +85,14 @@ public class RentResource extends AbstractResource {
 		return Response.ok(rentDTO).build();
 	}
 
-	@Path("pending-payments-by-customer{customerUuid}")
+	@Path("pending-payments-by-customer/{customerUuid}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response findPendingPaymentRentsByCustomer(@PathParam("customerUuid") final String customerUuid) throws BusinessException {
 
 		final List<Rent> rents = this.rentQueryService.findPendingPaymentRentsByCustomer(customerUuid);
 
-		return Response.ok(new RentsDTO(rents)).build();
+		return Response.ok(new RentsDTO(rents, this.translator)).build();
 	}
 
 	@Path("payments")
@@ -100,65 +106,82 @@ public class RentResource extends AbstractResource {
 		return Response.ok(rentPaymentDTO).build();
 	}
 
-	@Path("pending-devolutions-by-customer{customerUuid}")
+	@Path("fetch-rents-with-pending-or-incomplete-rent-item-to-load-by-customer/{customerUuid}")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response fetchPendingDevolutionRentsByCustomer(@PathParam("customerUuid") final String customerUuid) throws BusinessException {
+	public Response fetchRentsWithPendingOrIncompleteRentItemToLoadByCustomer(@PathParam("customerUuid") final String customerUuid)
+			throws BusinessException {
 
-		final List<Rent> rents = this.rentQueryService.fetchPendingDevolutionRentsByCustomer(customerUuid);
+		final List<Rent> rents = this.rentQueryService.fetchRentsWithPendingOrIncompleteRentItemToLoadByCustomer(customerUuid);
 
-		return Response.ok(new RentsDTO(rents)).build();
+		return Response.ok(new RentsDTO(rents, this.translator)).build();
 	}
 
-	@Path("return-items")
+	@Path("fetch-rents-with-pending-or-incomplete-rent-item-to-return-by-customer/{customerUuid}")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response fetchRentsWithPendingOrIncompleteRentItemToReturnByCustomer(@PathParam("customerUuid") final String customerUuid)
+			throws BusinessException {
+
+		final List<Rent> rents = this.rentQueryService.fetchRentsWithPendingOrIncompleteRentItemToReturnByCustomer(customerUuid);
+
+		return Response.ok(new RentsDTO(rents, this.translator)).build();
+	}
+
+	@Path("issue-quotation")
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response returnItems(final List<ReturnItemDTO> returnItemsDTO) throws BusinessException {
-
-		final List<ReturnItem> returnItems = returnItemsDTO.stream().map(returnItem -> returnItem.get()).collect(Collectors.toList());
-
-		this.returnService.returnItems(this.getContext(), returnItems);
-
-		return Response.ok(returnItemsDTO).build();
-	}
-
-	@Path("process-quotation")
-	@POST
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response processQuotation(final RentDTO rentDTO) throws BusinessException, JRException, FileNotFoundException {
-
+	public Response issueQuotation(final RentDTO rentDTO) throws BusinessException, JRException, IOException {
 		final Rent rent = rentDTO.get();
-
 		final RentReport rentReport = new RentReport(rent);
 
-		final JasperReport jasperReport = JasperCompileManager.compileReport(new FileInputStream(this.FILE_DIR + "reports/quotation.jrxml"));
-
-		final JRBeanCollectionDataSource dataSource = new JRBeanCollectionDataSource(rentReport.getRentItemsReport());
-
-		final Map<String, Object> parameters = new HashMap<>();
-		parameters.put("quotationDate", rentReport.getReportDate());
-		parameters.put("unitName", rentReport.getUnitName());
-		parameters.put("address", rentReport.getAddress());
-		parameters.put("phoneNumber", rentReport.getPhoneNumber());
-		parameters.put("email", rentReport.getEmail());
-		parameters.put("customerName", rentReport.getCustomerName());
-		parameters.put("totalDiscount", rentReport.getTotalDiscount());
-		parameters.put("grandTotal", rentReport.getGrandTotal());
-
-		final JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, dataSource);
-		JasperExportManager.exportReportToPdfFile(jasperPrint, this.FILE_DIR + rentReport.getName());
+		FileGeneratorUtil.generatePdf(RentReport.REPORT_XML_NAME, rentReport.getParameters(), rentReport.getRentItemsReport(), rentReport.getName());
 
 		return Response.ok(rentReport).build();
 	}
 
-	@Path("quotation/{fileName}")
-	@GET
-	@Produces("application/pdf")
-	public Response displayQuotation(@PathParam("fileName") final String fileName) throws BusinessException {
+	@Path("issue-transport-guide")
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response issueTransportGuide(final GuideDTO guideDTO) throws BusinessException {
+		this.guideService.setGuideIssuer(this.transportGuideIssuer);
 
-		final File file = new File(this.FILE_DIR + fileName);
-		return Response.ok(file).header("Content-Disposition", "attachment; filename=" + fileName).build();
+		final Guide guide = this.guideService.issueGuide(this.getContext(), guideDTO.get());
+
+		guideDTO.setIssueDate(guide.getIssueDate());
+
+		this.generatePDF(guideDTO);
+
+		return Response.ok(guideDTO).build();
+	}
+
+	private void generatePDF(final GuideDTO guideDTO) throws BusinessException {
+
+		final GuideReport guideReport = new GuideReport(guideDTO, this.translator);
+		try {
+			FileGeneratorUtil.generatePdf(GuideReport.REPORT_XML_NAME, guideReport.getParameters(), guideReport.getGuideItems(),
+					guideReport.getFileName());
+			guideDTO.setFileName(guideReport.getFileName());
+		} catch (IOException | JRException e) {
+			throw new BusinessException(e.getMessage());
+		}
+	}
+
+	@Path("issue-return-guide")
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response issueReturnGuide(final GuideDTO guideDTO) throws BusinessException, IOException, JRException {
+		this.guideService.setGuideIssuer(this.returnGuideIssuer);
+
+		final Guide guide = this.guideService.issueGuide(this.getContext(), guideDTO.get());
+
+		guideDTO.setIssueDate(guide.getIssueDate());
+
+		this.generatePDF(guideDTO);
+
+		return Response.ok(guideDTO).build();
 	}
 }
