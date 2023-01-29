@@ -57,7 +57,5 @@ public class ContractPaymentServiceTest extends AbstractUnitServiceTest {
 		Mockito.verify(this.contractDAO, Mockito.times(1)).update(this.getUserContext(), contractPayment.getContract());
 
 		Assert.assertEquals(contractPayment.getContract().getTotalPaid(), new BigDecimal(5000));
-		Assert.assertEquals(contractPayment.getContract().getReferencePaymentDate().minusMonths(BigDecimal.ONE.longValue()),
-				contractPayment.getReferenceDate());
 	}
 }

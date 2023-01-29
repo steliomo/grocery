@@ -207,7 +207,7 @@ public class RentItem extends GenericEntity {
 		return this.calculatedTotal;
 	}
 
-	public void calculateTotalRent(final LocalDate calculatedDate) {
+	public void calculateTotalOnLoad(final LocalDate calculatedDate) {
 
 		if (this.calculatedTotal == null || this.loadingDate == null || this.loadedQuantity == null) {
 			this.calculatedTotal = BigDecimal.ZERO;
@@ -216,8 +216,19 @@ public class RentItem extends GenericEntity {
 
 		final long days = Duration.between(this.loadingDate.atStartOfDay(), calculatedDate.atStartOfDay()).toDays();
 
-		this.calculatedTotal = this.calculatedTotal
-				.add(this.getItem().getRentPrice().multiply(this.getCurrentRentQuantity()).multiply(new BigDecimal(days)));
+		this.calculatedTotal = this.getItem().getRentPrice().multiply(this.loadedQuantity).multiply(new BigDecimal(days));
+	}
+
+	public void calculateTotalOnReturn(final LocalDate calculatedDate, final BigDecimal quantity) {
+
+		if (this.calculatedTotal == null || this.loadingDate == null || this.loadedQuantity == null) {
+			this.calculatedTotal = BigDecimal.ZERO;
+			return;
+		}
+
+		final long days = Duration.between(this.loadingDate.atStartOfDay(), calculatedDate.atStartOfDay()).toDays();
+
+		this.calculatedTotal = this.getItem().getRentPrice().multiply(quantity).multiply(new BigDecimal(days));
 	}
 
 	public BigDecimal getCurrentRentQuantity() {

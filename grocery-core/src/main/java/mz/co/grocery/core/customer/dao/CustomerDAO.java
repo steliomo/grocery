@@ -23,9 +23,9 @@ public interface CustomerDAO extends GenericDAO<Customer, Long> {
 
 		public static final String findByUnit = "SELECT c FROM Customer c WHERE c.unit.uuid = :unitUuid AND c.entityStatus = :entityStatus";
 
-		public static final String findRentPendingPaymentsByUnit = "SELECT c FROM Rent r INNER JOIN r.customer c WHERE c.unit.uuid = :unitUuid AND c.entityStatus = :entityStatus AND r.paymentStatus IN ('PENDING', 'INCOMPLETE') GROUP BY c.id ORDER BY c.name";
+		public static final String findRentPendingPaymentsByUnit = "SELECT c FROM Rent r INNER JOIN r.customer c WHERE c.unit.uuid = :unitUuid AND c.entityStatus = :entityStatus AND r.paymentStatus IN ('PENDING', 'INCOMPLETE', 'OVER_PAYMENT') GROUP BY c.id ORDER BY c.name";
 
-		public static final String countPendingPaymentsByUnit = "SELECT COUNT(DISTINCT c) FROM Rent r INNER JOIN r.customer c WHERE c.unit.uuid = :unitUuid AND c.entityStatus = :entityStatus AND r.paymentStatus = 'PENDING'";
+		public static final String countPendingPaymentsByUnit = "SELECT COUNT(DISTINCT c) FROM Rent r INNER JOIN r.customer c WHERE c.unit.uuid = :unitUuid AND c.entityStatus = :entityStatus AND r.paymentStatus IN ('PENDING', 'INCOMPLETE', 'OVER_PAYMENT')";
 
 		public static final String findCustomersWithPendingOrIncompleteRentItemsToReturnByUnit = "SELECT c FROM Rent r INNER JOIN r.customer c INNER JOIN r.rentItems ri WHERE c.unit.uuid = :unitUuid AND ri.returnStatus IN ('PENDING', 'INCOMPLETE') AND c.entityStatus = :entityStatus GROUP BY c.id ORDER BY c.name";
 

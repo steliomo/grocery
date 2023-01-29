@@ -46,4 +46,9 @@ public class RentDAOImpl extends GenericDAOImpl<Rent, Long> implements RentDAO {
 				new ParamBuilder().add("customerUuid", customerUuid).add("entityStatus", entityStatus).process(), Rent.class)
 				.setHint(QueryHints.HINT_PASS_DISTINCT_THROUGH, false).getResultList();
 	}
+
+	@Override
+	public Rent fetchByUuid(final String uuid) throws BusinessException {
+		return this.findSingleByNamedQuery(RentDAO.QUERY_NAME.fetchByUuid, new ParamBuilder().add("uuid", uuid).process());
+	}
 }

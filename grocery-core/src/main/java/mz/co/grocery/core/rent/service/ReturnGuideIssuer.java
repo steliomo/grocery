@@ -81,7 +81,7 @@ public class ReturnGuideIssuer implements GuideIssuer {
 						this.translator.getTranslation("guide.return.item.quantity.unexpected", new String[] { rentItem.getItem().getName() }));
 			}
 
-			rentItem.calculateTotalRent(guide.getIssueDate());
+			rentItem.calculateTotalOnReturn(guide.getIssueDate(), guideItem.getQuantity());
 			rentItem.addReturnedQuantity(guideItem.getQuantity());
 			rentItem.setReturnDate(guide.getIssueDate());
 			rentItem.setReturnStatus();
@@ -98,8 +98,9 @@ public class ReturnGuideIssuer implements GuideIssuer {
 			}
 		}
 
-		final Rent rent = this.rentDAO.findByUuid(guide.getRent().getUuid());
+		final Rent rent = this.rentDAO.fetchByUuid(guide.getRent().getUuid());
 		rent.setTotalCalculated(calculatedTotal);
+		rent.setReturnStatus();
 		rent.setPaymentStatus();
 		this.rentDAO.update(userContext, rent);
 

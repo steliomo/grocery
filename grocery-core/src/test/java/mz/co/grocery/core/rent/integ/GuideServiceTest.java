@@ -103,7 +103,7 @@ public class GuideServiceTest extends AbstractIntegServiceTest {
 		guide.setIssueDate(returnDate);
 
 		rent.getRentItems().forEach(rentItem -> {
-			rentItem.calculateTotalRent(guide.getIssueDate());
+			rentItem.calculateTotalOnLoad(guide.getIssueDate());
 			rentItem.addLoadedQuantity(new BigDecimal(5));
 			rentItem.setLoadingDate(guide.getIssueDate());
 			rentItem.setLoadStatus();

@@ -95,7 +95,7 @@ public class GuideServiceTest extends AbstractUnitServiceTest {
 		Mockito.when(this.stockDAO.findByUuid(ArgumentMatchers.any())).thenReturn(EntityFactory.gimme(Stock.class,
 				StockTemplate.VALID));
 
-		Mockito.when(this.rentDAO.findByUuid(ArgumentMatchers.any())).thenReturn(guide.getRent());
+		Mockito.when(this.rentDAO.fetchByUuid(ArgumentMatchers.any())).thenReturn(guide.getRent());
 
 		final UserContext context = this.getUserContext();
 
@@ -157,7 +157,7 @@ public class GuideServiceTest extends AbstractUnitServiceTest {
 		Mockito.when(this.rentItemDAO.findByUuid(ArgumentMatchers.any()))
 		.thenReturn(rentItem);
 
-		Mockito.when(this.rentDAO.findByUuid(ArgumentMatchers.any())).thenReturn(guide.getRent());
+		Mockito.when(this.rentDAO.fetchByUuid(ArgumentMatchers.any())).thenReturn(guide.getRent());
 
 		final UserContext context = this.getUserContext();
 
@@ -205,7 +205,7 @@ public class GuideServiceTest extends AbstractUnitServiceTest {
 				ri.setPlannedQuantity(new BigDecimal(100));
 				ri.addLoadedQuantity(new BigDecimal(90));
 
-				ri.calculateTotalRent(rentDate);
+				ri.calculateTotalOnLoad(rentDate);
 				ri.setStockable();
 				ri.setLoadingDate(rentDate);
 				ri.setLoadStatus();
@@ -218,7 +218,7 @@ public class GuideServiceTest extends AbstractUnitServiceTest {
 		final Stock stock = EntityFactory.gimme(Stock.class, StockTemplate.VALID);
 		Mockito.when(this.stockDAO.findByUuid(ArgumentMatchers.any())).thenReturn(stock);
 
-		Mockito.when(this.rentDAO.findByUuid(ArgumentMatchers.any())).thenReturn(guide.getRent());
+		Mockito.when(this.rentDAO.fetchByUuid(ArgumentMatchers.any())).thenReturn(guide.getRent());
 
 		this.guideService.issueGuide(context, guide);
 
@@ -254,7 +254,7 @@ public class GuideServiceTest extends AbstractUnitServiceTest {
 				ri.setPlannedQuantity(new BigDecimal(100));
 				ri.addLoadedQuantity(new BigDecimal(90));
 
-				ri.calculateTotalRent(rentDate);
+				ri.calculateTotalOnLoad(rentDate);
 				ri.setStockable();
 				ri.setLoadingDate(rentDate);
 				ri.setLoadStatus();
@@ -264,7 +264,7 @@ public class GuideServiceTest extends AbstractUnitServiceTest {
 		Mockito.when(this.rentItemDAO.findByUuid(ArgumentMatchers.any()))
 		.thenAnswer(invocation -> rentItem);
 
-		Mockito.when(this.rentDAO.findByUuid(ArgumentMatchers.any())).thenReturn(guide.getRent());
+		Mockito.when(this.rentDAO.fetchByUuid(ArgumentMatchers.any())).thenReturn(guide.getRent());
 
 		this.guideService.issueGuide(context, guide);
 
@@ -309,7 +309,7 @@ public class GuideServiceTest extends AbstractUnitServiceTest {
 				final RentItem ri = (RentItem) result;
 				ri.setPlannedQuantity(new BigDecimal(5));
 				ri.addLoadedQuantity(new BigDecimal(5));
-				ri.calculateTotalRent(rentDate);
+				ri.calculateTotalOnLoad(rentDate);
 				ri.setStockable();
 				ri.setLoadingDate(rentDate);
 				ri.setLoadStatus();
