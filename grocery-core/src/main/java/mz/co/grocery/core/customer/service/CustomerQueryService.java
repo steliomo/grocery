@@ -7,6 +7,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import mz.co.grocery.core.customer.model.Customer;
+import mz.co.grocery.core.rent.model.GuideType;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 
 /**
@@ -23,7 +24,8 @@ public interface CustomerQueryService {
 
 	Long countCustomersWithPendingPeymentsByUnit(String unitUuid) throws BusinessException;
 
-	List<Customer> findCustomersWithPendingOrIncompleteRentItemsToReturnByUnit(String unitUuid, int currentPage, int maxResult) throws BusinessException;
+	List<Customer> findCustomersWithPendingOrIncompleteRentItemsToReturnByUnit(String unitUuid, int currentPage, int maxResult)
+			throws BusinessException;
 
 	Long countCustomersWithPendingOrIncompleteRentItemsToReturnByUnit(String unitUuid) throws BusinessException;
 
@@ -35,4 +37,8 @@ public interface CustomerQueryService {
 	List<Customer> findCustomersSaleWithPendindOrIncompletePaymentByUnit(String unitUuid) throws BusinessException;
 
 	List<Customer> findCustomersWithPendingOrInCompleteRentItemsToLoadByUnit(String unitUuid) throws BusinessException;
+
+	List<Customer> findCustomersWithIssuedGuidesByTypeAndUnit(GuideType guideType, String unitUuid) throws BusinessException;
+
+	List<Customer> findCustomersWithPaymentsByUnit(String unitUuid) throws BusinessException;
 }

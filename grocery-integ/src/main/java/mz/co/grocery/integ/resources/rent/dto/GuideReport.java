@@ -51,6 +51,7 @@ public class GuideReport {
 
 	private void setParameters(final GuideDTO guideDTO, final ApplicationTranslator translator) {
 		this.parameters = new HashMap<>();
+		this.parameters.put("guideCode", guideDTO.getCode());
 		this.parameters.put("guideType", translator.getTranslation(guideDTO.getType().toString()));
 		this.parameters.put("guideDate", guideDTO.getIssueDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
 		this.parameters.put("customerName", guideDTO.getRentDTO().getCustomerDTO().getName());

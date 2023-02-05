@@ -24,6 +24,8 @@ import mz.co.grocery.core.customer.service.CustomerService;
 import mz.co.grocery.core.fixturefactory.ContractTemplate;
 import mz.co.grocery.core.fixturefactory.CustomerTemplate;
 import mz.co.grocery.core.fixturefactory.GroceryTemplate;
+import mz.co.grocery.core.fixturefactory.GuideTemplate;
+import mz.co.grocery.core.fixturefactory.RentPaymentTemplate;
 import mz.co.grocery.core.grocery.model.Grocery;
 import mz.co.grocery.core.grocery.service.GroceryService;
 import mz.co.grocery.core.rent.builder.RentBuilder;
@@ -31,8 +33,10 @@ import mz.co.grocery.core.rent.model.Guide;
 import mz.co.grocery.core.rent.model.GuideItem;
 import mz.co.grocery.core.rent.model.GuideType;
 import mz.co.grocery.core.rent.model.Rent;
+import mz.co.grocery.core.rent.model.RentPayment;
 import mz.co.grocery.core.rent.service.GuideIssuer;
 import mz.co.grocery.core.rent.service.GuideService;
+import mz.co.grocery.core.rent.service.RentPaymentService;
 import mz.co.grocery.core.rent.service.RentService;
 import mz.co.grocery.core.rent.service.TransportGuideIssuer;
 import mz.co.grocery.core.sale.integ.SaleBuilder;
@@ -76,6 +80,9 @@ public class CustomerQueryServiceTest extends AbstractIntegServiceTest {
 	@Inject
 	@Qualifier(TransportGuideIssuer.NAME)
 	private GuideIssuer transportGuideIssuer;
+
+	@Inject
+	private RentPaymentService rentPaymentService;
 
 	private Grocery unit;
 
@@ -265,6 +272,48 @@ public class CustomerQueryServiceTest extends AbstractIntegServiceTest {
 
 		final List<Customer> customers = this.customerQueryService
 				.findCustomersWithPendingOrInCompleteRentItemsToLoadByUnit(rent.getUnit().getUuid());
+
+		Assert.assertFalse(customers.isEmpty());
+	}
+
+	@Test
+	public void shouldFindCustomersWithIssuedGuidesByTypeAndUnit() throws BusinessException {
+		final Rent rent = this.rentBuilder.build();
+		this.rentService.rent(this.getUserContext(), rent);
+		final Guide guide = EntityFactory.gimme(Guide.class, GuideTemplate.NO_ITEMS_TRANSPORT);
+		guide.setRent(rent);
+
+		rent.getRentItems().forEach(rentItem -> {
+			final GuideItem guideItem = new GuideItem();
+			guideItem.setRentItem(rentItem);
+			guideItem.setQuantity(new BigDecimal(2));
+
+			guide.addGuideItem(guideItem);
+		});
+
+		this.guideService.setGuideIssuer(this.transportGuideIssuer);
+		this.guideService.issueGuide(this.getUserContext(), guide);
+
+		final List<Customer> customers = this.customerQueryService.findCustomersWithIssuedGuidesByTypeAndUnit(GuideType.TRANSPORT,
+				rent.getUnit().getUuid());
+
+		Assert.assertFalse(customers.isEmpty());
+	}
+
+	@Test
+	public void shouldFindCustomersWithPaymentsByUnit() throws BusinessException {
+		final Rent rent = this.rentBuilder.build();
+		this.rentService.rent(this.getUserContext(), rent);
+
+		final RentPayment rentPayment = EntityFactory.gimme(RentPayment.class, RentPaymentTemplate.VALID, processor -> {
+			if (processor instanceof RentPayment) {
+				final RentPayment payment = (RentPayment) processor;
+				payment.setRent(rent);
+			}
+		});
+		this.rentPaymentService.makeRentPayment(this.getUserContext(), rentPayment);
+
+		final List<Customer> customers = this.customerQueryService.findCustomersWithPaymentsByUnit(rent.getUnit().getUuid());
 
 		Assert.assertFalse(customers.isEmpty());
 	}

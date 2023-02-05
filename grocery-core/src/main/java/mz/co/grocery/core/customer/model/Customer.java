@@ -31,7 +31,9 @@ import mz.co.msaude.boot.frameworks.model.GenericEntity;
 	@NamedQuery(name = CustomerDAO.QUERY_NAME.findWithContractPendingPaymentByUnit, query = CustomerDAO.QUERY.findWithContractPendingPaymentByUnit),
 	@NamedQuery(name = CustomerDAO.QUERY_NAME.countCustomersWithContractPendingPaymentByUnit, query = CustomerDAO.QUERY.countCustomersWithContractPendingPaymentByUnit),
 	@NamedQuery(name = CustomerDAO.QUERY_NAME.findCustomersSaleWithPendindOrIncompletePaymentByUnit, query = CustomerDAO.QUERY.findCustomersSaleWithPendindOrIncompletePaymentByUnit),
-	@NamedQuery(name = CustomerDAO.QUERY_NAME.findCustomersWithPendingOrInCompleteRentItemsToLoadByUnit, query = CustomerDAO.QUERY.findCustomersWithPendingOrInCompleteRentItemsToLoadByUnit) })
+	@NamedQuery(name = CustomerDAO.QUERY_NAME.findCustomersWithPendingOrInCompleteRentItemsToLoadByUnit, query = CustomerDAO.QUERY.findCustomersWithPendingOrInCompleteRentItemsToLoadByUnit),
+	@NamedQuery(name = CustomerDAO.QUERY_NAME.findWithIssuedGuidesByTypeAndUnit, query = CustomerDAO.QUERY.findWithIssuedGuidesByTypeAndUnit),
+	@NamedQuery(name = CustomerDAO.QUERY_NAME.findCustomersWithPaymentsByUnit, query = CustomerDAO.QUERY.findCustomersWithPaymentsByUnit) })
 @Entity
 @Table(name = "CUSTOMERS")
 public class Customer extends GenericEntity {

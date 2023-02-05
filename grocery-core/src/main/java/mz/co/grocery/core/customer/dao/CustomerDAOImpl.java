@@ -9,6 +9,7 @@ import java.util.List;
 import org.springframework.stereotype.Repository;
 
 import mz.co.grocery.core.customer.model.Customer;
+import mz.co.grocery.core.rent.model.GuideType;
 import mz.co.msaude.boot.frameworks.dao.GenericDAOImpl;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.model.EntityStatus;
@@ -54,7 +55,8 @@ public class CustomerDAOImpl extends GenericDAOImpl<Customer, Long> implements C
 	}
 
 	@Override
-	public List<Customer> findCustomersWithPendingOrIncompleteRentItemsToReturnByUnit(final String unitUuid, final int currentPage, final int maxResult,
+	public List<Customer> findCustomersWithPendingOrIncompleteRentItemsToReturnByUnit(final String unitUuid, final int currentPage,
+			final int maxResult,
 			final EntityStatus entityStatus) throws BusinessException {
 		return this.findByQuery(CustomerDAO.QUERY_NAME.findCustomersWithPendingOrIncompleteRentItemsToReturnByUnit,
 				new ParamBuilder().add("unitUuid", unitUuid).add("entityStatus", entityStatus).process()).setFirstResult(currentPage * maxResult)
@@ -62,7 +64,8 @@ public class CustomerDAOImpl extends GenericDAOImpl<Customer, Long> implements C
 	}
 
 	@Override
-	public Long countCustomersWithPendingOrIncompleteRentItemsToReturnByUnit(final String unitUuid, final EntityStatus entityStatus) throws BusinessException {
+	public Long countCustomersWithPendingOrIncompleteRentItemsToReturnByUnit(final String unitUuid, final EntityStatus entityStatus)
+			throws BusinessException {
 		return this.findSingleByNamedQuery(CustomerDAO.QUERY_NAME.countCustomersWithPendingOrIncompleteRentItemsToReturnByUnit,
 				new ParamBuilder().add("unitUuid", unitUuid).add("entityStatus", entityStatus).process(), Long.class);
 	}
@@ -95,6 +98,19 @@ public class CustomerDAOImpl extends GenericDAOImpl<Customer, Long> implements C
 	public List<Customer> findCustomersWithPendingOrInCompleteRentItemsToLoadByUnit(final String unitUuid, final EntityStatus entityStatus)
 			throws BusinessException {
 		return this.findByNamedQuery(CustomerDAO.QUERY_NAME.findCustomersWithPendingOrInCompleteRentItemsToLoadByUnit,
+				new ParamBuilder().add("unitUuid", unitUuid).add("entityStatus", entityStatus).process());
+	}
+
+	@Override
+	public List<Customer> findWithIssuedGuidesByTypeAndUnit(final GuideType guideType, final String unitUuid, final EntityStatus entityStatus)
+			throws BusinessException {
+		return this.findByNamedQuery(CustomerDAO.QUERY_NAME.findWithIssuedGuidesByTypeAndUnit,
+				new ParamBuilder().add("guideType", guideType).add("unitUuid", unitUuid).add("entityStatus", entityStatus).process());
+	}
+
+	@Override
+	public List<Customer> findWithPaymentsByUnit(final String unitUuid, final EntityStatus entityStatus) throws BusinessException {
+		return this.findByNamedQuery(CustomerDAO.QUERY_NAME.findCustomersWithPaymentsByUnit,
 				new ParamBuilder().add("unitUuid", unitUuid).add("entityStatus", entityStatus).process());
 	}
 }

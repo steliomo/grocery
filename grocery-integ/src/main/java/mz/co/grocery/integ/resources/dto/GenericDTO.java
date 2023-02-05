@@ -67,6 +67,7 @@ public abstract class GenericDTO<T extends GenericEntity> {
 
 	public abstract void mapper(T t);
 
+	@SuppressWarnings("deprecation")
 	public T get(final T t) {
 		t.setId(this.id);
 		t.setUuid(this.uuid);
@@ -78,4 +79,8 @@ public abstract class GenericDTO<T extends GenericEntity> {
 	}
 
 	public abstract T get();
+
+	public void setId(final Long id) {
+		this.id = id;
+	}
 }

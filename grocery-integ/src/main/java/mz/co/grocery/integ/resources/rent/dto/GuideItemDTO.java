@@ -24,7 +24,6 @@ public class GuideItemDTO extends GenericDTO<GuideItem> {
 
 	public GuideItemDTO(final GuideItem guideItem) {
 		super(guideItem);
-		this.mapper(guideItem);
 	}
 
 	@Override

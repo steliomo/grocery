@@ -6,6 +6,7 @@ package mz.co.grocery.integ.resources.rent.dto;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
+import java.util.Comparator;
 import java.util.List;
 
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -32,11 +33,15 @@ public class RentDTO extends GenericDTO<Rent> {
 
 	private CustomerDTO customerDTO;
 
-	private BigDecimal totalRent;
+	private BigDecimal totalEstimated;
+
+	private BigDecimal totalCalculated;
 
 	private BigDecimal totalPaid;
 
 	private BigDecimal totalToPay;
+
+	private BigDecimal totalToRefund;
 
 	private int totalItems;
 
@@ -44,7 +49,9 @@ public class RentDTO extends GenericDTO<Rent> {
 
 	private List<RentItemDTO> rentItemsDTO;
 
-	private final List<RentPaymentDTO> rentPaymentsDTO = new ArrayList<>();
+	private List<RentPaymentDTO> rentPaymentsDTO;
+
+	private List<GuideDTO> guidesDTO;
 
 	public RentDTO() {
 	}
@@ -60,9 +67,11 @@ public class RentDTO extends GenericDTO<Rent> {
 
 	@Override
 	public void mapper(final Rent rent) {
-		this.totalRent = rent.getTotalEstimated();
+		this.totalEstimated = rent.getTotalEstimated();
+		this.totalCalculated = rent.getTotalCalculated();
 		this.totalPaid = rent.getTotalPayment();
 		this.totalToPay = rent.getTotalToPay();
+		this.totalToRefund = rent.totalToRefund();
 		this.totalItems = rent.getRentItems().size();
 
 		if (ProxyUtil.isInitialized(rent.getUnit())) {
@@ -80,6 +89,18 @@ public class RentDTO extends GenericDTO<Rent> {
 		}
 
 		rent.getRentItems().forEach(rentItem -> this.rentItemsDTO.add(new RentItemDTO(rentItem)));
+
+		if (this.guidesDTO == null) {
+			this.guidesDTO = new ArrayList<GuideDTO>();
+		}
+
+		rent.getGuides().forEach(guide -> this.guidesDTO.add(new GuideDTO(guide)));
+
+		if (this.rentPaymentsDTO == null) {
+			this.rentPaymentsDTO = new ArrayList<>();
+		}
+
+		rent.getRentPayments().forEach(payment -> this.rentPaymentsDTO.add(new RentPaymentDTO(payment)));
 	}
 
 	@Override
@@ -91,6 +112,11 @@ public class RentDTO extends GenericDTO<Rent> {
 		rent.setRentDate(this.rentDate);
 		rent.setCustomer(this.customerDTO == null ? null : this.customerDTO.get());
 		this.rentItemsDTO.forEach(rentItemDTO -> rent.addRentItem(rentItemDTO.get()));
+
+		if (this.rentPaymentsDTO == null) {
+			this.rentPaymentsDTO = new ArrayList<>();
+		}
+
 		this.rentPaymentsDTO.forEach(rentPaymentsDTO -> rent.addRentPayment(rentPaymentsDTO.get()));
 
 		return rent;
@@ -112,8 +138,12 @@ public class RentDTO extends GenericDTO<Rent> {
 		return this.totalItems;
 	}
 
-	public BigDecimal getTotalRent() {
-		return this.totalRent;
+	public BigDecimal getTotalEstimated() {
+		return this.totalEstimated;
+	}
+
+	public BigDecimal getTotalCalculated() {
+		return this.totalCalculated;
 	}
 
 	public BigDecimal getTotalPaid() {
@@ -124,15 +154,33 @@ public class RentDTO extends GenericDTO<Rent> {
 		return this.totalToPay;
 	}
 
+	public BigDecimal getTotalToRefund() {
+		return this.totalToRefund;
+	}
+
 	public List<RentItemDTO> getRentItemsDTO() {
 		return this.rentItemsDTO;
 	}
 
 	public List<RentPaymentDTO> getRentPaymentsDTO() {
+		if (this.rentPaymentsDTO == null) {
+			return this.rentPaymentsDTO;
+		}
+
+		this.rentPaymentsDTO.sort(Comparator.comparing(RentPaymentDTO::getId));
 		return this.rentPaymentsDTO;
 	}
 
 	public EnumDTO getPaymentStatus() {
 		return this.paymentStatus;
+	}
+
+	public List<GuideDTO> getGuidesDTO() {
+		if (this.guidesDTO == null) {
+			return this.guidesDTO;
+		}
+
+		this.guidesDTO.sort(Comparator.comparing(GuideDTO::getId));
+		return this.guidesDTO;
 	}
 }

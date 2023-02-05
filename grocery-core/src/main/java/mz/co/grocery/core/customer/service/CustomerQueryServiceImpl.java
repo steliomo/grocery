@@ -12,6 +12,7 @@ import org.springframework.stereotype.Service;
 
 import mz.co.grocery.core.customer.dao.CustomerDAO;
 import mz.co.grocery.core.customer.model.Customer;
+import mz.co.grocery.core.rent.model.GuideType;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.model.EntityStatus;
 
@@ -49,8 +50,9 @@ public class CustomerQueryServiceImpl implements CustomerQueryService {
 	}
 
 	@Override
-	public List<Customer> findCustomersWithPendingOrIncompleteRentItemsToReturnByUnit(final String unitUuid, final int currentPage, final int maxResult)
-			throws BusinessException {
+	public List<Customer> findCustomersWithPendingOrIncompleteRentItemsToReturnByUnit(final String unitUuid, final int currentPage,
+			final int maxResult)
+					throws BusinessException {
 		return this.customerDAO.findCustomersWithPendingOrIncompleteRentItemsToReturnByUnit(unitUuid, currentPage, maxResult, EntityStatus.ACTIVE);
 	}
 
@@ -79,5 +81,15 @@ public class CustomerQueryServiceImpl implements CustomerQueryService {
 	@Override
 	public List<Customer> findCustomersWithPendingOrInCompleteRentItemsToLoadByUnit(final String unitUuid) throws BusinessException {
 		return this.customerDAO.findCustomersWithPendingOrInCompleteRentItemsToLoadByUnit(unitUuid, EntityStatus.ACTIVE);
+	}
+
+	@Override
+	public List<Customer> findCustomersWithIssuedGuidesByTypeAndUnit(final GuideType guideType, final String unitUuid) throws BusinessException {
+		return this.customerDAO.findWithIssuedGuidesByTypeAndUnit(guideType, unitUuid, EntityStatus.ACTIVE);
+	}
+
+	@Override
+	public List<Customer> findCustomersWithPaymentsByUnit(final String unitUuid) throws BusinessException {
+		return this.customerDAO.findWithPaymentsByUnit(unitUuid, EntityStatus.ACTIVE);
 	}
 }

@@ -22,6 +22,8 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import org.hibernate.LazyInitializationException;
+
 import mz.co.grocery.core.customer.model.Customer;
 import mz.co.grocery.core.grocery.model.Grocery;
 import mz.co.grocery.core.rent.dao.RentDAO;
@@ -36,7 +38,9 @@ import mz.co.msaude.boot.frameworks.model.GenericEntity;
 @NamedQueries({ @NamedQuery(name = RentDAO.QUERY_NAME.findPendinPaymentsByCustomer, query = RentDAO.QUERY.findPendinPaymentsByCustomer),
 	@NamedQuery(name = RentDAO.QUERY_NAME.fetchPendingOrIncompleteRentItemToLoadByCustomer, query = RentDAO.QUERY.fetchPendingOrIncompleteRentItemToLoadByCustomer),
 	@NamedQuery(name = RentDAO.QUERY_NAME.fetchRentsWithPendingOrIncompleteRentItemToReturnByCustomer, query = RentDAO.QUERY.fetchRentsWithPendingOrIncompleteRentItemToReturnByCustomer),
-	@NamedQuery(name = RentDAO.QUERY_NAME.fetchByUuid, query = RentDAO.QUERY.fetchByUuid) })
+	@NamedQuery(name = RentDAO.QUERY_NAME.fetchByUuid, query = RentDAO.QUERY.fetchByUuid),
+	@NamedQuery(name = RentDAO.QUERY_NAME.fetchRentsWithIssuedGuidesByTypeAndCustomer, query = RentDAO.QUERY.fetchRentsWithIssuedGuidesByTypeAndCustomer),
+	@NamedQuery(name = RentDAO.QUERY_NAME.fetchRentsWithPaymentsByCustomer, query = RentDAO.QUERY.fetchRentsWithPaymentsByCustomer) })
 @Entity
 @Table(name = "RENTS")
 public class Rent extends GenericEntity {
@@ -87,6 +91,9 @@ public class Rent extends GenericEntity {
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "rent")
 	private final Set<RentPayment> rentPayments = new HashSet<>();
 
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "rent")
+	private Set<Guide> guides = new HashSet<>();
+
 	public Grocery getUnit() {
 		return this.unit;
 	}
@@ -116,6 +123,12 @@ public class Rent extends GenericEntity {
 	}
 
 	public Set<RentItem> getRentItems() {
+		try {
+			this.rentItems.size();
+		} catch (final LazyInitializationException e) {
+			return new HashSet<>();
+		}
+
 		return Collections.unmodifiableSet(this.rentItems);
 	}
 
@@ -128,6 +141,16 @@ public class Rent extends GenericEntity {
 	}
 
 	public Set<RentPayment> getRentPayments() {
+		if (this.rentPayments == null) {
+			return this.rentPayments;
+		}
+
+		try {
+			this.rentPayments.size();
+		} catch (final LazyInitializationException e) {
+			return new HashSet<>();
+		}
+
 		return Collections.unmodifiableSet(this.rentPayments);
 	}
 
@@ -231,5 +254,20 @@ public class Rent extends GenericEntity {
 
 	public ReturnStatus getReturnStatus() {
 		return this.returnStatus;
+	}
+
+	public Set<Guide> getGuides() {
+
+		if (this.guides == null) {
+			this.guides = new HashSet<>();
+			return this.guides;
+		}
+
+		try {
+			this.guides.size();
+		} catch (final LazyInitializationException e) {
+			return new HashSet<>();
+		}
+		return Collections.unmodifiableSet(this.guides);
 	}
 }

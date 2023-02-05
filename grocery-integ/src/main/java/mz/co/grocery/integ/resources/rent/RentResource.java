@@ -13,6 +13,7 @@ import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
@@ -21,6 +22,7 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import mz.co.grocery.core.rent.model.Guide;
+import mz.co.grocery.core.rent.model.GuideType;
 import mz.co.grocery.core.rent.model.Rent;
 import mz.co.grocery.core.rent.service.GuideIssuer;
 import mz.co.grocery.core.rent.service.GuideService;
@@ -151,14 +153,25 @@ public class RentResource extends AbstractResource {
 		final Guide guide = this.guideService.issueGuide(this.getContext(), guideDTO.get());
 
 		guideDTO.setIssueDate(guide.getIssueDate());
+		guideDTO.setId(guide.getId());
 
-		this.generatePDF(guideDTO);
+		this.guidePdfGenerator(guideDTO);
 
 		return Response.ok(guideDTO).build();
 	}
 
-	private void generatePDF(final GuideDTO guideDTO) throws BusinessException {
+	@Path("issue-guide-pdf")
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response issueGuidePDF(final GuideDTO guideDTO) throws BusinessException {
 
+		this.guidePdfGenerator(guideDTO);
+
+		return Response.ok(guideDTO).build();
+	}
+
+	private void guidePdfGenerator(final GuideDTO guideDTO) throws BusinessException {
 		final GuideReport guideReport = new GuideReport(guideDTO, this.translator);
 		try {
 			FileGeneratorUtil.generatePdf(GuideReport.REPORT_XML_NAME, guideReport.getParameters(), guideReport.getGuideItems(),
@@ -179,9 +192,35 @@ public class RentResource extends AbstractResource {
 		final Guide guide = this.guideService.issueGuide(this.getContext(), guideDTO.get());
 
 		guideDTO.setIssueDate(guide.getIssueDate());
+		guideDTO.setId(guide.getId());
 
-		this.generatePDF(guideDTO);
+		this.guidePdfGenerator(guideDTO);
 
 		return Response.ok(guideDTO).build();
+	}
+
+	@Path("fetch-rents-with-issued-guides-by-type-and-customer")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response fetchRentsWithIssuedGuidesByTypeAndCustomer(@QueryParam("guideType") final GuideType guideType,
+			@QueryParam("customerUuid") final String customerUuid) throws BusinessException {
+
+		final List<Rent> rents = this.rentQueryService.fetchRentsWithIssuedGuidesByTypeAndCustomer(guideType, customerUuid);
+
+		final RentsDTO rentsDTO = new RentsDTO(rents, this.translator);
+
+		return Response.ok(rentsDTO).build();
+	}
+
+	@Path("fetch-rents-with-payments-by-customer/{customerUuid}")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response fetchRentsWithPaymentsByCustomer(@PathParam("customerUuid") final String customerUuid) throws BusinessException {
+
+		final List<Rent> rents = this.rentQueryService.fetchRentsWithPaymentsByCustomer(customerUuid);
+
+		final RentsDTO rentsDTO = new RentsDTO(rents, this.translator);
+
+		return Response.ok(rentsDTO).build();
 	}
 }

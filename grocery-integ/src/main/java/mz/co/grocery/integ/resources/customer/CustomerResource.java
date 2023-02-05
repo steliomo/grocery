@@ -24,6 +24,7 @@ import org.springframework.stereotype.Service;
 import mz.co.grocery.core.customer.model.Customer;
 import mz.co.grocery.core.customer.service.CustomerQueryService;
 import mz.co.grocery.core.customer.service.CustomerService;
+import mz.co.grocery.core.rent.model.GuideType;
 import mz.co.grocery.integ.resources.AbstractResource;
 import mz.co.grocery.integ.resources.customer.dto.CustomerDTO;
 import mz.co.grocery.integ.resources.customer.dto.CustomersDTO;
@@ -142,6 +143,31 @@ public class CustomerResource extends AbstractResource {
 	public Response findCustomersWithPendingOrInCompleteRentItemsToLoadByUnit(@PathParam("unitUuid") final String unitUuid) throws BusinessException {
 
 		final List<Customer> customers = this.customerQueryService.findCustomersWithPendingOrInCompleteRentItemsToLoadByUnit(unitUuid);
+
+		final List<CustomerDTO> customerDTOs = customers.stream().map(customer -> new CustomerDTO(customer)).collect(Collectors.toList());
+
+		return Response.ok(new CustomersDTO(customerDTOs, BigDecimal.ZERO.longValue())).build();
+	}
+
+	@Path("find-customers-with-issued-guides-by-type-and-unit")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response findCustomersWithIssuedGuidesByTypeAndUnit(@QueryParam("guideType") final GuideType guideType,
+			@QueryParam("unitUuid") final String unitUuid) throws BusinessException {
+
+		final List<Customer> customers = this.customerQueryService.findCustomersWithIssuedGuidesByTypeAndUnit(guideType, unitUuid);
+
+		final List<CustomerDTO> customerDTOs = customers.stream().map(customer -> new CustomerDTO(customer)).collect(Collectors.toList());
+
+		return Response.ok(new CustomersDTO(customerDTOs, BigDecimal.ZERO.longValue())).build();
+	}
+
+	@Path("find-payments-by-unit/{unitUuid}")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response findCustomersWithPaymentsByUnit(@PathParam("unitUuid") final String unitUuid) throws BusinessException {
+
+		final List<Customer> customers = this.customerQueryService.findCustomersWithPaymentsByUnit(unitUuid);
 
 		final List<CustomerDTO> customerDTOs = customers.stream().map(customer -> new CustomerDTO(customer)).collect(Collectors.toList());
 

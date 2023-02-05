@@ -8,6 +8,8 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
+import org.apache.commons.lang3.StringUtils;
+
 import mz.co.grocery.core.rent.model.Guide;
 import mz.co.grocery.core.rent.model.GuideType;
 import mz.co.grocery.integ.resources.dto.GenericDTO;
@@ -19,6 +21,10 @@ import mz.co.grocery.integ.resources.util.ProxyUtil;
  */
 public class GuideDTO extends GenericDTO<Guide> {
 
+	private static final int LEFT_PAD = 5;
+
+	private static final char PAD_CHAR = '0';
+
 	private GuideType type;
 
 	private RentDTO rentDTO;
@@ -29,16 +35,21 @@ public class GuideDTO extends GenericDTO<Guide> {
 
 	private String fileName;
 
+	private String code;
+
 	public GuideDTO() {
 	}
 
 	public GuideDTO(final Guide guide) {
 		super(guide);
-		this.mapper(guide);
 	}
 
 	@Override
 	public void mapper(final Guide guide) {
+
+		if (guide.getRent() == null || guide.getRent().getGuides() == null || !guide.getRent().getGuides().isEmpty()) {
+			guide.setRent(null);
+		}
 
 		if (ProxyUtil.isInitialized(guide.getRent())) {
 			this.rentDTO = new RentDTO(guide.getRent());
@@ -46,7 +57,6 @@ public class GuideDTO extends GenericDTO<Guide> {
 
 		this.type = guide.getType();
 		this.issueDate = guide.getIssueDate();
-
 		this.guideItemsDTO = guide.getGuideItems().stream().map(guideItem -> new GuideItemDTO(guideItem)).collect(Collectors.toList());
 	}
 
@@ -90,5 +100,15 @@ public class GuideDTO extends GenericDTO<Guide> {
 
 	public void setIssueDate(final LocalDate issueDate) {
 		this.issueDate = issueDate;
+	}
+
+	public String getCode() {
+
+		if (this.getId() == null) {
+			return this.code;
+		}
+
+		this.code = StringUtils.leftPad(String.valueOf(this.getId()), GuideDTO.LEFT_PAD, GuideDTO.PAD_CHAR);
+		return this.code;
 	}
 }
