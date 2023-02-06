@@ -28,7 +28,7 @@ public class RentItemReport {
 	public RentItemReport(final RentItem rentItem) {
 
 		this.itemName = rentItem.getItem().getName();
-		this.price = rentItem.getItem().getSalePrice();
+		this.price = rentItem.getItem().getRentPrice();
 		this.quantity = rentItem.getPlannedQuantity();
 		this.discount = rentItem.getDiscount();
 		this.days = rentItem.getPlannedDays();

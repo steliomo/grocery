@@ -27,13 +27,9 @@ public class RentReport {
 
 	private String reportDate;
 
-	private String unitName;
-
 	private String address;
 
 	private String phoneNumber;
-
-	private String email;
 
 	private String customerName;
 
@@ -52,10 +48,8 @@ public class RentReport {
 
 		this.name = "QUOTATION_" + time + ".pdf";
 		this.reportDate = rent.getRentDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-		this.unitName = rent.getUnit().getName();
-		this.address = rent.getUnit().getAddress();
+		this.address = rent.getCustomer().getAddress();
 		this.phoneNumber = rent.getUnit().getPhoneNumber();
-		this.email = rent.getUnit().getEmail();
 		this.customerName = rent.getCustomer().getName();
 		this.totalDiscount = rent.getRentItems().stream().map(RentItem::getDiscount).reduce(BigDecimal.ZERO, BigDecimal::add);
 		this.rentItemsReport = rent.getRentItems().stream().map(rentItem -> new RentItemReport(rentItem)).collect(Collectors.toList());
@@ -74,10 +68,9 @@ public class RentReport {
 		final HashMap<String, Object> parameters = new HashMap<>();
 
 		parameters.put("quotationDate", this.reportDate);
-		parameters.put("unitName", this.unitName);
+		parameters.put("nuit", "");
 		parameters.put("address", this.address);
 		parameters.put("phoneNumber", this.phoneNumber);
-		parameters.put("email", this.email);
 		parameters.put("customerName", this.customerName);
 		parameters.put("totalDiscount", this.totalDiscount);
 		parameters.put("grandTotal", this.grandTotal);
