@@ -371,7 +371,8 @@ Email: mowinner@mowinner.co.mz]]></text>
 		</band>
 	</pageFooter>
 	<summary>
-		<band height="27">
+		<band height="150">
+			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<staticText>
 				<reportElement mode="Transparent" x="0" y="0" width="395" height="25" backcolor="#E6E6E6" uuid="29a63a00-3d82-43d9-9940-02a20c8ca476">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -401,6 +402,7 @@ Email: mowinner@mowinner.co.mz]]></text>
 					<rightPen lineWidth="1.0" lineStyle="Dashed"/>
 				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
+					<font isBold="true"/>
 					<paragraph rightIndent="5"/>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{grandTotal}+" MT"]]></textFieldExpression>
@@ -422,6 +424,15 @@ Email: mowinner@mowinner.co.mz]]></text>
 				</textElement>
 				<textFieldExpression><![CDATA[$P{totalDiscount}+" MT"]]></textFieldExpression>
 			</textField>
+			<image scaleImage="FillFrame" rotation="None">
+				<reportElement style="Table" positionType="Float" isPrintRepeatedValues="false" mode="Transparent" x="152" y="50" width="250" height="100" uuid="43873514-fd8c-40f3-8a65-6f5001b0d00c">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.layout.grid.weight.fixed" value="true"/>
+				</reportElement>
+				<graphicElement fill="Solid"/>
+				<imageExpression><![CDATA["/opt/grocery/data/reports/jeta_signature.png"]]></imageExpression>
+			</image>
 		</band>
 	</summary>
 </jasperReport>
