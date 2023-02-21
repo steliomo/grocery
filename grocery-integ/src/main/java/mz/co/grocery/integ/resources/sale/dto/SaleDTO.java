@@ -5,6 +5,9 @@ package mz.co.grocery.integ.resources.sale.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Comparator;
+import java.util.List;
 import java.util.Set;
 import java.util.stream.Collectors;
 
@@ -18,6 +21,7 @@ import mz.co.grocery.core.util.ApplicationTranslator;
 import mz.co.grocery.integ.resources.customer.dto.CustomerDTO;
 import mz.co.grocery.integ.resources.dto.GenericDTO;
 import mz.co.grocery.integ.resources.grocery.dto.GroceryDTO;
+import mz.co.grocery.integ.resources.guide.dto.GuideDTO;
 import mz.co.grocery.integ.resources.util.EnumDTO;
 import mz.co.grocery.integ.resources.util.ProxyUtil;
 import mz.co.msaude.boot.frameworks.util.LocalDateAdapter;
@@ -50,6 +54,10 @@ public class SaleDTO extends GenericDTO<Sale> {
 
 	private EnumDTO saleStatus;
 
+	private EnumDTO deliveryStatus;
+
+	private List<GuideDTO> guidesDTO;
+
 	public SaleDTO() {
 	}
 
@@ -60,6 +68,7 @@ public class SaleDTO extends GenericDTO<Sale> {
 	public SaleDTO(final Sale sale, final ApplicationTranslator translator) {
 		super(sale);
 		this.saleStatus = new EnumDTO(sale.getSaleStatus().toString(), translator.getTranslation(sale.getSaleStatus().toString()));
+		this.deliveryStatus = new EnumDTO(sale.getDeliveryStatus().toString(), translator.getTranslation(sale.getDeliveryStatus().toString()));
 	}
 
 	@Override
@@ -86,6 +95,11 @@ public class SaleDTO extends GenericDTO<Sale> {
 		this.saleType = sale.getSaleType();
 		this.totalPaid = sale.getTotalPaid();
 		this.dueDate = sale.getDueDate();
+
+		if (sale.getGuides() != null) {
+			this.guidesDTO = new ArrayList<>();
+			sale.getGuides().forEach(guide -> this.guidesDTO.add(new GuideDTO(guide)));
+		}
 	}
 
 	@Override
@@ -164,5 +178,18 @@ public class SaleDTO extends GenericDTO<Sale> {
 
 	public EnumDTO getSaleStatus() {
 		return this.saleStatus;
+	}
+
+	public EnumDTO getDeliveryStatus() {
+		return this.deliveryStatus;
+	}
+
+	public List<GuideDTO> getGuidesDTO() {
+		if (this.guidesDTO == null) {
+			return this.guidesDTO;
+		}
+
+		this.guidesDTO.sort(Comparator.comparing(GuideDTO::getId));
+		return this.guidesDTO;
 	}
 }

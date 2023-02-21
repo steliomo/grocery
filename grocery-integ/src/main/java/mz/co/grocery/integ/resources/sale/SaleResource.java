@@ -18,6 +18,8 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import mz.co.grocery.core.expense.model.ExpenseReport;
@@ -28,6 +30,8 @@ import mz.co.grocery.core.rent.service.RentPaymentQueryService;
 import mz.co.grocery.core.sale.model.Sale;
 import mz.co.grocery.core.sale.model.SalePayment;
 import mz.co.grocery.core.sale.model.SaleReport;
+import mz.co.grocery.core.sale.service.CashSaleServiceImpl;
+import mz.co.grocery.core.sale.service.InstallmentSaleServiceImpl;
 import mz.co.grocery.core.sale.service.SalePaymentService;
 import mz.co.grocery.core.sale.service.SaleQueryService;
 import mz.co.grocery.core.sale.service.SaleService;
@@ -50,8 +54,13 @@ public class SaleResource extends AbstractResource {
 
 	public static final String NAME = "mz.co.grocery.integ.resources.sale.SaleResource";
 
-	@Inject
-	private SaleService saleService;
+	@Autowired
+	@Qualifier(CashSaleServiceImpl.NAME)
+	private SaleService cashSaleService;
+
+	@Autowired
+	@Qualifier(InstallmentSaleServiceImpl.NAME)
+	private SaleService installmentSaleService;
 
 	@Inject
 	private SaleQueryService saleQueryService;
@@ -75,7 +84,18 @@ public class SaleResource extends AbstractResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response registSale(final SaleDTO saleDTO) throws BusinessException {
-		final Sale sale = this.saleService.registSale(this.getContext(), saleDTO.get());
+		Sale sale = null;
+
+		switch (saleDTO.getSaleType()) {
+		case CASH:
+			sale = this.cashSaleService.registSale(this.getContext(), saleDTO.get());
+			break;
+
+		case INSTALLMENT:
+			sale = this.installmentSaleService.registSale(this.getContext(), saleDTO.get());
+			break;
+		}
+
 		return Response.ok(new SaleDTO(sale)).build();
 	}
 
@@ -155,9 +175,42 @@ public class SaleResource extends AbstractResource {
 
 		final SalesDTO salesDTO = new SalesDTO();
 
-		sales.forEach(sale -> {
-			salesDTO.addSale(new SaleDTO(sale, this.translator));
-		});
+		sales.forEach(sale -> salesDTO.addSale(new SaleDTO(sale, this.translator)));
+
+		return Response.ok(salesDTO).build();
+	}
+
+	@GET
+	@Path("fetch-sales-with-pending-or-incomplete-delivery-status-by-customer/{customerUuid}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response fetchSalesWithPendingOrIncompleteDeliveryStatusByCustomer(@PathParam("customerUuid") final String customerUuid)
+			throws BusinessException {
+
+		final CustomerDTO customerDTO = new CustomerDTO();
+		customerDTO.setUuid(customerUuid);
+
+		final List<Sale> sales = this.saleQueryService.fetchSalesWithPendingOrIncompleteDeliveryStatusByCustomer(customerDTO.get());
+
+		final SalesDTO salesDTO = new SalesDTO();
+
+		sales.forEach(sale -> salesDTO.addSale(new SaleDTO(sale, this.translator)));
+
+		return Response.ok(salesDTO).build();
+	}
+
+	@GET
+	@Path("fetch-sales-with-delivery-guides-by-customer/{customerUuid}")
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response fetchSalesWithDeliveryGuidesByCustomer(@PathParam("customerUuid") final String customerUuid) throws BusinessException {
+
+		final CustomerDTO customerDTO = new CustomerDTO();
+		customerDTO.setUuid(customerUuid);
+
+		final List<Sale> sales = this.saleQueryService.fetchSalesWithDeliveryGuidesByCustomer(customerDTO.get());
+
+		final SalesDTO salesDTO = new SalesDTO();
+
+		sales.forEach(sale -> salesDTO.addSale(new SaleDTO(sale, this.translator)));
 
 		return Response.ok(salesDTO).build();
 	}

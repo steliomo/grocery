@@ -1,7 +1,7 @@
 /**
  *
  */
-package mz.co.grocery.integ.resources.rent.dto;
+package mz.co.grocery.integ.resources.guide.dto;
 
 import java.time.LocalDateTime;
 import java.time.format.DateTimeFormatter;
@@ -43,7 +43,7 @@ public class GuideReport {
 		Integer item = 1;
 
 		for (final GuideItemDTO guideItemDTO : guideDTO.getGuideItemsDTO()) {
-			final GuideItemReport guideItemReport = new GuideItemReport(item, guideItemDTO.getQuantity(), guideItemDTO.getRentItemDTO().getName());
+			final GuideItemReport guideItemReport = new GuideItemReport(item, guideItemDTO.getQuantity(), guideItemDTO.getName());
 			this.guideItems.add(guideItemReport);
 			item++;
 		}
@@ -54,10 +54,10 @@ public class GuideReport {
 		this.parameters.put("guideCode", guideDTO.getCode());
 		this.parameters.put("guideType", translator.getTranslation(guideDTO.getType().toString()));
 		this.parameters.put("guideDate", guideDTO.getIssueDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
-		this.parameters.put("customerName", guideDTO.getRentDTO().getCustomerDTO().getName());
-		this.parameters.put("address", guideDTO.getRentDTO().getCustomerDTO().getAddress());
+		this.parameters.put("customerName", guideDTO.getCustomerDTO().getName());
+		this.parameters.put("address", guideDTO.getCustomerDTO().getAddress());
 		this.parameters.put("nuit", "");
-		this.parameters.put("phoneNumber", guideDTO.getRentDTO().getCustomerDTO().getContact());
+		this.parameters.put("phoneNumber", guideDTO.getCustomerDTO().getContact());
 	}
 
 	public List<GuideItemReport> getGuideItems() {

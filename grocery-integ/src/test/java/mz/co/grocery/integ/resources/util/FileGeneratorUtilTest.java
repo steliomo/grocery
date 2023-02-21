@@ -14,7 +14,7 @@ import org.junit.Assert;
 import org.junit.Ignore;
 import org.junit.Test;
 
-import mz.co.grocery.integ.resources.rent.dto.GuideItemDTO;
+import mz.co.grocery.integ.resources.guide.dto.GuideItemDTO;
 import net.sf.jasperreports.engine.JRException;
 
 /**

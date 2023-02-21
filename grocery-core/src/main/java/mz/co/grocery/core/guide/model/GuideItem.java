@@ -1,7 +1,7 @@
 /**
  *
  */
-package mz.co.grocery.core.rent.model;
+package mz.co.grocery.core.guide.model;
 
 import java.math.BigDecimal;
 
@@ -14,6 +14,8 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import mz.co.grocery.core.rent.model.RentItem;
+import mz.co.grocery.core.sale.model.SaleItem;
 import mz.co.grocery.core.saleable.model.Stock;
 import mz.co.msaude.boot.frameworks.model.GenericEntity;
 
@@ -33,10 +35,13 @@ public class GuideItem extends GenericEntity {
 	@JoinColumn(name = "GUIDE_ID", nullable = false)
 	private Guide guide;
 
-	@NotNull
 	@OneToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "RENT_ITEM_ID", nullable = false)
+	@JoinColumn(name = "RENT_ITEM_ID")
 	private RentItem rentItem;
+
+	@OneToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "SALE_ITEM_ID")
+	private SaleItem saleItem;
 
 	@NotNull
 	@Column(name = "QUANTITY", nullable = false)
@@ -67,6 +72,18 @@ public class GuideItem extends GenericEntity {
 	}
 
 	public Stock getStock() {
-		return (Stock) this.rentItem.getItem();
+		return this.rentItem != null ? (Stock) this.rentItem.getItem() : this.saleItem.getStock();
+	}
+
+	public SaleItem getSaleItem() {
+		return this.saleItem;
+	}
+
+	public void setSaleItem(final SaleItem saleItem) {
+		this.saleItem = saleItem;
+	}
+
+	public GuideItemType getItemGuideType() {
+		return this.rentItem == null ? GuideItemType.SALE : GuideItemType.RENT;
 	}
 }

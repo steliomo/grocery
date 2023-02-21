@@ -16,6 +16,7 @@ import mz.co.grocery.core.util.ApplicationTranslator;
 import mz.co.grocery.integ.resources.customer.dto.CustomerDTO;
 import mz.co.grocery.integ.resources.dto.GenericDTO;
 import mz.co.grocery.integ.resources.grocery.dto.GroceryDTO;
+import mz.co.grocery.integ.resources.guide.dto.GuideDTO;
 import mz.co.grocery.integ.resources.util.EnumDTO;
 import mz.co.grocery.integ.resources.util.ProxyUtil;
 import mz.co.msaude.boot.frameworks.util.LocalDateAdapter;

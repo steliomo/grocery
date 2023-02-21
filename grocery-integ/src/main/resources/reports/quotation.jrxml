@@ -40,19 +40,6 @@
 	<field name="days" class="java.math.BigDecimal"/>
 	<field name="discount" class="java.math.BigDecimal"/>
 	<field name="value" class="java.math.BigDecimal"/>
-	<background>
-		<band height="800">
-			<property name="com.jaspersoft.studio.unit.height" value="px"/>
-			<image scaleImage="FillFrame" hAlign="Center" vAlign="Middle">
-				<reportElement isPrintRepeatedValues="false" mode="Transparent" x="52" y="175" width="450" height="450" uuid="4d0b977d-3910-4728-9177-9c80a0caa403">
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-				</reportElement>
-				<graphicElement fill="Solid"/>
-				<imageExpression><![CDATA["/opt/grocery/data/reports/watermak_logo.png"]]></imageExpression>
-			</image>
-		</band>
-	</background>
 	<title>
 		<band height="150">
 			<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -430,6 +417,12 @@ Email: mowinner@mowinner.co.mz]]></text>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.layout.grid.weight.fixed" value="true"/>
 				</reportElement>
+				<box>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
 				<graphicElement fill="Solid"/>
 				<imageExpression><![CDATA["/opt/grocery/data/reports/jeta_signature.png"]]></imageExpression>
 			</image>

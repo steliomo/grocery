@@ -9,7 +9,7 @@ import java.util.List;
 import org.springframework.stereotype.Repository;
 
 import mz.co.grocery.core.customer.model.Customer;
-import mz.co.grocery.core.rent.model.GuideType;
+import mz.co.grocery.core.guide.model.GuideType;
 import mz.co.msaude.boot.frameworks.dao.GenericDAOImpl;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.model.EntityStatus;
@@ -111,6 +111,19 @@ public class CustomerDAOImpl extends GenericDAOImpl<Customer, Long> implements C
 	@Override
 	public List<Customer> findWithPaymentsByUnit(final String unitUuid, final EntityStatus entityStatus) throws BusinessException {
 		return this.findByNamedQuery(CustomerDAO.QUERY_NAME.findCustomersWithPaymentsByUnit,
+				new ParamBuilder().add("unitUuid", unitUuid).add("entityStatus", entityStatus).process());
+	}
+
+	@Override
+	public List<Customer> findCustomersWithPendingOrIncompleteDeliveryStatusSalesByUnit(final String unitUuid, final EntityStatus entityStatus)
+			throws BusinessException {
+		return this.findByNamedQuery(CustomerDAO.QUERY_NAME.findCustomersWithPendingOrIncompleteDeliveryStatusSalesByUnit,
+				new ParamBuilder().add("unitUuid", unitUuid).add("entityStatus", entityStatus).process());
+	}
+
+	@Override
+	public List<Customer> findCustomersWithDeliveredGuidesByUnit(final String unitUuid, final EntityStatus entityStatus) throws BusinessException {
+		return this.findByNamedQuery(CustomerDAO.QUERY_NAME.findCustomersWithDeliveredGuidesByUnit,
 				new ParamBuilder().add("unitUuid", unitUuid).add("entityStatus", entityStatus).process());
 	}
 }

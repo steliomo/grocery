@@ -24,4 +24,9 @@ public interface SaleQueryService {
 			throws BusinessException;
 
 	List<Sale> findPendingOrImpletePaymentSaleStatusByCustomer(Customer customer) throws BusinessException;
+
+	List<Sale> fetchSalesWithPendingOrIncompleteDeliveryStatusByCustomer(Customer customer) throws BusinessException;
+
+	List<Sale> fetchSalesWithDeliveryGuidesByCustomer(Customer customer) throws BusinessException;
+
 }

@@ -45,4 +45,14 @@ public class SaleQueryServiceImpl implements SaleQueryService {
 	public List<Sale> findPendingOrImpletePaymentSaleStatusByCustomer(final Customer customer) throws BusinessException {
 		return this.saleDAO.findPendingOrImpletePaymentSaleStatusByCustomer(customer.getUuid(), EntityStatus.ACTIVE);
 	}
+
+	@Override
+	public List<Sale> fetchSalesWithPendingOrIncompleteDeliveryStatusByCustomer(final Customer customer) throws BusinessException {
+		return this.saleDAO.fetchSalesWithPendingOrIncompleteDeliveryStatusByCustomer(customer.getUuid(), EntityStatus.ACTIVE);
+	}
+
+	@Override
+	public List<Sale> fetchSalesWithDeliveryGuidesByCustomer(final Customer customer) throws BusinessException {
+		return this.saleDAO.fetchSalesWithDeliveryGuidesByCustomer(customer.getUuid(), EntityStatus.ACTIVE);
+	}
 }

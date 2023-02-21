@@ -44,6 +44,8 @@ public class StockDTO extends GenericDTO<Stock> {
 
 	private BigDecimal rentPrice;
 
+	private BigDecimal unitPerM2;
+
 	public StockDTO() {
 	}
 
@@ -83,6 +85,8 @@ public class StockDTO extends GenericDTO<Stock> {
 		this.stockUpdateQuantity = stock.getStockUpdateQuantity();
 
 		this.rentPrice = stock.getRentPrice();
+
+		this.unitPerM2 = stock.getUnitPerM2();
 	}
 
 	@Override
@@ -104,6 +108,7 @@ public class StockDTO extends GenericDTO<Stock> {
 		stock.setStockUpdateDate(this.stockUpdateDate);
 		stock.setStockUpdateDate(this.stockUpdateDate);
 		stock.setRentPrice(this.rentPrice);
+		stock.setUnitPerM2(this.unitPerM2);
 
 		return stock;
 	}
@@ -158,5 +163,9 @@ public class StockDTO extends GenericDTO<Stock> {
 
 	public BigDecimal getRentPrice() {
 		return this.rentPrice;
+	}
+
+	public BigDecimal getUnitPerM2() {
+		return this.unitPerM2;
 	}
 }

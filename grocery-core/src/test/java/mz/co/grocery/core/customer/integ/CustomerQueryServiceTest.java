@@ -28,18 +28,19 @@ import mz.co.grocery.core.fixturefactory.GuideTemplate;
 import mz.co.grocery.core.fixturefactory.RentPaymentTemplate;
 import mz.co.grocery.core.grocery.model.Grocery;
 import mz.co.grocery.core.grocery.service.GroceryService;
+import mz.co.grocery.core.guide.model.Guide;
+import mz.co.grocery.core.guide.model.GuideItem;
+import mz.co.grocery.core.guide.model.GuideType;
+import mz.co.grocery.core.guide.service.DeliveryGuideIssuerImpl;
+import mz.co.grocery.core.guide.service.GuideIssuer;
+import mz.co.grocery.core.guide.service.GuideService;
+import mz.co.grocery.core.guide.service.TransportGuideIssuerImpl;
 import mz.co.grocery.core.rent.builder.RentBuilder;
-import mz.co.grocery.core.rent.model.Guide;
-import mz.co.grocery.core.rent.model.GuideItem;
-import mz.co.grocery.core.rent.model.GuideType;
 import mz.co.grocery.core.rent.model.Rent;
 import mz.co.grocery.core.rent.model.RentPayment;
-import mz.co.grocery.core.rent.service.GuideIssuer;
-import mz.co.grocery.core.rent.service.GuideService;
 import mz.co.grocery.core.rent.service.RentPaymentService;
 import mz.co.grocery.core.rent.service.RentService;
-import mz.co.grocery.core.rent.service.TransportGuideIssuer;
-import mz.co.grocery.core.sale.integ.SaleBuilder;
+import mz.co.grocery.core.sale.builder.SaleBuilder;
 import mz.co.grocery.core.sale.model.Sale;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.fixturefactory.EntityFactory;
@@ -78,8 +79,12 @@ public class CustomerQueryServiceTest extends AbstractIntegServiceTest {
 	private GuideService guideService;
 
 	@Inject
-	@Qualifier(TransportGuideIssuer.NAME)
+	@Qualifier(TransportGuideIssuerImpl.NAME)
 	private GuideIssuer transportGuideIssuer;
+
+	@Inject
+	@Qualifier(DeliveryGuideIssuerImpl.NAME)
+	private GuideIssuer deliveryGuideIssuer;
 
 	@Inject
 	private RentPaymentService rentPaymentService;
@@ -314,6 +319,44 @@ public class CustomerQueryServiceTest extends AbstractIntegServiceTest {
 		this.rentPaymentService.makeRentPayment(this.getUserContext(), rentPayment);
 
 		final List<Customer> customers = this.customerQueryService.findCustomersWithPaymentsByUnit(rent.getUnit().getUuid());
+
+		Assert.assertFalse(customers.isEmpty());
+	}
+
+	@Test
+	public void shouldFindCustomersWithPendingOrIncompleteDeliveryStatusSalesByUnit() throws BusinessException {
+
+		final Sale sale = this.saleBuilder.sale().withProducts(5).withServices(5).withUnit().withCustomer().saleType(SaleType.INSTALLMENT)
+				.dueDate(LocalDate.now().plusDays(30)).build();
+
+		final List<Customer> customers = this.customerQueryService
+				.findCustomersWithPendingOrIncompleteDeliveryStatusSalesByUnit(sale.getGrocery().getUuid());
+
+		Assert.assertFalse(customers.isEmpty());
+		Assert.assertEquals(sale.getCustomer().getName(), customers.get(0).getName());
+	}
+
+	@Test
+	public void shouldFindCustomersWithDeliveredGuidesByUnit() throws BusinessException {
+		this.guideService.setGuideIssuer(this.deliveryGuideIssuer);
+
+		final Sale sale = this.saleBuilder.sale().withProducts(5).withCustomer().withUnit().saleType(SaleType.INSTALLMENT)
+				.dueDate(LocalDate.now())
+				.build();
+		final Guide guide = EntityFactory.gimme(Guide.class, GuideTemplate.DELIVERY);
+
+		guide.setSale(sale);
+
+		sale.getItems().forEach(saleItem -> {
+			final GuideItem guideItem = new GuideItem();
+			guideItem.setQuantity(saleItem.getQuantity());
+			guideItem.setSaleItem(saleItem);
+			guide.addGuideItem(guideItem);
+		});
+
+		this.guideService.issueGuide(this.getUserContext(), guide);
+
+		final List<Customer> customers = this.customerQueryService.findCustomersWithDeliveredGuidesByUnit(sale.getGrocery().getUuid());
 
 		Assert.assertFalse(customers.isEmpty());
 	}

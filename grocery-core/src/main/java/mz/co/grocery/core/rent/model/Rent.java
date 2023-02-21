@@ -26,6 +26,7 @@ import org.hibernate.LazyInitializationException;
 
 import mz.co.grocery.core.customer.model.Customer;
 import mz.co.grocery.core.grocery.model.Grocery;
+import mz.co.grocery.core.guide.model.Guide;
 import mz.co.grocery.core.rent.dao.RentDAO;
 import mz.co.grocery.core.util.BigDecimalUtil;
 import mz.co.msaude.boot.frameworks.model.GenericEntity;

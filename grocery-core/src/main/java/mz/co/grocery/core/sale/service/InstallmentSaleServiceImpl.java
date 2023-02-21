@@ -15,11 +15,10 @@ import mz.co.grocery.core.inventory.model.InventoryStatus;
 import mz.co.grocery.core.payment.service.PaymentService;
 import mz.co.grocery.core.sale.dao.SaleDAO;
 import mz.co.grocery.core.sale.dao.SaleItemDAO;
+import mz.co.grocery.core.sale.model.DeliveryStatus;
 import mz.co.grocery.core.sale.model.Sale;
 import mz.co.grocery.core.sale.model.SaleItem;
 import mz.co.grocery.core.sale.model.SaleStatus;
-import mz.co.grocery.core.saleable.dao.StockDAO;
-import mz.co.grocery.core.saleable.model.Stock;
 import mz.co.grocery.core.util.ApplicationTranslator;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.model.EntityStatus;
@@ -30,10 +29,17 @@ import mz.co.msaude.boot.frameworks.service.AbstractService;
  * @author Stélio Moiane
  *
  */
-@Service(SaleServiceImpl.NAME)
-public class SaleServiceImpl extends AbstractService implements SaleService {
 
-	public static final String NAME = "mz.co.grocery.core.sale.service.SaleServiceImpl";
+@Service(InstallmentSaleServiceImpl.NAME)
+public class InstallmentSaleServiceImpl extends AbstractService implements SaleService {
+
+	public static final String NAME = "mz.co.grocery.core.sale.service.InstallmentSaleServiceImpl";
+
+	@Inject
+	private InventoryDAO inventoryDAO;
+
+	@Inject
+	private ApplicationTranslator translator;
 
 	@Inject
 	private SaleDAO saleDAO;
@@ -42,16 +48,7 @@ public class SaleServiceImpl extends AbstractService implements SaleService {
 	private SaleItemDAO saleItemDAO;
 
 	@Inject
-	private StockDAO stockDAO;
-
-	@Inject
-	private InventoryDAO inventoryDAO;
-
-	@Inject
 	private PaymentService paymentService;
-
-	@Inject
-	private ApplicationTranslator translator;
 
 	@Override
 	public Sale registSale(final UserContext userContext, final Sale sale) throws BusinessException {
@@ -62,37 +59,21 @@ public class SaleServiceImpl extends AbstractService implements SaleService {
 			throw new BusinessException(this.translator.getTranslation("cannot.create.sale.without.items"));
 		}
 
-		switch (sale.getSaleType()) {
-
-		case INSTALLMENT:
-
-			if (sale.getCustomer() == null) {
-				throw new BusinessException(this.translator.getTranslation("installment.sale.must.have.customer"));
-			}
-
-			if (sale.getDueDate() == null) {
-				throw new BusinessException(this.translator.getTranslation("installment.sale.due.date.must.be.specified"));
-			}
-
-			sale.setSaleStatus(SaleStatus.PENDING);
-			sale.setTotalPaid(BigDecimal.ZERO);
-
-			break;
-		case CASH:
-			sale.setSaleStatus(SaleStatus.COMPLETE);
-			break;
+		if (sale.getCustomer() == null) {
+			throw new BusinessException(this.translator.getTranslation("installment.sale.must.have.customer"));
 		}
+
+		if (sale.getDueDate() == null) {
+			throw new BusinessException(this.translator.getTranslation("installment.sale.due.date.must.be.specified"));
+		}
+
+		sale.setSaleStatus(SaleStatus.PENDING);
+		sale.setTotalPaid(BigDecimal.ZERO);
+		sale.setDeliveryStatus(DeliveryStatus.PENDING);
 
 		this.saleDAO.create(userContext, sale);
 
 		for (final SaleItem saleItem : sale.getItems()) {
-
-			if (saleItem.isProduct()) {
-				final Stock stock = this.stockDAO.findByUuid(saleItem.getStock().getUuid());
-				stock.updateStock(saleItem);
-				this.stockDAO.update(userContext, stock);
-			}
-
 			saleItem.setSale(sale);
 			this.saleItemDAO.create(userContext, saleItem);
 		}
@@ -111,6 +92,7 @@ public class SaleServiceImpl extends AbstractService implements SaleService {
 		try {
 			inventory = this.inventoryDAO.fetchByGroceryAndStatus(sale.getGrocery(), InventoryStatus.PENDING, EntityStatus.ACTIVE);
 		} catch (final BusinessException e) {
+			e.printStackTrace();
 		}
 
 		if (inventory != null) {

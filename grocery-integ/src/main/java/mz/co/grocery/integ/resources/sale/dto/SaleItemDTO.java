@@ -29,6 +29,8 @@ public class SaleItemDTO extends GenericDTO<SaleItem> {
 
 	private BigDecimal discount = BigDecimal.ZERO;
 
+	private BigDecimal deliveredQuantity;
+
 	public SaleItemDTO() {
 	}
 
@@ -53,6 +55,7 @@ public class SaleItemDTO extends GenericDTO<SaleItem> {
 		this.quantity = saleItem.getQuantity();
 		this.saleItemValue = saleItem.getSaleItemValue();
 		this.discount = saleItem.getDiscount();
+		this.deliveredQuantity = saleItem.getDeliveredQuantity();
 	}
 
 	@Override
@@ -92,5 +95,17 @@ public class SaleItemDTO extends GenericDTO<SaleItem> {
 
 	public BigDecimal getDiscount() {
 		return this.discount;
+	}
+
+	public BigDecimal getDeliveredQuantity() {
+		return this.deliveredQuantity;
+	}
+
+	public BigDecimal getToDeliveryQuantity() {
+		return this.quantity.subtract(this.deliveredQuantity);
+	}
+
+	public String getName() {
+		return this.stockDTO == null ? this.serviceItemDTO.getName() : this.stockDTO.getProductDescriptionDTO().getName();
 	}
 }

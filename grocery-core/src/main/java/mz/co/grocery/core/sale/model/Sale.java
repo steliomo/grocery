@@ -22,10 +22,15 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import org.hibernate.LazyInitializationException;
+
 import mz.co.grocery.core.customer.model.Customer;
 import mz.co.grocery.core.customer.model.SaleType;
 import mz.co.grocery.core.grocery.model.Grocery;
+import mz.co.grocery.core.guide.model.Guide;
 import mz.co.grocery.core.sale.dao.SaleDAO;
+import mz.co.grocery.core.util.BigDecimalUtil;
+import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.model.GenericEntity;
 
 /**
@@ -35,7 +40,10 @@ import mz.co.msaude.boot.frameworks.model.GenericEntity;
 @NamedQueries({
 	@NamedQuery(name = SaleDAO.QUERY_NAME.findPerPeriod, query = SaleDAO.QUERY.findPerPeriod),
 	@NamedQuery(name = SaleDAO.QUERY_NAME.findMonthlyPerPeriod, query = SaleDAO.QUERY.findMonthlyPerPeriod),
-	@NamedQuery(name = SaleDAO.QUERY_NAME.findPendingOrImpletePaymentSaleStatusByCustomer, query = SaleDAO.QUERY.findPendingOrImpletePaymentSaleStatusByCustomer)
+	@NamedQuery(name = SaleDAO.QUERY_NAME.findPendingOrImpletePaymentSaleStatusByCustomer, query = SaleDAO.QUERY.findPendingOrImpletePaymentSaleStatusByCustomer),
+	@NamedQuery(name = SaleDAO.QUERY_NAME.fetchSalesWithPendingOrIncompleteDeliveryStatusByCustomer, query = SaleDAO.QUERY.fetchSalesWithPendingOrIncompleteDeliveryStatusByCustomer),
+	@NamedQuery(name = SaleDAO.QUERY_NAME.fetchByUuid, query = SaleDAO.QUERY.fetchByUuid),
+	@NamedQuery(name = SaleDAO.QUERY_NAME.fetchSalesWithDeliveryGuidesByCustomer, query = SaleDAO.QUERY.fetchSalesWithDeliveryGuidesByCustomer)
 })
 @Entity
 @Table(name = "SALES")
@@ -82,6 +90,14 @@ public class Sale extends GenericEntity {
 
 	@Column(name = "DUE_DATE")
 	private LocalDate dueDate;
+
+	@NotNull
+	@Enumerated(EnumType.STRING)
+	@Column(name = "DELIVERY_STATUS", length = 20, nullable = false)
+	private DeliveryStatus deliveryStatus;
+
+	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sale")
+	private Set<Guide> guides;
 
 	public Grocery getGrocery() {
 		return this.grocery;
@@ -170,7 +186,7 @@ public class Sale extends GenericEntity {
 
 	public void updateSaleStatus() {
 
-		if (this.total.compareTo(this.totalPaid) == BigDecimal.ZERO.intValue()) {
+		if (BigDecimalUtil.isEqual(this.total, this.totalPaid)) {
 			this.saleStatus = SaleStatus.COMPLETE;
 			return;
 		}
@@ -184,5 +200,42 @@ public class Sale extends GenericEntity {
 
 	public void setDueDate(final LocalDate dueDate) {
 		this.dueDate = dueDate;
+	}
+
+	public DeliveryStatus getDeliveryStatus() {
+		return this.deliveryStatus;
+	}
+
+	public void setDeliveryStatus(final DeliveryStatus deliveryStatus) {
+		this.deliveryStatus = deliveryStatus;
+	}
+
+	public void updateDeliveryStatus() throws BusinessException {
+		if (this.items == null) {
+			throw new BusinessException("Sale items cannot be null");
+		}
+
+		final boolean allMatch = this.items.stream().allMatch(saleItem -> DeliveryStatus.COMPLETE.equals(saleItem.getDeliveryStatus()));
+
+		if (allMatch) {
+			this.deliveryStatus = DeliveryStatus.COMPLETE;
+			return;
+		}
+
+		this.deliveryStatus = DeliveryStatus.INCOMPLETE;
+	}
+
+	public Set<Guide> getGuides() {
+
+		if (this.guides == null) {
+			return new HashSet<>();
+		}
+
+		try {
+			this.guides.size();
+		} catch (final LazyInitializationException e) {
+			return new HashSet<>();
+		}
+		return Collections.unmodifiableSet(this.guides);
 	}
 }

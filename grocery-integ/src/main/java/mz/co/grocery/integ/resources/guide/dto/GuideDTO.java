@@ -1,7 +1,7 @@
 /**
  *
  */
-package mz.co.grocery.integ.resources.rent.dto;
+package mz.co.grocery.integ.resources.guide.dto;
 
 import java.time.LocalDate;
 import java.util.Collections;
@@ -10,9 +10,12 @@ import java.util.stream.Collectors;
 
 import org.apache.commons.lang3.StringUtils;
 
-import mz.co.grocery.core.rent.model.Guide;
-import mz.co.grocery.core.rent.model.GuideType;
+import mz.co.grocery.core.guide.model.Guide;
+import mz.co.grocery.core.guide.model.GuideType;
+import mz.co.grocery.integ.resources.customer.dto.CustomerDTO;
 import mz.co.grocery.integ.resources.dto.GenericDTO;
+import mz.co.grocery.integ.resources.rent.dto.RentDTO;
+import mz.co.grocery.integ.resources.sale.dto.SaleDTO;
 import mz.co.grocery.integ.resources.util.ProxyUtil;
 
 /**
@@ -28,6 +31,8 @@ public class GuideDTO extends GenericDTO<Guide> {
 	private GuideType type;
 
 	private RentDTO rentDTO;
+
+	private SaleDTO saleDTO;
 
 	private LocalDate issueDate;
 
@@ -51,8 +56,16 @@ public class GuideDTO extends GenericDTO<Guide> {
 			guide.setRent(null);
 		}
 
+		if (guide.getSale() == null || guide.getSale().getGuides() == null || !guide.getSale().getGuides().isEmpty()) {
+			guide.setSale(null);
+		}
+
 		if (ProxyUtil.isInitialized(guide.getRent())) {
 			this.rentDTO = new RentDTO(guide.getRent());
+		}
+
+		if (ProxyUtil.isInitialized(guide.getSale())) {
+			this.saleDTO = new SaleDTO(guide.getSale());
 		}
 
 		this.type = guide.getType();
@@ -64,7 +77,15 @@ public class GuideDTO extends GenericDTO<Guide> {
 	public Guide get() {
 
 		final Guide guide = this.get(new Guide());
-		guide.setRent(this.rentDTO.get());
+
+		if (this.rentDTO != null) {
+			guide.setRent(this.rentDTO.get());
+		}
+
+		if (this.saleDTO != null) {
+			guide.setSale(this.saleDTO.get());
+		}
+
 		guide.setIssueDate(this.issueDate);
 		guide.setType(this.type);
 		this.guideItemsDTO.forEach(guideItemDTO -> {
@@ -110,5 +131,18 @@ public class GuideDTO extends GenericDTO<Guide> {
 
 		this.code = StringUtils.leftPad(String.valueOf(this.getId()), GuideDTO.LEFT_PAD, GuideDTO.PAD_CHAR);
 		return this.code;
+	}
+
+	public SaleDTO getSaleDTO() {
+		return this.saleDTO;
+	}
+
+	public CustomerDTO getCustomerDTO() {
+
+		if (this.rentDTO == null && this.saleDTO == null) {
+			return new CustomerDTO();
+		}
+
+		return this.rentDTO == null ? this.saleDTO.getCustomerDTO() : this.rentDTO.getCustomerDTO();
 	}
 }

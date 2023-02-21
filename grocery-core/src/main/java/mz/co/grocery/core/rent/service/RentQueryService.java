@@ -5,7 +5,7 @@ package mz.co.grocery.core.rent.service;
 
 import java.util.List;
 
-import mz.co.grocery.core.rent.model.GuideType;
+import mz.co.grocery.core.guide.model.GuideType;
 import mz.co.grocery.core.rent.model.Rent;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 

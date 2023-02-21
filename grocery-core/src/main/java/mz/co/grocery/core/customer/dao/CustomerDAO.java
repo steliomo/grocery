@@ -7,7 +7,7 @@ import java.time.LocalDate;
 import java.util.List;
 
 import mz.co.grocery.core.customer.model.Customer;
-import mz.co.grocery.core.rent.model.GuideType;
+import mz.co.grocery.core.guide.model.GuideType;
 import mz.co.msaude.boot.frameworks.dao.GenericDAO;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.model.EntityStatus;
@@ -43,6 +43,10 @@ public interface CustomerDAO extends GenericDAO<Customer, Long> {
 		public static final String findWithIssuedGuidesByTypeAndUnit = "SELECT c FROM Guide g INNER JOIN g.rent r INNER JOIN r.customer c WHERE r.unit.uuid = :unitUuid AND g.type = :guideType AND c.entityStatus = :entityStatus GROUP BY c.id ORDER BY g.issueDate DESC";
 
 		public static final String findCustomersWithPaymentsByUnit = "SELECT c FROM Rent r INNER JOIN r.customer c INNER JOIN r.rentPayments ri WHERE r.unit.uuid = :unitUuid AND c.entityStatus = :entityStatus AND r.entityStatus = :entityStatus AND ri.entityStatus = :entityStatus GROUP BY c.id ORDER BY r.rentDate DESC";
+
+		public static final String findCustomersWithPendingOrIncompleteDeliveryStatusSalesByUnit = "SELECT c FROM Sale s INNER JOIN s.customer c WHERE s.grocery.uuid = :unitUuid AND s.deliveryStatus IN ('PENDING','INCOMPLETE') AND s.saleType = 'INSTALLMENT' AND c.entityStatus = :entityStatus AND s.entityStatus = :entityStatus GROUP BY c.id ORDER BY s.saleDate DESC";
+
+		public static final String findCustomersWithDeliveredGuidesByUnit = "SELECT c FROM Guide g INNER JOIN g.sale s INNER JOIN s.customer c WHERE s.grocery.uuid = :unitUuid AND g.type = 'DELIVERY' AND s.saleType = 'INSTALLMENT' AND c.entityStatus = :entityStatus AND g.entityStatus = :entityStatus GROUP BY c.id ORDER BY g.issueDate DESC";
 	}
 
 	class QUERY_NAME {
@@ -70,6 +74,10 @@ public interface CustomerDAO extends GenericDAO<Customer, Long> {
 		public static final String findWithIssuedGuidesByTypeAndUnit = "Customer.findWithIssuedGuidesByTypeAndUnit";
 
 		public static final String findCustomersWithPaymentsByUnit = "Customer.findCustomersWithPaymentsByUnit";
+
+		public static final String findCustomersWithPendingOrIncompleteDeliveryStatusSalesByUnit = "Customer.findCustomersWithPendingOrIncompleteDeliveryStatusSalesByUnit";
+
+		public static final String findCustomersWithDeliveredGuidesByUnit = "Customer.findCustomersWithDeliveredGuidesByUnit";
 	}
 
 	Long countByUnit(String unitUuid, EntityStatus entityStatus) throws BusinessException;
@@ -97,4 +105,8 @@ public interface CustomerDAO extends GenericDAO<Customer, Long> {
 	List<Customer> findWithIssuedGuidesByTypeAndUnit(GuideType guideType, String unitUuid, EntityStatus entityStatus) throws BusinessException;
 
 	List<Customer> findWithPaymentsByUnit(String unitUuid, EntityStatus entityStatus) throws BusinessException;
+
+	List<Customer> findCustomersWithPendingOrIncompleteDeliveryStatusSalesByUnit(String unitUuid, EntityStatus entityStatus) throws BusinessException;
+
+	List<Customer> findCustomersWithDeliveredGuidesByUnit(String unitUuid, EntityStatus entityStatus) throws BusinessException;
 }

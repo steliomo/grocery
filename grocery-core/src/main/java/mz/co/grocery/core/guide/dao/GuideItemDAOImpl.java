@@ -1,11 +1,11 @@
 /**
  *
  */
-package mz.co.grocery.core.rent.dao;
+package mz.co.grocery.core.guide.dao;
 
 import org.springframework.stereotype.Repository;
 
-import mz.co.grocery.core.rent.model.GuideItem;
+import mz.co.grocery.core.guide.model.GuideItem;
 import mz.co.msaude.boot.frameworks.dao.GenericDAOImpl;
 
 /**

@@ -8,10 +8,11 @@ import java.util.HashSet;
 import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.Rule;
 import br.com.six2six.fixturefactory.loader.TemplateLoader;
-import mz.co.grocery.core.rent.model.Guide;
-import mz.co.grocery.core.rent.model.GuideItem;
-import mz.co.grocery.core.rent.model.GuideType;
+import mz.co.grocery.core.guide.model.Guide;
+import mz.co.grocery.core.guide.model.GuideItem;
+import mz.co.grocery.core.guide.model.GuideType;
 import mz.co.grocery.core.rent.model.Rent;
+import mz.co.grocery.core.sale.model.Sale;
 
 /**
  * @author Stélio Moiane
@@ -28,6 +29,8 @@ public class GuideTemplate implements TemplateLoader {
 	public static final String RETURN = "RETURN";
 
 	public static final String NO_ITEMS_RETURN = "NO_ITEMS_RETURN";
+
+	public static final String DELIVERY = "DELIVERY";
 
 	@Override
 	public void load() {
@@ -58,6 +61,14 @@ public class GuideTemplate implements TemplateLoader {
 
 		Fixture.of(Guide.class).addTemplate(GuideTemplate.NO_ITEMS_RETURN).inherits(GuideTemplate.RETURN, new Rule() {
 			{
+				this.add("guideItems", new HashSet<GuideItem>());
+			}
+		});
+
+		Fixture.of(Guide.class).addTemplate(GuideTemplate.DELIVERY, new Rule() {
+			{
+				this.add("type", GuideType.DELIVERY);
+				this.add("sale", this.one(Sale.class, SaleTemplate.VALID));
 				this.add("guideItems", new HashSet<GuideItem>());
 			}
 		});

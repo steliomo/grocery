@@ -24,7 +24,7 @@ import org.springframework.stereotype.Service;
 import mz.co.grocery.core.customer.model.Customer;
 import mz.co.grocery.core.customer.service.CustomerQueryService;
 import mz.co.grocery.core.customer.service.CustomerService;
-import mz.co.grocery.core.rent.model.GuideType;
+import mz.co.grocery.core.guide.model.GuideType;
 import mz.co.grocery.integ.resources.AbstractResource;
 import mz.co.grocery.integ.resources.customer.dto.CustomerDTO;
 import mz.co.grocery.integ.resources.customer.dto.CustomersDTO;
@@ -172,5 +172,25 @@ public class CustomerResource extends AbstractResource {
 		final List<CustomerDTO> customerDTOs = customers.stream().map(customer -> new CustomerDTO(customer)).collect(Collectors.toList());
 
 		return Response.ok(new CustomersDTO(customerDTOs, BigDecimal.ZERO.longValue())).build();
+	}
+
+	@Path("find-customers-with-pending-or-incomplete-delivery-status-sales-by-unit/{unitUuid}")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response findCustomersWithPendingOrIncompleteDeliveryStatusSales(@PathParam("unitUuid") final String unitUuid) throws BusinessException {
+
+		final List<Customer> customers = this.customerQueryService.findCustomersWithPendingOrIncompleteDeliveryStatusSalesByUnit(unitUuid);
+
+		return Response.ok(new CustomersDTO(customers)).build();
+	}
+
+	@Path("find-customers-with-delivered-guides-by-unit/{unitUuid}")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response findCustomersWithDeliveredGuidesByUnit(@PathParam("unitUuid") final String unitUuid) throws BusinessException {
+
+		final List<Customer> customers = this.customerQueryService.findCustomersWithDeliveredGuidesByUnit(unitUuid);
+
+		return Response.ok(new CustomersDTO(customers)).build();
 	}
 }

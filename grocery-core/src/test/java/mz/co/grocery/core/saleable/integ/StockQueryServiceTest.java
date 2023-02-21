@@ -11,6 +11,7 @@ import javax.inject.Inject;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
+import org.springframework.beans.factory.annotation.Qualifier;
 
 import mz.co.grocery.core.config.AbstractIntegServiceTest;
 import mz.co.grocery.core.customer.model.SaleType;
@@ -25,6 +26,7 @@ import mz.co.grocery.core.item.service.ProductService;
 import mz.co.grocery.core.item.service.ProductUnitService;
 import mz.co.grocery.core.sale.model.Sale;
 import mz.co.grocery.core.sale.model.SaleItem;
+import mz.co.grocery.core.sale.service.CashSaleServiceImpl;
 import mz.co.grocery.core.sale.service.SaleService;
 import mz.co.grocery.core.saleable.builder.StockBuilder;
 import mz.co.grocery.core.saleable.model.Stock;
@@ -59,6 +61,7 @@ public class StockQueryServiceTest extends AbstractIntegServiceTest {
 	private GroceryService groceryService;
 
 	@Inject
+	@Qualifier(CashSaleServiceImpl.NAME)
 	private SaleService saleService;
 
 	@Inject

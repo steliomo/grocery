@@ -1,7 +1,7 @@
 /**
  *
  */
-package mz.co.grocery.core.rent.model;
+package mz.co.grocery.core.guide.model;
 
 import java.time.LocalDate;
 import java.util.Collections;
@@ -20,6 +20,8 @@ import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 import mz.co.grocery.core.grocery.model.Grocery;
+import mz.co.grocery.core.rent.model.Rent;
+import mz.co.grocery.core.sale.model.Sale;
 import mz.co.msaude.boot.frameworks.model.GenericEntity;
 
 /**
@@ -32,10 +34,13 @@ public class Guide extends GenericEntity {
 
 	private static final long serialVersionUID = 1L;
 
-	@NotNull
 	@ManyToOne(fetch = FetchType.LAZY)
-	@JoinColumn(name = "RENT_ID", nullable = false)
+	@JoinColumn(name = "RENT_ID")
 	private Rent rent;
+
+	@ManyToOne(fetch = FetchType.LAZY)
+	@JoinColumn(name = "SALE_ID")
+	private Sale sale;
 
 	@NotNull
 	@Column(name = "ISSUE_DATE", nullable = false)
@@ -55,6 +60,14 @@ public class Guide extends GenericEntity {
 
 	public void setRent(final Rent rent) {
 		this.rent = rent;
+	}
+
+	public Sale getSale() {
+		return this.sale;
+	}
+
+	public void setSale(final Sale sale) {
+		this.sale = sale;
 	}
 
 	public LocalDate getIssueDate() {
@@ -87,6 +100,6 @@ public class Guide extends GenericEntity {
 	}
 
 	public Grocery getUnit() {
-		return this.rent.getUnit();
+		return this.rent != null ? this.rent.getUnit() : this.sale.getGrocery();
 	}
 }

@@ -100,6 +100,10 @@ public class Stock extends GenericEntity implements Item {
 	@Column(name = "RENT_PRICE", nullable = false)
 	private BigDecimal rentPrice = BigDecimal.ZERO;
 
+	@NotNull
+	@Column(name = "UNIT_PER_M2", nullable = false)
+	private BigDecimal unitPerM2 = BigDecimal.ZERO;
+
 	public Grocery getGrocery() {
 		return this.grocery;
 	}
@@ -275,11 +279,20 @@ public class Stock extends GenericEntity implements Item {
 		this.quantity = this.inventoryQuantity;
 	}
 
+	@Override
 	public BigDecimal getRentPrice() {
 		return this.rentPrice;
 	}
 
 	public void setRentPrice(final BigDecimal rentPrice) {
 		this.rentPrice = rentPrice;
+	}
+
+	public void setUnitPerM2(final BigDecimal unitPerM2) {
+		this.unitPerM2 = unitPerM2;
+	}
+
+	public BigDecimal getUnitPerM2() {
+		return this.unitPerM2;
 	}
 }

@@ -6,6 +6,7 @@ package mz.co.grocery.core.sale.dao;
 import java.time.LocalDate;
 import java.util.List;
 
+import org.hibernate.jpa.QueryHints;
 import org.springframework.stereotype.Repository;
 
 import mz.co.grocery.core.sale.model.Sale;
@@ -43,8 +44,30 @@ public class SaleDAOImpl extends GenericDAOImpl<Sale, Long> implements SaleDAO {
 	}
 
 	@Override
-	public List<Sale> findPendingOrImpletePaymentSaleStatusByCustomer(final String customerUuid, final EntityStatus entityStatus) throws BusinessException {
+	public List<Sale> findPendingOrImpletePaymentSaleStatusByCustomer(final String customerUuid, final EntityStatus entityStatus)
+			throws BusinessException {
 		return this.findByNamedQuery(SaleDAO.QUERY_NAME.findPendingOrImpletePaymentSaleStatusByCustomer,
 				new ParamBuilder().add("customerUuid", customerUuid).add("entityStatus", entityStatus).process());
+	}
+
+	@Override
+	public List<Sale> fetchSalesWithPendingOrIncompleteDeliveryStatusByCustomer(final String customerUuid, final EntityStatus entityStatus)
+			throws BusinessException {
+		return this.findByQuery(SaleDAO.QUERY_NAME.fetchSalesWithPendingOrIncompleteDeliveryStatusByCustomer,
+				new ParamBuilder().add("customerUuid", customerUuid).add("entityStatus", entityStatus).process())
+				.setHint(QueryHints.HINT_PASS_DISTINCT_THROUGH, false).getResultList();
+	}
+
+	@Override
+	public Sale fetchByUuid(final String uuid) throws BusinessException {
+		return this.findSingleByNamedQuery(SaleDAO.QUERY_NAME.fetchByUuid,
+				new ParamBuilder().add("uuid", uuid).add("entityStatus", EntityStatus.ACTIVE).process());
+	}
+
+	@Override
+	public List<Sale> fetchSalesWithDeliveryGuidesByCustomer(final String customerUuid, final EntityStatus entityStatus) throws BusinessException {
+		return this.findByQuery(SaleDAO.QUERY_NAME.fetchSalesWithDeliveryGuidesByCustomer,
+				new ParamBuilder().add("customerUuid", customerUuid).add("entityStatus", entityStatus).process())
+				.setHint(QueryHints.HINT_PASS_DISTINCT_THROUGH, false).getResultList();
 	}
 }

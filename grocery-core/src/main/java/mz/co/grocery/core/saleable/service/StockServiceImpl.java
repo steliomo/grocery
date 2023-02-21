@@ -72,6 +72,7 @@ public class StockServiceImpl extends AbstractService implements StockService {
 		stockToUpdate.setRentPrice(stock.getRentPrice());
 		stockToUpdate.addQuantity(stock.getQuantity());
 		stockToUpdate.setMinimumStock(stock.getMinimumStock());
+		stockToUpdate.setUnitPerM2(stock.getUnitPerM2());
 
 		stockToUpdate.setStockUpdateDate(LocalDate.now());
 		stockToUpdate.setStockUpdateQuantity(stockToUpdate.getQuantity());

@@ -12,7 +12,7 @@ import org.springframework.stereotype.Service;
 
 import mz.co.grocery.core.customer.dao.CustomerDAO;
 import mz.co.grocery.core.customer.model.Customer;
-import mz.co.grocery.core.rent.model.GuideType;
+import mz.co.grocery.core.guide.model.GuideType;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.model.EntityStatus;
 
@@ -91,5 +91,15 @@ public class CustomerQueryServiceImpl implements CustomerQueryService {
 	@Override
 	public List<Customer> findCustomersWithPaymentsByUnit(final String unitUuid) throws BusinessException {
 		return this.customerDAO.findWithPaymentsByUnit(unitUuid, EntityStatus.ACTIVE);
+	}
+
+	@Override
+	public List<Customer> findCustomersWithPendingOrIncompleteDeliveryStatusSalesByUnit(final String unitUuid) throws BusinessException {
+		return this.customerDAO.findCustomersWithPendingOrIncompleteDeliveryStatusSalesByUnit(unitUuid, EntityStatus.ACTIVE);
+	}
+
+	@Override
+	public List<Customer> findCustomersWithDeliveredGuidesByUnit(final String unitUuid) throws BusinessException {
+		return this.customerDAO.findCustomersWithDeliveredGuidesByUnit(unitUuid, EntityStatus.ACTIVE);
 	}
 }

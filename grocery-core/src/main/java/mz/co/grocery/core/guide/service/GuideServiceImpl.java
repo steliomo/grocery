@@ -1,14 +1,14 @@
 /**
  *
  */
-package mz.co.grocery.core.rent.service;
+package mz.co.grocery.core.guide.service;
 
 import javax.inject.Inject;
 
 import org.springframework.stereotype.Service;
 
+import mz.co.grocery.core.guide.model.Guide;
 import mz.co.grocery.core.payment.service.PaymentService;
-import mz.co.grocery.core.rent.model.Guide;
 import mz.co.grocery.core.util.ApplicationTranslator;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.model.UserContext;

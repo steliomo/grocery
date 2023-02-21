@@ -14,5 +14,4 @@ import mz.co.msaude.boot.frameworks.model.UserContext;
 public interface SaleService {
 
 	Sale registSale(UserContext userContext, Sale sale) throws BusinessException;
-
 }

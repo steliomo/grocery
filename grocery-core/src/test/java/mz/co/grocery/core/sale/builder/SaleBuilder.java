@@ -1,7 +1,7 @@
 /**
  *
  */
-package mz.co.grocery.core.sale.integ;
+package mz.co.grocery.core.sale.builder;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -9,6 +9,7 @@ import java.util.List;
 import javax.inject.Inject;
 
 import org.junit.Ignore;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 import mz.co.grocery.core.config.AbstractIntegServiceTest;
@@ -27,6 +28,8 @@ import mz.co.grocery.core.item.service.ServiceDescriptionService;
 import mz.co.grocery.core.item.service.ServiceService;
 import mz.co.grocery.core.sale.model.Sale;
 import mz.co.grocery.core.sale.model.SaleItem;
+import mz.co.grocery.core.sale.service.CashSaleServiceImpl;
+import mz.co.grocery.core.sale.service.InstallmentSaleServiceImpl;
 import mz.co.grocery.core.sale.service.SaleService;
 import mz.co.grocery.core.saleable.service.ServiceItemService;
 import mz.co.grocery.core.saleable.service.StockService;
@@ -69,7 +72,12 @@ public class SaleBuilder extends AbstractIntegServiceTest {
 	private CustomerService customerService;
 
 	@Inject
-	private SaleService saleService;
+	@Qualifier(CashSaleServiceImpl.NAME)
+	private SaleService cashSaleService;
+
+	@Inject
+	@Qualifier(InstallmentSaleServiceImpl.NAME)
+	private SaleService installmentSaleService;
 
 	private Sale sale;
 
@@ -155,7 +163,11 @@ public class SaleBuilder extends AbstractIntegServiceTest {
 	}
 
 	public Sale build() throws BusinessException {
-		return this.saleService.registSale(this.getUserContext(), this.sale);
-	}
 
+		if (SaleType.CASH.equals(this.sale.getSaleType())) {
+			return this.cashSaleService.registSale(this.getUserContext(), this.sale);
+		}
+
+		return this.installmentSaleService.registSale(this.getUserContext(), this.sale);
+	}
 }

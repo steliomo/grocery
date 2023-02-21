@@ -9,8 +9,8 @@ import javax.inject.Inject;
 
 import org.springframework.stereotype.Service;
 
+import mz.co.grocery.core.guide.model.GuideType;
 import mz.co.grocery.core.rent.dao.RentDAO;
-import mz.co.grocery.core.rent.model.GuideType;
 import mz.co.grocery.core.rent.model.Rent;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.model.EntityStatus;

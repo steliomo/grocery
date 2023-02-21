@@ -7,6 +7,8 @@ import java.math.BigDecimal;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
+import javax.persistence.EnumType;
+import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
@@ -16,6 +18,7 @@ import javax.xml.bind.annotation.XmlTransient;
 
 import mz.co.grocery.core.saleable.model.ServiceItem;
 import mz.co.grocery.core.saleable.model.Stock;
+import mz.co.grocery.core.util.BigDecimalUtil;
 import mz.co.msaude.boot.frameworks.model.GenericEntity;
 
 /**
@@ -53,6 +56,15 @@ public class SaleItem extends GenericEntity {
 	@NotNull
 	@Column(name = "DISCOUNT", nullable = false)
 	private BigDecimal discount = BigDecimal.ZERO;
+
+	@NotNull
+	@Column(name = "DELIVERED_QUANTITY", nullable = false)
+	private BigDecimal deliveredQuantity = BigDecimal.ZERO;
+
+	@NotNull
+	@Enumerated(EnumType.STRING)
+	@Column(name = "DELIVERY_STATUS", nullable = false)
+	private DeliveryStatus deliveryStatus = DeliveryStatus.NA;
 
 	public Sale getSale() {
 		return this.sale;
@@ -117,5 +129,40 @@ public class SaleItem extends GenericEntity {
 
 	public Boolean isProduct() {
 		return this.stock != null;
+	}
+
+	public void addDeliveredQuantity(final BigDecimal quantity) {
+		this.deliveredQuantity = this.deliveredQuantity.add(quantity);
+	}
+
+	public BigDecimal getDeliveredQuantity() {
+		return this.deliveredQuantity;
+	}
+
+	public void setDeliveryStatus() {
+
+		if (BigDecimalUtil.isZero(this.deliveredQuantity)) {
+			this.deliveryStatus = DeliveryStatus.PENDING;
+			return;
+		}
+
+		if (BigDecimalUtil.isEqual(this.quantity, this.deliveredQuantity)) {
+			this.deliveryStatus = DeliveryStatus.COMPLETE;
+			return;
+		}
+
+		this.deliveryStatus = DeliveryStatus.INCOMPLETE;
+	}
+
+	public DeliveryStatus getDeliveryStatus() {
+		return this.deliveryStatus;
+	}
+
+	public String getName() {
+		return this.stock != null ? this.stock.getName() : this.serviceItem.getName();
+	}
+
+	public BigDecimal getQuantityToDeliver() {
+		return this.quantity.subtract(this.deliveredQuantity);
 	}
 }

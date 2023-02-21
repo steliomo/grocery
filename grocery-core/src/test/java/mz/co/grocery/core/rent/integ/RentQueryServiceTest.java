@@ -15,21 +15,21 @@ import org.springframework.beans.factory.annotation.Qualifier;
 
 import mz.co.grocery.core.config.AbstractIntegServiceTest;
 import mz.co.grocery.core.fixturefactory.RentPaymentTemplate;
+import mz.co.grocery.core.guide.model.Guide;
+import mz.co.grocery.core.guide.model.GuideItem;
+import mz.co.grocery.core.guide.model.GuideType;
+import mz.co.grocery.core.guide.service.GuideIssuer;
+import mz.co.grocery.core.guide.service.GuideService;
+import mz.co.grocery.core.guide.service.TransportGuideIssuerImpl;
 import mz.co.grocery.core.rent.builder.RentBuilder;
-import mz.co.grocery.core.rent.model.Guide;
-import mz.co.grocery.core.rent.model.GuideItem;
-import mz.co.grocery.core.rent.model.GuideType;
 import mz.co.grocery.core.rent.model.LoadStatus;
 import mz.co.grocery.core.rent.model.PaymentStatus;
 import mz.co.grocery.core.rent.model.Rent;
 import mz.co.grocery.core.rent.model.RentPayment;
 import mz.co.grocery.core.rent.model.ReturnStatus;
-import mz.co.grocery.core.rent.service.GuideIssuer;
-import mz.co.grocery.core.rent.service.GuideService;
 import mz.co.grocery.core.rent.service.RentPaymentService;
 import mz.co.grocery.core.rent.service.RentQueryService;
 import mz.co.grocery.core.rent.service.RentService;
-import mz.co.grocery.core.rent.service.TransportGuideIssuer;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.fixturefactory.EntityFactory;
 
@@ -52,7 +52,7 @@ public class RentQueryServiceTest extends AbstractIntegServiceTest {
 	private GuideService guideService;
 
 	@Inject
-	@Qualifier(TransportGuideIssuer.NAME)
+	@Qualifier(TransportGuideIssuerImpl.NAME)
 	private GuideIssuer transportGuideIssuer;
 
 	@Inject

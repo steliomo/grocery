@@ -21,20 +21,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import mz.co.grocery.core.rent.model.Guide;
-import mz.co.grocery.core.rent.model.GuideType;
+import mz.co.grocery.core.guide.model.GuideType;
+import mz.co.grocery.core.guide.service.GuideIssuer;
+import mz.co.grocery.core.guide.service.ReturnGuideIssuerImpl;
+import mz.co.grocery.core.guide.service.TransportGuideIssuerImpl;
 import mz.co.grocery.core.rent.model.Rent;
-import mz.co.grocery.core.rent.service.GuideIssuer;
-import mz.co.grocery.core.rent.service.GuideService;
 import mz.co.grocery.core.rent.service.RentPaymentService;
 import mz.co.grocery.core.rent.service.RentQueryService;
 import mz.co.grocery.core.rent.service.RentService;
-import mz.co.grocery.core.rent.service.ReturnGuideIssuer;
-import mz.co.grocery.core.rent.service.TransportGuideIssuer;
 import mz.co.grocery.core.util.ApplicationTranslator;
 import mz.co.grocery.integ.resources.AbstractResource;
-import mz.co.grocery.integ.resources.rent.dto.GuideDTO;
-import mz.co.grocery.integ.resources.rent.dto.GuideReport;
 import mz.co.grocery.integ.resources.rent.dto.RentDTO;
 import mz.co.grocery.integ.resources.rent.dto.RentPaymentDTO;
 import mz.co.grocery.integ.resources.rent.dto.RentReport;
@@ -63,15 +59,12 @@ public class RentResource extends AbstractResource {
 	@Inject
 	private RentPaymentService rentPaymentService;
 
-	@Inject
-	private GuideService guideService;
-
 	@Autowired
-	@Qualifier(TransportGuideIssuer.NAME)
+	@Qualifier(TransportGuideIssuerImpl.NAME)
 	private GuideIssuer transportGuideIssuer;
 
 	@Autowired
-	@Qualifier(ReturnGuideIssuer.NAME)
+	@Qualifier(ReturnGuideIssuerImpl.NAME)
 	private GuideIssuer returnGuideIssuer;
 
 	@Inject
@@ -141,62 +134,6 @@ public class RentResource extends AbstractResource {
 		FileGeneratorUtil.generatePdf(RentReport.REPORT_XML_NAME, rentReport.getParameters(), rentReport.getRentItemsReport(), rentReport.getName());
 
 		return Response.ok(rentReport).build();
-	}
-
-	@Path("issue-transport-guide")
-	@POST
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response issueTransportGuide(final GuideDTO guideDTO) throws BusinessException {
-		this.guideService.setGuideIssuer(this.transportGuideIssuer);
-
-		final Guide guide = this.guideService.issueGuide(this.getContext(), guideDTO.get());
-
-		guideDTO.setIssueDate(guide.getIssueDate());
-		guideDTO.setId(guide.getId());
-
-		this.guidePdfGenerator(guideDTO);
-
-		return Response.ok(guideDTO).build();
-	}
-
-	@Path("issue-guide-pdf")
-	@POST
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response issueGuidePDF(final GuideDTO guideDTO) throws BusinessException {
-
-		this.guidePdfGenerator(guideDTO);
-
-		return Response.ok(guideDTO).build();
-	}
-
-	private void guidePdfGenerator(final GuideDTO guideDTO) throws BusinessException {
-		final GuideReport guideReport = new GuideReport(guideDTO, this.translator);
-		try {
-			FileGeneratorUtil.generatePdf(GuideReport.REPORT_XML_NAME, guideReport.getParameters(), guideReport.getGuideItems(),
-					guideReport.getFileName());
-			guideDTO.setFileName(guideReport.getFileName());
-		} catch (IOException | JRException e) {
-			throw new BusinessException(e.getMessage());
-		}
-	}
-
-	@Path("issue-return-guide")
-	@POST
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response issueReturnGuide(final GuideDTO guideDTO) throws BusinessException, IOException, JRException {
-		this.guideService.setGuideIssuer(this.returnGuideIssuer);
-
-		final Guide guide = this.guideService.issueGuide(this.getContext(), guideDTO.get());
-
-		guideDTO.setIssueDate(guide.getIssueDate());
-		guideDTO.setId(guide.getId());
-
-		this.guidePdfGenerator(guideDTO);
-
-		return Response.ok(guideDTO).build();
 	}
 
 	@Path("fetch-rents-with-issued-guides-by-type-and-customer")

@@ -1,7 +1,7 @@
 /**
  *
  */
-package mz.co.grocery.core.rent.service;
+package mz.co.grocery.core.guide.service;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
@@ -10,13 +10,13 @@ import javax.inject.Inject;
 
 import org.springframework.stereotype.Service;
 
-import mz.co.grocery.core.rent.dao.GuideDAO;
-import mz.co.grocery.core.rent.dao.GuideItemDAO;
+import mz.co.grocery.core.guide.dao.GuideDAO;
+import mz.co.grocery.core.guide.dao.GuideItemDAO;
+import mz.co.grocery.core.guide.model.Guide;
+import mz.co.grocery.core.guide.model.GuideItem;
+import mz.co.grocery.core.guide.model.GuideType;
 import mz.co.grocery.core.rent.dao.RentDAO;
 import mz.co.grocery.core.rent.dao.RentItemDAO;
-import mz.co.grocery.core.rent.model.Guide;
-import mz.co.grocery.core.rent.model.GuideItem;
-import mz.co.grocery.core.rent.model.GuideType;
 import mz.co.grocery.core.rent.model.Rent;
 import mz.co.grocery.core.rent.model.RentItem;
 import mz.co.grocery.core.saleable.dao.StockDAO;
@@ -30,10 +30,10 @@ import mz.co.msaude.boot.frameworks.model.UserContext;
  *
  */
 
-@Service(TransportGuideIssuer.NAME)
-public class TransportGuideIssuer implements GuideIssuer {
+@Service(TransportGuideIssuerImpl.NAME)
+public class TransportGuideIssuerImpl implements GuideIssuer {
 
-	public static final String NAME = "mz.co.grocery.core.rent.service.TransportGuideIssuer";
+	public static final String NAME = "mz.co.grocery.core.rent.service.TransportGuideIssuerImpl";
 
 	@Inject
 	private ApplicationTranslator translator;
