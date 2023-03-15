@@ -21,7 +21,7 @@ jobs:
         cache: maven
         
     - name: Clone and build boot-framework
-      uses: actions/checkout@v2
+      uses: actions/checkout@v3
       with:
         repository: steliomo/boot-frameworks
         ref: v1.0.2
