@@ -19,5 +19,16 @@ jobs:
         java-version: '8'
         distribution: 'temurin'
         cache: maven
+        
+    - name: Clone and build boot-framework
+      uses: actions/checkout@v2
+      with:
+        repository: steliomo/boot-frameworks
+        ref: v1.0.2
+        path: boot-frameworks
+        
+    - name: Build and install boot-framework
+      run: mvn clean install -f boot-frameworks
+      
     - name: Build with Maven
       run: mvn clean install
