@@ -8,7 +8,7 @@ import java.util.Collections;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.apache.commons.lang3.StringUtils;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import mz.co.grocery.core.guide.model.Guide;
 import mz.co.grocery.core.guide.model.GuideType;
@@ -17,6 +17,7 @@ import mz.co.grocery.integ.resources.dto.GenericDTO;
 import mz.co.grocery.integ.resources.rent.dto.RentDTO;
 import mz.co.grocery.integ.resources.sale.dto.SaleDTO;
 import mz.co.grocery.integ.resources.util.ProxyUtil;
+import mz.co.msaude.boot.frameworks.util.LocalDateAdapter;
 
 /**
  * @author Stélio Moiane
@@ -24,23 +25,18 @@ import mz.co.grocery.integ.resources.util.ProxyUtil;
  */
 public class GuideDTO extends GenericDTO<Guide> {
 
-	private static final int LEFT_PAD = 5;
-
-	private static final char PAD_CHAR = '0';
-
 	private GuideType type;
 
 	private RentDTO rentDTO;
 
 	private SaleDTO saleDTO;
 
+	@XmlJavaTypeAdapter(LocalDateAdapter.class)
 	private LocalDate issueDate;
 
 	private List<GuideItemDTO> guideItemsDTO;
 
 	private String fileName;
-
-	private String code;
 
 	public GuideDTO() {
 	}
@@ -121,16 +117,6 @@ public class GuideDTO extends GenericDTO<Guide> {
 
 	public void setIssueDate(final LocalDate issueDate) {
 		this.issueDate = issueDate;
-	}
-
-	public String getCode() {
-
-		if (this.getId() == null) {
-			return this.code;
-		}
-
-		this.code = StringUtils.leftPad(String.valueOf(this.getId()), GuideDTO.LEFT_PAD, GuideDTO.PAD_CHAR);
-		return this.code;
 	}
 
 	public SaleDTO getSaleDTO() {

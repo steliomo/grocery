@@ -7,7 +7,6 @@ package mz.co.grocery.integ.resources.item.dto;
 import mz.co.grocery.core.item.model.Product;
 import mz.co.grocery.core.item.model.ProductDescription;
 import mz.co.grocery.core.item.model.ProductUnit;
-import mz.co.grocery.core.item.model.ProductUnitType;
 import mz.co.grocery.integ.resources.dto.GenericDTO;
 import mz.co.grocery.integ.resources.util.ProxyUtil;
 
@@ -23,6 +22,8 @@ public class ProductDescriptionDTO extends GenericDTO<ProductDescription> {
 
 	private ProductUnitDTO productUnitDTO;
 
+	private String name;
+
 	public ProductDescriptionDTO() {
 	}
 
@@ -32,6 +33,8 @@ public class ProductDescriptionDTO extends GenericDTO<ProductDescription> {
 
 	@Override
 	public void mapper(final ProductDescription productDescription) {
+
+		this.name = productDescription.getName();
 
 		final Product product = productDescription.getProduct();
 
@@ -46,6 +49,7 @@ public class ProductDescriptionDTO extends GenericDTO<ProductDescription> {
 		if (ProxyUtil.isInitialized(productUnit)) {
 			this.productUnitDTO = new ProductUnitDTO(productUnit);
 		}
+
 	}
 
 	@Override
@@ -75,25 +79,6 @@ public class ProductDescriptionDTO extends GenericDTO<ProductDescription> {
 	}
 
 	public String getName() {
-
-		if (this.productUnitDTO == null) {
-			return "";
-		}
-
-		final StringBuilder builder = new StringBuilder();
-
-		if (ProductUnitType.NA.equals(this.productUnitDTO.getProductUnitType())) {
-			return builder.append(this.productDTO.getName())
-					.append(" ")
-					.append(this.description).toString();
-		}
-
-		return builder
-				.append(this.productDTO.getName())
-				.append(" ")
-				.append(this.description).append(" ")
-				.append(this.productUnitDTO.getUnit()).append(" ")
-				.append(this.productUnitDTO.getProductUnitType())
-				.toString();
+		return this.name;
 	}
 }

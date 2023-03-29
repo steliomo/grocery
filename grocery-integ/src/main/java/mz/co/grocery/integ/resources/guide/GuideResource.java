@@ -17,7 +17,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import mz.co.grocery.core.file.service.FileGeneratorService;
 import mz.co.grocery.core.guide.model.Guide;
+import mz.co.grocery.core.guide.model.GuideReport;
 import mz.co.grocery.core.guide.service.DeliveryGuideIssuerImpl;
 import mz.co.grocery.core.guide.service.GuideIssuer;
 import mz.co.grocery.core.guide.service.GuideService;
@@ -26,8 +28,6 @@ import mz.co.grocery.core.guide.service.TransportGuideIssuerImpl;
 import mz.co.grocery.core.util.ApplicationTranslator;
 import mz.co.grocery.integ.resources.AbstractResource;
 import mz.co.grocery.integ.resources.guide.dto.GuideDTO;
-import mz.co.grocery.integ.resources.guide.dto.GuideReport;
-import mz.co.grocery.integ.resources.util.FileGeneratorUtil;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import net.sf.jasperreports.engine.JRException;
 
@@ -58,6 +58,9 @@ public class GuideResource extends AbstractResource {
 
 	@Inject
 	private ApplicationTranslator translator;
+
+	@Inject
+	private FileGeneratorService fileGeneratorService;
 
 	@Path("issue-transport-guide")
 	@POST
@@ -100,28 +103,20 @@ public class GuideResource extends AbstractResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response issueGuidePDF(final GuideDTO guideDTO) throws BusinessException {
-		this.guidePdfGenerator(guideDTO);
+
+		final GuideReport guideReport = new GuideReport(guideDTO.get(), this.translator);
+
+		this.fileGeneratorService.createPdfReport(guideReport);
+
+		guideDTO.setFileName(guideReport.getFileName());
 
 		return Response.ok(guideDTO).build();
 	}
 
 	private void issueGuide(final GuideDTO guideDTO) throws BusinessException {
 		final Guide guide = this.guideService.issueGuide(this.getContext(), guideDTO.get());
-
-		guideDTO.setIssueDate(guide.getIssueDate());
-		guideDTO.setId(guide.getId());
-
-		this.guidePdfGenerator(guideDTO);
+		final GuideReport report = new GuideReport(guide, this.translator);
+		guideDTO.setFileName(report.getFileName());
 	}
 
-	private void guidePdfGenerator(final GuideDTO guideDTO) throws BusinessException {
-		final GuideReport guideReport = new GuideReport(guideDTO, this.translator);
-		try {
-			FileGeneratorUtil.generatePdf(GuideReport.REPORT_XML_NAME, guideReport.getParameters(), guideReport.getGuideItems(),
-					guideReport.getFileName());
-			guideDTO.setFileName(guideReport.getFileName());
-		} catch (IOException | JRException e) {
-			throw new BusinessException(e.getMessage());
-		}
-	}
 }

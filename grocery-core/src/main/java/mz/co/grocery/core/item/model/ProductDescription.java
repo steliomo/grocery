@@ -71,6 +71,21 @@ public class ProductDescription extends GenericEntity {
 	}
 
 	public String getName() {
-		return this.product.getName() + " " + this.description + " " + this.productUnit.getUnit() + " " + this.productUnit.getProductUnitType();
+
+		final StringBuilder builder = new StringBuilder();
+
+		if (ProductUnitType.NA.equals(this.productUnit.getProductUnitType())) {
+			return builder.append(this.product.getName())
+					.append(" ")
+					.append(this.description).toString();
+		}
+
+		return builder
+				.append(this.product.getName())
+				.append(" ")
+				.append(this.description).append(" ")
+				.append(this.productUnit.getUnit()).append(" ")
+				.append(this.productUnit.getProductUnitType())
+				.toString();
 	}
 }

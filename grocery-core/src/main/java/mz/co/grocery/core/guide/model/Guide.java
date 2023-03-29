@@ -19,6 +19,7 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import mz.co.grocery.core.customer.model.Customer;
 import mz.co.grocery.core.grocery.model.Grocery;
 import mz.co.grocery.core.rent.model.Rent;
 import mz.co.grocery.core.sale.model.Sale;
@@ -101,5 +102,9 @@ public class Guide extends GenericEntity {
 
 	public Grocery getUnit() {
 		return this.rent != null ? this.rent.getUnit() : this.sale.getGrocery();
+	}
+
+	public Customer getCustomer() {
+		return this.rent != null ? this.rent.getCustomer() : this.sale.getCustomer();
 	}
 }

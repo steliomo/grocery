@@ -185,6 +185,11 @@ public class Rent extends GenericEntity {
 	}
 
 	public BigDecimal getTotalToPay() {
+
+		if (BigDecimalUtil.isGraterThanOrEqual(this.totalPaid, this.paymentBaseCalculation())) {
+			return BigDecimal.ZERO;
+		}
+
 		return this.paymentBaseCalculation().subtract(this.totalPaid);
 	}
 
@@ -270,5 +275,9 @@ public class Rent extends GenericEntity {
 			return new HashSet<>();
 		}
 		return Collections.unmodifiableSet(this.guides);
+	}
+
+	public void reCalculateEstimatedTotal(final BigDecimal estimated) {
+		this.totalEstimated = this.totalEstimated.subtract(estimated);
 	}
 }

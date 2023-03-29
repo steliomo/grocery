@@ -13,7 +13,7 @@ import javax.ws.rs.core.Response;
 
 import org.springframework.stereotype.Service;
 
-import mz.co.grocery.integ.resources.util.FileGeneratorUtil;
+import mz.co.grocery.core.file.service.FileGeneratorService;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 
 /**
@@ -30,8 +30,7 @@ public class FileResource {
 	@GET
 	@Produces("application/pdf")
 	public Response loadPdfFile(@PathParam("fileName") final String fileName) throws BusinessException {
-
-		final File file = new File(FileGeneratorUtil.FILE_DIR + fileName);
+		final File file = new File(FileGeneratorService.FILE_DIR + fileName);
 		return Response.ok(file).header("Content-Disposition", "attachment; filename=" + fileName).build();
 	}
 }

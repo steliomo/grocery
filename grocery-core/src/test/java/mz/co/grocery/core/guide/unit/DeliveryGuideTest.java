@@ -13,7 +13,10 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import mz.co.grocery.core.config.AbstractUnitServiceTest;
+import mz.co.grocery.core.customer.model.Customer;
 import mz.co.grocery.core.customer.model.SaleType;
+import mz.co.grocery.core.file.service.FileGeneratorService;
+import mz.co.grocery.core.fixturefactory.CustomerTemplate;
 import mz.co.grocery.core.fixturefactory.GuideItemTemplate;
 import mz.co.grocery.core.fixturefactory.GuideTemplate;
 import mz.co.grocery.core.fixturefactory.SaleItemTemplate;
@@ -72,6 +75,9 @@ public class DeliveryGuideTest extends AbstractUnitServiceTest {
 	@Mock
 	private SaleDAO saleDAO;
 
+	@Mock
+	private FileGeneratorService fileGeneratorService;
+
 	@Test(expected = BusinessException.class)
 	public void shouldNotIssueGuideForNonDeliveryGuideType() throws BusinessException {
 		this.guideService.setGuideIssuer(this.deliveryGuideIssuer);
@@ -125,6 +131,7 @@ public class DeliveryGuideTest extends AbstractUnitServiceTest {
 		this.guideService.setGuideIssuer(this.deliveryGuideIssuer);
 		final Guide guide = new GuideUnitBuider(GuideType.DELIVERY.toString()).withSaleProducts(3).build();
 		guide.getSale().setSaleType(SaleType.INSTALLMENT);
+		guide.getSale().setCustomer(EntityFactory.gimme(Customer.class, CustomerTemplate.VALID));
 
 		final SaleItem saleItem = EntityFactory.gimme(SaleItem.class, SaleItemTemplate.PRODUCT);
 		guide.getSale().addItem(saleItem);

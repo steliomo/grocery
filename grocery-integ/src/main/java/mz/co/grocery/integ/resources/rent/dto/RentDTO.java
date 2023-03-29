@@ -112,6 +112,11 @@ public class RentDTO extends GenericDTO<Rent> {
 		rent.setUnit(this.unitDTO == null ? null : this.unitDTO.get());
 		rent.setRentDate(this.rentDate);
 		rent.setCustomer(this.customerDTO == null ? null : this.customerDTO.get());
+
+		if (this.rentItemsDTO == null) {
+			this.rentItemsDTO = new ArrayList<>();
+		}
+
 		this.rentItemsDTO.forEach(rentItemDTO -> rent.addRentItem(rentItemDTO.get()));
 
 		if (this.rentPaymentsDTO == null) {

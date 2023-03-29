@@ -21,6 +21,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
+import mz.co.grocery.core.file.service.FileGeneratorService;
 import mz.co.grocery.core.guide.model.GuideType;
 import mz.co.grocery.core.guide.service.GuideIssuer;
 import mz.co.grocery.core.guide.service.ReturnGuideIssuerImpl;
@@ -35,7 +36,6 @@ import mz.co.grocery.integ.resources.rent.dto.RentDTO;
 import mz.co.grocery.integ.resources.rent.dto.RentPaymentDTO;
 import mz.co.grocery.integ.resources.rent.dto.RentReport;
 import mz.co.grocery.integ.resources.rent.dto.RentsDTO;
-import mz.co.grocery.integ.resources.util.FileGeneratorUtil;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import net.sf.jasperreports.engine.JRException;
 
@@ -69,6 +69,9 @@ public class RentResource extends AbstractResource {
 
 	@Inject
 	private ApplicationTranslator translator;
+
+	@Inject
+	private FileGeneratorService fileGeneratorService;
 
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
@@ -131,7 +134,7 @@ public class RentResource extends AbstractResource {
 		final Rent rent = rentDTO.get();
 		final RentReport rentReport = new RentReport(rent);
 
-		FileGeneratorUtil.generatePdf(RentReport.REPORT_XML_NAME, rentReport.getParameters(), rentReport.getRentItemsReport(), rentReport.getName());
+		this.fileGeneratorService.createPdfReport(rentReport);
 
 		return Response.ok(rentReport).build();
 	}

@@ -219,16 +219,25 @@ public class RentItem extends GenericEntity {
 		this.calculatedTotal = this.getItem().getRentPrice().multiply(this.loadedQuantity).multiply(new BigDecimal(days));
 	}
 
-	public void calculateTotalOnReturn(final LocalDate calculatedDate, final BigDecimal quantity) {
+	public BigDecimal calculateTotalOnReturn(final LocalDate calculatedDate, final BigDecimal quantity) {
 
 		if (this.calculatedTotal == null || this.loadingDate == null || this.loadedQuantity == null) {
 			this.calculatedTotal = BigDecimal.ZERO;
-			return;
+			return this.calculatedTotal;
 		}
 
 		final long days = Duration.between(this.loadingDate.atStartOfDay(), calculatedDate.atStartOfDay()).toDays();
 
 		this.calculatedTotal = this.getItem().getRentPrice().multiply(quantity).multiply(new BigDecimal(days));
+
+		if (days == 0) {
+			final BigDecimal updatedQuantity = this.loadedQuantity.subtract(quantity);
+			final BigDecimal updatedPlannedTotal = this.getItem().getRentPrice().multiply(this.plannedDays).multiply(updatedQuantity);
+
+			return this.plannedTotal.subtract(updatedPlannedTotal);
+		}
+
+		return BigDecimal.ZERO;
 	}
 
 	public BigDecimal getCurrentRentQuantity() {
@@ -275,5 +284,9 @@ public class RentItem extends GenericEntity {
 		}
 
 		this.returnStatus = ReturnStatus.INCOMPLETE;
+	}
+
+	public String getName() {
+		return this.stock != null ? this.stock.getName() : this.serviceItem.getName();
 	}
 }

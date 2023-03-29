@@ -1,7 +1,7 @@
 /**
  *
  */
-package mz.co.grocery.integ.resources.guide.dto;
+package mz.co.grocery.core.guide.model;
 
 import java.math.BigDecimal;
 

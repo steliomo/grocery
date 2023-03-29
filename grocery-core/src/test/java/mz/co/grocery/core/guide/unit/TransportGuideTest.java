@@ -14,6 +14,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import mz.co.grocery.core.config.AbstractUnitServiceTest;
+import mz.co.grocery.core.file.service.FileGeneratorService;
 import mz.co.grocery.core.fixturefactory.GuideTemplate;
 import mz.co.grocery.core.fixturefactory.RentItemTemplate;
 import mz.co.grocery.core.fixturefactory.StockTemplate;
@@ -72,6 +73,9 @@ public class TransportGuideTest extends AbstractUnitServiceTest {
 
 	@Mock
 	private StockDAO stockDAO;
+
+	@Mock
+	private FileGeneratorService fileGeneratorService;
 
 	@Test
 	public void shouldIssueTransportGuideForProducts() throws BusinessException {

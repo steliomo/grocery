@@ -7,7 +7,10 @@ import javax.inject.Inject;
 
 import org.springframework.stereotype.Service;
 
+import mz.co.grocery.core.file.model.Report;
+import mz.co.grocery.core.file.service.FileGeneratorService;
 import mz.co.grocery.core.guide.model.Guide;
+import mz.co.grocery.core.guide.model.GuideReport;
 import mz.co.grocery.core.payment.service.PaymentService;
 import mz.co.grocery.core.util.ApplicationTranslator;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
@@ -29,6 +32,9 @@ public class GuideServiceImpl extends AbstractService implements GuideService {
 	@Inject
 	private PaymentService paymentService;
 
+	@Inject
+	private FileGeneratorService fileGeneratorService;
+
 	private GuideIssuer guideIssuer;
 
 	@Override
@@ -40,6 +46,9 @@ public class GuideServiceImpl extends AbstractService implements GuideService {
 
 		this.guideIssuer.issue(userContext, guide);
 
+		final Report report = new GuideReport(guide, this.translator);
+
+		this.fileGeneratorService.createPdfReport(report);
 		this.paymentService.debitTransaction(userContext, guide.getUnit().getUuid());
 
 		return guide;

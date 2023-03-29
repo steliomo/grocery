@@ -3,6 +3,7 @@
  */
 package mz.co.grocery.core.fixturefactory;
 
+import java.time.LocalDate;
 import java.util.HashSet;
 
 import br.com.six2six.fixturefactory.Fixture;
@@ -38,6 +39,7 @@ public class GuideTemplate implements TemplateLoader {
 		Fixture.of(Guide.class).addTemplate(GuideTemplate.VALID, new Rule() {
 			{
 				this.add("rent", this.one(Rent.class, RentTemplate.VALID));
+				this.add("issueDate", LocalDate.now());
 			}
 		});
 

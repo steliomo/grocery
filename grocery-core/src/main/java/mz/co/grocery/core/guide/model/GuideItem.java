@@ -86,4 +86,8 @@ public class GuideItem extends GenericEntity {
 	public GuideItemType getItemGuideType() {
 		return this.rentItem == null ? GuideItemType.SALE : GuideItemType.RENT;
 	}
+
+	public String getName() {
+		return this.rentItem != null ? this.rentItem.getName() : this.saleItem.getName();
+	}
 }
