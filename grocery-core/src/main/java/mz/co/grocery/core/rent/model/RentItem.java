@@ -77,9 +77,6 @@ public class RentItem extends GenericEntity {
 	@Column(name = "PLANNED_TOTAL", nullable = false)
 	private BigDecimal plannedTotal;
 
-	@Column(name = "CALCULATED_TOTAL")
-	private BigDecimal calculatedTotal;
-
 	@NotNull
 	@Column(name = "STOCKABLE", nullable = false)
 	private Boolean stockable;
@@ -203,41 +200,26 @@ public class RentItem extends GenericEntity {
 		this.plannedTotal = this.getItem().getRentPrice().multiply(this.plannedQuantity).multiply(this.plannedDays).subtract(this.discount);
 	}
 
-	public BigDecimal getCalculatedTotal() {
-		return this.calculatedTotal;
-	}
+	public BigDecimal getRentalChunkValueOnLoading(final LocalDate calculatedDate) {
 
-	public void calculateTotalOnLoad(final LocalDate calculatedDate) {
-
-		if (this.calculatedTotal == null || this.loadingDate == null || this.loadedQuantity == null) {
-			this.calculatedTotal = BigDecimal.ZERO;
-			return;
+		if (this.loadingDate == null) {
+			return BigDecimal.ZERO;
 		}
 
 		final long days = Duration.between(this.loadingDate.atStartOfDay(), calculatedDate.atStartOfDay()).toDays();
 
-		this.calculatedTotal = this.getItem().getRentPrice().multiply(this.loadedQuantity).multiply(new BigDecimal(days));
+		return this.getItem().getRentPrice().multiply(this.loadedQuantity).multiply(new BigDecimal(days));
 	}
 
-	public BigDecimal calculateTotalOnReturn(final LocalDate calculatedDate, final BigDecimal quantity) {
+	public BigDecimal getRentalChunkValueOnReturning(final LocalDate calculatedDate, final BigDecimal quantity) {
 
-		if (this.calculatedTotal == null || this.loadingDate == null || this.loadedQuantity == null) {
-			this.calculatedTotal = BigDecimal.ZERO;
-			return this.calculatedTotal;
+		if (this.loadingDate == null) {
+			return BigDecimal.ZERO;
 		}
 
 		final long days = Duration.between(this.loadingDate.atStartOfDay(), calculatedDate.atStartOfDay()).toDays();
 
-		this.calculatedTotal = this.getItem().getRentPrice().multiply(quantity).multiply(new BigDecimal(days));
-
-		if (days == 0) {
-			final BigDecimal updatedQuantity = this.loadedQuantity.subtract(quantity);
-			final BigDecimal updatedPlannedTotal = this.getItem().getRentPrice().multiply(this.plannedDays).multiply(updatedQuantity);
-
-			return this.plannedTotal.subtract(updatedPlannedTotal);
-		}
-
-		return BigDecimal.ZERO;
+		return this.getItem().getRentPrice().multiply(quantity).multiply(new BigDecimal(days));
 	}
 
 	public BigDecimal getCurrentRentQuantity() {
@@ -288,5 +270,17 @@ public class RentItem extends GenericEntity {
 
 	public String getName() {
 		return this.stock != null ? this.stock.getName() : this.serviceItem.getName();
+	}
+
+	public void reCalculateTotalPlanned(final LocalDate returnedDate, final BigDecimal returnedQuantity) {
+
+		final long days = Duration.between(this.loadingDate.atStartOfDay(), returnedDate.atStartOfDay()).toDays();
+
+		if (BigDecimal.ZERO.longValue() != days) {
+			return;
+		}
+
+		this.plannedTotal = this.getItem().getRentPrice().multiply(this.plannedDays).multiply(this.plannedQuantity.subtract(returnedQuantity))
+				.subtract(this.discount);
 	}
 }

@@ -81,7 +81,7 @@ public class TransportGuideIssuerImpl implements GuideIssuer {
 						this.translator.getTranslation("guide.unexpected.item.load.quantity", new String[] { rentItem.getItem().getName() }));
 			}
 
-			rentItem.calculateTotalOnLoad(guide.getIssueDate());
+			final BigDecimal chunkValue = rentItem.getRentalChunkValueOnLoading(guide.getIssueDate());
 			rentItem.addLoadedQuantity(guideItem.getQuantity());
 			rentItem.setLoadingDate(guide.getIssueDate());
 			rentItem.setLoadStatus();
@@ -89,7 +89,7 @@ public class TransportGuideIssuerImpl implements GuideIssuer {
 
 			this.rentItemDAO.update(context, rentItem);
 
-			totalCalculated = totalCalculated.add(rentItem.getCalculatedTotal());
+			totalCalculated = totalCalculated.add(chunkValue);
 
 			if (rentItem.isStockable()) {
 				final Stock stock = this.stockDAO.findByUuid(guideItem.getStock().getUuid());

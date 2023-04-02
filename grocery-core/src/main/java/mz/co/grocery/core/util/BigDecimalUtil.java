@@ -23,6 +23,10 @@ public class BigDecimalUtil {
 		return valueA.compareTo(valueB) == BigDecimal.ONE.negate().intValue();
 	}
 
+	public static boolean isLessThanOrEqual(final BigDecimal valueA, final BigDecimal valueB) {
+		return valueA.compareTo(valueB) == BigDecimal.ONE.negate().intValue() || BigDecimalUtil.isEqual(valueA, valueB);
+	}
+
 	public static boolean isEqual(final BigDecimal valueA, final BigDecimal valueB) {
 		return valueA.compareTo(valueB) == BigDecimal.ZERO.intValue();
 	}

@@ -40,7 +40,7 @@ public class RentUnitBuilder {
 			if (result instanceof RentItem) {
 				final RentItem rentItem = (RentItem) result;
 				rentItem.calculatePlannedTotal();
-				rentItem.calculateTotalOnLoad(loadDate);
+				rentItem.getRentalChunkValueOnLoading(loadDate);
 			}
 		});
 

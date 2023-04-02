@@ -46,7 +46,6 @@ public class ContractServiceTest extends AbstractUnitServiceTest {
 
 		Mockito.verify(this.contractDAO, Mockito.times(1)).create(this.getUserContext(), contract);
 		Assert.assertEquals(contract.getStartDate(), contract.getReferencePaymentDate());
-		Assert.assertEquals(contract.getStartDate().getDayOfMonth(), contract.getEndDate().getDayOfMonth());
 	}
 
 	@Test(expected = BusinessException.class)

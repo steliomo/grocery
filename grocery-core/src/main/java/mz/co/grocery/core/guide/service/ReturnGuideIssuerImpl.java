@@ -65,8 +65,7 @@ public class ReturnGuideIssuerImpl implements GuideIssuer {
 
 		this.guideDAO.create(userContext, guide);
 
-		BigDecimal calculatedTotal = BigDecimal.ZERO;
-		BigDecimal recalculateTotalPlanned = BigDecimal.ZERO;
+		BigDecimal calculatedTotalRental = BigDecimal.ZERO;
 
 		for (final GuideItem guideItem : guide.getGuideItems()) {
 
@@ -81,18 +80,20 @@ public class ReturnGuideIssuerImpl implements GuideIssuer {
 			}
 
 			if (guide.getIssueDate().isBefore(rentItem.getLoadingDate())) {
-				throw new BusinessException(this.translator.getTranslation("guide.return.date.unexpected", new String[] { rentItem.getItem().getName() }));
+				throw new BusinessException(
+						this.translator.getTranslation("guide.return.date.unexpected", new String[] { rentItem.getItem().getName() }));
 			}
 
-			final BigDecimal plannedTotal = rentItem.calculateTotalOnReturn(guide.getIssueDate(), guideItem.getQuantity());
+			final BigDecimal rentalChunk = rentItem.getRentalChunkValueOnReturning(guide.getIssueDate(), guideItem.getQuantity());
+			rentItem.reCalculateTotalPlanned(guide.getIssueDate(), guideItem.getQuantity());
+
 			rentItem.addReturnedQuantity(guideItem.getQuantity());
 			rentItem.setReturnDate(guide.getIssueDate());
 			rentItem.setReturnStatus();
 			rentItem.closeItemLoad();
 			this.rentItemDAO.update(userContext, rentItem);
 
-			calculatedTotal = calculatedTotal.add(rentItem.getCalculatedTotal());
-			recalculateTotalPlanned = recalculateTotalPlanned.add(plannedTotal);
+			calculatedTotalRental = calculatedTotalRental.add(rentalChunk);
 
 			if (rentItem.isStockable()) {
 				final Stock stock = this.stockDAO.findByUuid(rentItem.getItem().getUuid());
@@ -103,8 +104,8 @@ public class ReturnGuideIssuerImpl implements GuideIssuer {
 		}
 
 		final Rent rent = this.rentDAO.fetchByUuid(guide.getRent().getUuid());
-		rent.setTotalCalculated(calculatedTotal);
-		rent.reCalculateEstimatedTotal(recalculateTotalPlanned);
+		rent.setTotalCalculated(calculatedTotalRental);
+		rent.calculateTotalEstimated();
 		rent.setReturnStatus();
 		rent.setPaymentStatus();
 		this.rentDAO.update(userContext, rent);

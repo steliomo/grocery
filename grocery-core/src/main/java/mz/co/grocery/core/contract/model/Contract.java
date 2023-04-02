@@ -156,8 +156,4 @@ public class Contract extends GenericEntity {
 	public Long getDays() {
 		return ChronoUnit.DAYS.between(this.startDate, this.endDate);
 	}
-
-	public void adjustEndDateDay() {
-		this.endDate = this.endDate.withDayOfMonth(this.startDate.getDayOfMonth());
-	}
 }

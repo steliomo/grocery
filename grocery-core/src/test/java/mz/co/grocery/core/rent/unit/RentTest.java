@@ -22,7 +22,27 @@ import mz.co.grocery.core.rent.model.ReturnStatus;
 public class RentTest extends AbstractUnitServiceTest {
 
 	@Test
-	public void shouldFindRentPaymentBaseCalculationWhenTotalEstimatedIsGreaterThanTotalCalculatedAndReturnedIsComplete() {
+	public void shouldFindRentPaymentBaseCalculationWhenReturnIsPendingOrImcomplete() {
+		final RentItem rentItem = new RentItem();
+		rentItem.addLoadedQuantity(new BigDecimal(20));
+		rentItem.addReturnedQuantity(new BigDecimal(15));
+		rentItem.setReturnStatus();
+
+		final Rent rent = new Rent();
+		rent.addRentItem(rentItem);
+
+		final BigDecimal estimated = new BigDecimal(1000);
+		final BigDecimal calculated = new BigDecimal(500);
+
+		rent.setTotalEstimated(estimated);
+		rent.setTotalCalculated(calculated);
+		rent.setReturnStatus();
+
+		Assert.assertEquals(estimated, rent.paymentBaseCalculation());
+	}
+
+	@Test
+	public void shouldFindRentPaymentBaseCalculationWhenReturnIscomplete() {
 		final RentItem rentItem = new RentItem();
 		rentItem.addLoadedQuantity(new BigDecimal(20));
 		rentItem.addReturnedQuantity(new BigDecimal(20));
@@ -37,30 +57,6 @@ public class RentTest extends AbstractUnitServiceTest {
 		rent.setTotalEstimated(estimated);
 		rent.setTotalCalculated(calculated);
 		rent.setReturnStatus();
-
-		Assert.assertEquals(calculated, rent.paymentBaseCalculation());
-	}
-
-	@Test
-	public void shouldFindRentPaymentBaseCalculationWhenTotalEstimatedIsGreaterThanTotalCalculated() {
-		final Rent rent = new Rent();
-		final BigDecimal estimated = new BigDecimal(1000);
-		final BigDecimal calculated = new BigDecimal(500);
-
-		rent.setTotalEstimated(estimated);
-		rent.setTotalCalculated(calculated);
-
-		Assert.assertEquals(estimated, rent.paymentBaseCalculation());
-	}
-
-	@Test
-	public void shouldFindRentPaymentBaseCalculationWhenTotalEstimatedIsLessThanTotalCalculated() {
-		final Rent rent = new Rent();
-		final BigDecimal estimated = new BigDecimal(100);
-		final BigDecimal calculated = new BigDecimal(500);
-
-		rent.setTotalEstimated(estimated);
-		rent.setTotalCalculated(calculated);
 
 		Assert.assertEquals(calculated, rent.paymentBaseCalculation());
 	}
@@ -95,7 +91,15 @@ public class RentTest extends AbstractUnitServiceTest {
 
 	@Test
 	public void shouldCalculatePaymentStatusWhenPaymentEqualThanToPay() {
+
+		final RentItem rentItem = new RentItem();
+		rentItem.addLoadedQuantity(new BigDecimal(10));
+		rentItem.addReturnedQuantity(new BigDecimal(10));
+		rentItem.setReturnStatus();
+
 		final Rent rent = new Rent();
+		rent.addRentItem(rentItem);
+
 		final BigDecimal estimated = new BigDecimal(100);
 		final BigDecimal paid = new BigDecimal(200);
 		final BigDecimal calculated = new BigDecimal(200);
@@ -103,6 +107,7 @@ public class RentTest extends AbstractUnitServiceTest {
 		rent.setTotalEstimated(estimated);
 		rent.setTotalPaid(paid);
 		rent.setTotalCalculated(calculated);
+		rent.setReturnStatus();
 
 		rent.setPaymentStatus();
 
@@ -129,7 +134,7 @@ public class RentTest extends AbstractUnitServiceTest {
 
 		rent.setPaymentStatus();
 
-		Assert.assertEquals(estimated, rent.paymentBaseCalculation());
+		Assert.assertEquals(calculated, rent.paymentBaseCalculation());
 		Assert.assertEquals(new BigDecimal(50), rent.totalToRefund());
 		Assert.assertEquals(PaymentStatus.OVER_PAYMENT, rent.getPaymentStatus());
 	}

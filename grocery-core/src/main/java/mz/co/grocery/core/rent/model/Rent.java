@@ -173,11 +173,7 @@ public class Rent extends GenericEntity {
 
 	public BigDecimal paymentBaseCalculation() {
 
-		if (ReturnStatus.COMPLETE.equals(this.getReturnStatus()) && BigDecimalUtil.isGraterThanOrEqual(this.totalCalculated, this.totalPaid)) {
-			return this.totalCalculated;
-		}
-
-		if (BigDecimalUtil.isGraterThan(this.totalEstimated, this.totalCalculated)) {
+		if (ReturnStatus.PENDING.equals(this.getReturnStatus()) || ReturnStatus.INCOMPLETE.equals(this.getReturnStatus())) {
 			return this.totalEstimated;
 		}
 
@@ -194,10 +190,12 @@ public class Rent extends GenericEntity {
 	}
 
 	public BigDecimal totalToRefund() {
-		if (BigDecimalUtil.isGraterThan(this.totalPaid, this.totalCalculated) && ReturnStatus.COMPLETE.equals(this.getReturnStatus())) {
-			return this.totalPaid.subtract(this.totalCalculated);
+
+		if (BigDecimalUtil.isLessThanOrEqual(this.totalPaid, this.paymentBaseCalculation())) {
+			return BigDecimal.ZERO;
 		}
-		return BigDecimal.ZERO;
+
+		return this.totalPaid.subtract(this.paymentBaseCalculation());
 	}
 
 	public void calculateTotalEstimated() {
@@ -277,7 +275,7 @@ public class Rent extends GenericEntity {
 		return Collections.unmodifiableSet(this.guides);
 	}
 
-	public void reCalculateEstimatedTotal(final BigDecimal estimated) {
-		this.totalEstimated = this.totalEstimated.subtract(estimated);
+	public void refund(final BigDecimal paymentValue) {
+		this.totalPaid = this.totalPaid.subtract(paymentValue);
 	}
 }

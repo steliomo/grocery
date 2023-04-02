@@ -39,7 +39,6 @@ public class ContractServiceImpl extends AbstractService implements ContractServ
 		}
 
 		contract.setReferencePaymentDate();
-		contract.adjustEndDateDay();
 
 		this.contractDAO.create(context, contract);
 

@@ -93,7 +93,7 @@ public class ReturnGuideTest extends AbstractUnitServiceTest {
 				ri.setPlannedQuantity(new BigDecimal(100));
 				ri.addLoadedQuantity(new BigDecimal(90));
 
-				ri.calculateTotalOnLoad(rentDate);
+				ri.getRentalChunkValueOnLoading(rentDate);
 				ri.setStockable();
 				ri.setLoadingDate(rentDate);
 				ri.setLoadStatus();
@@ -122,7 +122,6 @@ public class ReturnGuideTest extends AbstractUnitServiceTest {
 
 		Assert.assertEquals(LocalDate.now(), guide.getIssueDate());
 		Assert.assertEquals(GuideType.RETURN, guide.getType());
-		Assert.assertEquals(rentItem.getCalculatedTotal(), guide.getRent().getTotalCalculated());
 		Assert.assertEquals(LoadStatus.COMPLETE, rentItem.getLoadStatus());
 		Assert.assertEquals(ReturnStatus.INCOMPLETE, rentItem.getReturnStatus());
 	}
@@ -142,7 +141,7 @@ public class ReturnGuideTest extends AbstractUnitServiceTest {
 				ri.setPlannedQuantity(new BigDecimal(100));
 				ri.addLoadedQuantity(new BigDecimal(90));
 
-				ri.calculateTotalOnLoad(rentDate);
+				ri.getRentalChunkValueOnLoading(rentDate);
 				ri.setStockable();
 				ri.setLoadingDate(rentDate);
 				ri.setLoadStatus();
@@ -168,7 +167,6 @@ public class ReturnGuideTest extends AbstractUnitServiceTest {
 
 		Assert.assertEquals(LocalDate.now(), guide.getIssueDate());
 		Assert.assertEquals(GuideType.RETURN, guide.getType());
-		Assert.assertEquals(rentItem.getCalculatedTotal(), guide.getRent().getTotalCalculated());
 		Assert.assertEquals(LoadStatus.COMPLETE, rentItem.getLoadStatus());
 		Assert.assertEquals(ReturnStatus.INCOMPLETE, rentItem.getReturnStatus());
 	}
@@ -197,7 +195,7 @@ public class ReturnGuideTest extends AbstractUnitServiceTest {
 				final RentItem ri = (RentItem) result;
 				ri.setPlannedQuantity(new BigDecimal(5));
 				ri.addLoadedQuantity(new BigDecimal(5));
-				ri.calculateTotalOnLoad(rentDate);
+				ri.getRentalChunkValueOnLoading(rentDate);
 				ri.setStockable();
 				ri.setLoadingDate(rentDate);
 				ri.setLoadStatus();
@@ -231,7 +229,7 @@ public class ReturnGuideTest extends AbstractUnitServiceTest {
 				ri.setPlannedQuantity(new BigDecimal(100));
 				ri.addLoadedQuantity(new BigDecimal(100));
 
-				ri.calculateTotalOnLoad(rentDate);
+				ri.getRentalChunkValueOnLoading(rentDate);
 				ri.calculatePlannedTotal();
 				ri.setStockable();
 				ri.setLoadingDate(rentDate);
