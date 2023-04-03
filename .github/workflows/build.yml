@@ -26,6 +26,9 @@ jobs:
         repository: steliomo/boot-frameworks
         ref: v1.0.2
         path: boot-frameworks
+    
+    - name: Copy the report files
+      run: cp -r grocery-core/src/main/resources/reports/*.jrxml /opt/grocery/data/reports
         
     - name: Build and install boot-framework
       run: mvn clean install -f boot-frameworks
