@@ -10,6 +10,7 @@
 	<modules>
 		<module>grocery-core</module>
 		<module>grocery-integ</module>
+		<module>grocery-persistence</module>
 	</modules>
 
 	<parent>

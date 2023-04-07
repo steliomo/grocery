@@ -3,7 +3,6 @@
  */
 package mz.co.grocery.integ.resources.rent;
 
-import java.io.IOException;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -21,7 +20,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import mz.co.grocery.core.file.service.FileGeneratorService;
+import mz.co.grocery.core.application.report.ReportGeneratorPort;
 import mz.co.grocery.core.guide.model.GuideType;
 import mz.co.grocery.core.guide.service.GuideIssuer;
 import mz.co.grocery.core.guide.service.ReturnGuideIssuerImpl;
@@ -37,7 +36,6 @@ import mz.co.grocery.integ.resources.rent.dto.RentPaymentDTO;
 import mz.co.grocery.integ.resources.rent.dto.RentReport;
 import mz.co.grocery.integ.resources.rent.dto.RentsDTO;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
-import net.sf.jasperreports.engine.JRException;
 
 /**
  * @author Stélio Moiane
@@ -71,7 +69,7 @@ public class RentResource extends AbstractResource {
 	private ApplicationTranslator translator;
 
 	@Inject
-	private FileGeneratorService fileGeneratorService;
+	private ReportGeneratorPort reportGeneratorPort;
 
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
@@ -130,11 +128,11 @@ public class RentResource extends AbstractResource {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response issueQuotation(final RentDTO rentDTO) throws BusinessException, JRException, IOException {
+	public Response issueQuotation(final RentDTO rentDTO) throws BusinessException {
 		final Rent rent = rentDTO.get();
 		final RentReport rentReport = new RentReport(rent);
 
-		this.fileGeneratorService.createPdfReport(rentReport);
+		this.reportGeneratorPort.createPdfReport(rentReport);
 
 		return Response.ok(rentReport).build();
 	}

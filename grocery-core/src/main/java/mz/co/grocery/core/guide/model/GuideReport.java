@@ -12,7 +12,7 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
-import mz.co.grocery.core.file.model.Report;
+import mz.co.grocery.core.domain.report.Report;
 import mz.co.grocery.core.util.ApplicationTranslator;
 
 /**

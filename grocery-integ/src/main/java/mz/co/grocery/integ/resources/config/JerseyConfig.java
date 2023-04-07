@@ -4,13 +4,13 @@
 package mz.co.grocery.integ.resources.config;
 
 import org.glassfish.jersey.server.ResourceConfig;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Service;
 
 import mz.co.grocery.integ.resources.contract.ContractResource;
 import mz.co.grocery.integ.resources.customer.CustomerResource;
 import mz.co.grocery.integ.resources.expense.ExpenseResource;
 import mz.co.grocery.integ.resources.expense.ExpenseTypeResource;
-import mz.co.grocery.integ.resources.files.FileResource;
 import mz.co.grocery.integ.resources.grocery.GroceryResource;
 import mz.co.grocery.integ.resources.grocery.GroceryUserResource;
 import mz.co.grocery.integ.resources.guide.GuideResource;
@@ -22,6 +22,7 @@ import mz.co.grocery.integ.resources.item.ServiceDescriptionResource;
 import mz.co.grocery.integ.resources.item.ServiceResource;
 import mz.co.grocery.integ.resources.payment.PaymentResource;
 import mz.co.grocery.integ.resources.rent.RentResource;
+import mz.co.grocery.integ.resources.report.ReportResource;
 import mz.co.grocery.integ.resources.sale.SaleResource;
 import mz.co.grocery.integ.resources.saleable.SaleableResource;
 import mz.co.grocery.integ.resources.saleable.ServiceItemResource;
@@ -32,6 +33,8 @@ import mz.co.grocery.integ.resources.user.UserResource;
  * @author Stélio Moiane
  *
  */
+
+@Configuration
 @Service
 public class JerseyConfig extends ResourceConfig {
 
@@ -61,7 +64,7 @@ public class JerseyConfig extends ResourceConfig {
 		this.register(BusinessExceptionMapper.class);
 		this.register(NoResultExceptionMapper.class);
 
-		this.register(FileResource.class);
+		this.register(ReportResource.class);
 		this.register(GuideResource.class);
 	}
 }

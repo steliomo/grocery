@@ -12,7 +12,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
-import mz.co.grocery.core.file.model.Report;
+import mz.co.grocery.core.domain.report.Report;
 import mz.co.grocery.core.rent.model.Rent;
 import mz.co.grocery.core.rent.model.RentItem;
 

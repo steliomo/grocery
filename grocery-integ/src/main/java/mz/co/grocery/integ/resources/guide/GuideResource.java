@@ -3,8 +3,6 @@
  */
 package mz.co.grocery.integ.resources.guide;
 
-import java.io.IOException;
-
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.POST;
@@ -17,7 +15,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
-import mz.co.grocery.core.file.service.FileGeneratorService;
+import mz.co.grocery.core.application.report.ReportGeneratorPort;
 import mz.co.grocery.core.guide.model.Guide;
 import mz.co.grocery.core.guide.model.GuideReport;
 import mz.co.grocery.core.guide.service.DeliveryGuideIssuerImpl;
@@ -29,7 +27,6 @@ import mz.co.grocery.core.util.ApplicationTranslator;
 import mz.co.grocery.integ.resources.AbstractResource;
 import mz.co.grocery.integ.resources.guide.dto.GuideDTO;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
-import net.sf.jasperreports.engine.JRException;
 
 /**
  * @author Stélio Moiane
@@ -60,7 +57,7 @@ public class GuideResource extends AbstractResource {
 	private ApplicationTranslator translator;
 
 	@Inject
-	private FileGeneratorService fileGeneratorService;
+	private ReportGeneratorPort reportGeneratorPort;
 
 	@Path("issue-transport-guide")
 	@POST
@@ -78,7 +75,7 @@ public class GuideResource extends AbstractResource {
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response issueReturnGuide(final GuideDTO returnGuideDTO) throws BusinessException, IOException, JRException {
+	public Response issueReturnGuide(final GuideDTO returnGuideDTO) throws BusinessException {
 		this.guideService.setGuideIssuer(this.returnGuideIssuer);
 
 		this.issueGuide(returnGuideDTO);
@@ -106,7 +103,7 @@ public class GuideResource extends AbstractResource {
 
 		final GuideReport guideReport = new GuideReport(guideDTO.get(), this.translator);
 
-		this.fileGeneratorService.createPdfReport(guideReport);
+		this.reportGeneratorPort.createPdfReport(guideReport);
 
 		guideDTO.setFileName(guideReport.getFileName());
 

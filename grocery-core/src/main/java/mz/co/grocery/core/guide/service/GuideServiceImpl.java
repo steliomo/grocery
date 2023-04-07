@@ -7,8 +7,8 @@ import javax.inject.Inject;
 
 import org.springframework.stereotype.Service;
 
-import mz.co.grocery.core.file.model.Report;
-import mz.co.grocery.core.file.service.FileGeneratorService;
+import mz.co.grocery.core.application.report.ReportGeneratorPort;
+import mz.co.grocery.core.domain.report.Report;
 import mz.co.grocery.core.guide.model.Guide;
 import mz.co.grocery.core.guide.model.GuideReport;
 import mz.co.grocery.core.payment.service.PaymentService;
@@ -33,7 +33,7 @@ public class GuideServiceImpl extends AbstractService implements GuideService {
 	private PaymentService paymentService;
 
 	@Inject
-	private FileGeneratorService fileGeneratorService;
+	private ReportGeneratorPort reportGeneratorPort;
 
 	private GuideIssuer guideIssuer;
 
@@ -48,7 +48,7 @@ public class GuideServiceImpl extends AbstractService implements GuideService {
 
 		final Report report = new GuideReport(guide, this.translator);
 
-		this.fileGeneratorService.createPdfReport(report);
+		this.reportGeneratorPort.createPdfReport(report);
 		this.paymentService.debitTransaction(userContext, guide.getUnit().getUuid());
 
 		return guide;
