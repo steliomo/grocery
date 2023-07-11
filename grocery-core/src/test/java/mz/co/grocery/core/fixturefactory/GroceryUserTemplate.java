@@ -8,9 +8,9 @@ import java.time.LocalDate;
 import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.Rule;
 import br.com.six2six.fixturefactory.loader.TemplateLoader;
-import mz.co.grocery.core.grocery.model.Grocery;
-import mz.co.grocery.core.grocery.model.GroceryUser;
-import mz.co.grocery.core.grocery.model.UserRole;
+import mz.co.grocery.core.domain.unit.Unit;
+import mz.co.grocery.core.domain.unit.UnitUser;
+import mz.co.grocery.core.domain.unit.UserRole;
 import mz.co.msaude.boot.frameworks.util.UuidFactory;
 
 /**
@@ -23,9 +23,9 @@ public class GroceryUserTemplate implements TemplateLoader {
 
 	@Override
 	public void load() {
-		Fixture.of(GroceryUser.class).addTemplate(VALID, new Rule() {
+		Fixture.of(UnitUser.class).addTemplate(GroceryUserTemplate.VALID, new Rule() {
 			{
-				this.add("grocery", this.one(Grocery.class, GroceryTemplate.VALID));
+				this.add("grocery", this.one(Unit.class, UnitTemplate.VALID));
 				this.add("user", UuidFactory.generate());
 				this.add("userRole", this.random(UserRole.ADMINISTRATOR, UserRole.MANAGER, UserRole.OPERATOR));
 				this.add("expiryDate", LocalDate.now());

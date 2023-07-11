@@ -9,8 +9,8 @@ import java.time.LocalDate;
 import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.Rule;
 import br.com.six2six.fixturefactory.loader.TemplateLoader;
-import mz.co.grocery.core.rent.model.Rent;
-import mz.co.grocery.core.rent.model.RentPayment;
+import mz.co.grocery.core.domain.rent.Rent;
+import mz.co.grocery.core.domain.rent.RentPayment;
 
 /**
  * @author Stélio Moiane

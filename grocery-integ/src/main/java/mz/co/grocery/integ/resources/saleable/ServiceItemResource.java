@@ -17,17 +17,20 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import mz.co.grocery.core.saleable.model.ServiceItem;
-import mz.co.grocery.core.saleable.service.ServiceItemQueryService;
-import mz.co.grocery.core.saleable.service.ServiceItemService;
+import mz.co.grocery.core.application.sale.out.ServiceItemPort;
+import mz.co.grocery.core.common.WebAdapter;
+import mz.co.grocery.core.domain.item.Service;
+import mz.co.grocery.core.domain.sale.ServiceItem;
+import mz.co.grocery.core.domain.unit.Unit;
 import mz.co.grocery.integ.resources.AbstractResource;
-import mz.co.grocery.integ.resources.grocery.dto.GroceryDTO;
 import mz.co.grocery.integ.resources.item.dto.ServiceDTO;
 import mz.co.grocery.integ.resources.saleable.dto.ServiceItemDTO;
 import mz.co.grocery.integ.resources.saleable.dto.ServiceItemsDTO;
+import mz.co.grocery.integ.resources.unit.dto.UnitDTO;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
+import mz.co.msaude.boot.frameworks.mapper.DTOMapper;
 
 /**
  * @author Stélio Moiane
@@ -35,22 +38,30 @@ import mz.co.msaude.boot.frameworks.exception.BusinessException;
  */
 
 @Path("service-items")
-@Service(ServiceItemResource.NAME)
+@WebAdapter
 public class ServiceItemResource extends AbstractResource {
 
-	public static final String NAME = "mz.co.grocery.integ.resources.saleable.ServiceItemResource";
-
 	@Inject
-	private ServiceItemService serviceItemService;
+	private ServiceItemPort serviceItemPort;
 
-	@Inject
-	private ServiceItemQueryService serviceItemQueryService;
+	@Autowired
+	private DTOMapper<ServiceItemDTO, ServiceItem> serviceItemMapper;
+
+	@Autowired
+	private DTOMapper<UnitDTO, Unit> unitMapper;
+
+	@Autowired
+	private DTOMapper<ServiceDTO, Service> serviceMapper;
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response createServiceItem(final ServiceItemDTO serviceItemDTO) throws BusinessException {
-		this.serviceItemService.createServiceItem(this.getContext(), serviceItemDTO.get());
+
+		ServiceItem serviceItem = this.serviceItemMapper.toDomain(serviceItemDTO);
+
+		serviceItem = this.serviceItemPort.createServiceItem(this.getContext(), serviceItem);
+
 		return Response.ok(serviceItemDTO).build();
 	}
 
@@ -60,18 +71,22 @@ public class ServiceItemResource extends AbstractResource {
 	public Response fetchAllServiceItems(@QueryParam("currentPage") final int currentPage, @QueryParam("maxResult") final int maxResult)
 			throws BusinessException {
 
-		final List<ServiceItem> serviceItems = this.serviceItemQueryService.fetchAllServiceItems(currentPage, maxResult);
-		final Long totalItems = this.serviceItemQueryService.countServiceItems();
+		final List<ServiceItem> serviceItems = this.serviceItemPort.fetchAllServiceItems(currentPage, maxResult);
 
-		return Response.ok(new ServiceItemsDTO(serviceItems, totalItems)).build();
+		final Long totalItems = this.serviceItemPort.countServiceItems();
+
+		return Response.ok(new ServiceItemsDTO(serviceItems, totalItems, this.serviceItemMapper)).build();
 	}
 
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response updateServiceItem(final ServiceItemDTO serviceItemDTO) throws BusinessException {
-		this.serviceItemService.updateServiceItem(this.getContext(), serviceItemDTO.get());
-		return Response.ok(serviceItemDTO).build();
+		ServiceItem serviceItem = this.serviceItemMapper.toDomain(serviceItemDTO);
+
+		serviceItem = this.serviceItemPort.updateServiceItem(this.getContext(), serviceItem);
+
+		return Response.ok(this.serviceItemMapper.toDTO(serviceItem)).build();
 	}
 
 	@GET
@@ -79,9 +94,9 @@ public class ServiceItemResource extends AbstractResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response fetchServiceItemByUuid(@PathParam("serviceItemUuid") final String serviceItemUuid) throws BusinessException {
-		final ServiceItem serviceItem = this.serviceItemQueryService.fetchServiceItemByUuid(serviceItemUuid);
+		final ServiceItem serviceItem = this.serviceItemPort.fetchServiceItemByUuid(serviceItemUuid);
 
-		return Response.ok(new ServiceItemDTO(serviceItem)).build();
+		return Response.ok(this.serviceItemMapper.toDTO(serviceItem)).build();
 	}
 
 	@GET
@@ -91,10 +106,11 @@ public class ServiceItemResource extends AbstractResource {
 	public Response fetchServiceItemsByName(@QueryParam("serviceItemName") final String serviceItemName)
 			throws BusinessException {
 
-		final List<ServiceItem> serviceItems = this.serviceItemQueryService.fetchServiceItemByName(serviceItemName);
-		final Long totalItems = this.serviceItemQueryService.countServiceItems();
+		final List<ServiceItem> serviceItems = this.serviceItemPort.fetchServiceItemByName(serviceItemName);
 
-		return Response.ok(new ServiceItemsDTO(serviceItems, totalItems)).build();
+		final Long totalItems = this.serviceItemPort.countServiceItems();
+
+		return Response.ok(new ServiceItemsDTO(serviceItems, totalItems, this.serviceItemMapper)).build();
 	}
 
 	@GET
@@ -105,12 +121,16 @@ public class ServiceItemResource extends AbstractResource {
 			@QueryParam("unitUuid") final String unitUuid)
 					throws BusinessException {
 
-		final ServiceDTO serviceDTO = new ServiceDTO(serviceUuid);
-		final GroceryDTO unitDTO = new GroceryDTO(unitUuid);
+		final ServiceDTO serviceDTO = new ServiceDTO();
+		serviceDTO.setUuid(serviceUuid);
 
-		final List<ServiceItem> serviceItems = this.serviceItemQueryService.fetchServiceItemsByServiceAndUnit(serviceDTO.get(), unitDTO.get());
+		final UnitDTO unitDTO = new UnitDTO();
+		unitDTO.setUuid(unitUuid);
 
-		return Response.ok(new ServiceItemsDTO(serviceItems, 0L).getServiceItemsDTO()).build();
+		final List<ServiceItem> serviceItems = this.serviceItemPort.fetchServiceItemsByServiceAndUnit(this.serviceMapper.toDomain(serviceDTO),
+				this.unitMapper.toDomain(unitDTO));
+
+		return Response.ok(new ServiceItemsDTO(serviceItems, 0L, this.serviceItemMapper).getServiceItemsDTO()).build();
 	}
 
 	@GET
@@ -121,11 +141,15 @@ public class ServiceItemResource extends AbstractResource {
 			@QueryParam("unitUuid") final String unitUuid)
 					throws BusinessException {
 
-		final ServiceDTO serviceDTO = new ServiceDTO(serviceUuid);
-		final GroceryDTO unitDTO = new GroceryDTO(unitUuid);
+		final ServiceDTO serviceDTO = new ServiceDTO();
+		serviceDTO.setUuid(serviceUuid);
 
-		final List<ServiceItem> serviceItems = this.serviceItemQueryService.fetchServiceItemsNotInThisUnitByService(serviceDTO.get(), unitDTO.get());
+		final UnitDTO unitDTO = new UnitDTO();
+		unitDTO.setUuid(unitUuid);
 
-		return Response.ok(new ServiceItemsDTO(serviceItems, 0L).getServiceItemsDTO()).build();
+		final List<ServiceItem> serviceItems = this.serviceItemPort.fetchServiceItemsNotInThisUnitByService(this.serviceMapper.toDomain(serviceDTO),
+				this.unitMapper.toDomain(unitDTO));
+
+		return Response.ok(new ServiceItemsDTO(serviceItems, 0L, this.serviceItemMapper).getServiceItemsDTO()).build();
 	}
 }

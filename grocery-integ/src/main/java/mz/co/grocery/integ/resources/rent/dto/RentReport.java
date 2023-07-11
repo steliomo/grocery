@@ -12,9 +12,9 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import mz.co.grocery.core.domain.rent.Rent;
+import mz.co.grocery.core.domain.rent.RentItem;
 import mz.co.grocery.core.domain.report.Report;
-import mz.co.grocery.core.rent.model.Rent;
-import mz.co.grocery.core.rent.model.RentItem;
 
 /**
  * @author Stélio Moiane
@@ -49,12 +49,12 @@ public class RentReport implements Report {
 
 		this.name = "QUOTATION_" + time + ".pdf";
 		this.reportDate = rent.getRentDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy"));
-		this.address = rent.getCustomer().getAddress();
-		this.phoneNumber = rent.getCustomer().getContact();
-		this.customerName = rent.getCustomer().getName();
-		this.totalDiscount = rent.getRentItems().stream().map(RentItem::getDiscount).reduce(BigDecimal.ZERO, BigDecimal::add);
-		this.rentItemsReport = rent.getRentItems().stream().map(rentItem -> new RentItemReport(rentItem)).collect(Collectors.toList());
-		this.grandTotal = rent.getRentItems().stream().map(RentItem::getPlannedTotal).reduce(BigDecimal.ZERO, BigDecimal::add);
+		this.address = rent.getCustomer().get().getAddress();
+		this.phoneNumber = rent.getCustomer().get().getContact();
+		this.customerName = rent.getCustomer().get().getName();
+		this.totalDiscount = rent.getRentItems().get().stream().map(RentItem::getDiscount).reduce(BigDecimal.ZERO, BigDecimal::add);
+		this.rentItemsReport = rent.getRentItems().get().stream().map(rentItem -> new RentItemReport(rentItem)).collect(Collectors.toList());
+		this.grandTotal = rent.getRentItems().get().stream().map(RentItem::getPlannedTotal).reduce(BigDecimal.ZERO, BigDecimal::add);
 	}
 
 	@Override
@@ -73,7 +73,7 @@ public class RentReport implements Report {
 	}
 
 	@Override
-	public String getFileName() {
+	public String getFilePath() {
 		return this.name;
 	}
 

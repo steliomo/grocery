@@ -8,8 +8,8 @@ import java.time.LocalDate;
 import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.Rule;
 import br.com.six2six.fixturefactory.loader.TemplateLoader;
-import mz.co.grocery.core.contract.model.Contract;
-import mz.co.grocery.core.contract.model.ContractPayment;
+import mz.co.grocery.core.domain.contract.Contract;
+import mz.co.grocery.core.domain.contract.ContractPayment;
 
 /**
  * @author Stélio Moiane

@@ -16,20 +16,23 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import mz.co.grocery.core.contract.model.Contract;
-import mz.co.grocery.core.contract.model.ContractType;
-import mz.co.grocery.core.contract.service.ContractPaymentService;
-import mz.co.grocery.core.contract.service.ContractQueryService;
-import mz.co.grocery.core.contract.service.ContractService;
+import mz.co.grocery.core.application.contract.in.CelebrateContractUseCase;
+import mz.co.grocery.core.application.contract.in.PaymentContractUseCase;
+import mz.co.grocery.core.application.contract.out.ContractPort;
+import mz.co.grocery.core.common.WebAdapter;
+import mz.co.grocery.core.domain.contract.Contract;
+import mz.co.grocery.core.domain.contract.ContractPayment;
+import mz.co.grocery.core.domain.contract.ContractType;
 import mz.co.grocery.core.util.ApplicationTranslator;
 import mz.co.grocery.integ.resources.AbstractResource;
+import mz.co.grocery.integ.resources.common.EnumsDTO;
 import mz.co.grocery.integ.resources.contract.dto.ContractDTO;
 import mz.co.grocery.integ.resources.contract.dto.ContractPaymentDTO;
 import mz.co.grocery.integ.resources.contract.dto.ContractsDTO;
-import mz.co.grocery.integ.resources.util.EnumsDTO;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
+import mz.co.msaude.boot.frameworks.mapper.DTOMapper;
 import mz.co.msaude.boot.frameworks.util.LocalDateAdapter;
 
 /**
@@ -37,31 +40,37 @@ import mz.co.msaude.boot.frameworks.util.LocalDateAdapter;
  *
  */
 @Path("contracts")
-@Service(ContractResource.NAME)
+@WebAdapter
 public class ContractResource extends AbstractResource {
 
-	public static final String NAME = "mz.co.grocery.integ.resources.contract.ContractResource";
+	@Inject
+	private CelebrateContractUseCase contractUseCase;
 
 	@Inject
-	private ContractService contractService;
+	private PaymentContractUseCase paymentContractUseCase;
 
 	@Inject
-	private ContractPaymentService contractPaymentService;
-
-	@Inject
-	private ContractQueryService contractQueryService;
+	private ContractPort contractPort;
 
 	@Inject
 	private ApplicationTranslator translator;
+
+	@Autowired
+	private DTOMapper<ContractDTO, Contract> contractMapper;
+
+	@Autowired
+	private DTOMapper<ContractPaymentDTO, ContractPayment> contractPaymentMapper;
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response celebrateContract(final ContractDTO contractDTO) throws BusinessException {
 
-		this.contractService.celebrateContract(this.getContext(), contractDTO.get());
+		Contract contract = this.contractMapper.toDomain(contractDTO);
 
-		return Response.ok(contractDTO).build();
+		contract = this.contractUseCase.celebrateContract(this.getContext(), contract);
+
+		return Response.ok(this.contractMapper.toDTO(contract)).build();
 	}
 
 	@Path("contract-payment")
@@ -70,9 +79,11 @@ public class ContractResource extends AbstractResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response performContractPayment(final ContractPaymentDTO contractPaymentDTO) throws BusinessException {
 
-		this.contractPaymentService.performContractPayment(this.getContext(), contractPaymentDTO.get());
+		ContractPayment contractPayment = this.contractPaymentMapper.toDomain(contractPaymentDTO);
 
-		return Response.ok(contractPaymentDTO).build();
+		contractPayment = this.paymentContractUseCase.performContractPayment(this.getContext(), contractPayment);
+
+		return Response.ok(this.contractPaymentMapper.toDTO(contractPayment)).build();
 	}
 
 	@Path("types")
@@ -93,8 +104,8 @@ public class ContractResource extends AbstractResource {
 		final LocalDateAdapter adapter = new LocalDateAdapter();
 		final LocalDate localDate = adapter.unmarshal(currentDate);
 
-		final List<Contract> contracts = this.contractQueryService.findPendingContractsForPaymentByCustomerUuid(customerUuid, localDate);
+		final List<Contract> contracts = this.contractPort.findPendingContractsForPaymentByCustomerUuid(customerUuid, localDate);
 
-		return Response.ok(new ContractsDTO(contracts, this.translator)).build();
+		return Response.ok(new ContractsDTO(contracts, this.contractMapper)).build();
 	}
 }

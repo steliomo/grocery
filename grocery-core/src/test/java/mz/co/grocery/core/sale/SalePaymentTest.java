@@ -15,17 +15,16 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
+import mz.co.grocery.core.application.sale.in.SalePaymentUseCase;
+import mz.co.grocery.core.application.sale.out.SalePaymentPort;
+import mz.co.grocery.core.application.sale.out.SalePort;
+import mz.co.grocery.core.application.sale.service.SalePaymentService;
 import mz.co.grocery.core.config.AbstractUnitServiceTest;
-import mz.co.grocery.core.customer.model.SaleType;
+import mz.co.grocery.core.domain.customer.SaleType;
+import mz.co.grocery.core.domain.sale.Sale;
+import mz.co.grocery.core.domain.sale.SalePayment;
+import mz.co.grocery.core.domain.sale.SaleStatus;
 import mz.co.grocery.core.fixturefactory.SaleTemplate;
-import mz.co.grocery.core.sale.dao.SaleDAO;
-import mz.co.grocery.core.sale.model.Sale;
-import mz.co.grocery.core.sale.model.SalePayment;
-import mz.co.grocery.core.sale.model.SaleStatus;
-import mz.co.grocery.core.sale.service.SalePaymentDAO;
-import mz.co.grocery.core.sale.service.SalePaymentService;
-import mz.co.grocery.core.sale.service.SalePaymentServiceImpl;
-import mz.co.grocery.core.util.ApplicationTranslator;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.fixturefactory.EntityFactory;
 import mz.co.msaude.boot.frameworks.model.UserContext;
@@ -36,17 +35,14 @@ import mz.co.msaude.boot.frameworks.model.UserContext;
  */
 public class SalePaymentTest extends AbstractUnitServiceTest {
 
+	@Mock
+	private SalePort salePort;
+
+	@Mock
+	private SalePaymentPort salePaymentPort;
+
 	@InjectMocks
-	private final SalePaymentService salePaymentService = new SalePaymentServiceImpl();
-
-	@Mock
-	private ApplicationTranslator translator;
-
-	@Mock
-	private SaleDAO saleDAO;
-
-	@Mock
-	private SalePaymentDAO salePaymentDAO;
+	private final SalePaymentUseCase salePaymentService = new SalePaymentService(this.salePort, this.salePaymentPort);
 
 	@Captor
 	private ArgumentCaptor<SalePayment> salePaymentCaptor;
@@ -68,20 +64,19 @@ public class SalePaymentTest extends AbstractUnitServiceTest {
 
 		final UserContext userContext = this.getUserContext();
 
-		Mockito.when(this.saleDAO.findByUuid(sale.getUuid())).thenReturn(sale);
+		Mockito.when(this.salePort.findByUuid(sale.getUuid())).thenReturn(sale);
 
 		this.salePaymentService.payInstallmentSale(userContext, sale.getUuid(), paymentValue, PaymenteDate);
 
-		Mockito.verify(this.saleDAO, Mockito.times(1)).update(userContext, sale);
-		Mockito.verify(this.salePaymentDAO).create(ArgumentMatchers.eq(userContext), this.salePaymentCaptor.capture());
-		Mockito.verify(this.saleDAO).update(ArgumentMatchers.eq(userContext), this.saleCaptor.capture());
-
+		Mockito.verify(this.salePort, Mockito.times(1)).updateSale(userContext, sale);
+		Mockito.verify(this.salePaymentPort).createSalePayment(ArgumentMatchers.eq(userContext), this.salePaymentCaptor.capture());
+		Mockito.verify(this.salePort).updateSale(ArgumentMatchers.eq(userContext), this.saleCaptor.capture());
 		final SalePayment salePayment = this.salePaymentCaptor.getValue();
 
 		Assert.assertEquals(SaleType.INSTALLMENT, sale.getSaleType());
 		Assert.assertEquals(paymentValue, salePayment.getPaymentValue());
 		Assert.assertEquals(PaymenteDate, salePayment.getPaymentDate());
-		Assert.assertEquals(paymentValue, salePayment.getSale().getTotalPaid());
+		Assert.assertEquals(paymentValue, salePayment.getSale().get().getTotalPaid());
 		Assert.assertEquals(SaleStatus.INCOMPLETE, this.saleCaptor.getValue().getSaleStatus());
 	}
 
@@ -96,10 +91,7 @@ public class SalePaymentTest extends AbstractUnitServiceTest {
 		final BigDecimal paymentValue = new BigDecimal(100);
 		final LocalDate PaymenteDate = LocalDate.now();
 
-		Mockito.when(this.saleDAO.findByUuid(sale.getUuid())).thenReturn(sale);
-
-		Mockito.when(this.translator.getTranslation("cannot.perform.payment.for.non.installment.sale"))
-		.thenReturn("Cannot perform payment for non installment sale");
+		Mockito.when(this.salePort.findByUuid(sale.getUuid())).thenReturn(sale);
 
 		this.salePaymentService.payInstallmentSale(this.getUserContext(), sale.getUuid(), paymentValue, PaymenteDate);
 	}
@@ -117,13 +109,8 @@ public class SalePaymentTest extends AbstractUnitServiceTest {
 		final BigDecimal paymentValue = sale.getRemainingPayment().add(new BigDecimal(100));
 		final LocalDate PaymenteDate = LocalDate.now();
 
-		Mockito.when(this.saleDAO.findByUuid(sale.getUuid())).thenReturn(sale);
-
-		Mockito.when(this.translator.getTranslation("the.payment.value.is.higher.than.expected"))
-		.thenReturn("The payment value is higher than expected. Was expected:" + sale.getRemainingPayment().toString() + " but is"
-				+ paymentValue.toString());
+		Mockito.when(this.salePort.findByUuid(sale.getUuid())).thenReturn(sale);
 
 		this.salePaymentService.payInstallmentSale(this.getUserContext(), sale.getUuid(), paymentValue, PaymenteDate);
 	}
-
 }

@@ -8,26 +8,24 @@ import java.math.BigDecimal;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
+import mz.co.grocery.core.application.payment.in.PaymentUseCase;
+import mz.co.grocery.core.application.rent.in.MakeRentPaymentUseCase;
+import mz.co.grocery.core.application.rent.out.RentPaymentPort;
+import mz.co.grocery.core.application.rent.out.RentPort;
+import mz.co.grocery.core.application.rent.service.MakeRentPaymentService;
 import mz.co.grocery.core.config.AbstractUnitServiceTest;
-import mz.co.grocery.core.fixturefactory.GroceryTemplate;
+import mz.co.grocery.core.domain.rent.PaymentStatus;
+import mz.co.grocery.core.domain.rent.Rent;
+import mz.co.grocery.core.domain.rent.RentItem;
+import mz.co.grocery.core.domain.rent.RentPayment;
+import mz.co.grocery.core.domain.unit.Unit;
+import mz.co.grocery.core.fixturefactory.UnitTemplate;
 import mz.co.grocery.core.fixturefactory.RentItemTemplate;
 import mz.co.grocery.core.fixturefactory.RentPaymentTemplate;
-import mz.co.grocery.core.grocery.model.Grocery;
-import mz.co.grocery.core.payment.service.PaymentService;
-import mz.co.grocery.core.rent.dao.RentDAO;
-import mz.co.grocery.core.rent.dao.RentPaymentDAO;
-import mz.co.grocery.core.rent.model.PaymentStatus;
-import mz.co.grocery.core.rent.model.Rent;
-import mz.co.grocery.core.rent.model.RentItem;
-import mz.co.grocery.core.rent.model.RentPayment;
-import mz.co.grocery.core.rent.service.RentPaymentService;
-import mz.co.grocery.core.rent.service.RentPaymentServiceImpl;
-import mz.co.grocery.core.util.ApplicationTranslator;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.fixturefactory.EntityFactory;
 
@@ -37,20 +35,17 @@ import mz.co.msaude.boot.frameworks.fixturefactory.EntityFactory;
  */
 public class RentPaymentServiceTest extends AbstractUnitServiceTest {
 
+	@Mock
+	private RentPort rentPort;
+
+	@Mock
+	private RentPaymentPort rentPaymentPort;
+
+	@Mock
+	private PaymentUseCase paymentUseCase;
+
 	@InjectMocks
-	private final RentPaymentService rentService = new RentPaymentServiceImpl();
-
-	@Mock
-	private RentDAO rentDAO;
-
-	@Mock
-	private RentPaymentDAO rentPaymentDAO;
-
-	@Mock
-	private PaymentService paymentService;
-
-	@Mock
-	private ApplicationTranslator translator;
+	private final MakeRentPaymentUseCase rentService = new MakeRentPaymentService(this.rentPort, this.rentPaymentPort, this.paymentUseCase);
 
 	private Rent rent;
 
@@ -71,7 +66,7 @@ public class RentPaymentServiceTest extends AbstractUnitServiceTest {
 		this.rent.addRentPayment(this.rentPayment);
 		this.rentPayment.setPaymentValue(this.rent.getTotalEstimated());
 
-		Mockito.when(this.rentDAO.findByUuid(this.rent.getUuid())).thenReturn(this.rent);
+		Mockito.when(this.rentPort.findByUuid(this.rent.getUuid())).thenReturn(this.rent);
 
 		this.rentService.makeRentPayment(this.getUserContext(), this.rentPayment);
 
@@ -86,7 +81,7 @@ public class RentPaymentServiceTest extends AbstractUnitServiceTest {
 
 		this.rent.addRentPayment(this.rentPayment);
 
-		Mockito.when(this.rentDAO.findByUuid(this.rent.getUuid())).thenReturn(this.rent);
+		Mockito.when(this.rentPort.findByUuid(this.rent.getUuid())).thenReturn(this.rent);
 
 		this.rentService.makeRentPayment(this.getUserContext(), this.rentPayment);
 		Assert.assertEquals(PaymentStatus.INCOMPLETE, this.rentPayment.getPaymentStatus());
@@ -95,8 +90,6 @@ public class RentPaymentServiceTest extends AbstractUnitServiceTest {
 	@Test(expected = BusinessException.class)
 	public void shouldNotMakePartialRentPaymentForZeroValue() throws BusinessException {
 		this.rentPayment.setPaymentValue(BigDecimal.ZERO);
-
-		Mockito.when(this.translator.getTranslation(ArgumentMatchers.any())).thenReturn("The rent payment value cannot be zero!");
 
 		this.rentService.makeRentPayment(this.getUserContext(), this.rentPayment);
 	}
@@ -108,9 +101,7 @@ public class RentPaymentServiceTest extends AbstractUnitServiceTest {
 		this.rentPayment.setRent(this.rent);
 		this.rent.setTotalPaid(this.rent.getTotalEstimated().add(new BigDecimal(100)));
 
-		Mockito.when(this.rentDAO.findByUuid(this.rent.getUuid())).thenReturn(this.rent);
-		Mockito.when(this.translator.getTranslation(ArgumentMatchers.any()))
-		.thenReturn("The refund process cannot happen while there are items to return!");
+		Mockito.when(this.rentPort.findByUuid(this.rent.getUuid())).thenReturn(this.rent);
 
 		this.rentService.makeRentPayment(this.getUserContext(), this.rentPayment);
 	}
@@ -129,12 +120,12 @@ public class RentPaymentServiceTest extends AbstractUnitServiceTest {
 		rent.setReturnStatus();
 		rent.setTotalCalculated(rent.getTotalEstimated());
 		rent.setTotalPaid(rent.getTotalEstimated().add(new BigDecimal(100)));
-		rent.setUnit(EntityFactory.gimme(Grocery.class, GroceryTemplate.VALID));
+		rent.setUnit(EntityFactory.gimme(Unit.class, UnitTemplate.VALID));
 
 		this.rentPayment.setRent(rent);
 		this.rentPayment.setPaymentValue(new BigDecimal(100));
 
-		Mockito.when(this.rentDAO.findByUuid(rent.getUuid())).thenReturn(rent);
+		Mockito.when(this.rentPort.findByUuid(rent.getUuid())).thenReturn(rent);
 
 		this.rentService.makeRentPayment(this.getUserContext(), this.rentPayment);
 

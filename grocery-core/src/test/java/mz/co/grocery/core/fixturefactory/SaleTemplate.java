@@ -9,11 +9,11 @@ import java.util.HashSet;
 import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.Rule;
 import br.com.six2six.fixturefactory.loader.TemplateLoader;
-import mz.co.grocery.core.customer.model.SaleType;
-import mz.co.grocery.core.grocery.model.Grocery;
-import mz.co.grocery.core.sale.model.Sale;
-import mz.co.grocery.core.sale.model.SaleItem;
-import mz.co.grocery.core.sale.model.SaleStatus;
+import mz.co.grocery.core.domain.customer.SaleType;
+import mz.co.grocery.core.domain.sale.Sale;
+import mz.co.grocery.core.domain.sale.SaleItem;
+import mz.co.grocery.core.domain.sale.SaleStatus;
+import mz.co.grocery.core.domain.unit.Unit;
 
 /**
  * @author Stélio Moiane
@@ -28,7 +28,7 @@ public class SaleTemplate implements TemplateLoader {
 	public void load() {
 		Fixture.of(Sale.class).addTemplate(SaleTemplate.VALID, new Rule() {
 			{
-				this.add("grocery", this.one(Grocery.class, GroceryTemplate.VALID));
+				this.add("unit", this.one(Unit.class, UnitTemplate.VALID));
 				this.add("saleDate", LocalDate.now());
 				this.add("items", new HashSet<SaleItem>());
 				this.add("saleType", this.random(SaleType.CASH, SaleType.INSTALLMENT));

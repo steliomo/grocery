@@ -6,8 +6,8 @@ package mz.co.grocery.integ.resources.contract.dto;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import mz.co.grocery.core.contract.model.Contract;
-import mz.co.grocery.core.util.ApplicationTranslator;
+import mz.co.grocery.core.domain.contract.Contract;
+import mz.co.msaude.boot.frameworks.mapper.DTOMapper;
 
 /**
  * @author Stélio Moiane
@@ -17,17 +17,17 @@ public class ContractsDTO {
 
 	private List<Contract> contracts;
 
-	private ApplicationTranslator translator;
+	private DTOMapper<ContractDTO, Contract> contractMapper;
 
 	public ContractsDTO() {
 	}
 
-	public ContractsDTO(final List<Contract> contracts, final ApplicationTranslator translator) {
+	public ContractsDTO(final List<Contract> contracts, final DTOMapper<ContractDTO, Contract> contractMapper) {
 		this.contracts = contracts;
-		this.translator = translator;
+		this.contractMapper = contractMapper;
 	}
 
 	public List<ContractDTO> getContracts() {
-		return this.contracts.stream().map(contract -> new ContractDTO(contract, this.translator)).collect(Collectors.toList());
+		return this.contracts.stream().map(contract -> this.contractMapper.toDTO(contract)).collect(Collectors.toList());
 	}
 }

@@ -12,8 +12,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import mz.co.grocery.core.config.AbstractUnitServiceTest;
+import mz.co.grocery.core.domain.rent.RentItem;
 import mz.co.grocery.core.fixturefactory.RentItemTemplate;
-import mz.co.grocery.core.rent.model.RentItem;
 import mz.co.msaude.boot.frameworks.fixturefactory.EntityFactory;
 
 /**
@@ -32,7 +32,7 @@ public class RentItemTest extends AbstractUnitServiceTest {
 
 	@Test
 	public void shouldCalculateTotalPlanned() {
-		final BigDecimal expected = this.rentItem.getItem().getRentPrice().multiply(this.rentItem.getPlannedDays())
+		final BigDecimal expected = this.rentItem.getItem().get().getRentPrice().multiply(this.rentItem.getPlannedDays())
 				.multiply(this.rentItem.getPlannedQuantity())
 				.subtract(this.rentItem.getDiscount());
 
@@ -45,7 +45,7 @@ public class RentItemTest extends AbstractUnitServiceTest {
 		final LocalDate returnDate = LocalDate.now();
 		this.rentItem.setLoadingDate(returnDate);
 
-		final BigDecimal expected = this.rentItem.getItem().getRentPrice().multiply(this.rentItem.getPlannedDays())
+		final BigDecimal expected = this.rentItem.getItem().get().getRentPrice().multiply(this.rentItem.getPlannedDays())
 				.multiply(this.rentItem.getPlannedQuantity().subtract(returnedQuantity))
 				.subtract(this.rentItem.getDiscount());
 
@@ -63,7 +63,7 @@ public class RentItemTest extends AbstractUnitServiceTest {
 		this.rentItem.addLoadedQuantity(new BigDecimal(30));
 
 		final long days = Duration.between(this.rentItem.getLoadingDate().atStartOfDay(), returnDate.atStartOfDay()).toDays();
-		final BigDecimal expected = this.rentItem.getItem().getRentPrice().multiply(new BigDecimal(days))
+		final BigDecimal expected = this.rentItem.getItem().get().getRentPrice().multiply(new BigDecimal(days))
 				.multiply(returnedQuantity);
 
 		final BigDecimal rentalChunkValue = this.rentItem.getRentalChunkValueOnReturning(returnDate, returnedQuantity);
@@ -81,7 +81,7 @@ public class RentItemTest extends AbstractUnitServiceTest {
 
 		final long days = Duration.between(this.rentItem.getLoadingDate().atStartOfDay(), loadDate.atStartOfDay()).toDays();
 
-		final BigDecimal expected = this.rentItem.getItem().getRentPrice().multiply(new BigDecimal(days))
+		final BigDecimal expected = this.rentItem.getItem().get().getRentPrice().multiply(new BigDecimal(days))
 				.multiply(this.rentItem.getLoadedQuantity());
 
 		final BigDecimal rentalChunkValue = this.rentItem.getRentalChunkValueOnLoading(loadDate);

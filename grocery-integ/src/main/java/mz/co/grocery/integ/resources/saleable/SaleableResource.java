@@ -12,15 +12,21 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import mz.co.grocery.core.saleable.service.ServiceItemService;
-import mz.co.grocery.core.saleable.service.StockService;
+import mz.co.grocery.core.application.sale.in.UpdateServiceItemPriceUseCase;
+import mz.co.grocery.core.application.sale.in.UpdateStockAndPricesUseCase;
+import mz.co.grocery.core.application.sale.out.ServiceItemPort;
+import mz.co.grocery.core.application.sale.out.StockPort;
+import mz.co.grocery.core.common.WebAdapter;
+import mz.co.grocery.core.domain.sale.ServiceItem;
+import mz.co.grocery.core.domain.sale.Stock;
 import mz.co.grocery.integ.resources.AbstractResource;
 import mz.co.grocery.integ.resources.saleable.dto.SaleableDTO;
 import mz.co.grocery.integ.resources.saleable.dto.ServiceItemDTO;
 import mz.co.grocery.integ.resources.saleable.dto.StockDTO;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
+import mz.co.msaude.boot.frameworks.mapper.DTOMapper;
 
 /**
  * @author Stélio Moiane
@@ -28,16 +34,26 @@ import mz.co.msaude.boot.frameworks.exception.BusinessException;
  */
 
 @Path("saleables")
-@Service(SaleableResource.NAME)
+@WebAdapter
 public class SaleableResource extends AbstractResource {
 
-	public static final String NAME = "mz.co.grocery.integ.resources.saleable.SaleableResource";
+	@Inject
+	private StockPort stockPort;
 
 	@Inject
-	private StockService stockService;
+	private ServiceItemPort serviceItemPort;
+
+	@Autowired
+	private DTOMapper<StockDTO, Stock> stockMapper;
+
+	@Autowired
+	private DTOMapper<ServiceItemDTO, ServiceItem> serviceItemMapper;
 
 	@Inject
-	private ServiceItemService serviceItemService;
+	private UpdateServiceItemPriceUseCase updateServiceItemPriceUseCase;
+
+	@Inject
+	private UpdateStockAndPricesUseCase updateStockAndPricesUseCase;
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -45,11 +61,11 @@ public class SaleableResource extends AbstractResource {
 	public Response addSaleable(final SaleableDTO saleable) throws BusinessException {
 
 		for (final StockDTO stock : saleable.getStocks()) {
-			this.stockService.createStock(this.getContext(), stock.get());
+			this.stockPort.createStock(this.getContext(), this.stockMapper.toDomain(stock));
 		}
 
 		for (final ServiceItemDTO serviceItem : saleable.getServiceItems()) {
-			this.serviceItemService.createServiceItem(this.getContext(), serviceItem.get());
+			this.serviceItemPort.createServiceItem(this.getContext(), this.serviceItemMapper.toDomain(serviceItem));
 		}
 
 		return Response.ok(saleable).build();
@@ -61,11 +77,11 @@ public class SaleableResource extends AbstractResource {
 	public Response updateSaleable(final SaleableDTO saleable) throws BusinessException {
 
 		for (final StockDTO stock : saleable.getStocks()) {
-			this.stockService.updateStocksAndPrices(this.getContext(), stock.get());
+			this.updateStockAndPricesUseCase.updateStocksAndPrices(this.getContext(), this.stockMapper.toDomain(stock));
 		}
 
 		for (final ServiceItemDTO serviceItem : saleable.getServiceItems()) {
-			this.serviceItemService.updateServiceItemPrice(this.getContext(), serviceItem.get());
+			this.updateServiceItemPriceUseCase.updateServiceItemPrice(this.getContext(), this.serviceItemMapper.toDomain(serviceItem));
 		}
 
 		return Response.ok(saleable).build();

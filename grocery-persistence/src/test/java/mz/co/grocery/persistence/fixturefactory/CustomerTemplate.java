@@ -6,7 +6,7 @@ package mz.co.grocery.persistence.fixturefactory;
 import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.Rule;
 import br.com.six2six.fixturefactory.loader.TemplateLoader;
-import mz.co.grocery.core.customer.model.Customer;
+import mz.co.grocery.core.domain.customer.Customer;
 
 /**
  * @author Stélio Moiane

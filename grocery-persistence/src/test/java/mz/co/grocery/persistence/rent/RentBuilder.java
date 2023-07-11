@@ -11,22 +11,26 @@ import javax.inject.Inject;
 
 import org.springframework.stereotype.Service;
 
-import mz.co.grocery.core.customer.model.Customer;
-import mz.co.grocery.core.customer.service.CustomerService;
-import mz.co.grocery.core.grocery.model.Grocery;
-import mz.co.grocery.core.grocery.service.GroceryService;
-import mz.co.grocery.core.item.model.ItemType;
-import mz.co.grocery.core.item.service.ProductDescriptionService;
-import mz.co.grocery.core.item.service.ProductService;
-import mz.co.grocery.core.item.service.ProductUnitService;
-import mz.co.grocery.core.item.service.ServiceDescriptionService;
-import mz.co.grocery.core.item.service.ServiceService;
-import mz.co.grocery.core.rent.model.Rent;
-import mz.co.grocery.core.rent.model.RentItem;
-import mz.co.grocery.core.saleable.model.ServiceItem;
-import mz.co.grocery.core.saleable.model.Stock;
-import mz.co.grocery.core.saleable.service.ServiceItemService;
-import mz.co.grocery.core.saleable.service.StockService;
+import mz.co.grocery.core.application.customer.out.CustomerPort;
+import mz.co.grocery.core.application.item.out.ProductDescriptionPort;
+import mz.co.grocery.core.application.item.out.ProductPort;
+import mz.co.grocery.core.application.item.out.ProductUnitPort;
+import mz.co.grocery.core.application.item.out.ServiceDescriptionPort;
+import mz.co.grocery.core.application.item.out.ServicePort;
+import mz.co.grocery.core.application.sale.out.ServiceItemPort;
+import mz.co.grocery.core.application.sale.out.StockPort;
+import mz.co.grocery.core.application.unit.out.UnitPort;
+import mz.co.grocery.core.domain.customer.Customer;
+import mz.co.grocery.core.domain.item.ItemType;
+import mz.co.grocery.core.domain.item.Product;
+import mz.co.grocery.core.domain.item.ProductDescription;
+import mz.co.grocery.core.domain.item.ProductUnit;
+import mz.co.grocery.core.domain.item.ServiceDescription;
+import mz.co.grocery.core.domain.rent.Rent;
+import mz.co.grocery.core.domain.rent.RentItem;
+import mz.co.grocery.core.domain.sale.ServiceItem;
+import mz.co.grocery.core.domain.sale.Stock;
+import mz.co.grocery.core.domain.unit.Unit;
 import mz.co.grocery.persistence.config.AbstractServiceTest;
 import mz.co.grocery.persistence.fixturefactory.RentItemTemplate;
 import mz.co.grocery.persistence.fixturefactory.RentTemplate;
@@ -43,87 +47,116 @@ public class RentBuilder extends AbstractServiceTest {
 	public static final String NAME = "mz.co.grocery.core.rent.builder.RentBuilder";
 
 	@Inject
-	private GroceryService groceryService;
+	private UnitPort unitPort;
 
 	@Inject
-	private CustomerService customerService;
+	private CustomerPort customerPort;
 
 	@Inject
-	private ProductService productService;
+	private ProductPort productPort;
 
 	@Inject
-	private ProductUnitService productUnitService;
+	private ProductUnitPort productUnitPort;
 
 	@Inject
-	private ProductDescriptionService productDescriptionService;
+	private ProductDescriptionPort productDescriptionPort;
 
 	@Inject
-	private StockService stockService;
+	private StockPort stockPort;
 
 	@Inject
-	private ServiceService serviceService;
+	private ServicePort servicePort;
 
 	@Inject
-	private ServiceDescriptionService serviceDescriptionService;
+	private ServiceDescriptionPort serviceDescriptionPort;
 
 	@Inject
-	private ServiceItemService serviceItemService;
+	private ServiceItemPort serviceItemPort;
 
 	public Rent build() throws BusinessException {
 
 		final Rent rent = EntityFactory.gimme(Rent.class, RentTemplate.VALID, result -> {
 
-			if (result instanceof Grocery || result instanceof Customer) {
+			if (result instanceof Unit || result instanceof Customer) {
 				return;
 			}
 
-			final Rent Rent = (Rent) result;
+			final Rent rentResult = (Rent) result;
 			final List<RentItem> products = EntityFactory.gimme(RentItem.class, 5, RentItemTemplate.PRODUCT);
 			final List<RentItem> services = EntityFactory.gimme(RentItem.class, 5, RentItemTemplate.SERVICE);
 
 			final List<RentItem> rentItems = Stream.concat(products.stream(), services.stream()).collect(Collectors.toList());
 
 			rentItems.forEach(rentItem -> {
-				Rent.addRentItem(rentItem);
-
 				if (ItemType.PRODUCT.equals(rentItem.getType())) {
 					this.createProduct(rentItem);
+					rentResult.addRentItem(rentItem);
 					return;
 				}
 
 				this.createService(rentItem);
+
+				rentResult.addRentItem(rentItem);
 			});
 		});
 
-		this.groceryService.createGrocery(this.getUserContext(), rent.getUnit());
-		rent.getCustomer().setUnit(rent.getUnit());
-		this.customerService.createCustomer(this.getUserContext(), rent.getCustomer());
+		final Unit unit = this.unitPort.createUnit(this.getUserContext(), rent.getUnit().get());
+
+		Customer customer = rent.getCustomer().get();
+		customer.setUnit(unit);
+
+		customer = this.customerPort.createCustomer(this.getUserContext(), rent.getCustomer().get());
+
+		rent.setUnit(unit);
+		rent.setCustomer(customer);
 
 		return rent;
 	}
 
 	private void createProduct(final RentItem rentItem) {
-		final Stock stock = (Stock) rentItem.getItem();
+		Stock stock = (Stock) rentItem.getItem().get();
 
 		try {
-			this.productService.createProduct(this.getUserContext(), stock.getProductDescription().getProduct());
-			this.productUnitService.createProductUnit(this.getUserContext(), stock.getProductDescription().getProductUnit());
-			this.productDescriptionService.createProductDescription(this.getUserContext(), stock.getProductDescription());
-			this.groceryService.createGrocery(this.getUserContext(), stock.getGrocery());
-			this.stockService.createStock(this.getUserContext(), stock);
+
+			ProductDescription productDescription = stock.getProductDescription().get();
+
+			final Product product = this.productPort.createProduct(this.getUserContext(), productDescription.getProduct().get());
+			final ProductUnit productUnit = this.productUnitPort.createProductUnit(this.getUserContext(),
+					stock.getProductDescription().get().getProductUnit().get());
+
+			productDescription.setProduct(product);
+			productDescription.setProductUnit(productUnit);
+
+			productDescription = this.productDescriptionPort.createProductDescription(this.getUserContext(), productDescription);
+
+			final Unit unit = this.unitPort.createUnit(this.getUserContext(), stock.getUnit().get());
+
+			stock.setUnit(unit);
+			stock.setProductDescription(productDescription);
+			stock.setStockStatus();
+
+			stock = this.stockPort.createStock(this.getUserContext(), stock);
+			rentItem.setItem(stock);
 		} catch (final BusinessException e) {
 			e.printStackTrace();
 		}
 	}
 
 	private void createService(final RentItem rentItem) {
-		final ServiceItem serviceItem = (ServiceItem) rentItem.getItem();
+		ServiceItem serviceItem = (ServiceItem) rentItem.getItem().get();
 
 		try {
-			this.groceryService.createGrocery(this.getUserContext(), serviceItem.getUnit());
-			this.serviceService.createService(this.getUserContext(), serviceItem.getServiceDescription().getService());
-			this.serviceDescriptionService.createServiceDescription(this.getUserContext(), serviceItem.getServiceDescription());
-			this.serviceItemService.createServiceItem(this.getUserContext(), serviceItem);
+			final Unit unit = this.unitPort.createUnit(this.getUserContext(), serviceItem.getUnit().get());
+
+			ServiceDescription serviceDescription = serviceItem.getServiceDescription().get();
+			serviceDescription.setService(this.servicePort.createService(this.getUserContext(), serviceDescription.getService().get()));
+			serviceDescription = this.serviceDescriptionPort.createServiceDescription(this.getUserContext(), serviceDescription);
+
+			serviceItem.setUnit(unit);
+			serviceItem.setServiceDescription(serviceDescription);
+
+			serviceItem = this.serviceItemPort.createServiceItem(this.getUserContext(), serviceItem);
+			rentItem.setItem(serviceItem);
 		} catch (final BusinessException e) {
 			e.printStackTrace();
 		}

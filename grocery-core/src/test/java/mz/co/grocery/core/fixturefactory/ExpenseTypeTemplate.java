@@ -3,8 +3,8 @@ package mz.co.grocery.core.fixturefactory;
 import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.Rule;
 import br.com.six2six.fixturefactory.loader.TemplateLoader;
-import mz.co.grocery.core.expense.model.ExpenseType;
-import mz.co.grocery.core.expense.model.ExpenseTypeCategory;
+import mz.co.grocery.core.domain.expense.ExpenseType;
+import mz.co.grocery.core.domain.expense.ExpenseTypeCategory;
 
 public class ExpenseTypeTemplate implements TemplateLoader {
 

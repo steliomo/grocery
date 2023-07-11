@@ -6,7 +6,7 @@ package mz.co.grocery.integ.resources.expense.dto;
 import java.math.BigDecimal;
 import java.util.List;
 
-import mz.co.grocery.core.expense.model.ExpenseReport;
+import mz.co.grocery.core.domain.expense.ExpenseReport;
 
 /**
  * @author Stélio Moiane

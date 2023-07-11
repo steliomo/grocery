@@ -5,10 +5,10 @@ package mz.co.grocery.integ.resources.rent.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Optional;
 
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import mz.co.grocery.core.rent.model.RentPayment;
 import mz.co.grocery.integ.resources.dto.GenericDTO;
 import mz.co.msaude.boot.frameworks.util.LocalDateAdapter;
 
@@ -16,47 +16,36 @@ import mz.co.msaude.boot.frameworks.util.LocalDateAdapter;
  * @author Stélio Moiane
  *
  */
-public class RentPaymentDTO extends GenericDTO<RentPayment> {
+public class RentPaymentDTO extends GenericDTO {
+
+	private RentDTO rentDTO;
+
+	private BigDecimal paymentValue;
 
 	@XmlJavaTypeAdapter(LocalDateAdapter.class)
 	private LocalDate paymentDate;
 
-	private BigDecimal paymentValue;
-
-	private RentDTO rentDTO;
-
-	public RentPaymentDTO() {
+	public Optional<RentDTO> getRentDTO() {
+		return Optional.ofNullable(this.rentDTO);
 	}
 
-	public RentPaymentDTO(final RentPayment rentPayment) {
-		super(rentPayment);
-	}
-
-	@Override
-	public void mapper(final RentPayment rentPayment) {
-		this.paymentDate = rentPayment.getPaymentDate();
-		this.paymentValue = rentPayment.getPaymentValue();
-	}
-
-	@Override
-	public RentPayment get() {
-		final RentPayment rentPayment = this.get(new RentPayment());
-		rentPayment.setPaymentDate(this.paymentDate);
-		rentPayment.setPaymentValue(this.paymentValue);
-		rentPayment.setRent(this.rentDTO.get());
-
-		return rentPayment;
-	}
-
-	public LocalDate getPaymentDate() {
-		return this.paymentDate;
+	public void setRentDTO(final RentDTO rentDTO) {
+		this.rentDTO = rentDTO;
 	}
 
 	public BigDecimal getPaymentValue() {
 		return this.paymentValue;
 	}
 
-	public RentDTO getRentDTO() {
-		return this.rentDTO;
+	public void setPaymentValue(final BigDecimal paymentValue) {
+		this.paymentValue = paymentValue;
+	}
+
+	public LocalDate getPaymentDate() {
+		return this.paymentDate;
+	}
+
+	public void setPaymentDate(final LocalDate paymentDate) {
+		this.paymentDate = paymentDate;
 	}
 }

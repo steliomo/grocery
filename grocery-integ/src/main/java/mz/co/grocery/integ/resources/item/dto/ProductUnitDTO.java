@@ -5,49 +5,33 @@ package mz.co.grocery.integ.resources.item.dto;
 
 import java.math.BigDecimal;
 
-import mz.co.grocery.core.item.model.ProductUnit;
-import mz.co.grocery.core.item.model.ProductUnitType;
+import mz.co.grocery.core.domain.item.ProductUnitType;
 import mz.co.grocery.integ.resources.dto.GenericDTO;
 
 /**
  * @author Stélio Moiane
  *
  */
-public class ProductUnitDTO extends GenericDTO<ProductUnit> {
+public class ProductUnitDTO extends GenericDTO {
 
 	private ProductUnitType productUnitType;
 
 	private BigDecimal unit;
 
-	public ProductUnitDTO() {
-
-	}
-
-	public ProductUnitDTO(final ProductUnit productUnit) {
-		super(productUnit);
-	}
-
-	@Override
-	public void mapper(final ProductUnit productUnit) {
-		this.productUnitType = productUnit.getProductUnitType();
-		this.unit = productUnit.getUnit();
-	}
-
-	@Override
-	public ProductUnit get() {
-		final ProductUnit productUnit = this.get(new ProductUnit());
-		productUnit.setProductUnitType(this.productUnitType);
-		productUnit.setUnit(this.unit);
-
-		return productUnit;
-	}
-
 	public ProductUnitType getProductUnitType() {
 		return this.productUnitType;
 	}
 
+	public void setProductUnitType(final ProductUnitType productUnitType) {
+		this.productUnitType = productUnitType;
+	}
+
 	public BigDecimal getUnit() {
 		return this.unit;
+	}
+
+	public void setUnit(final BigDecimal unit) {
+		this.unit = unit;
 	}
 
 	public String getName() {

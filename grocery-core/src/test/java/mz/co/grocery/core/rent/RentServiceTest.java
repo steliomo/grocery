@@ -3,6 +3,8 @@
  */
 package mz.co.grocery.core.rent;
 
+import java.util.Optional;
+
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
@@ -11,20 +13,20 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
+import mz.co.grocery.core.application.payment.in.PaymentUseCase;
+import mz.co.grocery.core.application.rent.in.RentUseCase;
+import mz.co.grocery.core.application.rent.out.RentItemPort;
+import mz.co.grocery.core.application.rent.out.RentPort;
+import mz.co.grocery.core.application.rent.service.RentService;
+import mz.co.grocery.core.application.sale.out.StockPort;
 import mz.co.grocery.core.config.AbstractUnitServiceTest;
+import mz.co.grocery.core.domain.rent.PaymentStatus;
+import mz.co.grocery.core.domain.rent.Rent;
+import mz.co.grocery.core.domain.rent.RentItem;
+import mz.co.grocery.core.domain.rent.RentStatus;
+import mz.co.grocery.core.domain.sale.Stock;
 import mz.co.grocery.core.fixturefactory.RentTemplate;
 import mz.co.grocery.core.fixturefactory.StockTemplate;
-import mz.co.grocery.core.payment.service.PaymentService;
-import mz.co.grocery.core.rent.dao.RentDAO;
-import mz.co.grocery.core.rent.dao.RentItemDAO;
-import mz.co.grocery.core.rent.model.PaymentStatus;
-import mz.co.grocery.core.rent.model.Rent;
-import mz.co.grocery.core.rent.model.RentItem;
-import mz.co.grocery.core.rent.service.RentService;
-import mz.co.grocery.core.rent.service.RentServiceImpl;
-import mz.co.grocery.core.saleable.dao.StockDAO;
-import mz.co.grocery.core.saleable.model.Stock;
-import mz.co.grocery.core.util.ApplicationTranslator;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.fixturefactory.EntityFactory;
 import mz.co.msaude.boot.frameworks.model.UserContext;
@@ -35,23 +37,20 @@ import mz.co.msaude.boot.frameworks.model.UserContext;
  */
 public class RentServiceTest extends AbstractUnitServiceTest {
 
+	@Mock
+	private StockPort stockPort;
+
+	@Mock
+	private RentItemPort rentItemPort;
+
+	@Mock
+	private RentPort rentPort;
+
+	@Mock
+	private PaymentUseCase paymentUseCase;
+
 	@InjectMocks
-	private final RentService rentService = new RentServiceImpl();
-
-	@Mock
-	private StockDAO stockDAO;
-
-	@Mock
-	private RentItemDAO rentItemDAO;
-
-	@Mock
-	private RentDAO rentDAO;
-
-	@Mock
-	private PaymentService paymentService;
-
-	@Mock
-	private ApplicationTranslator translator;
+	private final RentUseCase rentUseCase = new RentService(this.rentPort, this.stockPort, this.rentItemPort, this.paymentUseCase);
 
 	private Rent rent;
 
@@ -65,36 +64,49 @@ public class RentServiceTest extends AbstractUnitServiceTest {
 	@Test
 	public void shouldRentItems() throws BusinessException {
 
-		Mockito.when(this.stockDAO.findByUuid(null)).thenReturn(EntityFactory.gimme(Stock.class, StockTemplate.VALID));
+		Mockito.when(this.stockPort.findStockByUuid(null)).thenReturn(EntityFactory.gimme(Stock.class, StockTemplate.VALID));
 		final UserContext context = this.getUserContext();
 
-		this.rentService.rent(context, this.rent);
+		this.rentUseCase.rent(context, this.rent);
 
-		Mockito.verify(this.rentDAO).create(context, this.rent);
-		Mockito.verify(this.rentItemDAO, Mockito.times(20)).create(ArgumentMatchers.any(UserContext.class), ArgumentMatchers.any(RentItem.class));
-		Mockito.verify(this.paymentService).debitTransaction(context, this.rent.getUnit().getUuid());
+		Mockito.verify(this.rentPort).createRent(context, this.rent);
+		Mockito.verify(this.rentItemPort, Mockito.times(20)).createRentItem(ArgumentMatchers.any(UserContext.class),
+				ArgumentMatchers.any(RentItem.class));
+		Mockito.verify(this.paymentUseCase).debitTransaction(context, this.rent.getUnit().get().getUuid());
 
-		Assert.assertFalse(this.rent.getRentItems().isEmpty());
-		Assert.assertEquals(this.rent.getRentItems().size(), 20);
+		Assert.assertFalse(this.rent.getRentItems().get().isEmpty());
+		Assert.assertEquals(this.rent.getRentItems().get().size(), 20);
 		Assert.assertEquals(PaymentStatus.PENDING, this.rent.getPaymentStatus());
 	}
 
 	@Test(expected = BusinessException.class)
 	public void shouldNotRentForUnavailableItems() throws BusinessException {
 		final Stock stock = EntityFactory.gimme(Stock.class, StockTemplate.UNAVAILABLE);
-		Mockito.when(this.stockDAO.findByUuid(null)).thenReturn(stock);
+		Mockito.when(this.stockPort.findStockByUuid(null)).thenReturn(stock);
 
-		Mockito.when(this.translator.getTranslation("product.quantity.unavailable", new String[] { stock.getName() }))
-		.thenReturn("Cannot perfrom rent with unavailable " + stock.getName());
-
-		this.rentService.rent(this.getUserContext(), this.rent);
+		this.rentUseCase.rent(this.getUserContext(), this.rent);
 	}
 
 	@Test(expected = BusinessException.class)
 	public void shouldNotRentEmptyItems() throws BusinessException {
 		final Rent rent = EntityFactory.gimme(Rent.class, RentTemplate.VALID);
-		Mockito.when(this.translator.getTranslation("cannot.create.rent.without.items"))
-		.thenReturn("Cannot perform rent process when the items are empty!");
-		this.rentService.rent(this.getUserContext(), rent);
+
+		this.rentUseCase.rent(this.getUserContext(), rent);
+	}
+
+	@Test
+	public void shouldAddNewRentItemsIntheRentInProgress() throws BusinessException {
+
+		Mockito.when(this.stockPort.findStockByUuid(null)).thenReturn(EntityFactory.gimme(Stock.class, StockTemplate.VALID));
+		Mockito.when(
+				this.rentPort.findRentByCustomerAndUnitAndStatus(this.rent.getCustomer().get(), this.rent.getUnit().get(), RentStatus.OPENED))
+		.thenReturn(Optional.ofNullable(this.rent));
+
+		this.rent = this.rentUseCase.rent(this.getUserContext(), this.rent);
+
+		Mockito.verify(this.rentPort, Mockito.times(0)).createRent(ArgumentMatchers.any(), ArgumentMatchers.any());
+		Mockito.verify(this.rentPort, Mockito.times(1)).updateRent(ArgumentMatchers.any(), ArgumentMatchers.any());
+
+		Assert.assertEquals(RentStatus.OPENED, this.rent.getRentStatus());
 	}
 }

@@ -10,10 +10,10 @@ import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import mz.co.grocery.integ.resources.common.BearerTokenUtil;
 import mz.co.grocery.integ.resources.payment.Mpesa;
 import mz.co.grocery.integ.resources.payment.dto.MpesaRequestDTO;
 import mz.co.grocery.integ.resources.payment.dto.MpesaResponseDTO;
-import mz.co.grocery.integ.resources.util.BearerTokenUtil;
 
 /**
  * @author Stélio Moiane

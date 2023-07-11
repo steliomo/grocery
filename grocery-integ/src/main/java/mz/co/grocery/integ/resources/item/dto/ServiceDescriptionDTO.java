@@ -3,56 +3,34 @@
  */
 package mz.co.grocery.integ.resources.item.dto;
 
-import mz.co.grocery.core.item.model.Service;
-import mz.co.grocery.core.item.model.ServiceDescription;
+import java.util.Optional;
+
 import mz.co.grocery.integ.resources.dto.GenericDTO;
-import mz.co.grocery.integ.resources.util.ProxyUtil;
 
 /**
  * @author Stélio Moiane
  *
  */
-public class ServiceDescriptionDTO extends GenericDTO<ServiceDescription> {
+public class ServiceDescriptionDTO extends GenericDTO {
 
 	private ServiceDTO serviceDTO;
 
 	private String description;
 
-	public ServiceDescriptionDTO() {
+	public Optional<ServiceDTO> getServiceDTO() {
+		return Optional.ofNullable(this.serviceDTO);
 	}
 
-	public ServiceDescriptionDTO(final ServiceDescription serviceDescription) {
-		super(serviceDescription);
-	}
-
-	@Override
-	public void mapper(final ServiceDescription serviceDescription) {
-
-		final Service service = serviceDescription.getService();
-
-		if (ProxyUtil.isInitialized(service)) {
-			this.serviceDTO = new ServiceDTO(service);
-		}
-
-		this.description = serviceDescription.getDescription();
-	}
-
-	@Override
-	public ServiceDescription get() {
-
-		final ServiceDescription serviceDescription = this.get(new ServiceDescription());
-		serviceDescription.setService(this.serviceDTO.get());
-		serviceDescription.setDescription(this.description);
-
-		return serviceDescription;
-	}
-
-	public ServiceDTO getServiceDTO() {
-		return this.serviceDTO;
+	public void setServiceDTO(final ServiceDTO serviceDTO) {
+		this.serviceDTO = serviceDTO;
 	}
 
 	public String getDescription() {
 		return this.description;
+	}
+
+	public void setDescription(final String description) {
+		this.description = description;
 	}
 
 	public String getName() {

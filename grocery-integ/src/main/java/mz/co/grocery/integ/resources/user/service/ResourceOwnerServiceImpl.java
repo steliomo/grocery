@@ -14,9 +14,9 @@ import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.core.userdetails.UsernameNotFoundException;
 import org.springframework.stereotype.Service;
 
+import mz.co.grocery.integ.resources.common.UrlTargets;
 import mz.co.grocery.integ.resources.user.dto.UserDTO;
 import mz.co.grocery.integ.resources.user.model.ResourceOwner;
-import mz.co.grocery.integ.resources.util.UrlTargets;
 import mz.co.msaude.boot.frameworks.model.UserContext;
 
 /**

@@ -8,9 +8,9 @@ import java.math.BigDecimal;
 import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.Rule;
 import br.com.six2six.fixturefactory.loader.TemplateLoader;
-import mz.co.grocery.core.guide.model.GuideItem;
-import mz.co.grocery.core.rent.model.RentItem;
-import mz.co.grocery.core.sale.model.SaleItem;
+import mz.co.grocery.core.domain.guide.GuideItem;
+import mz.co.grocery.core.domain.rent.RentItem;
+import mz.co.grocery.core.domain.sale.SaleItem;
 
 /**
  * @author Stélio Moiane

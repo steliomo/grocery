@@ -5,21 +5,21 @@ package mz.co.grocery.integ.resources.expense.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Optional;
 
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import mz.co.grocery.core.expense.model.Expense;
 import mz.co.grocery.integ.resources.dto.GenericDTO;
-import mz.co.grocery.integ.resources.grocery.dto.GroceryDTO;
+import mz.co.grocery.integ.resources.unit.dto.UnitDTO;
 import mz.co.msaude.boot.frameworks.util.LocalDateAdapter;
 
 /**
  * @author Stélio Moiane
  *
  */
-public class ExpenseDTO extends GenericDTO<Expense> {
+public class ExpenseDTO extends GenericDTO {
 
-	private GroceryDTO groceryDTO;
+	private UnitDTO unitDTO;
 
 	private ExpenseTypeDTO expenseTypeDTO;
 
@@ -30,51 +30,43 @@ public class ExpenseDTO extends GenericDTO<Expense> {
 
 	private String description;
 
-	public ExpenseDTO() {
+	public Optional<UnitDTO> getUnitDTO() {
+		return Optional.ofNullable(this.unitDTO);
 	}
 
-	public ExpenseDTO(final Expense expense) {
-		super(expense);
+	public void setUnitDTO(final UnitDTO unitDTO) {
+		this.unitDTO = unitDTO;
 	}
 
-	@Override
-	public void mapper(final Expense expense) {
-		this.groceryDTO = new GroceryDTO(expense.getGrocery());
-		this.expenseTypeDTO = new ExpenseTypeDTO(expense.getExpenseType());
-		this.datePerformed = expense.getDatePerformed();
-		this.expenseValue = expense.getExpenseValue();
-		this.description = expense.getDescription();
+	public Optional<ExpenseTypeDTO> getExpenseTypeDTO() {
+		return Optional.ofNullable(this.expenseTypeDTO);
 	}
 
-	@Override
-	public Expense get() {
-		final Expense expense = this.get(new Expense());
-		expense.setGrocery(this.groceryDTO.get());
-		expense.setExpenseType(this.expenseTypeDTO.get());
-		expense.setDatePerformed(this.datePerformed);
-		expense.setExpenseValue(this.expenseValue);
-		expense.setDescription(this.description);
-
-		return expense;
-	}
-
-	public GroceryDTO getGroceryDTO() {
-		return this.groceryDTO;
-	}
-
-	public ExpenseTypeDTO getExpenseTypeDTO() {
-		return this.expenseTypeDTO;
+	public void setExpenseTypeDTO(final ExpenseTypeDTO expenseTypeDTO) {
+		this.expenseTypeDTO = expenseTypeDTO;
 	}
 
 	public LocalDate getDatePerformed() {
 		return this.datePerformed;
 	}
 
+	public void setDatePerformed(final LocalDate datePerformed) {
+		this.datePerformed = datePerformed;
+	}
+
 	public BigDecimal getExpenseValue() {
 		return this.expenseValue;
 	}
 
+	public void setExpenseValue(final BigDecimal expenseValue) {
+		this.expenseValue = expenseValue;
+	}
+
 	public String getDescription() {
 		return this.description;
+	}
+
+	public void setDescription(final String description) {
+		this.description = description;
 	}
 }

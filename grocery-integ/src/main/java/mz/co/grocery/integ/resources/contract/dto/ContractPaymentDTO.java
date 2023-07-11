@@ -4,10 +4,10 @@
 package mz.co.grocery.integ.resources.contract.dto;
 
 import java.time.LocalDate;
+import java.util.Optional;
 
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import mz.co.grocery.core.contract.model.ContractPayment;
 import mz.co.grocery.integ.resources.dto.GenericDTO;
 import mz.co.msaude.boot.frameworks.util.LocalDateAdapter;
 
@@ -15,33 +15,26 @@ import mz.co.msaude.boot.frameworks.util.LocalDateAdapter;
  * @author Stélio Moiane
  *
  */
-public class ContractPaymentDTO extends GenericDTO<ContractPayment> {
+public class ContractPaymentDTO extends GenericDTO {
 
 	private ContractDTO contractDTO;
 
 	@XmlJavaTypeAdapter(LocalDateAdapter.class)
 	private LocalDate paymentDate;
 
-	@Override
-	public void mapper(final ContractPayment contractPayment) {
-		this.contractDTO = new ContractDTO(contractPayment.getContract());
-		this.paymentDate = contractPayment.getPaymentDate();
+	public Optional<ContractDTO> getContractDTO() {
+		return Optional.ofNullable(this.contractDTO);
 	}
 
-	@Override
-	public ContractPayment get() {
-		final ContractPayment contractPayment = this.get(new ContractPayment());
-		contractPayment.setContract(this.contractDTO.get());
-		contractPayment.setPaymentDate(this.paymentDate);
-
-		return contractPayment;
-	}
-
-	public ContractDTO getContractDTO() {
-		return this.contractDTO;
+	public void setContractDTO(final ContractDTO contractDTO) {
+		this.contractDTO = contractDTO;
 	}
 
 	public LocalDate getPaymentDate() {
 		return this.paymentDate;
+	}
+
+	public void setPaymentDate(final LocalDate paymentDate) {
+		this.paymentDate = paymentDate;
 	}
 }

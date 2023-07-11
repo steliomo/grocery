@@ -5,7 +5,7 @@ package mz.co.grocery.integ.resources.saleable.dto;
 
 import java.math.BigDecimal;
 
-import mz.co.grocery.core.saleable.model.Stock;
+import mz.co.grocery.core.domain.sale.Stock;
 
 /**
  * @author Stélio Moiane

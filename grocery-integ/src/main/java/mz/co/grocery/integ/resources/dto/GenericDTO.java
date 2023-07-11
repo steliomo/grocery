@@ -5,18 +5,13 @@ package mz.co.grocery.integ.resources.dto;
 
 import java.time.LocalDateTime;
 
-import com.fasterxml.jackson.annotation.JsonInclude;
-import com.fasterxml.jackson.annotation.JsonInclude.Include;
-
 import mz.co.msaude.boot.frameworks.model.EntityStatus;
-import mz.co.msaude.boot.frameworks.model.GenericEntity;
 
 /**
  * @author Stélio Moiane
  *
  */
-@JsonInclude(Include.NON_NULL)
-public abstract class GenericDTO<T extends GenericEntity> {
+public abstract class GenericDTO {
 
 	private Long id;
 
@@ -26,23 +21,18 @@ public abstract class GenericDTO<T extends GenericEntity> {
 
 	private LocalDateTime createdAt;
 
+	private String updatedBy;
+
+	private LocalDateTime updatedAt;
+
 	private EntityStatus entityStatus;
-
-	public GenericDTO() {
-	}
-
-	public GenericDTO(final T t) {
-		this.id = t.getId();
-		this.uuid = t.getUuid();
-		this.createdBy = t.getCreatedBy();
-		this.createdAt = t.getCreatedAt();
-		this.entityStatus = t.getEntityStatus();
-
-		this.mapper(t);
-	}
 
 	public Long getId() {
 		return this.id;
+	}
+
+	public void setId(final Long id) {
+		this.id = id;
 	}
 
 	public String getUuid() {
@@ -57,30 +47,39 @@ public abstract class GenericDTO<T extends GenericEntity> {
 		return this.createdBy;
 	}
 
+	public void setCreatedBy(final String createdBy) {
+		this.createdBy = createdBy;
+	}
+
 	public LocalDateTime getCreatedAt() {
 		return this.createdAt;
+	}
+
+	public void setCreatedAt(final LocalDateTime createdAt) {
+		this.createdAt = createdAt;
+	}
+
+	public String getUpdatedBy() {
+		return this.updatedBy;
+	}
+
+	public void setUpdatedBy(final String updatedBy) {
+		this.updatedBy = updatedBy;
+	}
+
+	public LocalDateTime getUpdatedAt() {
+		return this.updatedAt;
+	}
+
+	public void setUpdatedAt(final LocalDateTime updatedAt) {
+		this.updatedAt = updatedAt;
 	}
 
 	public EntityStatus getEntityStatus() {
 		return this.entityStatus;
 	}
 
-	public abstract void mapper(T t);
-
-	@SuppressWarnings("deprecation")
-	public T get(final T t) {
-		t.setId(this.id);
-		t.setUuid(this.uuid);
-		t.setCreatedBy(this.createdBy);
-		t.setCreatedAt(this.createdAt);
-		t.setEntityStatus(this.entityStatus);
-
-		return t;
-	}
-
-	public abstract T get();
-
-	public void setId(final Long id) {
-		this.id = id;
+	public void setEntityStatus(final EntityStatus entityStatus) {
+		this.entityStatus = entityStatus;
 	}
 }

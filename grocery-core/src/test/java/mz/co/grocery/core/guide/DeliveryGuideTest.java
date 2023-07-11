@@ -12,31 +12,31 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
+import mz.co.grocery.core.application.guide.in.GuideIssuer;
+import mz.co.grocery.core.application.guide.in.IssueGuideUseCase;
+import mz.co.grocery.core.application.guide.out.GuideItemPort;
+import mz.co.grocery.core.application.guide.out.GuidePort;
+import mz.co.grocery.core.application.guide.service.DeliveryGuideIssuer;
+import mz.co.grocery.core.application.guide.service.IssueGuideService;
+import mz.co.grocery.core.application.payment.in.PaymentUseCase;
 import mz.co.grocery.core.application.report.ReportGeneratorPort;
+import mz.co.grocery.core.application.sale.out.SaleItemPort;
+import mz.co.grocery.core.application.sale.out.SalePort;
+import mz.co.grocery.core.application.sale.out.StockPort;
 import mz.co.grocery.core.config.AbstractUnitServiceTest;
-import mz.co.grocery.core.customer.model.Customer;
-import mz.co.grocery.core.customer.model.SaleType;
+import mz.co.grocery.core.domain.customer.Customer;
+import mz.co.grocery.core.domain.customer.SaleType;
+import mz.co.grocery.core.domain.guide.Guide;
+import mz.co.grocery.core.domain.guide.GuideItem;
+import mz.co.grocery.core.domain.guide.GuideItemType;
+import mz.co.grocery.core.domain.guide.GuideType;
+import mz.co.grocery.core.domain.sale.DeliveryStatus;
+import mz.co.grocery.core.domain.sale.SaleItem;
 import mz.co.grocery.core.fixturefactory.CustomerTemplate;
 import mz.co.grocery.core.fixturefactory.GuideItemTemplate;
 import mz.co.grocery.core.fixturefactory.GuideTemplate;
 import mz.co.grocery.core.fixturefactory.SaleItemTemplate;
 import mz.co.grocery.core.guide.builder.GuideUnitBuider;
-import mz.co.grocery.core.guide.dao.GuideDAO;
-import mz.co.grocery.core.guide.dao.GuideItemDAO;
-import mz.co.grocery.core.guide.model.Guide;
-import mz.co.grocery.core.guide.model.GuideItem;
-import mz.co.grocery.core.guide.model.GuideItemType;
-import mz.co.grocery.core.guide.model.GuideType;
-import mz.co.grocery.core.guide.service.DeliveryGuideIssuerImpl;
-import mz.co.grocery.core.guide.service.GuideIssuer;
-import mz.co.grocery.core.guide.service.GuideService;
-import mz.co.grocery.core.guide.service.GuideServiceImpl;
-import mz.co.grocery.core.payment.service.PaymentService;
-import mz.co.grocery.core.sale.dao.SaleDAO;
-import mz.co.grocery.core.sale.dao.SaleItemDAO;
-import mz.co.grocery.core.sale.model.DeliveryStatus;
-import mz.co.grocery.core.sale.model.SaleItem;
-import mz.co.grocery.core.saleable.dao.StockDAO;
 import mz.co.grocery.core.util.ApplicationTranslator;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.fixturefactory.EntityFactory;
@@ -48,41 +48,41 @@ import mz.co.msaude.boot.frameworks.model.UserContext;
  */
 public class DeliveryGuideTest extends AbstractUnitServiceTest {
 
-	@InjectMocks
-	private final GuideService guideService = new GuideServiceImpl();
-
-	@InjectMocks
-	private final GuideIssuer deliveryGuideIssuer = new DeliveryGuideIssuerImpl();
-
 	@Mock
 	private ApplicationTranslator translator;
 
 	@Mock
-	private GuideDAO guideDAO;
+	private ReportGeneratorPort reportGeneratorPort;
 
 	@Mock
-	private GuideItemDAO guideItemDAO;
+	private PaymentUseCase paymentUseCase;
 
 	@Mock
-	private SaleItemDAO saleItemDAO;
+	private GuidePort guidePort;
 
 	@Mock
-	private StockDAO stockDAO;
+	private GuideItemPort guideItemPort;
 
 	@Mock
-	private PaymentService paymentService;
+	private StockPort stockPort;
 
 	@Mock
-	private SaleDAO saleDAO;
+	private SaleItemPort saleItemPort;
 
 	@Mock
-	private ReportGeneratorPort fileGeneratorService;
+	private SalePort salePort;
+
+	@InjectMocks
+	private final IssueGuideUseCase guideService = new IssueGuideService(this.translator, this.reportGeneratorPort, this.paymentUseCase);
+
+	@InjectMocks
+	private final GuideIssuer deliveryGuideIssuer = new DeliveryGuideIssuer(this.guidePort, this.guideItemPort, this.saleItemPort, this.stockPort,
+			this.salePort);
 
 	@Test(expected = BusinessException.class)
 	public void shouldNotIssueGuideForNonDeliveryGuideType() throws BusinessException {
 		this.guideService.setGuideIssuer(this.deliveryGuideIssuer);
 		final Guide guide = EntityFactory.gimme(Guide.class, GuideTemplate.TRANSPORT);
-		Mockito.when(this.translator.getTranslation("guide.type.must.be.delivery")).thenReturn("The guide type must be DELIVERY");
 
 		this.guideService.issueGuide(this.getUserContext(), guide);
 	}
@@ -91,9 +91,7 @@ public class DeliveryGuideTest extends AbstractUnitServiceTest {
 	public void shouldNotIssueGuideForNonInstallmentSales() throws BusinessException {
 		this.guideService.setGuideIssuer(this.deliveryGuideIssuer);
 		final Guide guide = EntityFactory.gimme(Guide.class, GuideTemplate.DELIVERY);
-		guide.getSale().setSaleType(SaleType.CASH);
-
-		Mockito.when(this.translator.getTranslation("guide.sale.type.must.be.installment")).thenReturn("The sale type must be installmnet.");
+		guide.getSale().get().setSaleType(SaleType.CASH);
 
 		this.guideService.issueGuide(this.getUserContext(), guide);
 	}
@@ -102,9 +100,7 @@ public class DeliveryGuideTest extends AbstractUnitServiceTest {
 	public void shouldNotIssueGuideWithoutGuideItems() throws BusinessException {
 		this.guideService.setGuideIssuer(this.deliveryGuideIssuer);
 		final Guide guide = EntityFactory.gimme(Guide.class, GuideTemplate.DELIVERY);
-		guide.getSale().setSaleType(SaleType.INSTALLMENT);
-
-		Mockito.when(this.translator.getTranslation("guide.must.have.items")).thenReturn("Guide Items list is empty");
+		guide.getSale().get().setSaleType(SaleType.INSTALLMENT);
 
 		this.guideService.issueGuide(this.getUserContext(), guide);
 	}
@@ -113,15 +109,15 @@ public class DeliveryGuideTest extends AbstractUnitServiceTest {
 	public void shouldNotIssueGuideForGuideItemsWithQuantityAboveGreaterThanToDeliver() throws BusinessException {
 		this.guideService.setGuideIssuer(this.deliveryGuideIssuer);
 		final Guide guide = EntityFactory.gimme(Guide.class, GuideTemplate.DELIVERY);
-		guide.getSale().setSaleType(SaleType.INSTALLMENT);
+		guide.getSale().get().setSaleType(SaleType.INSTALLMENT);
 		final GuideItem guideItem = EntityFactory.gimme(GuideItem.class, GuideItemTemplate.SALE_PRODUCTS);
 		guideItem.setQuantity(new BigDecimal(500));
 		guide.addGuideItem(guideItem);
 
-		Mockito.when(this.saleItemDAO.findByUuid(ArgumentMatchers.any())).thenReturn(guideItem.getSaleItem());
-		Mockito.when(
-				this.translator.getTranslation(ArgumentMatchers.any(), new String[] { ArgumentMatchers.any() }))
-		.thenReturn("Unexpected quantity to deliver.");
+		final SaleItem saleItem = guideItem.getSaleItem().get();
+		saleItem.setDeliveredQuantity(BigDecimal.ZERO);
+
+		Mockito.when(this.saleItemPort.findByUuid(ArgumentMatchers.any())).thenReturn(saleItem);
 
 		this.guideService.issueGuide(this.getUserContext(), guide);
 	}
@@ -130,31 +126,35 @@ public class DeliveryGuideTest extends AbstractUnitServiceTest {
 	public void shouldIssueDeliveryGuide() throws BusinessException {
 		this.guideService.setGuideIssuer(this.deliveryGuideIssuer);
 		final Guide guide = new GuideUnitBuider(GuideType.DELIVERY.toString()).withSaleProducts(3).build();
-		guide.getSale().setSaleType(SaleType.INSTALLMENT);
-		guide.getSale().setCustomer(EntityFactory.gimme(Customer.class, CustomerTemplate.VALID));
+		guide.getSale().get().setSaleType(SaleType.INSTALLMENT);
+		guide.getSale().get().setCustomer(EntityFactory.gimme(Customer.class, CustomerTemplate.VALID));
 
 		final SaleItem saleItem = EntityFactory.gimme(SaleItem.class, SaleItemTemplate.PRODUCT);
-		guide.getSale().addItem(saleItem);
+		guide.getSale().get().addItem(saleItem);
+		saleItem.setDeliveredQuantity(BigDecimal.ZERO);
 
-		Mockito.when(this.saleItemDAO.findByUuid(ArgumentMatchers.any())).thenReturn(saleItem);
-		Mockito.when(this.stockDAO.findByUuid(ArgumentMatchers.any())).thenReturn(saleItem.getStock());
-		Mockito.when(this.saleDAO.fetchByUuid(ArgumentMatchers.any())).thenReturn(guide.getSale());
+		Mockito.when(this.guidePort.createGuide(ArgumentMatchers.any(UserContext.class), ArgumentMatchers.any(Guide.class))).thenReturn(guide);
+		Mockito.when(this.saleItemPort.findByUuid(ArgumentMatchers.any())).thenReturn(saleItem);
+		Mockito.when(this.stockPort.findStockByUuid(ArgumentMatchers.any())).thenReturn(saleItem.getStock().get());
+		Mockito.when(this.salePort.fetchByUuid(ArgumentMatchers.any())).thenReturn(guide.getSale().get());
 
 		this.guideService.issueGuide(this.getUserContext(), guide);
 
-		Mockito.verify(this.guideDAO, Mockito.times(1)).create(this.getUserContext(), guide);
-		Mockito.verify(this.guideItemDAO, Mockito.times(3)).create(ArgumentMatchers.any(UserContext.class), ArgumentMatchers.any(GuideItem.class));
-		Mockito.verify(this.saleItemDAO, Mockito.times(3)).update(ArgumentMatchers.any(UserContext.class), ArgumentMatchers.any(SaleItem.class));
-		Mockito.verify(this.paymentService, Mockito.times(1)).debitTransaction(this.getUserContext(), guide.getUnit().getUuid());
-		Mockito.verify(this.saleDAO, Mockito.times(1)).fetchByUuid(ArgumentMatchers.any());
-		Mockito.verify(this.saleDAO, Mockito.times(1)).update(ArgumentMatchers.any(), ArgumentMatchers.any());
+		Mockito.verify(this.guidePort, Mockito.times(1)).createGuide(this.getUserContext(), guide);
+		Mockito.verify(this.guideItemPort, Mockito.times(3)).createGuideItem(ArgumentMatchers.any(UserContext.class),
+				ArgumentMatchers.any(GuideItem.class));
+		Mockito.verify(this.saleItemPort, Mockito.times(3)).updateSaleItem(ArgumentMatchers.any(UserContext.class),
+				ArgumentMatchers.any(SaleItem.class));
+		Mockito.verify(this.paymentUseCase, Mockito.times(1)).debitTransaction(this.getUserContext(), guide.getUnit().getUuid());
+		Mockito.verify(this.salePort, Mockito.times(1)).fetchByUuid(ArgumentMatchers.any());
+		Mockito.verify(this.salePort, Mockito.times(1)).updateSale(ArgumentMatchers.any(), ArgumentMatchers.any());
 
 		Assert.assertEquals(GuideType.DELIVERY, guide.getType());
 
 		Assert.assertNotNull(guide);
-		Assert.assertEquals(DeliveryStatus.INCOMPLETE, guide.getSale().getDeliveryStatus());
+		Assert.assertEquals(DeliveryStatus.INCOMPLETE, guide.getSale().get().getDeliveryStatus());
 
-		guide.getGuideItems().forEach(guideItem -> {
+		guide.getGuideItems().get().forEach(guideItem -> {
 			Assert.assertEquals(GuideItemType.SALE, guideItem.getItemGuideType());
 		});
 	}

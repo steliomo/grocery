@@ -15,55 +15,66 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import mz.co.grocery.core.grocery.model.Grocery;
-import mz.co.grocery.core.inventory.model.Inventory;
-import mz.co.grocery.core.inventory.model.InventoryStatus;
-import mz.co.grocery.core.inventory.service.InventoryQueryService;
-import mz.co.grocery.core.inventory.service.InventoryService;
+import mz.co.grocery.core.application.inventory.in.ApproveInventoryUseCase;
+import mz.co.grocery.core.application.inventory.in.PerformInventoroyUseCase;
+import mz.co.grocery.core.application.inventory.out.InventoryPort;
+import mz.co.grocery.core.common.WebAdapter;
+import mz.co.grocery.core.domain.inventory.Inventory;
+import mz.co.grocery.core.domain.inventory.InventoryStatus;
+import mz.co.grocery.core.domain.unit.Unit;
 import mz.co.grocery.integ.resources.AbstractResource;
 import mz.co.grocery.integ.resources.inventory.dto.InventoryDTO;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
+import mz.co.msaude.boot.frameworks.mapper.DTOMapper;
 
 /**
  * @author Stélio Moiane
  *
  */
 @Path("inventories")
-@Service(InventoryResource.NAME)
+@WebAdapter
 public class InventoryResource extends AbstractResource {
 
-	public static final String NAME = "mz.co.grocery.integ.resources.inventory.InventoryResource";
+	@Inject
+	private InventoryPort inventoryPort;
 
 	@Inject
-	private InventoryQueryService inventoryQueryService;
+	private PerformInventoroyUseCase performInventoroyUseCase;
 
 	@Inject
-	private InventoryService inventoryService;
+	private ApproveInventoryUseCase ApproveInventoryUseCase;
+
+	@Autowired
+	private DTOMapper<InventoryDTO, Inventory> inventoryMapper;
 
 	@GET
 	@Path("by-grocery-and-status")
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response getInventoryByGroceryAndStatus(@QueryParam("groceryUuid") final String groceryUuid,
-	        @QueryParam("inventoryStatus") final InventoryStatus inventoryStatus) throws BusinessException {
+			@QueryParam("inventoryStatus") final InventoryStatus inventoryStatus) throws BusinessException {
 
-		final Grocery grocery = new Grocery();
+		final Unit grocery = new Unit();
 		grocery.setUuid(groceryUuid);
 
-		final Inventory inventory = this.inventoryQueryService.fetchInventoryByGroceryAndStatus(grocery,
-		        inventoryStatus);
+		final Inventory inventory = this.inventoryPort.fetchInventoryByGroceryAndStatus(grocery,
+				inventoryStatus);
 
-		return Response.ok(new InventoryDTO(inventory)).build();
+		return Response.ok(this.inventoryMapper.toDTO(inventory)).build();
 	}
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response performInventory(final InventoryDTO inventoryDTO) throws BusinessException {
-		this.inventoryService.performInventory(this.getContext(), inventoryDTO.get());
-		return Response.ok(inventoryDTO).build();
+
+		Inventory inventory = this.inventoryMapper.toDomain(inventoryDTO);
+
+		inventory = this.performInventoroyUseCase.performInventory(this.getContext(), inventory);
+
+		return Response.ok(this.inventoryMapper.toDTO(inventory)).build();
 	}
 
 	@PUT
@@ -71,7 +82,9 @@ public class InventoryResource extends AbstractResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response aproveInventory(@PathParam("inventoryUuid") final String inventoryUuid) throws BusinessException {
-		final Inventory inventory = this.inventoryService.approveInventory(this.getContext(), inventoryUuid);
-		return Response.ok(new InventoryDTO(inventory)).build();
+
+		final Inventory inventory = this.ApproveInventoryUseCase.approveInventory(this.getContext(), inventoryUuid);
+
+		return Response.ok(this.inventoryMapper.toDTO(inventory)).build();
 	}
 }

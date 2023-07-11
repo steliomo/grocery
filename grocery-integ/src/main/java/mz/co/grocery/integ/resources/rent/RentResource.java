@@ -17,25 +17,26 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
 
+import mz.co.grocery.core.application.guide.in.GuideIssuer;
+import mz.co.grocery.core.application.guide.service.ReturnGuideIssuer;
+import mz.co.grocery.core.application.guide.service.TransportGuideIssuer;
+import mz.co.grocery.core.application.rent.in.MakeRentPaymentUseCase;
+import mz.co.grocery.core.application.rent.in.RentUseCase;
+import mz.co.grocery.core.application.rent.out.RentPort;
 import mz.co.grocery.core.application.report.ReportGeneratorPort;
-import mz.co.grocery.core.guide.model.GuideType;
-import mz.co.grocery.core.guide.service.GuideIssuer;
-import mz.co.grocery.core.guide.service.ReturnGuideIssuerImpl;
-import mz.co.grocery.core.guide.service.TransportGuideIssuerImpl;
-import mz.co.grocery.core.rent.model.Rent;
-import mz.co.grocery.core.rent.service.RentPaymentService;
-import mz.co.grocery.core.rent.service.RentQueryService;
-import mz.co.grocery.core.rent.service.RentService;
-import mz.co.grocery.core.util.ApplicationTranslator;
+import mz.co.grocery.core.common.BeanQualifier;
+import mz.co.grocery.core.common.WebAdapter;
+import mz.co.grocery.core.domain.guide.GuideType;
+import mz.co.grocery.core.domain.rent.Rent;
+import mz.co.grocery.core.domain.rent.RentPayment;
 import mz.co.grocery.integ.resources.AbstractResource;
 import mz.co.grocery.integ.resources.rent.dto.RentDTO;
 import mz.co.grocery.integ.resources.rent.dto.RentPaymentDTO;
 import mz.co.grocery.integ.resources.rent.dto.RentReport;
 import mz.co.grocery.integ.resources.rent.dto.RentsDTO;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
+import mz.co.msaude.boot.frameworks.mapper.DTOMapper;
 
 /**
  * @author Stélio Moiane
@@ -43,42 +44,45 @@ import mz.co.msaude.boot.frameworks.exception.BusinessException;
  */
 
 @Path("rents")
-@Service(RentResource.NAME)
+@WebAdapter
 public class RentResource extends AbstractResource {
 
-	public static final String NAME = "mz.co.grocery.integ.resources.rent.RentResource";
+	@Inject
+	private RentPort rentPort;
 
 	@Inject
-	private RentService rentService;
+	private RentUseCase rentUseCase;
 
 	@Inject
-	private RentQueryService rentQueryService;
+	private MakeRentPaymentUseCase makeRentPaymentUseCase;
 
 	@Inject
-	private RentPaymentService rentPaymentService;
-
-	@Autowired
-	@Qualifier(TransportGuideIssuerImpl.NAME)
+	@BeanQualifier(TransportGuideIssuer.NAME)
 	private GuideIssuer transportGuideIssuer;
 
-	@Autowired
-	@Qualifier(ReturnGuideIssuerImpl.NAME)
+	@Inject
+	@BeanQualifier(ReturnGuideIssuer.NAME)
 	private GuideIssuer returnGuideIssuer;
 
 	@Inject
-	private ApplicationTranslator translator;
-
-	@Inject
 	private ReportGeneratorPort reportGeneratorPort;
+
+	@Autowired
+	private DTOMapper<RentDTO, Rent> rentMapper;
+
+	@Autowired
+	private DTOMapper<RentPaymentDTO, RentPayment> rentPaymentMapper;
 
 	@POST
 	@Produces(MediaType.APPLICATION_JSON)
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response rent(final RentDTO rentDTO) throws BusinessException {
 
-		this.rentService.rent(this.getContext(), rentDTO.get());
+		Rent rent = this.rentMapper.toDomain(rentDTO);
 
-		return Response.ok(rentDTO).build();
+		rent = this.rentUseCase.rent(this.getContext(), rent);
+
+		return Response.ok(this.rentMapper.toDTO(rent)).build();
 	}
 
 	@Path("pending-payments-by-customer/{customerUuid}")
@@ -86,9 +90,9 @@ public class RentResource extends AbstractResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response findPendingPaymentRentsByCustomer(@PathParam("customerUuid") final String customerUuid) throws BusinessException {
 
-		final List<Rent> rents = this.rentQueryService.findPendingPaymentRentsByCustomer(customerUuid);
+		final List<Rent> rents = this.rentPort.findPendingPaymentRentsByCustomer(customerUuid);
 
-		return Response.ok(new RentsDTO(rents, this.translator)).build();
+		return Response.ok(new RentsDTO(rents, this.rentMapper)).build();
 	}
 
 	@Path("payments")
@@ -96,10 +100,11 @@ public class RentResource extends AbstractResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response makePayment(final RentPaymentDTO rentPaymentDTO) throws BusinessException {
+		RentPayment rentPayment = this.rentPaymentMapper.toDomain(rentPaymentDTO);
 
-		this.rentPaymentService.makeRentPayment(this.getContext(), rentPaymentDTO.get());
+		rentPayment = this.makeRentPaymentUseCase.makeRentPayment(this.getContext(), rentPayment);
 
-		return Response.ok(rentPaymentDTO).build();
+		return Response.ok(this.rentPaymentMapper.toDTO(rentPayment)).build();
 	}
 
 	@Path("fetch-rents-with-pending-or-incomplete-rent-item-to-load-by-customer/{customerUuid}")
@@ -108,9 +113,9 @@ public class RentResource extends AbstractResource {
 	public Response fetchRentsWithPendingOrIncompleteRentItemToLoadByCustomer(@PathParam("customerUuid") final String customerUuid)
 			throws BusinessException {
 
-		final List<Rent> rents = this.rentQueryService.fetchRentsWithPendingOrIncompleteRentItemToLoadByCustomer(customerUuid);
+		final List<Rent> rents = this.rentPort.fetchRentsWithPendingOrIncompleteRentItemToLoadByCustomer(customerUuid);
 
-		return Response.ok(new RentsDTO(rents, this.translator)).build();
+		return Response.ok(new RentsDTO(rents, this.rentMapper)).build();
 	}
 
 	@Path("fetch-rents-with-pending-or-incomplete-rent-item-to-return-by-customer/{customerUuid}")
@@ -119,9 +124,9 @@ public class RentResource extends AbstractResource {
 	public Response fetchRentsWithPendingOrIncompleteRentItemToReturnByCustomer(@PathParam("customerUuid") final String customerUuid)
 			throws BusinessException {
 
-		final List<Rent> rents = this.rentQueryService.fetchRentsWithPendingOrIncompleteRentItemToReturnByCustomer(customerUuid);
+		final List<Rent> rents = this.rentPort.fetchRentsWithPendingOrIncompleteRentItemToReturnByCustomer(customerUuid);
 
-		return Response.ok(new RentsDTO(rents, this.translator)).build();
+		return Response.ok(new RentsDTO(rents, this.rentMapper)).build();
 	}
 
 	@Path("issue-quotation")
@@ -129,7 +134,8 @@ public class RentResource extends AbstractResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response issueQuotation(final RentDTO rentDTO) throws BusinessException {
-		final Rent rent = rentDTO.get();
+		final Rent rent = this.rentMapper.toDomain(rentDTO);
+
 		final RentReport rentReport = new RentReport(rent);
 
 		this.reportGeneratorPort.createPdfReport(rentReport);
@@ -143,11 +149,9 @@ public class RentResource extends AbstractResource {
 	public Response fetchRentsWithIssuedGuidesByTypeAndCustomer(@QueryParam("guideType") final GuideType guideType,
 			@QueryParam("customerUuid") final String customerUuid) throws BusinessException {
 
-		final List<Rent> rents = this.rentQueryService.fetchRentsWithIssuedGuidesByTypeAndCustomer(guideType, customerUuid);
+		final List<Rent> rents = this.rentPort.fetchRentsWithIssuedGuidesByTypeAndCustomer(guideType, customerUuid);
 
-		final RentsDTO rentsDTO = new RentsDTO(rents, this.translator);
-
-		return Response.ok(rentsDTO).build();
+		return Response.ok(new RentsDTO(rents, this.rentMapper)).build();
 	}
 
 	@Path("fetch-rents-with-payments-by-customer/{customerUuid}")
@@ -155,10 +159,8 @@ public class RentResource extends AbstractResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response fetchRentsWithPaymentsByCustomer(@PathParam("customerUuid") final String customerUuid) throws BusinessException {
 
-		final List<Rent> rents = this.rentQueryService.fetchRentsWithPaymentsByCustomer(customerUuid);
+		final List<Rent> rents = this.rentPort.fetchRentsWithPaymentsByCustomer(customerUuid);
 
-		final RentsDTO rentsDTO = new RentsDTO(rents, this.translator);
-
-		return Response.ok(rentsDTO).build();
+		return Response.ok(new RentsDTO(rents, this.rentMapper)).build();
 	}
 }

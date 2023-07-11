@@ -4,79 +4,49 @@
 package mz.co.grocery.integ.resources.saleable.dto;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
-import mz.co.grocery.core.grocery.model.Grocery;
-import mz.co.grocery.core.item.model.ServiceDescription;
-import mz.co.grocery.core.saleable.model.ServiceItem;
 import mz.co.grocery.integ.resources.dto.GenericDTO;
-import mz.co.grocery.integ.resources.grocery.dto.GroceryDTO;
 import mz.co.grocery.integ.resources.item.dto.ServiceDescriptionDTO;
-import mz.co.grocery.integ.resources.util.ProxyUtil;
+import mz.co.grocery.integ.resources.unit.dto.UnitDTO;
 
 /**
  * @author Stélio Moiane
  *
  */
-public class ServiceItemDTO extends GenericDTO<ServiceItem> {
+public class ServiceItemDTO extends GenericDTO {
 
 	private ServiceDescriptionDTO serviceDescriptionDTO;
 
-	private GroceryDTO unitDTO;
+	private UnitDTO unitDTO;
 
 	private BigDecimal salePrice;
 
-	public ServiceItemDTO() {
+	public Optional<ServiceDescriptionDTO> getServiceDescriptionDTO() {
+		return Optional.ofNullable(this.serviceDescriptionDTO);
 	}
 
-	public ServiceItemDTO(final ServiceItem serviceItem) {
-		super(serviceItem);
+	public void setServiceDescriptionDTO(final ServiceDescriptionDTO serviceDescriptionDTO) {
+		this.serviceDescriptionDTO = serviceDescriptionDTO;
 	}
 
-	@Override
-	public void mapper(final ServiceItem serviceItem) {
-
-		final ServiceDescription serviceDescription = serviceItem.getServiceDescription();
-
-		if (ProxyUtil.isInitialized(serviceDescription)) {
-			this.serviceDescriptionDTO = new ServiceDescriptionDTO(serviceDescription);
-		}
-
-		final Grocery unit = serviceItem.getUnit();
-		if (ProxyUtil.isInitialized(unit)) {
-			this.unitDTO = new GroceryDTO(unit);
-		}
-
-		this.salePrice = serviceItem.getSalePrice();
+	public Optional<UnitDTO> getUnitDTO() {
+		return Optional.ofNullable(this.unitDTO);
 	}
 
-	@Override
-	public ServiceItem get() {
-
-		final ServiceItem serviceItem = this.get(new ServiceItem());
-		serviceItem.setServiceDescription(this.serviceDescriptionDTO.get());
-		serviceItem.setUnit(this.unitDTO.get());
-		serviceItem.setSalePrice(this.salePrice);
-
-		return serviceItem;
-	}
-
-	public ServiceDescriptionDTO getServiceDescriptionDTO() {
-		return this.serviceDescriptionDTO;
-	}
-
-	public GroceryDTO getUnitDTO() {
-		return this.unitDTO;
+	public void setUnitDTO(final UnitDTO unitDTO) {
+		this.unitDTO = unitDTO;
 	}
 
 	public BigDecimal getSalePrice() {
 		return this.salePrice;
 	}
 
-	public String getName() {
-		return this.serviceDescriptionDTO.getName();
+	public void setSalePrice(final BigDecimal salePrice) {
+		this.salePrice = salePrice;
 	}
 
-	public void setUnitDTO(final GroceryDTO unitDTO) {
-		this.unitDTO = unitDTO;
+	public String getName() {
+		return this.serviceDescriptionDTO.getName();
 	}
 }

@@ -25,19 +25,17 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
 @PersistenceAdapter
 public class ReportGeneratorAdapter implements ReportGeneratorPort {
 
-	public static final String FILE_DIR = "/opt/grocery/data/";
-
 	@Override
 	public void createPdfReport(final Report report) throws BusinessException {
 
-		try (FileInputStream fileInputStream = new FileInputStream(ReportGeneratorAdapter.FILE_DIR + report.getXml())) {
+		try (FileInputStream fileInputStream = new FileInputStream(ReportGeneratorPort.FILE_DIR + report.getXml())) {
 
 			final JasperReport jasperReport = JasperCompileManager.compileReport(fileInputStream);
 
 			final JRBeanCollectionDataSource jrBeanCollectionDataSource = new JRBeanCollectionDataSource(report.getData());
 
 			final JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, report.getParameters(), jrBeanCollectionDataSource);
-			JasperExportManager.exportReportToPdfFile(jasperPrint, ReportGeneratorAdapter.FILE_DIR + report.getFileName());
+			JasperExportManager.exportReportToPdfFile(jasperPrint, ReportGeneratorPort.FILE_DIR + report.getFilePath());
 		} catch (final IOException | JRException e) {
 			e.printStackTrace();
 			throw new BusinessException(e.getMessage());

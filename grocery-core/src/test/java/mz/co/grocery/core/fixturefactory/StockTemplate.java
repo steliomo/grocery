@@ -9,10 +9,10 @@ import java.time.LocalDate;
 import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.Rule;
 import br.com.six2six.fixturefactory.loader.TemplateLoader;
-import mz.co.grocery.core.grocery.model.Grocery;
-import mz.co.grocery.core.item.model.ProductDescription;
-import mz.co.grocery.core.saleable.model.Stock;
-import mz.co.grocery.core.saleable.model.StockStatus;
+import mz.co.grocery.core.domain.item.ProductDescription;
+import mz.co.grocery.core.domain.sale.Stock;
+import mz.co.grocery.core.domain.sale.StockStatus;
+import mz.co.grocery.core.domain.unit.Unit;
 import mz.co.msaude.boot.frameworks.util.UuidFactory;
 
 /**
@@ -31,7 +31,7 @@ public class StockTemplate implements TemplateLoader {
 
 		Fixture.of(Stock.class).addTemplate(StockTemplate.VALID, new Rule() {
 			{
-				this.add("grocery", this.one(Grocery.class, GroceryTemplate.VALID));
+				this.add("unit", this.one(Unit.class, UnitTemplate.VALID));
 				this.add("productDescription", this.one(ProductDescription.class, ProductDescriptionTemplate.VALID));
 				this.add("purchasePrice", this.random(BigDecimal.class, this.range(1, 100)));
 				this.add("salePrice", this.random(BigDecimal.class, this.range(100, 200)));

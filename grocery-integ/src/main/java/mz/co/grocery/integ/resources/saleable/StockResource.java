@@ -20,15 +20,16 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import mz.co.grocery.core.saleable.model.Stock;
-import mz.co.grocery.core.saleable.service.StockQueryService;
-import mz.co.grocery.core.saleable.service.StockService;
+import mz.co.grocery.core.application.sale.out.StockPort;
+import mz.co.grocery.core.common.WebAdapter;
+import mz.co.grocery.core.domain.sale.Stock;
 import mz.co.grocery.integ.resources.AbstractResource;
 import mz.co.grocery.integ.resources.saleable.dto.StockDTO;
 import mz.co.grocery.integ.resources.saleable.dto.StocksDTO;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
+import mz.co.msaude.boot.frameworks.mapper.DTOMapper;
 import mz.co.msaude.boot.frameworks.model.EntityStatus;
 import mz.co.msaude.boot.frameworks.util.LocalDateAdapter;
 
@@ -38,51 +39,57 @@ import mz.co.msaude.boot.frameworks.util.LocalDateAdapter;
  */
 
 @Path("stocks")
-@Service(StockResource.NAME)
+@WebAdapter
 public class StockResource extends AbstractResource {
-	public static final String NAME = "mz.co.grocery.integ.resources.saleable.StockResource";
 
 	@Inject
-	private StockService stockService;
+	private StockPort stockPort;
 
-	@Inject
-	private StockQueryService stockQueryService;
+	@Autowired
+	private DTOMapper<StockDTO, Stock> stockMapper;
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response createStock(final StockDTO stockDTO) throws BusinessException {
-		this.stockService.createStock(this.getContext(), stockDTO.get());
-		return Response.ok(stockDTO).build();
+		Stock stock = this.stockMapper.toDomain(stockDTO);
+
+		stock = this.stockPort.createStock(this.getContext(), stock);
+
+		return Response.ok(this.stockMapper.toDTO(stock)).build();
 	}
 
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response updateStock(final StockDTO stockDTO) throws BusinessException {
-		this.stockService.updateStock(this.getContext(), stockDTO.get());
-		return Response.ok(stockDTO).build();
+
+		Stock stock = this.stockMapper.toDomain(stockDTO);
+
+		stock = this.stockPort.updateStock(this.getContext(), stock);
+
+		return Response.ok(this.stockMapper.toDTO(stock)).build();
 	}
 
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response fetchAllStocks(@QueryParam("currentPage") final int currentPage,
 			@QueryParam("maxResult") final int maxResult) throws BusinessException {
-		final Long totalItems = this.stockQueryService.count(EntityStatus.ACTIVE);
-		final List<Stock> stocks = this.stockQueryService.fetchAllStocks(currentPage, maxResult);
+		final Long totalItems = this.stockPort.count(EntityStatus.ACTIVE);
 
-		final List<StockDTO> stocksDTO = stocks.stream().map(stock -> new StockDTO(stock)).collect(Collectors.toList());
-		final StocksDTO stockDTO = new StocksDTO(stocksDTO, totalItems);
+		final List<Stock> stocks = this.stockPort.fetchAllStocks(currentPage, maxResult);
 
-		return Response.ok(stockDTO).build();
+		return Response.ok(new StocksDTO(stocks, totalItems, this.stockMapper)).build();
 	}
 
 	@GET
 	@Path("{stockUuid}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response fetchByUuid(@PathParam("stockUuid") final String stockUuid) throws BusinessException {
-		final Stock stock = this.stockQueryService.fetchStockByUuid(stockUuid);
-		return Response.ok(new StockDTO(stock)).build();
+
+		final Stock stock = this.stockPort.fetchStockByUuid(stockUuid);
+
+		return Response.ok(this.stockMapper.toDTO(stock)).build();
 	}
 
 	@GET
@@ -90,18 +97,20 @@ public class StockResource extends AbstractResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response fetchStocksByProductDescription(@QueryParam("description") final String description)
 			throws BusinessException {
-		final List<Stock> stocks = this.stockQueryService.fetchStocksByProductDescription(description);
-		final List<StockDTO> stocksDTO = stocks.stream().map(stock -> new StockDTO(stock)).collect(Collectors.toList());
-		return Response.ok(stocksDTO).build();
+		final List<Stock> stocks = this.stockPort.fetchStocksByProductDescription(description);
+
+		return Response.ok(new StocksDTO(stocks, 0L, this.stockMapper).getStocksDTO()).build();
 	}
 
 	@DELETE
 	@Path("{stockUuid}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response removeStock(@PathParam("stockUuid") final String stockUuid) throws BusinessException {
-		final Stock stock = this.stockQueryService.fetchStockByUuid(stockUuid);
-		this.stockService.removeStock(this.getContext(), stock);
-		return Response.ok(new StockDTO(stock)).build();
+		Stock stock = this.stockPort.fetchStockByUuid(stockUuid);
+
+		stock = this.stockPort.removeStock(this.getContext(), stock);
+
+		return Response.ok(this.stockMapper.toDTO(stock)).build();
 	}
 
 	@GET
@@ -110,20 +119,18 @@ public class StockResource extends AbstractResource {
 	public Response fecthStocksByGroceryAndProduct(@QueryParam("groceryUuid") final String groceryUuid,
 			@QueryParam("productUuid") final String productUuid) throws BusinessException {
 
-		final List<Stock> stocks = this.stockQueryService.fetchStockByGroceryAndProduct(groceryUuid, productUuid);
+		final List<Stock> stocks = this.stockPort.fetchStockByGroceryAndProduct(groceryUuid, productUuid);
 
-		final List<StockDTO> stocksDTO = stocks.stream().map(stock -> new StockDTO(stock)).collect(Collectors.toList());
-
-		return Response.ok(stocksDTO).build();
+		return Response.ok(new StocksDTO(stocks, 0L, this.stockMapper).getStocksDTO()).build();
 	}
 
 	@GET
 	@Path("by-grocery/{groceryUuid}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response fetchStocksByGrocery(@PathParam("groceryUuid") final String groceryUuid) throws BusinessException {
-		final List<Stock> stocks = this.stockQueryService.fetchStocksByGrocery(groceryUuid);
+		final List<Stock> stocks = this.stockPort.fetchStocksByGrocery(groceryUuid);
 
-		final List<StockDTO> stocksDTO = stocks.stream().map(stock -> new StockDTO(stock)).collect(Collectors.toList());
+		final List<StockDTO> stocksDTO = stocks.stream().map(stock -> this.stockMapper.toDTO(stock)).collect(Collectors.toList());
 
 		return Response.ok(stocksDTO).build();
 	}
@@ -139,10 +146,10 @@ public class StockResource extends AbstractResource {
 		final LocalDate sDate = dateAdapter.unmarshal(startDate);
 		final LocalDate eDate = dateAdapter.unmarshal(endDate);
 
-		final List<Stock> stocks = this.stockQueryService.fetchLowStocksByGroceryAndSalePeriod(groceryUuid, sDate,
+		final List<Stock> stocks = this.stockPort.fetchLowStocksByGroceryAndSalePeriod(groceryUuid, sDate,
 				eDate);
 
-		final List<StockDTO> stocksDTO = stocks.stream().map(stock -> new StockDTO(stock)).collect(Collectors.toList());
+		final List<StockDTO> stocksDTO = stocks.stream().map(stock -> this.stockMapper.toDTO(stock)).collect(Collectors.toList());
 
 		return Response.ok(stocksDTO).build();
 	}
@@ -153,9 +160,9 @@ public class StockResource extends AbstractResource {
 	public Response fecthStocksNotInThisByGroceryByProduct(@QueryParam("groceryUuid") final String groceryUuid,
 			@QueryParam("productUuid") final String productUuid) throws BusinessException {
 
-		final List<Stock> stocks = this.stockQueryService.fetchStockNotInthisGroceryByProduct(groceryUuid, productUuid);
+		final List<Stock> stocks = this.stockPort.fetchStockNotInthisGroceryByProduct(groceryUuid, productUuid);
 
-		final List<StockDTO> stocksDTO = stocks.stream().map(stock -> new StockDTO(stock)).collect(Collectors.toList());
+		final List<StockDTO> stocksDTO = stocks.stream().map(stock -> this.stockMapper.toDTO(stock)).collect(Collectors.toList());
 
 		return Response.ok(stocksDTO).build();
 	}
@@ -166,8 +173,8 @@ public class StockResource extends AbstractResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response fetchStocksInAnalysis(@QueryParam("unitUuid") final String unitUuid) throws BusinessException {
 
-		final List<Stock> stocksInAnalysis = this.stockQueryService.fetchStocksInAnalysisByUnit(unitUuid);
-		final List<StockDTO> stocksAnalysisDTOs = stocksInAnalysis.stream().map(stock -> new StockDTO(stock)).collect(Collectors.toList());
+		final List<Stock> stocksInAnalysis = this.stockPort.fetchStocksInAnalysisByUnit(unitUuid);
+		final List<StockDTO> stocksAnalysisDTOs = stocksInAnalysis.stream().map(stock -> this.stockMapper.toDTO(stock)).collect(Collectors.toList());
 
 		return Response.ok(stocksAnalysisDTOs).build();
 	}
@@ -177,7 +184,11 @@ public class StockResource extends AbstractResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response regulizeStock(final StockDTO stockDTO) throws BusinessException {
-		final Stock stock = this.stockService.regularize(this.getContext(), stockDTO.get());
-		return Response.ok(new StockDTO(stock)).build();
+
+		Stock stock = this.stockMapper.toDomain(stockDTO);
+
+		stock = this.stockPort.regularize(this.getContext(), stock);
+
+		return Response.ok(this.stockMapper.toDTO(stock)).build();
 	}
 }

@@ -19,29 +19,30 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
 
-import mz.co.grocery.core.expense.model.ExpenseReport;
-import mz.co.grocery.core.expense.service.ExpenseQueryService;
-import mz.co.grocery.core.grocery.model.GroceryUser;
-import mz.co.grocery.core.grocery.service.GroceryUserQueryService;
-import mz.co.grocery.core.rent.service.RentPaymentQueryService;
-import mz.co.grocery.core.sale.model.Sale;
-import mz.co.grocery.core.sale.model.SalePayment;
-import mz.co.grocery.core.sale.model.SaleReport;
-import mz.co.grocery.core.sale.service.CashSaleServiceImpl;
-import mz.co.grocery.core.sale.service.InstallmentSaleServiceImpl;
-import mz.co.grocery.core.sale.service.SalePaymentService;
-import mz.co.grocery.core.sale.service.SaleQueryService;
-import mz.co.grocery.core.sale.service.SaleService;
-import mz.co.grocery.core.util.ApplicationTranslator;
+import mz.co.grocery.core.application.expense.out.ExpensePort;
+import mz.co.grocery.core.application.rent.out.RentPaymentPort;
+import mz.co.grocery.core.application.sale.in.SalePaymentUseCase;
+import mz.co.grocery.core.application.sale.in.SaleUseCase;
+import mz.co.grocery.core.application.sale.out.SalePort;
+import mz.co.grocery.core.application.sale.service.CashSaleService;
+import mz.co.grocery.core.application.sale.service.InstallmentSaleService;
+import mz.co.grocery.core.application.unit.out.UnitUserPort;
+import mz.co.grocery.core.common.BeanQualifier;
+import mz.co.grocery.core.common.WebAdapter;
+import mz.co.grocery.core.domain.customer.Customer;
+import mz.co.grocery.core.domain.expense.ExpenseReport;
+import mz.co.grocery.core.domain.sale.Sale;
+import mz.co.grocery.core.domain.sale.SalePayment;
+import mz.co.grocery.core.domain.sale.SaleReport;
+import mz.co.grocery.core.domain.unit.UnitUser;
 import mz.co.grocery.integ.resources.AbstractResource;
 import mz.co.grocery.integ.resources.customer.dto.CustomerDTO;
 import mz.co.grocery.integ.resources.sale.dto.SaleDTO;
 import mz.co.grocery.integ.resources.sale.dto.SalePaymentDTO;
 import mz.co.grocery.integ.resources.sale.dto.SalesDTO;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
+import mz.co.msaude.boot.frameworks.mapper.DTOMapper;
 import mz.co.msaude.boot.frameworks.util.LocalDateAdapter;
 
 /**
@@ -49,75 +50,78 @@ import mz.co.msaude.boot.frameworks.util.LocalDateAdapter;
  *
  */
 @Path("sales")
-@Service(SaleResource.NAME)
+@WebAdapter
 public class SaleResource extends AbstractResource {
 
-	public static final String NAME = "mz.co.grocery.integ.resources.sale.SaleResource";
+	@Autowired
+	@BeanQualifier(CashSaleService.NAME)
+	private SaleUseCase cashSaleService;
 
 	@Autowired
-	@Qualifier(CashSaleServiceImpl.NAME)
-	private SaleService cashSaleService;
+	@BeanQualifier(InstallmentSaleService.NAME)
+	private SaleUseCase installmentSaleService;
+
+	@Inject
+	private SalePort salePort;
+
+	@Inject
+	private ExpensePort expensePort;
+
+	@Inject
+	private UnitUserPort unitUserPort;
+
+	@Inject
+	private RentPaymentPort rentPaymentPort;
+
+	@Inject
+	private SalePaymentUseCase salePaymentUseCase;
 
 	@Autowired
-	@Qualifier(InstallmentSaleServiceImpl.NAME)
-	private SaleService installmentSaleService;
+	private DTOMapper<SaleDTO, Sale> saleMapper;
 
-	@Inject
-	private SaleQueryService saleQueryService;
+	@Autowired
+	private DTOMapper<SalePaymentDTO, SalePayment> salePaymentMapper;
 
-	@Inject
-	private ExpenseQueryService expenseQueryService;
-
-	@Inject
-	private GroceryUserQueryService groceryUserQueryService;
-
-	@Inject
-	private RentPaymentQueryService rentPaymentQueryService;
-
-	@Inject
-	private SalePaymentService salePaymentService;
-
-	@Inject
-	private ApplicationTranslator translator;
+	@Autowired
+	private DTOMapper<CustomerDTO, Customer> customerMapper;
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response registSale(final SaleDTO saleDTO) throws BusinessException {
-		Sale sale = null;
+		Sale sale = this.saleMapper.toDomain(saleDTO);
 
 		switch (saleDTO.getSaleType()) {
 		case CASH:
-			sale = this.cashSaleService.registSale(this.getContext(), saleDTO.get());
+			sale = this.cashSaleService.registSale(this.getContext(), sale);
 			break;
 
 		case INSTALLMENT:
-			sale = this.installmentSaleService.registSale(this.getContext(), saleDTO.get());
+			sale = this.installmentSaleService.registSale(this.getContext(), sale);
 			break;
 		}
 
-		return Response.ok(new SaleDTO(sale)).build();
+		return Response.ok(this.saleMapper.toDTO(sale)).build();
 	}
 
 	@GET
 	@Path("per-period")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response findSalesPerPeriod(@QueryParam("groceryUuid") final String groceryUuid,
+	public Response findSalesPerPeriod(@QueryParam("groceryUuid") final String unitUuid,
 			@QueryParam("startDate") final String startDate, @QueryParam("endDate") final String endDate)
 					throws BusinessException {
 
-		final GroceryUser user = this.groceryUserQueryService.fetchGroceryUserByUser(this.getContext().getUuid());
+		final UnitUser user = this.unitUserPort.fetchUnitUserByUser(this.getContext().getUuid());
 
 		final LocalDateAdapter dateAdapter = new LocalDateAdapter();
 		final LocalDate sDate = dateAdapter.unmarshal(startDate);
 		final LocalDate eDate = dateAdapter.unmarshal(endDate);
 
-		final List<SaleReport> sales = this.saleQueryService.findSalesPerPeriod(groceryUuid, sDate, eDate);
+		final List<SaleReport> sales = this.salePort.findSalesByUnitAndPeriod(unitUuid, sDate, eDate);
 
-		final List<SaleReport> rents = this.rentPaymentQueryService.findSalesByUnitAndPeriod(groceryUuid, sDate, eDate);
+		final List<SaleReport> rents = this.rentPaymentPort.findSalesByUnitAndPeriod(unitUuid, sDate, eDate);
 
-		final BigDecimal expense = this.expenseQueryService.findExpensesValueByGroceryAndPeriod(groceryUuid, sDate,
-				eDate);
+		final BigDecimal expense = this.expensePort.findExpensesValueByUnitAndPeriod(unitUuid, sDate, eDate);
 
 		final SalesDTO buildMonthly = new SalesDTO(user).setSalesBalance(sales).setRentsBalance(rents).setExpense(expense).buildPeriod();
 
@@ -127,21 +131,21 @@ public class SaleResource extends AbstractResource {
 	@GET
 	@Path("monthly-per-period")
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response findMonthySalesPerPeriod(@QueryParam("groceryUuid") final String groceryUuid,
+	public Response findMonthySalesPerPeriod(@QueryParam("groceryUuid") final String unitUuid,
 			@QueryParam("startDate") final String startDate, @QueryParam("endDate") final String endDate)
 					throws BusinessException {
 
-		final GroceryUser user = this.groceryUserQueryService.fetchGroceryUserByUser(this.getContext().getUuid());
+		final UnitUser user = this.unitUserPort.fetchUnitUserByUser(this.getContext().getUuid());
 
 		final LocalDateAdapter dateAdapter = new LocalDateAdapter();
 		final LocalDate sDate = dateAdapter.unmarshal(startDate);
 		final LocalDate eDate = dateAdapter.unmarshal(endDate);
 
-		final List<SaleReport> sales = this.saleQueryService.findMonthlySalesPerPeriod(groceryUuid, sDate, eDate);
+		final List<SaleReport> sales = this.salePort.findSalesByUnitAndMonthlyPeriod(unitUuid, sDate, eDate);
 
-		final List<SaleReport> rents = this.rentPaymentQueryService.findSalesByUnitAndMonthlyPeriod(groceryUuid, sDate, eDate);
+		final List<SaleReport> rents = this.rentPaymentPort.findSalesByUnitAndMonthlyPeriod(unitUuid, sDate, eDate);
 
-		final List<ExpenseReport> expenses = this.expenseQueryService.findMonthyExpensesByGroceryAndPeriod(groceryUuid,
+		final List<ExpenseReport> expenses = this.expensePort.findMonthyExpensesByGroceryAndPeriod(unitUuid,
 				sDate,
 				eDate);
 
@@ -156,11 +160,11 @@ public class SaleResource extends AbstractResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	public Response salePayment(final SalePaymentDTO salePaymentDTO) throws BusinessException {
 
-		final SalePayment salePayment = this.salePaymentService.payInstallmentSale(this.getContext(), salePaymentDTO.getSaleUuid(),
+		final SalePayment salePayment = this.salePaymentUseCase.payInstallmentSale(this.getContext(), salePaymentDTO.getSaleUuid(),
 				salePaymentDTO.getPaymentValue(),
 				salePaymentDTO.getPaymentDate());
 
-		return Response.ok(new SalePaymentDTO(salePayment)).build();
+		return Response.ok(this.salePaymentMapper.toDTO(salePayment)).build();
 	}
 
 	@GET
@@ -171,11 +175,11 @@ public class SaleResource extends AbstractResource {
 		final CustomerDTO customerDTO = new CustomerDTO();
 		customerDTO.setUuid(customerUuid);
 
-		final List<Sale> sales = this.saleQueryService.findPendingOrImpletePaymentSaleStatusByCustomer(customerDTO.get());
+		final List<Sale> sales = this.salePort.findPendingOrImpletePaymentSaleStatusByCustomer(this.customerMapper.toDomain(customerDTO));
 
 		final SalesDTO salesDTO = new SalesDTO();
 
-		sales.forEach(sale -> salesDTO.addSale(new SaleDTO(sale, this.translator)));
+		sales.forEach(sale -> salesDTO.addSale(this.saleMapper.toDTO(sale)));
 
 		return Response.ok(salesDTO).build();
 	}
@@ -189,11 +193,11 @@ public class SaleResource extends AbstractResource {
 		final CustomerDTO customerDTO = new CustomerDTO();
 		customerDTO.setUuid(customerUuid);
 
-		final List<Sale> sales = this.saleQueryService.fetchSalesWithPendingOrIncompleteDeliveryStatusByCustomer(customerDTO.get());
+		final List<Sale> sales = this.salePort.fetchSalesWithPendingOrIncompleteDeliveryStatusByCustomer(this.customerMapper.toDomain(customerDTO));
 
 		final SalesDTO salesDTO = new SalesDTO();
 
-		sales.forEach(sale -> salesDTO.addSale(new SaleDTO(sale, this.translator)));
+		sales.forEach(sale -> salesDTO.addSale(this.saleMapper.toDTO(sale)));
 
 		return Response.ok(salesDTO).build();
 	}
@@ -206,11 +210,11 @@ public class SaleResource extends AbstractResource {
 		final CustomerDTO customerDTO = new CustomerDTO();
 		customerDTO.setUuid(customerUuid);
 
-		final List<Sale> sales = this.saleQueryService.fetchSalesWithDeliveryGuidesByCustomer(customerDTO.get());
+		final List<Sale> sales = this.salePort.fetchSalesWithDeliveryGuidesByCustomer(this.customerMapper.toDomain(customerDTO));
 
 		final SalesDTO salesDTO = new SalesDTO();
 
-		sales.forEach(sale -> salesDTO.addSale(new SaleDTO(sale, this.translator)));
+		sales.forEach(sale -> salesDTO.addSale(this.saleMapper.toDTO(sale)));
 
 		return Response.ok(salesDTO).build();
 	}

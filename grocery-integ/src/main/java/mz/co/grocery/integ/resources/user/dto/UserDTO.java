@@ -10,7 +10,7 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.annotation.JsonInclude.Include;
 
-import mz.co.grocery.integ.resources.grocery.dto.GroceryUserDTO;
+import mz.co.grocery.integ.resources.unit.dto.UnitUserDTO;
 
 /**
  * @author Stélio Moiane
@@ -30,7 +30,7 @@ public class UserDTO {
 
 	private String fullName;
 
-	private GroceryUserDTO groceryUserDTO;
+	private UnitUserDTO unitUserDTO;
 
 	private String email;
 
@@ -76,12 +76,12 @@ public class UserDTO {
 		this.fullName = fullName;
 	}
 
-	public GroceryUserDTO getGroceryUserDTO() {
-		return this.groceryUserDTO;
+	public UnitUserDTO getUnitUserDTO() {
+		return this.unitUserDTO;
 	}
 
-	public void setGroceryUserDTO(final GroceryUserDTO groceryUserDTO) {
-		this.groceryUserDTO = groceryUserDTO;
+	public void setUnitUserDTO(final UnitUserDTO unitUserDTO) {
+		this.unitUserDTO = unitUserDTO;
 	}
 
 	public String getEmail() {

@@ -5,13 +5,10 @@ package mz.co.grocery.integ.resources.rent.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Optional;
 
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import mz.co.grocery.core.item.model.ItemType;
-import mz.co.grocery.core.rent.model.RentItem;
-import mz.co.grocery.core.saleable.model.ServiceItem;
-import mz.co.grocery.core.saleable.model.Stock;
 import mz.co.grocery.integ.resources.dto.GenericDTO;
 import mz.co.grocery.integ.resources.saleable.dto.ServiceItemDTO;
 import mz.co.grocery.integ.resources.saleable.dto.StockDTO;
@@ -21,7 +18,7 @@ import mz.co.msaude.boot.frameworks.util.LocalDateAdapter;
  * @author Stélio Moiane
  *
  */
-public class RentItemDTO extends GenericDTO<RentItem> {
+public class RentItemDTO extends GenericDTO {
 
 	private StockDTO stockDTO;
 
@@ -43,85 +40,79 @@ public class RentItemDTO extends GenericDTO<RentItem> {
 	@XmlJavaTypeAdapter(LocalDateAdapter.class)
 	private LocalDate returnDate;
 
-	public RentItemDTO() {
+	public Optional<StockDTO> getStockDTO() {
+		return Optional.ofNullable(this.stockDTO);
 	}
 
-	public RentItemDTO(final RentItem rentItem) {
-		super(rentItem);
+	public void setStockDTO(final StockDTO stockDTO) {
+		this.stockDTO = stockDTO;
 	}
 
-	@Override
-	public void mapper(final RentItem rentItem) {
-		super.get(rentItem);
-		this.plannedQuantity = rentItem.getPlannedQuantity();
-		this.plannedDays = rentItem.getPlannedDays();
-		this.discount = rentItem.getDiscount();
-		this.loadedQuantity = rentItem.getLoadedQuantity();
-		this.loadingDate = rentItem.getLoadingDate();
-		this.returnedQuantity = rentItem.getReturnedQuantity();
-		this.returnDate = rentItem.getReturnDate();
-
-		if (ItemType.PRODUCT.equals(rentItem.getType())) {
-			this.stockDTO = new StockDTO((Stock) rentItem.getItem());
-			return;
-		}
-
-		this.serviceItemDTO = new ServiceItemDTO((ServiceItem) rentItem.getItem());
+	public Optional<ServiceItemDTO> getServiceItemDTO() {
+		return Optional.ofNullable(this.serviceItemDTO);
 	}
 
-	@Override
-	public RentItem get() {
-		final RentItem rentItem = this.get(new RentItem());
-
-		if (this.stockDTO != null || this.serviceItemDTO != null) {
-			rentItem.setItem(this.stockDTO != null ? this.stockDTO.get() : this.serviceItemDTO.get());
-			rentItem.setStockable();
-		}
-
-		rentItem.setPlannedQuantity(this.plannedQuantity);
-		rentItem.setPlannedDays(this.plannedDays);
-		rentItem.setDiscount(this.discount);
-
-		return rentItem;
-	}
-
-	public StockDTO getStockDTO() {
-		return this.stockDTO;
-	}
-
-	public ServiceItemDTO getServiceItemDTO() {
-		return this.serviceItemDTO;
+	public void setServiceItemDTO(final ServiceItemDTO serviceItemDTO) {
+		this.serviceItemDTO = serviceItemDTO;
 	}
 
 	public BigDecimal getPlannedQuantity() {
 		return this.plannedQuantity;
 	}
 
+	public void setPlannedQuantity(final BigDecimal plannedQuantity) {
+		this.plannedQuantity = plannedQuantity;
+	}
+
 	public BigDecimal getPlannedDays() {
 		return this.plannedDays;
+	}
+
+	public void setPlannedDays(final BigDecimal plannedDays) {
+		this.plannedDays = plannedDays;
 	}
 
 	public BigDecimal getDiscount() {
 		return this.discount;
 	}
 
+	public void setDiscount(final BigDecimal discount) {
+		this.discount = discount;
+	}
+
 	public BigDecimal getLoadedQuantity() {
 		return this.loadedQuantity;
+	}
+
+	public void setLoadedQuantity(final BigDecimal loadedQuantity) {
+		this.loadedQuantity = loadedQuantity;
 	}
 
 	public LocalDate getLoadingDate() {
 		return this.loadingDate;
 	}
 
+	public void setLoadingDate(final LocalDate loadingDate) {
+		this.loadingDate = loadingDate;
+	}
+
 	public BigDecimal getReturnedQuantity() {
 		return this.returnedQuantity;
+	}
+
+	public void setReturnedQuantity(final BigDecimal returnedQuantity) {
+		this.returnedQuantity = returnedQuantity;
 	}
 
 	public LocalDate getReturnDate() {
 		return this.returnDate;
 	}
 
+	public void setReturnDate(final LocalDate returnDate) {
+		this.returnDate = returnDate;
+	}
+
 	public String getName() {
-		return this.stockDTO != null ? this.stockDTO.getProductDescriptionDTO().getName() : this.serviceItemDTO.getName();
+		return this.stockDTO != null ? this.stockDTO.getProductDescriptionDTO().get().getName() : this.serviceItemDTO.getName();
 	}
 }

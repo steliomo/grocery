@@ -11,8 +11,6 @@ import mz.co.grocery.integ.resources.contract.ContractResource;
 import mz.co.grocery.integ.resources.customer.CustomerResource;
 import mz.co.grocery.integ.resources.expense.ExpenseResource;
 import mz.co.grocery.integ.resources.expense.ExpenseTypeResource;
-import mz.co.grocery.integ.resources.grocery.GroceryResource;
-import mz.co.grocery.integ.resources.grocery.GroceryUserResource;
 import mz.co.grocery.integ.resources.guide.GuideResource;
 import mz.co.grocery.integ.resources.inventory.InventoryResource;
 import mz.co.grocery.integ.resources.item.ProductDescriptionResource;
@@ -21,12 +19,15 @@ import mz.co.grocery.integ.resources.item.ProductUnitResource;
 import mz.co.grocery.integ.resources.item.ServiceDescriptionResource;
 import mz.co.grocery.integ.resources.item.ServiceResource;
 import mz.co.grocery.integ.resources.payment.PaymentResource;
+import mz.co.grocery.integ.resources.quotation.QuotationResource;
 import mz.co.grocery.integ.resources.rent.RentResource;
 import mz.co.grocery.integ.resources.report.ReportResource;
 import mz.co.grocery.integ.resources.sale.SaleResource;
 import mz.co.grocery.integ.resources.saleable.SaleableResource;
 import mz.co.grocery.integ.resources.saleable.ServiceItemResource;
 import mz.co.grocery.integ.resources.saleable.StockResource;
+import mz.co.grocery.integ.resources.unit.UnitResource;
+import mz.co.grocery.integ.resources.unit.UnitUserResource;
 import mz.co.grocery.integ.resources.user.UserResource;
 
 /**
@@ -46,8 +47,8 @@ public class JerseyConfig extends ResourceConfig {
 		this.register(StockResource.class);
 		this.register(SaleResource.class);
 		this.register(UserResource.class);
-		this.register(GroceryResource.class);
-		this.register(GroceryUserResource.class);
+		this.register(UnitResource.class);
+		this.register(UnitUserResource.class);
 		this.register(InventoryResource.class);
 		this.register(ExpenseTypeResource.class);
 		this.register(ExpenseResource.class);
@@ -66,5 +67,6 @@ public class JerseyConfig extends ResourceConfig {
 
 		this.register(ReportResource.class);
 		this.register(GuideResource.class);
+		this.register(QuotationResource.class);
 	}
 }

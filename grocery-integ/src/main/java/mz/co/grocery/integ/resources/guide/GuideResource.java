@@ -12,63 +12,58 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.stereotype.Service;
 
-import mz.co.grocery.core.application.report.ReportGeneratorPort;
-import mz.co.grocery.core.guide.model.Guide;
-import mz.co.grocery.core.guide.model.GuideReport;
-import mz.co.grocery.core.guide.service.DeliveryGuideIssuerImpl;
-import mz.co.grocery.core.guide.service.GuideIssuer;
-import mz.co.grocery.core.guide.service.GuideService;
-import mz.co.grocery.core.guide.service.ReturnGuideIssuerImpl;
-import mz.co.grocery.core.guide.service.TransportGuideIssuerImpl;
-import mz.co.grocery.core.util.ApplicationTranslator;
+import mz.co.grocery.core.application.guide.in.GuideIssuer;
+import mz.co.grocery.core.application.guide.in.IssueGuideUseCase;
+import mz.co.grocery.core.application.guide.service.DeliveryGuideIssuer;
+import mz.co.grocery.core.application.guide.service.ReturnGuideIssuer;
+import mz.co.grocery.core.application.guide.service.TransportGuideIssuer;
+import mz.co.grocery.core.common.BeanQualifier;
+import mz.co.grocery.core.common.WebAdapter;
+import mz.co.grocery.core.domain.guide.Guide;
 import mz.co.grocery.integ.resources.AbstractResource;
 import mz.co.grocery.integ.resources.guide.dto.GuideDTO;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
+import mz.co.msaude.boot.frameworks.mapper.DTOMapper;
 
 /**
  * @author Stélio Moiane
  *
  */
 @Path("guides")
-@Service(GuideResource.NAME)
+@WebAdapter
 public class GuideResource extends AbstractResource {
 
-	public static final String NAME = "mz.co.grocery.integ.resources.guide.GuideResource";
-
 	@Inject
-	private GuideService guideService;
+	private IssueGuideUseCase guideUseCase;
 
 	@Autowired
-	@Qualifier(TransportGuideIssuerImpl.NAME)
+	@BeanQualifier(TransportGuideIssuer.NAME)
 	private GuideIssuer transportGuideIssuer;
 
 	@Autowired
-	@Qualifier(ReturnGuideIssuerImpl.NAME)
+	@BeanQualifier(ReturnGuideIssuer.NAME)
 	private GuideIssuer returnGuideIssuer;
 
 	@Autowired
-	@Qualifier(DeliveryGuideIssuerImpl.NAME)
+	@BeanQualifier(DeliveryGuideIssuer.NAME)
 	private GuideIssuer deliveryGuideIssuer;
 
-	@Inject
-	private ApplicationTranslator translator;
-
-	@Inject
-	private ReportGeneratorPort reportGeneratorPort;
+	@Autowired
+	private DTOMapper<GuideDTO, Guide> guideMapper;
 
 	@Path("issue-transport-guide")
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response issueTransportGuide(final GuideDTO trasportGuideDTO) throws BusinessException {
-		this.guideService.setGuideIssuer(this.transportGuideIssuer);
+		this.guideUseCase.setGuideIssuer(this.transportGuideIssuer);
 
-		this.issueGuide(trasportGuideDTO);
+		Guide guide = this.guideMapper.toDomain(trasportGuideDTO);
 
-		return Response.ok(trasportGuideDTO).build();
+		guide = this.guideUseCase.issueGuide(this.getContext(), guide);
+
+		return Response.ok(this.guideMapper.toDTO(guide)).build();
 	}
 
 	@Path("issue-return-guide")
@@ -76,11 +71,13 @@ public class GuideResource extends AbstractResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response issueReturnGuide(final GuideDTO returnGuideDTO) throws BusinessException {
-		this.guideService.setGuideIssuer(this.returnGuideIssuer);
+		this.guideUseCase.setGuideIssuer(this.returnGuideIssuer);
 
-		this.issueGuide(returnGuideDTO);
+		Guide guide = this.guideMapper.toDomain(returnGuideDTO);
 
-		return Response.ok(returnGuideDTO).build();
+		guide = this.guideUseCase.issueGuide(this.getContext(), guide);
+
+		return Response.ok(this.guideMapper.toDTO(guide)).build();
 	}
 
 	@Path("issue-delivery-guide")
@@ -88,32 +85,12 @@ public class GuideResource extends AbstractResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response issueDeliveryGuide(final GuideDTO deliveryGuideDTO) throws BusinessException {
-		this.guideService.setGuideIssuer(this.deliveryGuideIssuer);
+		this.guideUseCase.setGuideIssuer(this.deliveryGuideIssuer);
 
-		this.issueGuide(deliveryGuideDTO);
+		Guide guide = this.guideMapper.toDomain(deliveryGuideDTO);
 
-		return Response.ok(deliveryGuideDTO).build();
+		guide = this.guideUseCase.issueGuide(this.getContext(), guide);
+
+		return Response.ok(this.guideMapper.toDTO(guide)).build();
 	}
-
-	@Path("issue-guide-pdf")
-	@POST
-	@Consumes(MediaType.APPLICATION_JSON)
-	@Produces(MediaType.APPLICATION_JSON)
-	public Response issueGuidePDF(final GuideDTO guideDTO) throws BusinessException {
-
-		final GuideReport guideReport = new GuideReport(guideDTO.get(), this.translator);
-
-		this.reportGeneratorPort.createPdfReport(guideReport);
-
-		guideDTO.setFileName(guideReport.getFileName());
-
-		return Response.ok(guideDTO).build();
-	}
-
-	private void issueGuide(final GuideDTO guideDTO) throws BusinessException {
-		final Guide guide = this.guideService.issueGuide(this.getContext(), guideDTO.get());
-		final GuideReport report = new GuideReport(guide, this.translator);
-		guideDTO.setFileName(report.getFileName());
-	}
-
 }

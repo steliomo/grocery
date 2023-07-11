@@ -5,34 +5,31 @@ package mz.co.grocery.integ.resources.rent.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
+import java.util.Optional;
 
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import mz.co.grocery.core.rent.model.Rent;
-import mz.co.grocery.core.util.ApplicationTranslator;
+import mz.co.grocery.integ.resources.common.EnumDTO;
 import mz.co.grocery.integ.resources.customer.dto.CustomerDTO;
 import mz.co.grocery.integ.resources.dto.GenericDTO;
-import mz.co.grocery.integ.resources.grocery.dto.GroceryDTO;
 import mz.co.grocery.integ.resources.guide.dto.GuideDTO;
-import mz.co.grocery.integ.resources.util.EnumDTO;
-import mz.co.grocery.integ.resources.util.ProxyUtil;
+import mz.co.grocery.integ.resources.unit.dto.UnitDTO;
 import mz.co.msaude.boot.frameworks.util.LocalDateAdapter;
 
 /**
  * @author Stélio Moiane
  *
  */
-public class RentDTO extends GenericDTO<Rent> {
+public class RentDTO extends GenericDTO {
 
-	private GroceryDTO unitDTO;
+	private UnitDTO unitDTO;
+
+	private CustomerDTO customerDTO;
 
 	@XmlJavaTypeAdapter(LocalDateAdapter.class)
 	private LocalDate rentDate;
-
-	private CustomerDTO customerDTO;
 
 	private BigDecimal totalEstimated;
 
@@ -44,8 +41,6 @@ public class RentDTO extends GenericDTO<Rent> {
 
 	private BigDecimal totalToRefund;
 
-	private int totalItems;
-
 	private EnumDTO paymentStatus;
 
 	private List<RentItemDTO> rentItemsDTO;
@@ -54,118 +49,88 @@ public class RentDTO extends GenericDTO<Rent> {
 
 	private List<GuideDTO> guidesDTO;
 
-	public RentDTO() {
+	public Optional<UnitDTO> getUnitDTO() {
+		return Optional.ofNullable(this.unitDTO);
 	}
 
-	public RentDTO(final Rent rent) {
-		super(rent);
+	public void setUnitDTO(final UnitDTO unitDTO) {
+		this.unitDTO = unitDTO;
 	}
 
-	public RentDTO(final Rent rent, final ApplicationTranslator translator) {
-		super(rent);
-		this.paymentStatus = new EnumDTO(rent.getPaymentStatus().toString(), translator.getTranslation(rent.getPaymentStatus().toString()));
+	public Optional<CustomerDTO> getCustomerDTO() {
+		return Optional.ofNullable(this.customerDTO);
 	}
 
-	@Override
-	public void mapper(final Rent rent) {
-		this.totalEstimated = rent.getTotalEstimated();
-		this.totalCalculated = rent.getTotalCalculated();
-		this.totalPaid = rent.getTotalPayment();
-		this.totalToPay = rent.getTotalToPay();
-		this.totalToRefund = rent.totalToRefund();
-		this.totalItems = rent.getRentItems().size();
-
-		if (ProxyUtil.isInitialized(rent.getUnit())) {
-			this.unitDTO = new GroceryDTO(rent.getUnit());
-		}
-
-		if (ProxyUtil.isInitialized(rent.getCustomer())) {
-			this.customerDTO = new CustomerDTO(rent.getCustomer());
-		}
-
-		this.rentDate = rent.getRentDate();
-
-		if (this.rentItemsDTO == null) {
-			this.rentItemsDTO = new ArrayList<>();
-		}
-
-		rent.getRentItems().forEach(rentItem -> this.rentItemsDTO.add(new RentItemDTO(rentItem)));
-
-		if (this.guidesDTO == null) {
-			this.guidesDTO = new ArrayList<GuideDTO>();
-		}
-
-		rent.getGuides().forEach(guide -> this.guidesDTO.add(new GuideDTO(guide)));
-
-		if (this.rentPaymentsDTO == null) {
-			this.rentPaymentsDTO = new ArrayList<>();
-		}
-
-		rent.getRentPayments().forEach(payment -> this.rentPaymentsDTO.add(new RentPaymentDTO(payment)));
-	}
-
-	@Override
-	public Rent get() {
-
-		final Rent rent = this.get(new Rent());
-
-		rent.setUnit(this.unitDTO == null ? null : this.unitDTO.get());
-		rent.setRentDate(this.rentDate);
-		rent.setCustomer(this.customerDTO == null ? null : this.customerDTO.get());
-
-		if (this.rentItemsDTO == null) {
-			this.rentItemsDTO = new ArrayList<>();
-		}
-
-		this.rentItemsDTO.forEach(rentItemDTO -> rent.addRentItem(rentItemDTO.get()));
-
-		if (this.rentPaymentsDTO == null) {
-			this.rentPaymentsDTO = new ArrayList<>();
-		}
-
-		this.rentPaymentsDTO.forEach(rentPaymentsDTO -> rent.addRentPayment(rentPaymentsDTO.get()));
-
-		return rent;
-	}
-
-	public GroceryDTO getUnitDTO() {
-		return this.unitDTO;
+	public void setCustomerDTO(final CustomerDTO customerDTO) {
+		this.customerDTO = customerDTO;
 	}
 
 	public LocalDate getRentDate() {
 		return this.rentDate;
 	}
 
-	public CustomerDTO getCustomerDTO() {
-		return this.customerDTO;
-	}
-
-	public int getTotalItems() {
-		return this.totalItems;
+	public void setRentDate(final LocalDate rentDate) {
+		this.rentDate = rentDate;
 	}
 
 	public BigDecimal getTotalEstimated() {
 		return this.totalEstimated;
 	}
 
+	public void setTotalEstimated(final BigDecimal totalEstimated) {
+		this.totalEstimated = totalEstimated;
+	}
+
 	public BigDecimal getTotalCalculated() {
 		return this.totalCalculated;
+	}
+
+	public void setTotalCalculated(final BigDecimal totalCalculated) {
+		this.totalCalculated = totalCalculated;
 	}
 
 	public BigDecimal getTotalPaid() {
 		return this.totalPaid;
 	}
 
+	public void setTotalPaid(final BigDecimal totalPaid) {
+		this.totalPaid = totalPaid;
+	}
+
 	public BigDecimal getTotalToPay() {
 		return this.totalToPay;
+	}
+
+	public void setTotalToPay(final BigDecimal totalToPay) {
+		this.totalToPay = totalToPay;
 	}
 
 	public BigDecimal getTotalToRefund() {
 		return this.totalToRefund;
 	}
 
+	public void setTotalToRefund(final BigDecimal totalToRefund) {
+		this.totalToRefund = totalToRefund;
+	}
+
+	public EnumDTO getPaymentStatus() {
+		return this.paymentStatus;
+	}
+
+	public void setPaymentStatus(final EnumDTO paymentStatus) {
+		this.paymentStatus = paymentStatus;
+	}
+
 	public List<RentItemDTO> getRentItemsDTO() {
 		return this.rentItemsDTO;
+	}
+
+	public void addRentItemDTO(final RentItemDTO rentItemDTO) {
+		this.rentItemsDTO.add(rentItemDTO);
+	}
+
+	public void addRentPaymentDTO(final RentPaymentDTO rentPaymentDTO) {
+		this.rentPaymentsDTO.add(rentPaymentDTO);
 	}
 
 	public List<RentPaymentDTO> getRentPaymentsDTO() {
@@ -177,8 +142,8 @@ public class RentDTO extends GenericDTO<Rent> {
 		return this.rentPaymentsDTO;
 	}
 
-	public EnumDTO getPaymentStatus() {
-		return this.paymentStatus;
+	public void addGuideDTO(final GuideDTO guideDTO) {
+		this.guidesDTO.add(guideDTO);
 	}
 
 	public List<GuideDTO> getGuidesDTO() {

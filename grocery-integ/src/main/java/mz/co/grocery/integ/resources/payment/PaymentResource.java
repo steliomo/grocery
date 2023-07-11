@@ -13,18 +13,17 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.springframework.stereotype.Service;
-
-import mz.co.grocery.core.payment.model.Payment;
-import mz.co.grocery.core.payment.model.Voucher;
-import mz.co.grocery.core.payment.service.PaymentService;
+import mz.co.grocery.core.application.payment.in.PaymentUseCase;
+import mz.co.grocery.core.common.WebAdapter;
+import mz.co.grocery.core.domain.payment.Payment;
+import mz.co.grocery.core.domain.payment.Voucher;
 import mz.co.grocery.core.util.ApplicationTranslator;
 import mz.co.grocery.integ.resources.AbstractResource;
+import mz.co.grocery.integ.resources.common.EnumsDTO;
 import mz.co.grocery.integ.resources.payment.dto.MpesaRequestDTO;
 import mz.co.grocery.integ.resources.payment.dto.MpesaResponseDTO;
 import mz.co.grocery.integ.resources.payment.service.MpesaPaymentGatewayServieImpl;
 import mz.co.grocery.integ.resources.payment.service.PaymentGatewayService;
-import mz.co.grocery.integ.resources.util.EnumsDTO;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 
 /**
@@ -32,16 +31,14 @@ import mz.co.msaude.boot.frameworks.exception.BusinessException;
  *
  */
 @Path("payments")
-@Service(PaymentResource.NAME)
+@WebAdapter
 public class PaymentResource extends AbstractResource {
-
-	public static final String NAME = "mz.co.grocery.integ.resources.payment.PaymentResource";
 
 	@Inject
 	private ApplicationTranslator translator;
 
 	@Inject
-	private PaymentService paymentService;
+	private PaymentUseCase paymentService;
 
 	@Inject
 	private Mpesa mpesa;

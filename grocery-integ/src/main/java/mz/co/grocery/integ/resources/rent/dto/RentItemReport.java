@@ -5,7 +5,7 @@ package mz.co.grocery.integ.resources.rent.dto;
 
 import java.math.BigDecimal;
 
-import mz.co.grocery.core.rent.model.RentItem;
+import mz.co.grocery.core.domain.rent.RentItem;
 
 /**
  * @author Stélio Moiane
@@ -27,8 +27,8 @@ public class RentItemReport {
 
 	public RentItemReport(final RentItem rentItem) {
 
-		this.itemName = rentItem.getItem().getName();
-		this.price = rentItem.getItem().getRentPrice();
+		this.itemName = rentItem.getItem().get().getName();
+		this.price = rentItem.getItem().get().getRentPrice();
 		this.quantity = rentItem.getPlannedQuantity();
 		this.discount = rentItem.getDiscount();
 		this.days = rentItem.getPlannedDays();

@@ -19,39 +19,42 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import mz.co.grocery.core.item.model.ProductDescription;
-import mz.co.grocery.core.item.service.ProductDescriptionQueryService;
-import mz.co.grocery.core.item.service.ProductDescriptionService;
+import mz.co.grocery.core.application.item.out.ProductDescriptionPort;
+import mz.co.grocery.core.common.WebAdapter;
+import mz.co.grocery.core.domain.item.ProductDescription;
 import mz.co.grocery.integ.resources.AbstractResource;
 import mz.co.grocery.integ.resources.item.dto.ProductDescriptionDTO;
 import mz.co.grocery.integ.resources.item.dto.ProductDescriptionsDTO;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
+import mz.co.msaude.boot.frameworks.mapper.DTOMapper;
 
 /**
  * @author Stélio Moiane
  *
  */
 @Path("product-descriptions")
-@Service(ProductDescriptionResource.NAME)
+@WebAdapter
 public class ProductDescriptionResource extends AbstractResource {
 
-	public static final String NAME = "mz.co.grocery.integ.resources.item.ProductDescriptionResource";
-
 	@Inject
-	private ProductDescriptionService productDescriptionService;
+	private ProductDescriptionPort productDescriptionPort;
 
-	@Inject
-	private ProductDescriptionQueryService productDescriptionQueryService;
+	@Autowired
+	private DTOMapper<ProductDescriptionDTO, ProductDescription> productDescriptionMapper;
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response createProductDescription(final ProductDescriptionDTO productDescriptionDTO)
 			throws BusinessException {
-		this.productDescriptionService.createProductDescription(this.getContext(), productDescriptionDTO.get());
-		return Response.ok(productDescriptionDTO).build();
+
+		ProductDescription productDescription = this.productDescriptionMapper.toDomain(productDescriptionDTO);
+
+		productDescription = this.productDescriptionPort.createProductDescription(this.getContext(), productDescription);
+
+		return Response.ok(this.productDescriptionMapper.toDTO(productDescription)).build();
 	}
 
 	@GET
@@ -60,16 +63,14 @@ public class ProductDescriptionResource extends AbstractResource {
 	public Response findAllProductDescriptions(@QueryParam("currentPage") final int currentPage,
 			@QueryParam("maxResult") final int maxResult) throws BusinessException {
 
-		final List<ProductDescription> productDescriptions = this.productDescriptionQueryService
+		final List<ProductDescription> productDescriptions = this.productDescriptionPort
 				.fetchdAllProductDescriptions(currentPage, maxResult);
 
-		final List<ProductDescriptionDTO> productDescriptionsDTO = productDescriptions.stream()
-				.map(productDescription -> new ProductDescriptionDTO(productDescription)).collect(Collectors.toList());
+		final Long totalItems = this.productDescriptionPort.countProductDescriptions();
 
-		final Long totalItems = this.productDescriptionQueryService.countProductDescriptions();
+		final ProductDescriptionsDTO productDescriptionDTO = new ProductDescriptionsDTO(productDescriptions,
+				totalItems, this.productDescriptionMapper);
 
-		final ProductDescriptionsDTO productDescriptionDTO = new ProductDescriptionsDTO(productDescriptionsDTO,
-				totalItems);
 		return Response.ok(productDescriptionDTO).build();
 	}
 
@@ -80,11 +81,11 @@ public class ProductDescriptionResource extends AbstractResource {
 	public Response findProductDescriptionByDescription(@QueryParam("description") final String description)
 			throws BusinessException {
 
-		final List<ProductDescription> productDescriptions = this.productDescriptionQueryService
+		final List<ProductDescription> productDescriptions = this.productDescriptionPort
 				.fetchProductDescriptionByDescription(description);
 
 		final List<ProductDescriptionDTO> productDescriptionsDTO = productDescriptions.stream()
-				.map(productDescription -> new ProductDescriptionDTO(productDescription)).collect(Collectors.toList());
+				.map(productDescription -> this.productDescriptionMapper.toDTO(productDescription)).collect(Collectors.toList());
 
 		return Response.ok(productDescriptionsDTO).build();
 	}
@@ -96,10 +97,10 @@ public class ProductDescriptionResource extends AbstractResource {
 	public Response fetchdProductDescriptionByUuid(
 			@PathParam("productDescriptionUuid") final String productDescriptionUuid) throws BusinessException {
 
-		final ProductDescription productDescription = this.productDescriptionQueryService
+		final ProductDescription productDescription = this.productDescriptionPort
 				.fetchProductDescriptionByUuid(productDescriptionUuid);
 
-		return Response.ok(new ProductDescriptionDTO(productDescription)).build();
+		return Response.ok(this.productDescriptionMapper.toDTO(productDescription)).build();
 	}
 
 	@PUT
@@ -107,8 +108,12 @@ public class ProductDescriptionResource extends AbstractResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response updateProductDescription(final ProductDescriptionDTO productDescriptionDTO)
 			throws BusinessException {
-		this.productDescriptionService.updateProductDescription(this.getContext(), productDescriptionDTO.get());
-		return Response.ok(productDescriptionDTO).build();
+
+		ProductDescription productDescription = this.productDescriptionMapper.toDomain(productDescriptionDTO);
+
+		productDescription = this.productDescriptionPort.updateProductDescription(this.getContext(), productDescription);
+
+		return Response.ok(this.productDescriptionMapper.toDTO(productDescription)).build();
 	}
 
 	@Path("{productDescriptionUuid}")
@@ -118,11 +123,11 @@ public class ProductDescriptionResource extends AbstractResource {
 	public Response deleteProductDescription(@PathParam("productDescriptionUuid") final String productDescriptionUuid)
 			throws BusinessException {
 
-		final ProductDescription productDescription = this.productDescriptionQueryService
+		ProductDescription productDescription = this.productDescriptionPort
 				.fetchProductDescriptionByUuid(productDescriptionUuid);
 
-		this.productDescriptionService.updateProductDescription(this.getContext(), productDescription);
+		productDescription = this.productDescriptionPort.updateProductDescription(this.getContext(), productDescription);
 
-		return Response.ok(new ProductDescriptionDTO(productDescription)).build();
+		return Response.ok(this.productDescriptionMapper.toDTO(productDescription)).build();
 	}
 }

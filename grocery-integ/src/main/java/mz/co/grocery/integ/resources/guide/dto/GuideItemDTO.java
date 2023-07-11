@@ -4,18 +4,17 @@
 package mz.co.grocery.integ.resources.guide.dto;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
-import mz.co.grocery.core.guide.model.GuideItem;
 import mz.co.grocery.integ.resources.dto.GenericDTO;
 import mz.co.grocery.integ.resources.rent.dto.RentItemDTO;
 import mz.co.grocery.integ.resources.sale.dto.SaleItemDTO;
-import mz.co.grocery.integ.resources.util.ProxyUtil;
 
 /**
  * @author Stélio Moiane
  *
  */
-public class GuideItemDTO extends GenericDTO<GuideItem> {
+public class GuideItemDTO extends GenericDTO {
 
 	private RentItemDTO rentItemDTO;
 
@@ -23,54 +22,28 @@ public class GuideItemDTO extends GenericDTO<GuideItem> {
 
 	private BigDecimal quantity;
 
-	public GuideItemDTO() {
+	public Optional<RentItemDTO> getRentItemDTO() {
+		return Optional.ofNullable(this.rentItemDTO);
 	}
 
-	public GuideItemDTO(final GuideItem guideItem) {
-		super(guideItem);
+	public void setRentItemDTO(final RentItemDTO rentItemDTO) {
+		this.rentItemDTO = rentItemDTO;
 	}
 
-	@Override
-	public void mapper(final GuideItem guideItem) {
-
-		if (ProxyUtil.isInitialized(guideItem.getRentItem())) {
-			this.rentItemDTO = new RentItemDTO(guideItem.getRentItem());
-		}
-
-		if (ProxyUtil.isInitialized(guideItem.getSaleItem())) {
-			this.saleItemDTO = new SaleItemDTO(guideItem.getSaleItem());
-		}
-
-		this.quantity = guideItem.getQuantity();
+	public Optional<SaleItemDTO> getSaleItemDTO() {
+		return Optional.ofNullable(this.saleItemDTO);
 	}
 
-	@Override
-	public GuideItem get() {
-		final GuideItem guideItem = this.get(new GuideItem());
-
-		if (this.rentItemDTO != null) {
-			guideItem.setRentItem(this.rentItemDTO.get());
-		}
-
-		if (this.saleItemDTO != null) {
-			guideItem.setSaleItem(this.saleItemDTO.get());
-		}
-
-		guideItem.setQuantity(this.quantity);
-
-		return guideItem;
-	}
-
-	public RentItemDTO getRentItemDTO() {
-		return this.rentItemDTO;
-	}
-
-	public SaleItemDTO getSaleItemDTO() {
-		return this.saleItemDTO;
+	public void setSaleItemDTO(final SaleItemDTO saleItemDTO) {
+		this.saleItemDTO = saleItemDTO;
 	}
 
 	public BigDecimal getQuantity() {
 		return this.quantity;
+	}
+
+	public void setQuantity(final BigDecimal quantity) {
+		this.quantity = quantity;
 	}
 
 	public String getName() {

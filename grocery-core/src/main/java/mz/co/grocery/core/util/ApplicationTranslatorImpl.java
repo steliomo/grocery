@@ -30,7 +30,7 @@ public class ApplicationTranslatorImpl implements ApplicationTranslator {
 	}
 
 	@Override
-	public String getTranslation(final String code, final Object[] args) {
+	public String getTranslation(final String code, final String... args) {
 		return this.messageSource.getMessage(code, args, new Locale(ApplicationTranslatorImpl.PT));
 	}
 }

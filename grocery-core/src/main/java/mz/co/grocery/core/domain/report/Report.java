@@ -16,7 +16,9 @@ public interface Report {
 
 	char PAD_CHAR = '0';
 
-	String getFileName();
+	String PDF = "pdf";
+
+	String getFilePath();
 
 	Map<String, Object> getParameters();
 

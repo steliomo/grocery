@@ -5,23 +5,21 @@ package mz.co.grocery.integ.resources.contract.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.Optional;
 
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import mz.co.grocery.core.contract.model.Contract;
-import mz.co.grocery.core.contract.model.ContractType;
-import mz.co.grocery.core.util.ApplicationTranslator;
+import mz.co.grocery.integ.resources.common.EnumDTO;
 import mz.co.grocery.integ.resources.customer.dto.CustomerDTO;
 import mz.co.grocery.integ.resources.dto.GenericDTO;
-import mz.co.grocery.integ.resources.grocery.dto.GroceryDTO;
-import mz.co.grocery.integ.resources.util.EnumDTO;
+import mz.co.grocery.integ.resources.unit.dto.UnitDTO;
 import mz.co.msaude.boot.frameworks.util.LocalDateAdapter;
 
 /**
  * @author Stélio Moiane
  *
  */
-public class ContractDTO extends GenericDTO<Contract> {
+public class ContractDTO extends GenericDTO {
 
 	private EnumDTO contractType;
 
@@ -40,83 +38,79 @@ public class ContractDTO extends GenericDTO<Contract> {
 
 	private BigDecimal totalPaid;
 
-	private GroceryDTO unitDTO;
+	private UnitDTO unitDTO;
 
 	private CustomerDTO customerDTO;
 
-	public ContractDTO() {
-	}
-
-	public ContractDTO(final Contract contract, final ApplicationTranslator translator) {
-		super(contract);
-		this.contractType = new EnumDTO(contract.getContractType().toString(), translator.getTranslation(contract.getContractType().toString()));
-	}
-
-	public ContractDTO(final Contract contract) {
-		super(contract);
-		this.contractType = new EnumDTO(contract.getContractType().toString(), null);
-	}
-
-	@Override
-	public void mapper(final Contract contract) {
-		this.description = contract.getDescription();
-		this.startDate = contract.getStartDate();
-		this.endDate = contract.getEndDate();
-		this.referencePaymentDate = contract.getReferencePaymentDate();
-		this.monthlyPayment = contract.getMonthlyPayment();
-		this.totalPaid = contract.getTotalPaid();
-		this.unitDTO = new GroceryDTO(contract.getUnit());
-		this.customerDTO = new CustomerDTO(contract.getCustomer());
-	}
-
-	@Override
-	public Contract get() {
-
-		final Contract contract = this.get(new Contract());
-		contract.setContractType(ContractType.valueOf(this.contractType.getValue()));
-		contract.setDescription(this.description);
-		contract.setStartDate(this.startDate);
-		contract.setEndDate(this.endDate);
-		contract.setMonthlyPayment(this.monthlyPayment);
-		contract.setUnit(this.unitDTO.get());
-		contract.setCustomer(this.customerDTO.get());
-
-		return contract;
-	}
-
 	public EnumDTO getContractType() {
 		return this.contractType;
+	}
+
+	public void setContractType(final EnumDTO contractType) {
+		this.contractType = contractType;
 	}
 
 	public String getDescription() {
 		return this.description;
 	}
 
+	public void setDescription(final String description) {
+		this.description = description;
+	}
+
 	public LocalDate getStartDate() {
 		return this.startDate;
+	}
+
+	public void setStartDate(final LocalDate startDate) {
+		this.startDate = startDate;
 	}
 
 	public LocalDate getEndDate() {
 		return this.endDate;
 	}
 
+	public void setEndDate(final LocalDate endDate) {
+		this.endDate = endDate;
+	}
+
 	public LocalDate getReferencePaymentDate() {
 		return this.referencePaymentDate;
+	}
+
+	public void setReferencePaymentDate(final LocalDate referencePaymentDate) {
+		this.referencePaymentDate = referencePaymentDate;
 	}
 
 	public BigDecimal getMonthlyPayment() {
 		return this.monthlyPayment;
 	}
 
+	public void setMonthlyPayment(final BigDecimal monthlyPayment) {
+		this.monthlyPayment = monthlyPayment;
+	}
+
 	public BigDecimal getTotalPaid() {
 		return this.totalPaid;
 	}
 
-	public GroceryDTO getUnitDTO() {
-		return this.unitDTO;
+	public void setTotalPaid(final BigDecimal totalPaid) {
+		this.totalPaid = totalPaid;
 	}
 
-	public CustomerDTO getCustomerDTO() {
-		return this.customerDTO;
+	public Optional<UnitDTO> getUnitDTO() {
+		return Optional.ofNullable(this.unitDTO);
+	}
+
+	public void setUnitDTO(final UnitDTO unitDTO) {
+		this.unitDTO = unitDTO;
+	}
+
+	public Optional<CustomerDTO> getCustomerDTO() {
+		return Optional.ofNullable(this.customerDTO);
+	}
+
+	public void setCustomerDTO(final CustomerDTO customerDTO) {
+		this.customerDTO = customerDTO;
 	}
 }

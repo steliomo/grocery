@@ -9,7 +9,8 @@ import java.math.RoundingMode;
 import org.junit.Assert;
 import org.junit.Test;
 
-import mz.co.grocery.core.payment.model.Voucher;
+import mz.co.grocery.core.domain.payment.Discount;
+import mz.co.grocery.core.domain.payment.Voucher;
 
 /**
  * @author Stélio Moiane

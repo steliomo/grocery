@@ -10,10 +10,8 @@ import org.springframework.stereotype.Component;
  * @author Stélio Moiane
  *
  */
-@Component(Mpesa.NAME)
+@Component
 public class Mpesa {
-
-	public static final String NAME = "mz.co.grocery.integ.resources.payment.Mpesa";
 
 	@Value("${mpesa.payment.url}")
 	private String url;

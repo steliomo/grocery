@@ -11,10 +11,10 @@ import java.util.Optional;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
-import mz.co.grocery.core.expense.model.ExpenseReport;
-import mz.co.grocery.core.grocery.model.GroceryUser;
-import mz.co.grocery.core.grocery.model.UserRole;
-import mz.co.grocery.core.sale.model.SaleReport;
+import mz.co.grocery.core.domain.expense.ExpenseReport;
+import mz.co.grocery.core.domain.sale.SaleReport;
+import mz.co.grocery.core.domain.unit.UnitUser;
+import mz.co.grocery.core.domain.unit.UserRole;
 
 /**
  * @author Stélio Moiane
@@ -34,7 +34,7 @@ public class SalesDTO {
 
 	private BigDecimal profit = BigDecimal.ZERO;
 
-	private GroceryUser user;
+	private UnitUser user;
 
 	private List<SaleReport> salesBalance;
 
@@ -45,7 +45,7 @@ public class SalesDTO {
 	public SalesDTO() {
 	}
 
-	public SalesDTO(final GroceryUser user) {
+	public SalesDTO(final UnitUser user) {
 		this.user = user;
 		this.salesBalance = new ArrayList<>();
 		this.rentsBalance = new ArrayList<>();

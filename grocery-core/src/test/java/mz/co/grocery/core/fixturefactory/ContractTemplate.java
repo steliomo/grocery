@@ -9,10 +9,10 @@ import java.time.LocalDate;
 import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.Rule;
 import br.com.six2six.fixturefactory.loader.TemplateLoader;
-import mz.co.grocery.core.contract.model.Contract;
-import mz.co.grocery.core.contract.model.ContractType;
-import mz.co.grocery.core.customer.model.Customer;
-import mz.co.grocery.core.grocery.model.Grocery;
+import mz.co.grocery.core.domain.contract.Contract;
+import mz.co.grocery.core.domain.contract.ContractType;
+import mz.co.grocery.core.domain.customer.Customer;
+import mz.co.grocery.core.domain.unit.Unit;
 
 /**
  * @author Stélio Moiane
@@ -31,7 +31,7 @@ public class ContractTemplate implements TemplateLoader {
 				this.add("startDate", LocalDate.now());
 				this.add("endDate", LocalDate.now().plusMonths(3));
 				this.add("monthlyPayment", new BigDecimal("5000"));
-				this.add("unit", this.one(Grocery.class, GroceryTemplate.VALID));
+				this.add("unit", this.one(Unit.class, UnitTemplate.VALID));
 				this.add("customer", this.one(Customer.class, CustomerTemplate.VALID));
 			}
 		});

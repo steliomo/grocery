@@ -10,8 +10,8 @@ import org.junit.Before;
 import org.junit.Test;
 
 import mz.co.grocery.core.config.AbstractUnitServiceTest;
+import mz.co.grocery.core.domain.sale.SaleItem;
 import mz.co.grocery.core.fixturefactory.SaleItemTemplate;
-import mz.co.grocery.core.sale.model.SaleItem;
 import mz.co.msaude.boot.frameworks.fixturefactory.EntityFactory;
 
 /**
@@ -38,8 +38,8 @@ public class SaleItemTest extends AbstractUnitServiceTest {
 	@Test
 	public void shouldCalculateProfitItemSale() {
 
-		final BigDecimal totalProfit = this.saleItem.getStock().getSalePrice()
-				.subtract(this.saleItem.getStock().getPurchasePrice()).multiply(this.saleItem.getQuantity())
+		final BigDecimal totalProfit = this.saleItem.getStock().get().getSalePrice()
+				.subtract(this.saleItem.getStock().get().getPurchasePrice()).multiply(this.saleItem.getQuantity())
 				.subtract(this.saleItem.getDiscount());
 
 		Assert.assertEquals(totalProfit, this.saleItem.getTotalBilling());

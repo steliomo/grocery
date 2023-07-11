@@ -17,38 +17,46 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import mz.co.grocery.core.item.service.ServiceQueryService;
-import mz.co.grocery.core.item.service.ServiceService;
+import mz.co.grocery.core.application.item.out.ServicePort;
+import mz.co.grocery.core.common.WebAdapter;
+import mz.co.grocery.core.domain.item.Service;
+import mz.co.grocery.core.domain.unit.Unit;
 import mz.co.grocery.integ.resources.AbstractResource;
-import mz.co.grocery.integ.resources.grocery.dto.GroceryDTO;
 import mz.co.grocery.integ.resources.item.dto.ServiceDTO;
 import mz.co.grocery.integ.resources.item.dto.ServicesDTO;
+import mz.co.grocery.integ.resources.unit.dto.UnitDTO;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
+import mz.co.msaude.boot.frameworks.mapper.DTOMapper;
 
 /**
  * @author Stélio Moiane
  *
  */
 @Path("services")
-@Service(ServiceResource.NAME)
+@WebAdapter
 public class ServiceResource extends AbstractResource {
 
-	public static final String NAME = "mz.co.grocery.integ.resources.item.ServiceResource";
-
 	@Inject
-	private ServiceService serviceService;
+	private ServicePort servicePort;
 
-	@Inject
-	private ServiceQueryService serviceQueryService;
+	@Autowired
+	private DTOMapper<ServiceDTO, Service> serviceMapper;
+
+	@Autowired
+	private DTOMapper<UnitDTO, Unit> unitMapper;
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response createService(final ServiceDTO serviceDTO) throws BusinessException {
-		this.serviceService.createService(this.getContext(), serviceDTO.get());
-		return Response.ok(serviceDTO).build();
+
+		Service service = this.serviceMapper.toDomain(serviceDTO);
+
+		service = this.servicePort.createService(this.getContext(), service);
+
+		return Response.ok(this.serviceMapper.toDTO(service)).build();
 	}
 
 	@GET
@@ -57,10 +65,11 @@ public class ServiceResource extends AbstractResource {
 	public Response findServices(@QueryParam("currentPage") final int currentPage, @QueryParam("maxResult") final int maxResult)
 			throws BusinessException {
 
-		final List<mz.co.grocery.core.item.model.Service> services = this.serviceQueryService.findAllServices(currentPage, maxResult);
-		final Long totalItems = this.serviceQueryService.countServices();
+		final List<Service> services = this.servicePort.findAllServices(currentPage, maxResult);
 
-		final ServicesDTO servicesDTO = new ServicesDTO(services, totalItems);
+		final Long totalItems = this.servicePort.countServices();
+
+		final ServicesDTO servicesDTO = new ServicesDTO(services, totalItems, this.serviceMapper);
 
 		return Response.ok(servicesDTO).build();
 	}
@@ -70,16 +79,22 @@ public class ServiceResource extends AbstractResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response findServiceByUuid(@PathParam("serviceUuid") final String serviceUuid) throws BusinessException {
-		final mz.co.grocery.core.item.model.Service service = this.serviceQueryService.findServiceByUuid(serviceUuid);
-		return Response.ok(new ServiceDTO(service)).build();
+
+		final Service service = this.servicePort.findServiceByUuid(serviceUuid);
+
+		return Response.ok(this.serviceMapper.toDTO(service)).build();
 	}
 
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response updateService(final ServiceDTO serviceDTO) throws BusinessException {
-		this.serviceService.updateService(this.getContext(), serviceDTO.get());
-		return Response.ok(serviceDTO).build();
+
+		Service service = this.serviceMapper.toDomain(serviceDTO);
+
+		service = this.servicePort.updateService(this.getContext(), service);
+
+		return Response.ok(this.serviceMapper.toDTO(service)).build();
 	}
 
 	@GET
@@ -87,8 +102,9 @@ public class ServiceResource extends AbstractResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response findServiceByName(@PathParam("serviceName") final String serviceName) throws BusinessException {
-		final List<mz.co.grocery.core.item.model.Service> services = this.serviceQueryService.findServicesByName(serviceName);
-		return Response.ok(new ServicesDTO(services, 0L)).build();
+		final List<Service> services = this.servicePort.findServicesByName(serviceName);
+
+		return Response.ok(new ServicesDTO(services, 0L, this.serviceMapper)).build();
 	}
 
 	@GET
@@ -96,11 +112,12 @@ public class ServiceResource extends AbstractResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response findServiceByUnitUuid(@PathParam("unitUuid") final String unitUuid) throws BusinessException {
+		final UnitDTO unitDTO = new UnitDTO();
+		unitDTO.setUuid(unitUuid);
 
-		final GroceryDTO unit = new GroceryDTO(unitUuid);
-		final List<mz.co.grocery.core.item.model.Service> services = this.serviceQueryService.findServicesByUnit(unit.get());
+		final List<Service> services = this.servicePort.findServicesByUnit(this.unitMapper.toDomain(unitDTO));
 
-		return Response.ok(new ServicesDTO(services, 0L).getServicesDTO()).build();
+		return Response.ok(new ServicesDTO(services, 0L, this.serviceMapper).getServicesDTO()).build();
 	}
 
 	@GET
@@ -109,10 +126,11 @@ public class ServiceResource extends AbstractResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response findServiceNotInThisUnit(@PathParam("unitUuid") final String unitUuid) throws BusinessException {
 
-		final GroceryDTO unit = new GroceryDTO(unitUuid);
+		final UnitDTO unitDTO = new UnitDTO();
+		unitDTO.setUuid(unitUuid);
 
-		final List<mz.co.grocery.core.item.model.Service> services = this.serviceQueryService.findServicesNotInthisUnit(unit.get());
+		final List<Service> services = this.servicePort.findServicesNotInthisUnit(this.unitMapper.toDomain(unitDTO));
 
-		return Response.ok(new ServicesDTO(services, 0L).getServicesDTO()).build();
+		return Response.ok(new ServicesDTO(services, 0L, this.serviceMapper).getServicesDTO()).build();
 	}
 }

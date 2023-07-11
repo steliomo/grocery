@@ -6,8 +6,8 @@ package mz.co.grocery.integ.resources.rent.dto;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import mz.co.grocery.core.rent.model.Rent;
-import mz.co.grocery.core.util.ApplicationTranslator;
+import mz.co.grocery.core.domain.rent.Rent;
+import mz.co.msaude.boot.frameworks.mapper.DTOMapper;
 
 /**
  * @author Stélio Moiane
@@ -16,17 +16,15 @@ import mz.co.grocery.core.util.ApplicationTranslator;
 public class RentsDTO {
 
 	private List<Rent> rents;
-	private ApplicationTranslator translator;
 
-	public RentsDTO() {
-	}
+	private DTOMapper<RentDTO, Rent> rentMapper;
 
-	public RentsDTO(final List<Rent> rents, final ApplicationTranslator translator) {
+	public RentsDTO(final List<Rent> rents, final DTOMapper<RentDTO, Rent> rentMapper) {
 		this.rents = rents;
-		this.translator = translator;
+		this.rentMapper = rentMapper;
 	}
 
 	public List<RentDTO> getRentsDTO() {
-		return this.rents.stream().map(rent -> new RentDTO(rent, this.translator)).collect(Collectors.toList());
+		return this.rents.stream().map(rent -> this.rentMapper.toDTO(rent)).collect(Collectors.toList());
 	}
 }

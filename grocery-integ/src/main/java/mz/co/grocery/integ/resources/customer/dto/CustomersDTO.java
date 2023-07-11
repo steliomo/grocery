@@ -3,10 +3,11 @@
  */
 package mz.co.grocery.integ.resources.customer.dto;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
-import mz.co.grocery.core.customer.model.Customer;
+import mz.co.grocery.core.domain.customer.Customer;
+import mz.co.msaude.boot.frameworks.mapper.DTOMapper;
 
 /**
  * @author Stélio Moiane
@@ -14,22 +15,20 @@ import mz.co.grocery.core.customer.model.Customer;
  */
 public class CustomersDTO {
 
-	private final List<CustomerDTO> customerDTOs;
+	private final List<Customer> customers;
 
 	private Long totalCustomers;
 
-	public CustomersDTO(final List<CustomerDTO> customerDTOs, final Long totalCustomers) {
-		this.customerDTOs = customerDTOs;
-		this.totalCustomers = totalCustomers;
-	}
+	private DTOMapper<CustomerDTO, Customer> customerMapper;
 
-	public CustomersDTO(final List<Customer> customers) {
-		this.customerDTOs = new ArrayList<>();
-		customers.forEach(customer -> this.customerDTOs.add(new CustomerDTO(customer)));
+	public CustomersDTO(final List<Customer> customers, final Long totalCustomers, final DTOMapper<CustomerDTO, Customer> customerMapper) {
+		this.customers = customers;
+		this.totalCustomers = totalCustomers;
+		this.customerMapper = customerMapper;
 	}
 
 	public List<CustomerDTO> getCustomerDTOs() {
-		return this.customerDTOs;
+		return this.customers.stream().map(customer -> this.customerMapper.toDTO(customer)).collect(Collectors.toList());
 	}
 
 	public Long getTotalCustomers() {

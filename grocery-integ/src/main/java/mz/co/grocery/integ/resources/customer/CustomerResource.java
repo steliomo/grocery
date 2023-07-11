@@ -6,7 +6,6 @@ package mz.co.grocery.integ.resources.customer;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
@@ -19,16 +18,17 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import mz.co.grocery.core.customer.model.Customer;
-import mz.co.grocery.core.customer.service.CustomerQueryService;
-import mz.co.grocery.core.customer.service.CustomerService;
-import mz.co.grocery.core.guide.model.GuideType;
+import mz.co.grocery.core.application.customer.out.CustomerPort;
+import mz.co.grocery.core.common.WebAdapter;
+import mz.co.grocery.core.domain.customer.Customer;
+import mz.co.grocery.core.domain.guide.GuideType;
 import mz.co.grocery.integ.resources.AbstractResource;
 import mz.co.grocery.integ.resources.customer.dto.CustomerDTO;
 import mz.co.grocery.integ.resources.customer.dto.CustomersDTO;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
+import mz.co.msaude.boot.frameworks.mapper.DTOMapper;
 import mz.co.msaude.boot.frameworks.util.LocalDateAdapter;
 
 /**
@@ -36,25 +36,25 @@ import mz.co.msaude.boot.frameworks.util.LocalDateAdapter;
  *
  */
 @Path("customers")
-@Service(CustomerResource.NAME)
+@WebAdapter
 public class CustomerResource extends AbstractResource {
 
-	public static final String NAME = "mz.co.grocery.integ.resources.customer.CustomerResource";
-
 	@Inject
-	private CustomerService customerService;
+	private CustomerPort customerPort;
 
-	@Inject
-	private CustomerQueryService customerQueryService;
+	@Autowired
+	private DTOMapper<CustomerDTO, Customer> customerMapper;
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response registCustomer(final CustomerDTO customerDTO) throws BusinessException {
 
-		this.customerService.createCustomer(this.getContext(), customerDTO.get());
+		Customer customer = this.customerMapper.toDomain(customerDTO);
 
-		return Response.ok(customerDTO).build();
+		customer = this.customerPort.createCustomer(this.getContext(), customer);
+
+		return Response.ok(this.customerMapper.toDTO(customer)).build();
 	}
 
 	@Path("by-unit/{unitUuid}")
@@ -63,13 +63,11 @@ public class CustomerResource extends AbstractResource {
 	public Response findCustomersByUnit(@PathParam("unitUuid") final String unitUuid, @QueryParam("currentPage") final int currentPage,
 			@QueryParam("maxResult") final int maxResult) throws BusinessException {
 
-		final List<Customer> customers = this.customerQueryService.findCustomersByUnit(unitUuid, currentPage, maxResult);
+		final List<Customer> customers = this.customerPort.findCustomersByUnit(unitUuid, currentPage, maxResult);
 
-		final List<CustomerDTO> customerDTOs = customers.stream().map(customer -> new CustomerDTO(customer)).collect(Collectors.toList());
+		final Long totalCustomers = this.customerPort.countCustomersByUnit(unitUuid);
 
-		final Long totalCustomers = this.customerQueryService.countCustomersByUnit(unitUuid);
-
-		return Response.ok(new CustomersDTO(customerDTOs, totalCustomers)).build();
+		return Response.ok(new CustomersDTO(customers, totalCustomers, this.customerMapper)).build();
 	}
 
 	@Path("pending-payments-by-unit/{unitUuid}")
@@ -79,13 +77,11 @@ public class CustomerResource extends AbstractResource {
 			@QueryParam("currentPage") final int currentPage,
 			@QueryParam("maxResult") final int maxResult) throws BusinessException {
 
-		final List<Customer> customers = this.customerQueryService.findCustomersWithRentPendingPeymentsByUnit(unitUuid, currentPage, maxResult);
+		final List<Customer> customers = this.customerPort.findCustomersWithRentPendingPeymentsByUnit(unitUuid, currentPage, maxResult);
 
-		final List<CustomerDTO> customerDTOs = customers.stream().map(customer -> new CustomerDTO(customer)).collect(Collectors.toList());
+		final Long totalCustomers = this.customerPort.countCustomersWithPendingPeymentsByUnit(unitUuid);
 
-		final Long totalCustomers = this.customerQueryService.countCustomersWithPendingPeymentsByUnit(unitUuid);
-
-		return Response.ok(new CustomersDTO(customerDTOs, totalCustomers)).build();
+		return Response.ok(new CustomersDTO(customers, totalCustomers, this.customerMapper)).build();
 	}
 
 	@Path("find-customers-with-pending-or-incomplete-rent-items-to-return-by-unit/{unitUuid}")
@@ -95,14 +91,12 @@ public class CustomerResource extends AbstractResource {
 			@QueryParam("currentPage") final int currentPage,
 			@QueryParam("maxResult") final int maxResult) throws BusinessException {
 
-		final List<Customer> customers = this.customerQueryService.findCustomersWithPendingOrIncompleteRentItemsToReturnByUnit(unitUuid, currentPage,
+		final List<Customer> customers = this.customerPort.findCustomersWithPendingOrIncompleteRentItemsToReturnByUnit(unitUuid, currentPage,
 				maxResult);
 
-		final List<CustomerDTO> customerDTOs = customers.stream().map(customer -> new CustomerDTO(customer)).collect(Collectors.toList());
+		final Long totalCustomers = this.customerPort.countCustomersWithPendingOrIncompleteRentItemsToReturnByUnit(unitUuid);
 
-		final Long totalCustomers = this.customerQueryService.countCustomersWithPendingOrIncompleteRentItemsToReturnByUnit(unitUuid);
-
-		return Response.ok(new CustomersDTO(customerDTOs, totalCustomers)).build();
+		return Response.ok(new CustomersDTO(customers, totalCustomers, this.customerMapper)).build();
 	}
 
 	@Path("pending-contract-payment-by-unit/{unitUuid}")
@@ -115,14 +109,12 @@ public class CustomerResource extends AbstractResource {
 		final LocalDateAdapter adapter = new LocalDateAdapter();
 		final LocalDate localDate = adapter.unmarshal(currentDate);
 
-		final List<Customer> customers = this.customerQueryService.findCustomersWithContractPendingPaymentByUnit(unitUuid, currentPage, maxResult,
+		final List<Customer> customers = this.customerPort.findCustomersWithContractPendingPaymentByUnit(unitUuid, currentPage, maxResult,
 				localDate);
 
-		final List<CustomerDTO> customerDTOs = customers.stream().map(customer -> new CustomerDTO(customer)).collect(Collectors.toList());
+		final Long totalCustomers = this.customerPort.countCustomersWithContractPendingPaymentByUnit(unitUuid, localDate);
 
-		final Long totalCustomers = this.customerQueryService.countCustomersWithContractPendingPaymentByUnit(unitUuid, localDate);
-
-		return Response.ok(new CustomersDTO(customerDTOs, totalCustomers)).build();
+		return Response.ok(new CustomersDTO(customers, totalCustomers, this.customerMapper)).build();
 	}
 
 	@Path("find-customers-sale-with-pendind-or-incomplete-payment-by-unit/{unitUuid}")
@@ -130,11 +122,9 @@ public class CustomerResource extends AbstractResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response findCustomersSaleWithPendindOrIncompletePaymentByUnit(@PathParam("unitUuid") final String unitUuid) throws BusinessException {
 
-		final List<Customer> customers = this.customerQueryService.findCustomersSaleWithPendindOrIncompletePaymentByUnit(unitUuid);
+		final List<Customer> customers = this.customerPort.findCustomersSaleWithPendindOrIncompletePaymentByUnit(unitUuid);
 
-		final List<CustomerDTO> customerDTOs = customers.stream().map(customer -> new CustomerDTO(customer)).collect(Collectors.toList());
-
-		return Response.ok(new CustomersDTO(customerDTOs, BigDecimal.ZERO.longValue())).build();
+		return Response.ok(new CustomersDTO(customers, BigDecimal.ZERO.longValue(), this.customerMapper)).build();
 	}
 
 	@Path("find-customers-with-pending-or-incomplete-rentitems-to-load-by-unit/{unitUuid}")
@@ -142,11 +132,9 @@ public class CustomerResource extends AbstractResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response findCustomersWithPendingOrInCompleteRentItemsToLoadByUnit(@PathParam("unitUuid") final String unitUuid) throws BusinessException {
 
-		final List<Customer> customers = this.customerQueryService.findCustomersWithPendingOrInCompleteRentItemsToLoadByUnit(unitUuid);
+		final List<Customer> customers = this.customerPort.findCustomersWithPendingOrInCompleteRentItemsToLoadByUnit(unitUuid);
 
-		final List<CustomerDTO> customerDTOs = customers.stream().map(customer -> new CustomerDTO(customer)).collect(Collectors.toList());
-
-		return Response.ok(new CustomersDTO(customerDTOs, BigDecimal.ZERO.longValue())).build();
+		return Response.ok(new CustomersDTO(customers, BigDecimal.ZERO.longValue(), this.customerMapper)).build();
 	}
 
 	@Path("find-customers-with-issued-guides-by-type-and-unit")
@@ -155,11 +143,9 @@ public class CustomerResource extends AbstractResource {
 	public Response findCustomersWithIssuedGuidesByTypeAndUnit(@QueryParam("guideType") final GuideType guideType,
 			@QueryParam("unitUuid") final String unitUuid) throws BusinessException {
 
-		final List<Customer> customers = this.customerQueryService.findCustomersWithIssuedGuidesByTypeAndUnit(guideType, unitUuid);
+		final List<Customer> customers = this.customerPort.findCustomersWithIssuedGuidesByTypeAndUnit(guideType, unitUuid);
 
-		final List<CustomerDTO> customerDTOs = customers.stream().map(customer -> new CustomerDTO(customer)).collect(Collectors.toList());
-
-		return Response.ok(new CustomersDTO(customerDTOs, BigDecimal.ZERO.longValue())).build();
+		return Response.ok(new CustomersDTO(customers, BigDecimal.ZERO.longValue(), this.customerMapper)).build();
 	}
 
 	@Path("find-payments-by-unit/{unitUuid}")
@@ -167,11 +153,9 @@ public class CustomerResource extends AbstractResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response findCustomersWithPaymentsByUnit(@PathParam("unitUuid") final String unitUuid) throws BusinessException {
 
-		final List<Customer> customers = this.customerQueryService.findCustomersWithPaymentsByUnit(unitUuid);
+		final List<Customer> customers = this.customerPort.findCustomersWithPaymentsByUnit(unitUuid);
 
-		final List<CustomerDTO> customerDTOs = customers.stream().map(customer -> new CustomerDTO(customer)).collect(Collectors.toList());
-
-		return Response.ok(new CustomersDTO(customerDTOs, BigDecimal.ZERO.longValue())).build();
+		return Response.ok(new CustomersDTO(customers, BigDecimal.ZERO.longValue(), this.customerMapper)).build();
 	}
 
 	@Path("find-customers-with-pending-or-incomplete-delivery-status-sales-by-unit/{unitUuid}")
@@ -179,9 +163,9 @@ public class CustomerResource extends AbstractResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response findCustomersWithPendingOrIncompleteDeliveryStatusSales(@PathParam("unitUuid") final String unitUuid) throws BusinessException {
 
-		final List<Customer> customers = this.customerQueryService.findCustomersWithPendingOrIncompleteDeliveryStatusSalesByUnit(unitUuid);
+		final List<Customer> customers = this.customerPort.findCustomersWithPendingOrIncompleteDeliveryStatusSalesByUnit(unitUuid);
 
-		return Response.ok(new CustomersDTO(customers)).build();
+		return Response.ok(new CustomersDTO(customers, BigDecimal.ZERO.longValue(), this.customerMapper)).build();
 	}
 
 	@Path("find-customers-with-delivered-guides-by-unit/{unitUuid}")
@@ -189,8 +173,8 @@ public class CustomerResource extends AbstractResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response findCustomersWithDeliveredGuidesByUnit(@PathParam("unitUuid") final String unitUuid) throws BusinessException {
 
-		final List<Customer> customers = this.customerQueryService.findCustomersWithDeliveredGuidesByUnit(unitUuid);
+		final List<Customer> customers = this.customerPort.findCustomersWithDeliveredGuidesByUnit(unitUuid);
 
-		return Response.ok(new CustomersDTO(customers)).build();
+		return Response.ok(new CustomersDTO(customers, BigDecimal.ZERO.longValue(), this.customerMapper)).build();
 	}
 }

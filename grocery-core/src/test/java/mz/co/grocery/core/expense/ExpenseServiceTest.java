@@ -11,13 +11,12 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
+import mz.co.grocery.core.application.expense.in.RegistExpenseUseCase;
+import mz.co.grocery.core.application.expense.out.ExpensePort;
+import mz.co.grocery.core.application.expense.service.ExpenseService;
 import mz.co.grocery.core.config.AbstractUnitServiceTest;
-import mz.co.grocery.core.expense.dao.ExpenseDAO;
-import mz.co.grocery.core.expense.model.Expense;
-import mz.co.grocery.core.expense.service.ExpenseService;
-import mz.co.grocery.core.expense.service.ExpenseServiceImpl;
+import mz.co.grocery.core.domain.expense.Expense;
 import mz.co.grocery.core.fixturefactory.ExpenseTemplate;
-import mz.co.grocery.core.util.ApplicationTranslator;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.fixturefactory.EntityFactory;
 import mz.co.msaude.boot.frameworks.model.UserContext;
@@ -29,13 +28,10 @@ import mz.co.msaude.boot.frameworks.model.UserContext;
 public class ExpenseServiceTest extends AbstractUnitServiceTest {
 
 	@Mock
-	private ExpenseDAO expenseDAO;
-
-	@Mock
-	private ApplicationTranslator translator;
+	private ExpensePort expensePort;
 
 	@InjectMocks
-	private final ExpenseService expenseService = new ExpenseServiceImpl();
+	private final RegistExpenseUseCase expenseService = new ExpenseService(this.expensePort);
 
 	@Test
 	public void shouldRegistExpenses() throws BusinessException {
@@ -44,7 +40,7 @@ public class ExpenseServiceTest extends AbstractUnitServiceTest {
 		this.expenseService.registExpenses(userContext, expenses);
 
 		for (final Expense expense : expenses) {
-			Mockito.verify(this.expenseDAO, Mockito.times(1)).create(userContext, expense);
+			Mockito.verify(this.expensePort, Mockito.times(1)).createExpense(userContext, expense);
 		}
 	}
 

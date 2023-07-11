@@ -4,20 +4,17 @@
 package mz.co.grocery.integ.resources.sale.dto;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
-import mz.co.grocery.core.sale.model.SaleItem;
-import mz.co.grocery.core.saleable.model.ServiceItem;
-import mz.co.grocery.core.saleable.model.Stock;
 import mz.co.grocery.integ.resources.dto.GenericDTO;
 import mz.co.grocery.integ.resources.saleable.dto.ServiceItemDTO;
 import mz.co.grocery.integ.resources.saleable.dto.StockDTO;
-import mz.co.grocery.integ.resources.util.ProxyUtil;
 
 /**
  * @author Stélio Moiane
  *
  */
-public class SaleItemDTO extends GenericDTO<SaleItem> {
+public class SaleItemDTO extends GenericDTO {
 
 	private StockDTO stockDTO;
 
@@ -25,87 +22,67 @@ public class SaleItemDTO extends GenericDTO<SaleItem> {
 
 	private BigDecimal quantity;
 
-	private BigDecimal saleItemValue = BigDecimal.ZERO;
+	private BigDecimal saleItemValue;
 
-	private BigDecimal discount = BigDecimal.ZERO;
+	private BigDecimal discount;
 
 	private BigDecimal deliveredQuantity;
 
 	public SaleItemDTO() {
+		this.saleItemValue = BigDecimal.ZERO;
+		this.discount = BigDecimal.ZERO;
+		this.deliveredQuantity = BigDecimal.ZERO;
 	}
 
-	public SaleItemDTO(final SaleItem saleItem) {
-		super(saleItem);
+	public Optional<StockDTO> getStockDTO() {
+		return Optional.ofNullable(this.stockDTO);
 	}
 
-	@Override
-	public void mapper(final SaleItem saleItem) {
-		final Stock stock = saleItem.getStock();
-
-		if (ProxyUtil.isInitialized(stock)) {
-			this.stockDTO = new StockDTO(stock);
-		}
-
-		final ServiceItem serviceItem = saleItem.getServiceItem();
-
-		if (ProxyUtil.isInitialized(serviceItem)) {
-			this.serviceItemDTO = new ServiceItemDTO(serviceItem);
-		}
-
-		this.quantity = saleItem.getQuantity();
-		this.saleItemValue = saleItem.getSaleItemValue();
-		this.discount = saleItem.getDiscount();
-		this.deliveredQuantity = saleItem.getDeliveredQuantity();
+	public void setStockDTO(final StockDTO stockDTO) {
+		this.stockDTO = stockDTO;
 	}
 
-	@Override
-	public SaleItem get() {
-		final SaleItem saleItem = this.get(new SaleItem());
-
-		if (this.stockDTO != null) {
-			saleItem.setStock(this.stockDTO.get());
-		}
-
-		if (this.serviceItemDTO != null) {
-			saleItem.setServiceItem(this.serviceItemDTO.get());
-		}
-
-		saleItem.setQuantity(this.quantity);
-		saleItem.setSaleItemValue(this.saleItemValue);
-		saleItem.setDiscount(this.discount);
-
-		return saleItem;
+	public Optional<ServiceItemDTO> getServiceItemDTO() {
+		return Optional.ofNullable(this.serviceItemDTO);
 	}
 
-	public StockDTO getStockDTO() {
-		return this.stockDTO;
-	}
-
-	public ServiceItemDTO getServiceItemDTO() {
-		return this.serviceItemDTO;
+	public void setServiceItemDTO(final ServiceItemDTO serviceItemDTO) {
+		this.serviceItemDTO = serviceItemDTO;
 	}
 
 	public BigDecimal getQuantity() {
 		return this.quantity;
 	}
 
+	public void setQuantity(final BigDecimal quantity) {
+		this.quantity = quantity;
+	}
+
 	public BigDecimal getSaleItemValue() {
 		return this.saleItemValue;
+	}
+
+	public void setSaleItemValue(final BigDecimal saleItemValue) {
+		this.saleItemValue = saleItemValue;
 	}
 
 	public BigDecimal getDiscount() {
 		return this.discount;
 	}
 
+	public void setDiscount(final BigDecimal discount) {
+		this.discount = discount;
+	}
+
 	public BigDecimal getDeliveredQuantity() {
 		return this.deliveredQuantity;
 	}
 
-	public BigDecimal getToDeliveryQuantity() {
-		return this.quantity.subtract(this.deliveredQuantity);
+	public void setDeliveredQuantity(final BigDecimal deliveredQuantity) {
+		this.deliveredQuantity = deliveredQuantity;
 	}
 
 	public String getName() {
-		return this.stockDTO == null ? this.serviceItemDTO.getName() : this.stockDTO.getProductDescriptionDTO().getName();
+		return this.stockDTO == null ? this.serviceItemDTO.getName() : this.stockDTO.getProductDescriptionDTO().get().getName();
 	}
 }

@@ -11,6 +11,5 @@ public interface ApplicationTranslator {
 
 	String getTranslation(String code);
 
-	String getTranslation(String code, Object[] args);
-
+	String getTranslation(String code, String... args);
 }

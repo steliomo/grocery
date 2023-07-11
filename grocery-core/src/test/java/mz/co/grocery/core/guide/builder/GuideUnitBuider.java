@@ -5,9 +5,9 @@ package mz.co.grocery.core.guide.builder;
 
 import java.util.List;
 
+import mz.co.grocery.core.domain.guide.Guide;
+import mz.co.grocery.core.domain.guide.GuideItem;
 import mz.co.grocery.core.fixturefactory.GuideItemTemplate;
-import mz.co.grocery.core.guide.model.Guide;
-import mz.co.grocery.core.guide.model.GuideItem;
 import mz.co.msaude.boot.frameworks.fixturefactory.EntityFactory;
 
 /**

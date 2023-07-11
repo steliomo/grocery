@@ -7,32 +7,30 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.Comparator;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
-import java.util.stream.Collectors;
 
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.hibernate.LazyInitializationException;
-
-import mz.co.grocery.core.customer.model.SaleType;
-import mz.co.grocery.core.sale.model.Sale;
-import mz.co.grocery.core.util.ApplicationTranslator;
+import mz.co.grocery.core.domain.customer.SaleType;
+import mz.co.grocery.integ.resources.common.EnumDTO;
 import mz.co.grocery.integ.resources.customer.dto.CustomerDTO;
 import mz.co.grocery.integ.resources.dto.GenericDTO;
-import mz.co.grocery.integ.resources.grocery.dto.GroceryDTO;
 import mz.co.grocery.integ.resources.guide.dto.GuideDTO;
-import mz.co.grocery.integ.resources.util.EnumDTO;
-import mz.co.grocery.integ.resources.util.ProxyUtil;
+import mz.co.grocery.integ.resources.unit.dto.UnitDTO;
 import mz.co.msaude.boot.frameworks.util.LocalDateAdapter;
 
 /**
  * @author Stélio Moiane
  *
  */
-public class SaleDTO extends GenericDTO<Sale> {
+public class SaleDTO extends GenericDTO {
 
-	private GroceryDTO groceryDTO;
+	private UnitDTO unitDTO;
+
+	private CustomerDTO customerDTO;
 
 	@XmlJavaTypeAdapter(LocalDateAdapter.class)
 	private LocalDate saleDate;
@@ -40,10 +38,6 @@ public class SaleDTO extends GenericDTO<Sale> {
 	private BigDecimal billing;
 
 	private BigDecimal total;
-
-	private Set<SaleItemDTO> saleItemsDTO;
-
-	private CustomerDTO customerDTO;
 
 	private SaleType saleType;
 
@@ -56,80 +50,21 @@ public class SaleDTO extends GenericDTO<Sale> {
 
 	private EnumDTO deliveryStatus;
 
+	private Set<SaleItemDTO> saleItemsDTO;
+
 	private List<GuideDTO> guidesDTO;
 
 	public SaleDTO() {
+		this.saleItemsDTO = new HashSet<>();
+		this.guidesDTO = new ArrayList<>();
 	}
 
-	public SaleDTO(final Sale sale) {
-		super(sale);
+	public Optional<UnitDTO> getUnitDTO() {
+		return Optional.ofNullable(this.unitDTO);
 	}
 
-	public SaleDTO(final Sale sale, final ApplicationTranslator translator) {
-		super(sale);
-		this.saleStatus = new EnumDTO(sale.getSaleStatus().toString(), translator.getTranslation(sale.getSaleStatus().toString()));
-		this.deliveryStatus = new EnumDTO(sale.getDeliveryStatus().toString(), translator.getTranslation(sale.getDeliveryStatus().toString()));
-	}
-
-	@Override
-	public void mapper(final Sale sale) {
-
-		if (ProxyUtil.isInitialized(sale.getGrocery())) {
-			this.groceryDTO = new GroceryDTO(sale.getGrocery());
-		}
-
-		this.saleDate = sale.getSaleDate();
-		this.billing = sale.getBilling();
-		this.total = sale.getTotal();
-
-		try {
-			this.saleItemsDTO = sale.getItems().stream().map(saleItem -> new SaleItemDTO(saleItem))
-					.collect(Collectors.toSet());
-		} catch (final LazyInitializationException e) {
-		}
-
-		if (ProxyUtil.isInitialized(sale.getCustomer())) {
-			this.customerDTO = new CustomerDTO(sale.getCustomer());
-		}
-
-		this.saleType = sale.getSaleType();
-		this.totalPaid = sale.getTotalPaid();
-		this.dueDate = sale.getDueDate();
-
-		if (sale.getGuides() != null) {
-			this.guidesDTO = new ArrayList<>();
-			sale.getGuides().forEach(guide -> this.guidesDTO.add(new GuideDTO(guide)));
-		}
-	}
-
-	@Override
-	public Sale get() {
-		final Sale sale = this.get(new Sale());
-
-		if (this.groceryDTO != null) {
-			sale.setGrocery(this.groceryDTO.get());
-		}
-
-		sale.setSaleDate(this.saleDate);
-		this.saleItemsDTO.forEach(saleItemDTO -> sale.addItem(saleItemDTO.get()));
-
-		if (this.customerDTO != null) {
-			sale.setCustomer(this.customerDTO.get());
-		}
-
-		sale.setSaleType(this.saleType);
-		sale.setTotalPaid(this.totalPaid);
-		sale.setDueDate(this.dueDate);
-
-		return sale;
-	}
-
-	public GroceryDTO getGroceryDTO() {
-		return this.groceryDTO;
-	}
-
-	public void setGroceryDTO(final GroceryDTO groceryDTO) {
-		this.groceryDTO = groceryDTO;
+	public void setUnitDTO(final UnitDTO unitDTO) {
+		this.unitDTO = unitDTO;
 	}
 
 	public LocalDate getSaleDate() {
@@ -144,8 +79,8 @@ public class SaleDTO extends GenericDTO<Sale> {
 		return this.billing;
 	}
 
-	public void setBilling(final BigDecimal profit) {
-		this.billing = profit;
+	public void setBilling(final BigDecimal billing) {
+		this.billing = billing;
 	}
 
 	public BigDecimal getTotal() {
@@ -156,40 +91,69 @@ public class SaleDTO extends GenericDTO<Sale> {
 		this.total = total;
 	}
 
-	public Set<SaleItemDTO> getSaleItemsDTO() {
-		return this.saleItemsDTO;
+	public Optional<Set<SaleItemDTO>> getSaleItemsDTO() {
+		return Optional.ofNullable(this.saleItemsDTO);
 	}
 
-	public CustomerDTO getCustomerDTO() {
-		return this.customerDTO;
+	public void addSaleItemsDTO(final SaleItemDTO saleItemDTO) {
+		this.saleItemsDTO.add(saleItemDTO);
+	}
+
+	public Optional<CustomerDTO> getCustomerDTO() {
+		return Optional.ofNullable(this.customerDTO);
+	}
+
+	public void setCustomerDTO(final CustomerDTO customerDTO) {
+		this.customerDTO = customerDTO;
 	}
 
 	public SaleType getSaleType() {
 		return this.saleType;
 	}
 
+	public void setSaleType(final SaleType saleType) {
+		this.saleType = saleType;
+	}
+
 	public BigDecimal getTotalPaid() {
 		return this.totalPaid;
+	}
+
+	public void setTotalPaid(final BigDecimal totalPaid) {
+		this.totalPaid = totalPaid;
 	}
 
 	public LocalDate getDueDate() {
 		return this.dueDate;
 	}
 
-	public EnumDTO getSaleStatus() {
-		return this.saleStatus;
+	public void setDueDate(final LocalDate dueDate) {
+		this.dueDate = dueDate;
 	}
 
-	public EnumDTO getDeliveryStatus() {
-		return this.deliveryStatus;
+	public Optional<EnumDTO> getSaleStatus() {
+		return Optional.ofNullable(this.saleStatus);
 	}
 
-	public List<GuideDTO> getGuidesDTO() {
-		if (this.guidesDTO == null) {
-			return this.guidesDTO;
-		}
+	public void setSaleStatus(final EnumDTO saleStatus) {
+		this.saleStatus = saleStatus;
+	}
+
+	public Optional<EnumDTO> getDeliveryStatus() {
+		return Optional.ofNullable(this.deliveryStatus);
+	}
+
+	public void setDeliveryStatus(final EnumDTO deliveryStatus) {
+		this.deliveryStatus = deliveryStatus;
+	}
+
+	public Optional<List<GuideDTO>> getGuidesDTO() {
 
 		this.guidesDTO.sort(Comparator.comparing(GuideDTO::getId));
-		return this.guidesDTO;
+		return Optional.ofNullable(this.guidesDTO);
+	}
+
+	public void addGuideDTO(final GuideDTO guideDTO) {
+		this.guidesDTO.add(guideDTO);
 	}
 }

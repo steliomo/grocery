@@ -14,14 +14,14 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
+import mz.co.grocery.core.application.payment.in.PaymentUseCase;
+import mz.co.grocery.core.application.payment.service.PaymentService;
+import mz.co.grocery.core.application.unit.out.UnitPort;
 import mz.co.grocery.core.config.AbstractUnitServiceTest;
-import mz.co.grocery.core.fixturefactory.GroceryTemplate;
-import mz.co.grocery.core.grocery.dao.GroceryDAO;
-import mz.co.grocery.core.grocery.model.Grocery;
-import mz.co.grocery.core.payment.model.Payment;
-import mz.co.grocery.core.payment.model.Voucher;
-import mz.co.grocery.core.payment.service.PaymentService;
-import mz.co.grocery.core.payment.service.PaymentServiceImpl;
+import mz.co.grocery.core.domain.payment.Payment;
+import mz.co.grocery.core.domain.payment.Voucher;
+import mz.co.grocery.core.domain.unit.Unit;
+import mz.co.grocery.core.fixturefactory.UnitTemplate;
 import mz.co.grocery.core.util.ApplicationTranslator;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.fixturefactory.EntityFactory;
@@ -33,17 +33,17 @@ import mz.co.msaude.boot.frameworks.model.UserContext;
  */
 public class PaymentServiceTest extends AbstractUnitServiceTest {
 
-	@InjectMocks
-	private final PaymentService paymentService = new PaymentServiceImpl();
-
 	@Mock
-	private GroceryDAO unitDAO;
+	private UnitPort unitPort;
 
 	@Captor
-	private ArgumentCaptor<Grocery> unitCaptor;
+	private ArgumentCaptor<Unit> unitCaptor;
 
 	@Mock
 	private ApplicationTranslator translator;
+
+	@InjectMocks
+	private final PaymentUseCase paymentUseCase = new PaymentService(this.unitPort);
 
 	@Test(expected = BusinessException.class)
 	public void shouldNotUpdateSubscription() throws BusinessException {
@@ -52,15 +52,15 @@ public class PaymentServiceTest extends AbstractUnitServiceTest {
 		payment.setStatus("	INS-1");
 		payment.setStatusDescription("Internal Error");
 
-		this.paymentService.updateSubscription(this.getUserContext(), payment);
+		this.paymentUseCase.updateSubscription(this.getUserContext(), payment);
 	}
 
 	@Test
 	public void shouldUpdateSubscription() throws BusinessException {
 
-		final Grocery unit = EntityFactory.gimme(Grocery.class, GroceryTemplate.VALID);
+		final Unit unit = EntityFactory.gimme(Unit.class, UnitTemplate.VALID);
 		unit.setBalance(new BigDecimal(-10));
-		Mockito.when(this.unitDAO.findByUuid(unit.getUuid())).thenReturn(unit);
+		Mockito.when(this.unitPort.findByUuid(unit.getUuid())).thenReturn(unit);
 
 		final Payment payment = new Payment(Voucher.FIVE_HUNDRED);
 		payment.setStatus("INS-0");
@@ -68,10 +68,10 @@ public class PaymentServiceTest extends AbstractUnitServiceTest {
 
 		final UserContext context = this.getUserContext();
 
-		this.paymentService.updateSubscription(context, payment);
-		Mockito.verify(this.unitDAO).update(ArgumentMatchers.eq(context), this.unitCaptor.capture());
+		this.paymentUseCase.updateSubscription(context, payment);
+		Mockito.verify(this.unitPort).updateUnit(ArgumentMatchers.eq(context), this.unitCaptor.capture());
 
-		final Grocery unitArgument = this.unitCaptor.getValue();
+		final Unit unitArgument = this.unitCaptor.getValue();
 
 		Assert.assertEquals(payment.getVoucherValue(), unitArgument.getBalance());
 	}
@@ -79,27 +79,27 @@ public class PaymentServiceTest extends AbstractUnitServiceTest {
 	@Test(expected = BusinessException.class)
 	public void shouldNotDebitTransation() throws BusinessException {
 
-		final Grocery unit = EntityFactory.gimme(Grocery.class, GroceryTemplate.VALID);
+		final Unit unit = EntityFactory.gimme(Unit.class, UnitTemplate.VALID);
 		unit.setBalance(new BigDecimal(-10));
-		Mockito.when(this.unitDAO.findByUuid(unit.getUuid())).thenReturn(unit);
+		Mockito.when(this.unitPort.findByUuid(unit.getUuid())).thenReturn(unit);
 
-		this.paymentService.debitTransaction(this.getUserContext(), unit.getUuid());
+		this.paymentUseCase.debitTransaction(this.getUserContext(), unit.getUuid());
 	}
 
 	@Test
 	public void shouldDebitTransation() throws BusinessException {
 
-		final Grocery unit = EntityFactory.gimme(Grocery.class, GroceryTemplate.VALID);
+		final Unit unit = EntityFactory.gimme(Unit.class, UnitTemplate.VALID);
 		unit.setBalance(new BigDecimal(10));
 
-		Mockito.when(this.unitDAO.findByUuid(unit.getUuid())).thenReturn(unit);
+		Mockito.when(this.unitPort.findByUuid(unit.getUuid())).thenReturn(unit);
 
 		final UserContext context = this.getUserContext();
 
-		this.paymentService.debitTransaction(context, unit.getUuid());
+		this.paymentUseCase.debitTransaction(context, unit.getUuid());
 
-		Mockito.verify(this.unitDAO).update(ArgumentMatchers.eq(context), this.unitCaptor.capture());
-		final Grocery unitArgument = this.unitCaptor.getValue();
+		Mockito.verify(this.unitPort).updateUnit(ArgumentMatchers.eq(context), this.unitCaptor.capture());
+		final Unit unitArgument = this.unitCaptor.getValue();
 
 		Assert.assertEquals(unit.getBalance(), unitArgument.getBalance());
 	}

@@ -4,30 +4,30 @@
 package mz.co.grocery.persistence.guide;
 
 import java.math.BigDecimal;
+import java.util.Set;
 
 import javax.inject.Inject;
 
 import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Qualifier;
 
-import mz.co.grocery.core.guide.model.Guide;
-import mz.co.grocery.core.guide.model.GuideItem;
-import mz.co.grocery.core.guide.model.GuideType;
-import mz.co.grocery.core.guide.service.GuideIssuer;
-import mz.co.grocery.core.guide.service.GuideService;
-import mz.co.grocery.core.guide.service.TransportGuideIssuerImpl;
-import mz.co.grocery.core.rent.dao.RentItemDAO;
-import mz.co.grocery.core.rent.model.LoadStatus;
-import mz.co.grocery.core.rent.model.Rent;
-import mz.co.grocery.core.rent.model.RentItem;
-import mz.co.grocery.core.rent.service.RentService;
+import mz.co.grocery.core.application.guide.in.GuideIssuer;
+import mz.co.grocery.core.application.guide.in.IssueGuideUseCase;
+import mz.co.grocery.core.application.guide.service.TransportGuideIssuer;
+import mz.co.grocery.core.application.rent.out.RentItemPort;
+import mz.co.grocery.core.application.rent.out.RentPort;
+import mz.co.grocery.core.common.BeanQualifier;
+import mz.co.grocery.core.domain.guide.Guide;
+import mz.co.grocery.core.domain.guide.GuideItem;
+import mz.co.grocery.core.domain.guide.GuideType;
+import mz.co.grocery.core.domain.rent.LoadStatus;
+import mz.co.grocery.core.domain.rent.Rent;
+import mz.co.grocery.core.domain.rent.RentItem;
 import mz.co.grocery.persistence.config.AbstractIntegServiceTest;
 import mz.co.grocery.persistence.fixturefactory.GuideTemplate;
 import mz.co.grocery.persistence.rent.RentBuilder;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.fixturefactory.EntityFactory;
-import mz.co.msaude.boot.frameworks.util.TestUtil;
 
 /**
  * @author Stélio Moiane
@@ -36,50 +36,59 @@ import mz.co.msaude.boot.frameworks.util.TestUtil;
 public class TransportGuideTest extends AbstractIntegServiceTest {
 
 	@Inject
-	private GuideService guideService;
+	private IssueGuideUseCase issueGuideUseCase;
 
 	@Inject
 	private RentBuilder rentBuilder;
 
 	@Inject
-	@Qualifier(TransportGuideIssuerImpl.NAME)
+	@BeanQualifier(TransportGuideIssuer.NAME)
 	private GuideIssuer transportGuideIssuer;
 
 	@Inject
-	private RentService rentService;
+	private RentPort rentService;
 
 	@Inject
-	private RentItemDAO rentItemDAO;
+	private RentItemPort rentItemPort;
 
 	@Test
 	public void shouldIssueTransportGuide() throws BusinessException {
-		this.guideService.setGuideIssuer(this.transportGuideIssuer);
+		this.issueGuideUseCase.setGuideIssuer(this.transportGuideIssuer);
 
-		final Rent rent = this.rentBuilder.build();
-		this.rentService.rent(this.getUserContext(), rent);
+		Rent rent = this.rentBuilder.build();
+		final Set<RentItem> rentItems = rent.getRentItems().get();
+		rent = this.rentService.createRent(this.getUserContext(), rent);
 		final Guide guide = EntityFactory.gimme(Guide.class, GuideTemplate.NO_ITEMS_TRANSPORT);
 		guide.setRent(rent);
 
-		rent.getRentItems().forEach(rentItem -> {
+		for (RentItem rentItem : rentItems) {
+			rentItem.setRent(rent);
+			rentItem.calculatePlannedTotal();
+			rentItem.setStockable();
+
+			rentItem = this.rentItemPort.createRentItem(this.getUserContext(), rentItem);
+
 			final GuideItem guideItem = new GuideItem();
+
 			guideItem.setRentItem(rentItem);
 			guideItem.setQuantity(new BigDecimal(2));
 
 			guide.addGuideItem(guideItem);
-		});
 
-		this.guideService.issueGuide(this.getUserContext(), guide);
+			rent.addRentItem(rentItem);
+		}
 
-		TestUtil.assertCreation(guide);
+		rent.calculateTotalEstimated();
+		this.issueGuideUseCase.issueGuide(this.getUserContext(), guide);
+
 		Assert.assertEquals(GuideType.TRANSPORT, guide.getType());
 
-		for (final GuideItem guideItem : guide.getGuideItems()) {
+		for (final GuideItem guideItem : guide.getGuideItems().get()) {
 
-			final RentItem rentItem = this.rentItemDAO.findById(guideItem.getRentItem().getId());
+			final RentItem rentItem = this.rentItemPort.findByUuid(guideItem.getRentItem().get().getUuid());
 
-			TestUtil.assertCreation(guideItem);
-			Assert.assertNotNull(guide.getRent().getTotalCalculated());
-			Assert.assertNotEquals(BigDecimal.ZERO, guide.getRent().getTotalEstimated());
+			Assert.assertNotNull(rent.getTotalCalculated());
+			Assert.assertNotEquals(BigDecimal.ZERO, rent.getTotalEstimated());
 			Assert.assertEquals(LoadStatus.INCOMPLETE, rentItem.getLoadStatus());
 			Assert.assertEquals(new BigDecimal(2).doubleValue(), rentItem.getLoadedQuantity().doubleValue(), 0.0);
 		}

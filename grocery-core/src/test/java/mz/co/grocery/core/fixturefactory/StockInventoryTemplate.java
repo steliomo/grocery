@@ -8,9 +8,9 @@ import java.math.BigDecimal;
 import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.Rule;
 import br.com.six2six.fixturefactory.loader.TemplateLoader;
-import mz.co.grocery.core.inventory.model.Inventory;
-import mz.co.grocery.core.inventory.model.StockInventory;
-import mz.co.grocery.core.saleable.model.Stock;
+import mz.co.grocery.core.domain.inventory.Inventory;
+import mz.co.grocery.core.domain.inventory.StockInventory;
+import mz.co.grocery.core.domain.sale.Stock;
 
 /**
  * @author Stélio Moiane
@@ -24,7 +24,7 @@ public class StockInventoryTemplate implements TemplateLoader {
 	@Override
 	public void load() {
 
-		Fixture.of(StockInventory.class).addTemplate(VALID, new Rule() {
+		Fixture.of(StockInventory.class).addTemplate(StockInventoryTemplate.VALID, new Rule() {
 			{
 				this.add("inventory", this.one(Inventory.class, InventoryTemplate.VALID));
 				this.add("stock", this.one(Stock.class, StockTemplate.VALID));
@@ -32,7 +32,7 @@ public class StockInventoryTemplate implements TemplateLoader {
 			}
 		});
 
-		Fixture.of(StockInventory.class).addTemplate(WITH_UUID).inherits(VALID, new Rule() {
+		Fixture.of(StockInventory.class).addTemplate(StockInventoryTemplate.WITH_UUID).inherits(StockInventoryTemplate.VALID, new Rule() {
 			{
 				this.add("stock", this.one(Stock.class, StockTemplate.WITH_UUID));
 			}

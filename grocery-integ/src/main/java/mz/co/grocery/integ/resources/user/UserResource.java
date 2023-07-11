@@ -18,29 +18,30 @@ import javax.ws.rs.client.Entity;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.security.authentication.AuthenticationProvider;
 import org.springframework.security.authentication.BadCredentialsException;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
-import org.springframework.stereotype.Service;
 
-import mz.co.grocery.core.grocery.model.Grocery;
-import mz.co.grocery.core.grocery.model.GroceryUser;
-import mz.co.grocery.core.grocery.model.UserRole;
-import mz.co.grocery.core.grocery.service.GroceryService;
-import mz.co.grocery.core.grocery.service.GroceryUserQueryService;
-import mz.co.grocery.core.grocery.service.GroceryUserService;
+import mz.co.grocery.core.application.unit.out.UnitPort;
+import mz.co.grocery.core.application.unit.out.UnitUserPort;
+import mz.co.grocery.core.common.Balance;
+import mz.co.grocery.core.common.WebAdapter;
+import mz.co.grocery.core.domain.unit.Unit;
+import mz.co.grocery.core.domain.unit.UnitUser;
+import mz.co.grocery.core.domain.unit.UserRole;
 import mz.co.grocery.core.util.ApplicationTranslator;
-import mz.co.grocery.core.util.Balance;
 import mz.co.grocery.integ.resources.AbstractResource;
-import mz.co.grocery.integ.resources.grocery.dto.GroceryUserDTO;
+import mz.co.grocery.integ.resources.common.UrlTargets;
 import mz.co.grocery.integ.resources.mail.Mail;
 import mz.co.grocery.integ.resources.mail.MailSenderService;
+import mz.co.grocery.integ.resources.unit.dto.UnitUserDTO;
 import mz.co.grocery.integ.resources.user.dto.UserDTO;
 import mz.co.grocery.integ.resources.user.model.ResourceOwner;
 import mz.co.grocery.integ.resources.user.service.ResourceOnwnerService;
-import mz.co.grocery.integ.resources.util.UrlTargets;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
+import mz.co.msaude.boot.frameworks.mapper.DTOMapper;
 import mz.co.msaude.boot.frameworks.model.UserContext;
 import mz.co.msaude.boot.frameworks.util.RandomUtil;
 import mz.co.msaude.boot.frameworks.util.UuidFactory;
@@ -51,25 +52,20 @@ import mz.co.msaude.boot.frameworks.util.UuidFactory;
  */
 
 @Path("users")
-@Service(UserResource.NAME)
+@WebAdapter
 public class UserResource extends AbstractResource {
-
-	public static final String NAME = "mz.co.grocery.integ.resources.user.UserResource";
 
 	@Inject
 	private AuthenticationProvider authenticationProvider;
 
 	@Inject
-	private GroceryUserQueryService groceryUserQueryService;
+	private UnitUserPort unitUserPort;
 
 	@Inject
 	private ResourceOnwnerService resourceOnwnerService;
 
 	@Inject
-	private GroceryUserService groceryUserService;
-
-	@Inject
-	private GroceryService groceryService;
+	private UnitPort unitPort;
 
 	@Inject
 	private MailSenderService mailSenderService;
@@ -82,6 +78,9 @@ public class UserResource extends AbstractResource {
 
 	@Inject
 	private Balance balance;
+
+	@Autowired
+	private DTOMapper<UnitUserDTO, UnitUser> unitUserMapper;
 
 	@POST
 	@Path("login")
@@ -110,8 +109,8 @@ public class UserResource extends AbstractResource {
 		userDTO.setFullName(userContext.getFullName());
 		userDTO.setEmail(context.getEmail());
 
-		final GroceryUser groceryUser = this.groceryUserQueryService.fetchGroceryUserByUser(userDTO.getUuid());
-		userDTO.setGroceryUserDTO(new GroceryUserDTO(groceryUser));
+		final UnitUser unitUser = this.unitUserPort.fetchUnitUserByUser(userDTO.getUuid());
+		userDTO.setUnitUserDTO(this.unitUserMapper.toDTO(unitUser));
 
 		return Response.ok(userDTO).build();
 	}
@@ -180,16 +179,16 @@ public class UserResource extends AbstractResource {
 
 		final String userId = this.resourceOnwnerService.createUser(context, user);
 
-		final GroceryUser groceryUser = user.getGroceryUserDTO().get();
+		final UnitUser groceryUser = this.unitUserMapper.toDomain(user.getUnitUserDTO());
 		groceryUser.setUserRole(UserRole.MANAGER);
 		groceryUser.setExpiryDate(LocalDate.now().plusMonths(3));
 		groceryUser.setUser(userId);
 
-		final Grocery unit = groceryUser.getGrocery();
+		final Unit unit = groceryUser.getUnit().get();
 		unit.setBalance(new BigDecimal(this.balance.getInitial()));
 
-		this.groceryService.createGrocery(context, unit);
-		this.groceryUserService.createGroceryUser(context, groceryUser);
+		this.unitPort.createUnit(context, unit);
+		this.unitUserPort.createUnitUser(context, groceryUser);
 
 		this.sendSignUpEmail(user, groceryUser);
 
@@ -198,7 +197,7 @@ public class UserResource extends AbstractResource {
 		return Response.ok(user).build();
 	}
 
-	private void sendSignUpEmail(final UserDTO user, final GroceryUser groceryUser) throws BusinessException {
+	private void sendSignUpEmail(final UserDTO user, final UnitUser unitUser) throws BusinessException {
 		this.mail.setMailTemplate("signup-template.txt");
 		this.mail.setMailTo(user.getEmail());
 		this.mail.setMailSubject(this.mail.getWelcome());
@@ -207,8 +206,8 @@ public class UserResource extends AbstractResource {
 		this.mail.setParam("username", user.getUsername());
 		this.mail.setParam("password", user.getPassword());
 		this.mail.setParam("email", user.getEmail());
-		this.mail.setParam("grocery", groceryUser.getGrocery().getName());
-		this.mail.setParam("address", groceryUser.getGrocery().getAddress());
+		this.mail.setParam("grocery", unitUser.getUnit().get().getName());
+		this.mail.setParam("address", unitUser.getUnit().get().getAddress());
 
 		this.mailSenderService.send(this.mail);
 	}

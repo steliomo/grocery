@@ -9,11 +9,11 @@ import java.util.HashSet;
 import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.Rule;
 import br.com.six2six.fixturefactory.loader.TemplateLoader;
-import mz.co.grocery.core.guide.model.Guide;
-import mz.co.grocery.core.guide.model.GuideItem;
-import mz.co.grocery.core.guide.model.GuideType;
-import mz.co.grocery.core.rent.model.Rent;
-import mz.co.grocery.core.sale.model.Sale;
+import mz.co.grocery.core.domain.guide.Guide;
+import mz.co.grocery.core.domain.guide.GuideItem;
+import mz.co.grocery.core.domain.guide.GuideType;
+import mz.co.grocery.core.domain.rent.Rent;
+import mz.co.grocery.core.domain.sale.Sale;
 
 /**
  * @author Stélio Moiane

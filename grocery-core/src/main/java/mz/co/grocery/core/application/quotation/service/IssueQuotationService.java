@@ -3,15 +3,15 @@
  */
 package mz.co.grocery.core.application.quotation.service;
 
+import mz.co.grocery.core.application.payment.in.PaymentUseCase;
 import mz.co.grocery.core.application.quotation.in.IssueQuotationUseCase;
 import mz.co.grocery.core.application.quotation.out.GenerateQuotationPdfPort;
 import mz.co.grocery.core.application.quotation.out.SaveQuotationItemPort;
 import mz.co.grocery.core.application.quotation.out.SaveQuotationPort;
+import mz.co.grocery.core.common.Clock;
 import mz.co.grocery.core.common.UseCase;
 import mz.co.grocery.core.domain.quotation.Quotation;
 import mz.co.grocery.core.domain.quotation.QuotationItem;
-import mz.co.grocery.core.payment.service.PaymentService;
-import mz.co.grocery.core.util.Clock;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.model.UserContext;
 import mz.co.msaude.boot.frameworks.service.AbstractService;
@@ -27,10 +27,10 @@ public class IssueQuotationService extends AbstractService implements IssueQuota
 	private SaveQuotationPort saveQuotationPort;
 	private SaveQuotationItemPort saveQuotationItemPort;
 	private GenerateQuotationPdfPort generateQuotationPdfPort;
-	private PaymentService paymentService;
+	private PaymentUseCase paymentService;
 
 	public IssueQuotationService(final Clock clock, final SaveQuotationPort saveQuotationPort, final SaveQuotationItemPort saveQuotationItemPort,
-			final GenerateQuotationPdfPort generateQuotationPdfPort, final PaymentService paymentService) {
+			final GenerateQuotationPdfPort generateQuotationPdfPort, final PaymentUseCase paymentService) {
 		this.clock = clock;
 		this.saveQuotationPort = saveQuotationPort;
 		this.saveQuotationItemPort = saveQuotationItemPort;
@@ -45,8 +45,13 @@ public class IssueQuotationService extends AbstractService implements IssueQuota
 			throw new BusinessException("quotation.issue.has.no.items");
 		}
 
+		if (!quotation.getCustomer().isPresent()) {
+			throw new BusinessException("quotation.issue.has.no.customer");
+		}
+
 		quotation.setIssueDate(this.clock.todayDate());
 		quotation.setToPendingStatus();
+		quotation.calculateTotal();
 
 		this.saveQuotationPort.save(context, quotation);
 
@@ -56,8 +61,10 @@ public class IssueQuotationService extends AbstractService implements IssueQuota
 			this.saveQuotationItemPort.save(context, quotationItem);
 		}
 
-		this.generateQuotationPdfPort.generatePdf(quotation);
-		this.paymentService.debitTransaction(context, quotation.getUnit().getUuid());
+		final String name = this.generateQuotationPdfPort.generatePdf(quotation, this.clock.todayDateTime());
+		quotation.setName(name);
+
+		this.paymentService.debitTransaction(context, quotation.getUnit().get().getUuid());
 
 		return quotation;
 	}

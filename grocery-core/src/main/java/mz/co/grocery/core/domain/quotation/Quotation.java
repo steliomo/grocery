@@ -3,23 +3,25 @@
  */
 package mz.co.grocery.core.domain.quotation;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.Collections;
+import java.util.HashSet;
+import java.util.Optional;
 import java.util.Set;
 
-import mz.co.grocery.core.customer.model.Customer;
-import mz.co.grocery.core.grocery.model.Grocery;
+import mz.co.grocery.core.common.Domain;
+import mz.co.grocery.core.domain.customer.Customer;
+import mz.co.grocery.core.domain.unit.Unit;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 
 /**
  * @author Stélio Moiane
  *
  */
-public class Quotation {
+public class Quotation extends Domain {
 
-	private Long id;
-
-	private String uuid;
+	private String name;
 
 	private Customer customer;
 
@@ -29,40 +31,40 @@ public class Quotation {
 
 	private QuotationStatus status;
 
-	private Grocery unit;
+	private Unit unit;
+
+	private BigDecimal totalValue;
+
+	private BigDecimal discount;
 
 	private Set<QuotationItem> items;
 
 	public Quotation() {
+		this.items = new HashSet<>();
+		this.discount = BigDecimal.ZERO;
 	}
 
 	public Quotation(final QuotationType type, final QuotationStatus status) {
 		this.type = type;
 		this.status = status;
+		this.items = new HashSet<>();
+		this.discount = BigDecimal.ZERO;
 	}
 
-	public Long getId() {
-		return this.id;
+	public void setName(final String name) {
+		this.name = name;
 	}
 
-	public void setId(final Long id) {
-		this.id = id;
+	public String getName() {
+		return this.name;
 	}
 
-	public String getUuid() {
-		return this.uuid;
-	}
-
-	public void setUuid(final String uuid) {
-		this.uuid = uuid;
+	public Optional<Customer> getCustomer() {
+		return Optional.ofNullable(this.customer);
 	}
 
 	public void setCustomer(final Customer customer) {
 		this.customer = customer;
-	}
-
-	public Customer getCustomer() {
-		return this.customer;
 	}
 
 	public QuotationType getType() {
@@ -90,23 +92,54 @@ public class Quotation {
 		throw new BusinessException("quotation.cannot.be.pendig.again");
 	}
 
-	public Grocery getUnit() {
-		return this.unit;
+	public Optional<Unit> getUnit() {
+		return Optional.ofNullable(this.unit);
+	}
+
+	public void setUnit(final Unit unit) {
+		this.unit = unit;
 	}
 
 	public Set<QuotationItem> getItems() {
-		return Collections.unmodifiableSet(this.items);
+		return Collections.unmodifiableSet(Optional.ofNullable(this.items).orElse(new HashSet<>()));
 	}
 
-	public void setItems(final Set<QuotationItem> items) {
-		this.items = items;
+	public void addItem(final QuotationItem quotationItem) {
+		this.items.add(quotationItem);
 	}
 
 	public boolean hasItems() {
 		if (this.items == null) {
 			return Boolean.FALSE;
 		}
-
 		return this.items != null && !this.items.isEmpty();
+	}
+
+	public BigDecimal getTotalValue() {
+		return this.totalValue;
+	}
+
+	public void calculateTotal() {
+		this.totalValue = this.items.stream().map(QuotationItem::getTotal).reduce(BigDecimal.ZERO, BigDecimal::add).subtract(this.discount);
+	}
+
+	public void setDiscount(final BigDecimal discount) {
+		this.discount = discount;
+	}
+
+	public BigDecimal getDiscount() {
+		return this.discount;
+	}
+
+	public void setType(final QuotationType type) {
+		this.type = type;
+	}
+
+	public void setStatus(final QuotationStatus status) {
+		this.status = status;
+	}
+
+	public void setTotalValue(final BigDecimal totalValue) {
+		this.totalValue = totalValue;
 	}
 }

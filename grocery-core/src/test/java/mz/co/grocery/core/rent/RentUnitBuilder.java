@@ -6,10 +6,10 @@ package mz.co.grocery.core.rent;
 import java.time.LocalDate;
 import java.util.List;
 
+import mz.co.grocery.core.domain.rent.Rent;
+import mz.co.grocery.core.domain.rent.RentItem;
 import mz.co.grocery.core.fixturefactory.RentItemTemplate;
 import mz.co.grocery.core.fixturefactory.RentTemplate;
-import mz.co.grocery.core.rent.model.Rent;
-import mz.co.grocery.core.rent.model.RentItem;
 import mz.co.msaude.boot.frameworks.fixturefactory.EntityFactory;
 
 /**
@@ -55,7 +55,7 @@ public class RentUnitBuilder {
 	}
 
 	public RentUnitBuilder calculatePlannedTotal() {
-		this.rent.getRentItems().forEach(rentItem -> rentItem.calculatePlannedTotal());
+		this.rent.getRentItems().get().forEach(rentItem -> rentItem.calculatePlannedTotal());
 		return this;
 	}
 

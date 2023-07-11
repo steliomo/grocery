@@ -15,15 +15,16 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import org.springframework.stereotype.Service;
+import org.springframework.beans.factory.annotation.Autowired;
 
-import mz.co.grocery.core.expense.model.ExpenseType;
-import mz.co.grocery.core.expense.service.ExpenseTypeQueryService;
-import mz.co.grocery.core.expense.service.ExpenseTypeService;
+import mz.co.grocery.core.application.expense.in.ExpenseTypePort;
+import mz.co.grocery.core.common.WebAdapter;
+import mz.co.grocery.core.domain.expense.ExpenseType;
 import mz.co.grocery.integ.resources.AbstractResource;
 import mz.co.grocery.integ.resources.expense.dto.ExpenseTypeDTO;
 import mz.co.grocery.integ.resources.expense.dto.ExpensesDTO;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
+import mz.co.msaude.boot.frameworks.mapper.DTOMapper;
 
 /**
  * @author Stélio Moiane
@@ -31,32 +32,37 @@ import mz.co.msaude.boot.frameworks.exception.BusinessException;
  */
 
 @Path("expenses-type")
-@Service(ExpenseTypeResource.NAME)
+@WebAdapter
 public class ExpenseTypeResource extends AbstractResource {
 
-	public static final String NAME = "mz.co.grocery.integ.resources.expense.ExpenseTypeResource";
-
 	@Inject
-	private ExpenseTypeService expenseTypeService;
+	private ExpenseTypePort expenseTypePort;
 
-	@Inject
-	private ExpenseTypeQueryService expenseTypeQueryService;
+	@Autowired
+	private DTOMapper<ExpenseTypeDTO, ExpenseType> expenseTypeMapper;
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response createEpenseType(final ExpenseTypeDTO expenseTypeDTO) throws BusinessException {
-		this.expenseTypeService.createExpenseType(this.getContext(), expenseTypeDTO.get());
-		return Response.ok(expenseTypeDTO).build();
+
+		ExpenseType expenseType = this.expenseTypeMapper.toDomain(expenseTypeDTO);
+
+		expenseType = this.expenseTypePort.createExpenseType(this.getContext(), expenseType);
+
+		return Response.ok(this.expenseTypeMapper.toDTO(expenseType)).build();
 	}
 
 	@PUT
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response updateExpenseType(final ExpenseTypeDTO expenseTypeDTO) throws BusinessException {
-		final ExpenseType expenseType = this.expenseTypeService.updateExpenseType(this.getContext(),
-				expenseTypeDTO.get());
-		return Response.ok(new ExpenseTypeDTO(expenseType)).build();
+
+		ExpenseType expenseType = this.expenseTypeMapper.toDomain(expenseTypeDTO);
+
+		expenseType = this.expenseTypePort.updateExpenseType(this.getContext(), expenseType);
+
+		return Response.ok(this.expenseTypeMapper.toDTO(expenseType)).build();
 	}
 
 	@GET
@@ -64,11 +70,10 @@ public class ExpenseTypeResource extends AbstractResource {
 	public Response findAllExpensesType(@QueryParam("currentPage") final int currentPage,
 			@QueryParam("maxResult") final int maxResult) throws BusinessException {
 
-		final List<ExpenseType> expensesType = this.expenseTypeQueryService.findAllExpensesType(currentPage, maxResult);
-		final Long totalItems = this.expenseTypeQueryService.count();
+		final List<ExpenseType> expensesType = this.expenseTypePort.findAllExpensesType(currentPage, maxResult);
+		final Long totalItems = this.expenseTypePort.count();
 
-		final List<ExpenseTypeDTO> expenseTypeDTOs = expensesType.stream()
-				.map(expenseType -> new ExpenseTypeDTO(expenseType))
+		final List<ExpenseTypeDTO> expenseTypeDTOs = expensesType.stream().map(expenseType -> this.expenseTypeMapper.toDTO(expenseType))
 				.collect(Collectors.toList());
 
 		final ExpensesDTO expensesDTO = new ExpensesDTO().setExpenseTypeDTOs(expenseTypeDTOs).setTotalItems(totalItems);
@@ -82,9 +87,8 @@ public class ExpenseTypeResource extends AbstractResource {
 	public Response findExpenseTypeByUuid(@PathParam("expenseTypeUuid") final String expenseTypeUuid)
 			throws BusinessException {
 
-		final ExpenseType expenseType = this.expenseTypeQueryService.findExpensesTypeByUuid(expenseTypeUuid);
+		final ExpenseType expenseType = this.expenseTypePort.findExpensesTypeByUuid(expenseTypeUuid);
 
-		return Response.ok(new ExpenseTypeDTO(expenseType)).build();
+		return Response.ok(this.expenseTypeMapper.toDTO(expenseType)).build();
 	}
-
 }

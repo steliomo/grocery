@@ -3,18 +3,22 @@
  */
 package mz.co.grocery.persistence.saleable;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import javax.inject.Inject;
 
 import org.springframework.stereotype.Service;
 
-import mz.co.grocery.core.grocery.model.Grocery;
-import mz.co.grocery.core.item.service.ProductDescriptionService;
-import mz.co.grocery.core.item.service.ProductService;
-import mz.co.grocery.core.item.service.ProductUnitService;
-import mz.co.grocery.core.saleable.model.Stock;
-import mz.co.grocery.core.saleable.service.StockService;
+import mz.co.grocery.core.application.item.out.ProductDescriptionPort;
+import mz.co.grocery.core.application.item.out.ProductPort;
+import mz.co.grocery.core.application.item.out.ProductUnitPort;
+import mz.co.grocery.core.application.sale.out.StockPort;
+import mz.co.grocery.core.domain.item.Product;
+import mz.co.grocery.core.domain.item.ProductDescription;
+import mz.co.grocery.core.domain.item.ProductUnit;
+import mz.co.grocery.core.domain.sale.Stock;
+import mz.co.grocery.core.domain.unit.Unit;
 import mz.co.grocery.persistence.config.AbstractServiceTest;
 import mz.co.grocery.persistence.fixturefactory.StockTemplate;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
@@ -24,28 +28,26 @@ import mz.co.msaude.boot.frameworks.fixturefactory.EntityFactory;
  * @author Stélio Moiane
  *
  */
-@Service(StockBuilder.NAME)
+@Service
 public class StockBuilder extends AbstractServiceTest {
 
-	public static final String NAME = "mz.co.grocery.core.saleable.builder.StockBuilder";
+	@Inject
+	private ProductPort productService;
 
 	@Inject
-	private ProductService productService;
+	private ProductUnitPort productUnitService;
 
 	@Inject
-	private ProductUnitService productUnitService;
+	private ProductDescriptionPort productDescriptionService;
 
 	@Inject
-	private ProductDescriptionService productDescriptionService;
-
-	@Inject
-	private StockService stockService;
+	private StockPort stockService;
 
 	private List<Stock> stocks;
 
 	private int number;
 
-	private Grocery unit;
+	private Unit unit;
 
 	public List<Stock> build() {
 
@@ -53,10 +55,20 @@ public class StockBuilder extends AbstractServiceTest {
 	}
 
 	public StockBuilder inAnalysis() {
-		this.stocks = EntityFactory.gimme(Stock.class, this.number, StockTemplate.IN_ANALYSIS, result -> {
+		EntityFactory.gimme(Stock.class, this.number, StockTemplate.IN_ANALYSIS, result -> {
 			if (result instanceof Stock) {
-				final Stock stock = (Stock) result;
-				StockBuilder.this.createStock(stock, StockBuilder.this.unit);
+				Stock stock = (Stock) result;
+				try {
+					stock = StockBuilder.this.createStock(stock, StockBuilder.this.unit);
+
+					if (this.stocks == null) {
+						this.stocks = new ArrayList<>();
+					}
+
+					this.stocks.add(stock);
+				} catch (final BusinessException e) {
+					e.printStackTrace();
+				}
 			}
 		});
 
@@ -64,10 +76,20 @@ public class StockBuilder extends AbstractServiceTest {
 	}
 
 	public StockBuilder valid() {
-		this.stocks = EntityFactory.gimme(Stock.class, this.number, StockTemplate.VALID, result -> {
+		EntityFactory.gimme(Stock.class, this.number, StockTemplate.VALID, result -> {
 			if (result instanceof Stock) {
-				final Stock stock = (Stock) result;
-				StockBuilder.this.createStock(stock, StockBuilder.this.unit);
+				Stock stock = (Stock) result;
+				try {
+					stock = StockBuilder.this.createStock(stock, StockBuilder.this.unit);
+
+					if (this.stocks == null) {
+						this.stocks = new ArrayList<>();
+					}
+
+					this.stocks.add(stock);
+				} catch (final BusinessException e) {
+					e.printStackTrace();
+				}
 			}
 		});
 
@@ -79,24 +101,31 @@ public class StockBuilder extends AbstractServiceTest {
 		return this;
 	}
 
-	public StockBuilder unit(final Grocery unit) {
+	public StockBuilder unit(final Unit unit) {
 		this.unit = unit;
 		return this;
 
 	}
 
-	private void createStock(final Stock stock, final Grocery unit) {
-		try {
-			this.productService.createProduct(this.getUserContext(), stock.getProductDescription().getProduct());
-			this.productUnitService.createProductUnit(this.getUserContext(),
-					stock.getProductDescription().getProductUnit());
-			this.productDescriptionService.createProductDescription(this.getUserContext(),
-					stock.getProductDescription());
-			stock.setGrocery(unit);
-			this.stockService.createStock(this.getUserContext(), stock);
-		} catch (final BusinessException e) {
-			e.printStackTrace();
-		}
-	}
+	private Stock createStock(final Stock stock, final Unit unit) throws BusinessException {
 
+		ProductDescription productDescription = stock.getProductDescription().get();
+
+		final Product product = this.productService.createProduct(this.getUserContext(), productDescription.getProduct().get());
+
+		final ProductUnit productUnit = this.productUnitService.createProductUnit(this.getUserContext(),
+				productDescription.getProductUnit().get());
+
+		productDescription.setProduct(product);
+		productDescription.setProductUnit(productUnit);
+
+		productDescription = this.productDescriptionService.createProductDescription(this.getUserContext(),
+				productDescription);
+
+		stock.setUnit(unit);
+		stock.setProductDescription(productDescription);
+		stock.setStockStatus();
+
+		return this.stockService.createStock(this.getUserContext(), stock);
+	}
 }

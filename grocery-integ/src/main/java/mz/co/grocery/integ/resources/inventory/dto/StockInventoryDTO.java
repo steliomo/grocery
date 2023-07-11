@@ -4,56 +4,34 @@
 package mz.co.grocery.integ.resources.inventory.dto;
 
 import java.math.BigDecimal;
+import java.util.Optional;
 
-import mz.co.grocery.core.inventory.model.StockInventory;
-import mz.co.grocery.core.saleable.model.Stock;
 import mz.co.grocery.integ.resources.dto.GenericDTO;
-import mz.co.grocery.integ.resources.saleable.dto.StockDTO;
-import mz.co.grocery.integ.resources.util.ProxyUtil;;
+import mz.co.grocery.integ.resources.saleable.dto.StockDTO;;
 
 /**
  * @author Stélio Moiane
  *
  */
-public class StockInventoryDTO extends GenericDTO<StockInventory> {
+public class StockInventoryDTO extends GenericDTO {
 
 	private StockDTO stockDTO;
 
-	private String fisicalInventory;
+	private BigDecimal fisicalInventory;
 
-	public StockInventoryDTO() {
+	public Optional<StockDTO> getStockDTO() {
+		return Optional.ofNullable(this.stockDTO);
 	}
 
-	public StockInventoryDTO(final StockInventory stockInventory) {
-		super(stockInventory);
+	public void setStockDTO(final StockDTO stockDTO) {
+		this.stockDTO = stockDTO;
 	}
 
-	@Override
-	public void mapper(final StockInventory stockInventory) {
-
-		final Stock stock = stockInventory.getStock();
-
-		if (ProxyUtil.isInitialized(stock)) {
-			this.stockDTO = new StockDTO(stock);
-		}
-
-		this.fisicalInventory = String.valueOf(stockInventory.getFisicalInventory());
-	}
-
-	@Override
-	public StockInventory get() {
-		final StockInventory stockInventory = this.get(new StockInventory());
-		stockInventory.setStock(this.stockDTO.get());
-		stockInventory.setFisicalInventory(new BigDecimal(this.fisicalInventory));
-
-		return stockInventory;
-	}
-
-	public StockDTO getStockDTO() {
-		return this.stockDTO;
-	}
-
-	public String getFisicalInventory() {
+	public BigDecimal getFisicalInventory() {
 		return this.fisicalInventory;
+	}
+
+	public void setFisicalInventory(final BigDecimal fisicalInventory) {
+		this.fisicalInventory = fisicalInventory;
 	}
 }

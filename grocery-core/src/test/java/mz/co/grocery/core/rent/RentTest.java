@@ -9,11 +9,11 @@ import org.junit.Assert;
 import org.junit.Test;
 
 import mz.co.grocery.core.config.AbstractUnitServiceTest;
-import mz.co.grocery.core.rent.model.LoadStatus;
-import mz.co.grocery.core.rent.model.PaymentStatus;
-import mz.co.grocery.core.rent.model.Rent;
-import mz.co.grocery.core.rent.model.RentItem;
-import mz.co.grocery.core.rent.model.ReturnStatus;
+import mz.co.grocery.core.domain.rent.LoadStatus;
+import mz.co.grocery.core.domain.rent.PaymentStatus;
+import mz.co.grocery.core.domain.rent.Rent;
+import mz.co.grocery.core.domain.rent.RentItem;
+import mz.co.grocery.core.domain.rent.ReturnStatus;
 
 /**
  * @author Stélio Moiane
@@ -152,7 +152,7 @@ public class RentTest extends AbstractUnitServiceTest {
 
 		rent.setLoadingStatus();
 
-		Assert.assertEquals(LoadStatus.INCOMPLETE, rent.getLoadingStatus());
+		Assert.assertEquals(LoadStatus.INCOMPLETE, rent.getLoadStatus());
 	}
 
 	@Test
@@ -168,7 +168,7 @@ public class RentTest extends AbstractUnitServiceTest {
 
 		rent.setLoadingStatus();
 
-		Assert.assertEquals(LoadStatus.COMPLETE, rent.getLoadingStatus());
+		Assert.assertEquals(LoadStatus.COMPLETE, rent.getLoadStatus());
 	}
 
 	@Test

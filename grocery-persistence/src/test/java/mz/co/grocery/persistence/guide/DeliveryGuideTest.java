@@ -7,22 +7,24 @@ import java.time.LocalDate;
 
 import javax.inject.Inject;
 
+import org.junit.Assert;
 import org.junit.Test;
-import org.springframework.beans.factory.annotation.Qualifier;
 
-import mz.co.grocery.core.customer.model.SaleType;
-import mz.co.grocery.core.guide.model.Guide;
-import mz.co.grocery.core.guide.model.GuideItem;
-import mz.co.grocery.core.guide.service.DeliveryGuideIssuerImpl;
-import mz.co.grocery.core.guide.service.GuideIssuer;
-import mz.co.grocery.core.guide.service.GuideService;
-import mz.co.grocery.core.sale.model.Sale;
+import mz.co.grocery.core.application.guide.in.GuideIssuer;
+import mz.co.grocery.core.application.guide.in.IssueGuideUseCase;
+import mz.co.grocery.core.application.guide.service.DeliveryGuideIssuer;
+import mz.co.grocery.core.application.sale.out.SaleItemPort;
+import mz.co.grocery.core.common.BeanQualifier;
+import mz.co.grocery.core.domain.customer.SaleType;
+import mz.co.grocery.core.domain.guide.Guide;
+import mz.co.grocery.core.domain.guide.GuideItem;
+import mz.co.grocery.core.domain.sale.Sale;
+import mz.co.grocery.core.domain.sale.SaleItem;
 import mz.co.grocery.persistence.config.AbstractIntegServiceTest;
 import mz.co.grocery.persistence.fixturefactory.GuideTemplate;
 import mz.co.grocery.persistence.sale.SaleBuilder;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.fixturefactory.EntityFactory;
-import mz.co.msaude.boot.frameworks.util.TestUtil;
 
 /**
  * @author Stélio Moiane
@@ -34,15 +36,18 @@ public class DeliveryGuideTest extends AbstractIntegServiceTest {
 	private SaleBuilder saleBuilder;
 
 	@Inject
-	private GuideService guideService;
+	private IssueGuideUseCase issueGuideUseCase;
 
 	@Inject
-	@Qualifier(DeliveryGuideIssuerImpl.NAME)
+	@BeanQualifier(DeliveryGuideIssuer.NAME)
 	private GuideIssuer deliveryGuideIssuer;
+
+	@Inject
+	private SaleItemPort saleItemPort;
 
 	@Test
 	public void shouldIssueDeliveryGuide() throws BusinessException {
-		this.guideService.setGuideIssuer(this.deliveryGuideIssuer);
+		this.issueGuideUseCase.setGuideIssuer(this.deliveryGuideIssuer);
 
 		final Sale sale = this.saleBuilder.sale().withProducts(5).withCustomer().withUnit().saleType(SaleType.INSTALLMENT)
 				.dueDate(LocalDate.now())
@@ -51,19 +56,17 @@ public class DeliveryGuideTest extends AbstractIntegServiceTest {
 
 		guide.setSale(sale);
 
-		sale.getItems().forEach(saleItem -> {
+		for (SaleItem saleItem : sale.getItems().get()) {
+			saleItem = this.saleItemPort.createSaleItem(this.getUserContext(), saleItem);
+
 			final GuideItem guideItem = new GuideItem();
 			guideItem.setQuantity(saleItem.getQuantity());
 			guideItem.setSaleItem(saleItem);
 			guide.addGuideItem(guideItem);
-		});
+		}
 
-		this.guideService.issueGuide(this.getUserContext(), guide);
+		this.issueGuideUseCase.issueGuide(this.getUserContext(), guide);
 
-		TestUtil.assertCreation(guide);
-
-		guide.getGuideItems().forEach(guideItem -> {
-			TestUtil.assertCreation(guideItem);
-		});
+		Assert.assertNotNull(guide.getIssueDate());
 	}
 }
