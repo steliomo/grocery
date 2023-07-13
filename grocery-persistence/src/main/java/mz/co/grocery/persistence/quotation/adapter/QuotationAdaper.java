@@ -5,7 +5,7 @@ package mz.co.grocery.persistence.quotation.adapter;
 
 import java.time.LocalDateTime;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 import mz.co.grocery.core.application.quotation.out.GenerateQuotationPdfPort;
 import mz.co.grocery.core.application.quotation.out.SaveQuotationPort;

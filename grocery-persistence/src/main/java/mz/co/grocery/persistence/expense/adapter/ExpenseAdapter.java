@@ -7,7 +7,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 import mz.co.grocery.core.application.expense.out.ExpensePort;
 import mz.co.grocery.core.common.PersistenceAdapter;

@@ -3,7 +3,7 @@
  */
 package mz.co.grocery.persistence.quotation.adapter;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 import mz.co.grocery.core.application.quotation.out.SaveQuotationItemPort;
 import mz.co.grocery.core.common.PersistenceAdapter;

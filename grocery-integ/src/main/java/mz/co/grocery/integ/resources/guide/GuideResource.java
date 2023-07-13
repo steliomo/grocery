@@ -18,9 +18,12 @@ import mz.co.grocery.core.application.guide.in.IssueGuideUseCase;
 import mz.co.grocery.core.application.guide.service.DeliveryGuideIssuer;
 import mz.co.grocery.core.application.guide.service.ReturnGuideIssuer;
 import mz.co.grocery.core.application.guide.service.TransportGuideIssuer;
+import mz.co.grocery.core.application.report.ReportGeneratorPort;
 import mz.co.grocery.core.common.BeanQualifier;
 import mz.co.grocery.core.common.WebAdapter;
 import mz.co.grocery.core.domain.guide.Guide;
+import mz.co.grocery.core.domain.guide.GuideReport;
+import mz.co.grocery.core.util.ApplicationTranslator;
 import mz.co.grocery.integ.resources.AbstractResource;
 import mz.co.grocery.integ.resources.guide.dto.GuideDTO;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
@@ -51,6 +54,12 @@ public class GuideResource extends AbstractResource {
 
 	@Autowired
 	private DTOMapper<GuideDTO, Guide> guideMapper;
+
+	@Inject
+	private ApplicationTranslator translator;
+
+	@Inject
+	private ReportGeneratorPort reportGeneratorPort;
 
 	@Path("issue-transport-guide")
 	@POST
@@ -92,5 +101,22 @@ public class GuideResource extends AbstractResource {
 		guide = this.guideUseCase.issueGuide(this.getContext(), guide);
 
 		return Response.ok(this.guideMapper.toDTO(guide)).build();
+	}
+
+	@Path("issue-guide-pdf")
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response issueGuidePDF(final GuideDTO guideDTO) throws BusinessException {
+
+		final Guide guide = this.guideMapper.toDomain(guideDTO);
+
+		final GuideReport guideReport = new GuideReport(guide, guide.getGuideItems().get(), this.translator);
+
+		this.reportGeneratorPort.createPdfReport(guideReport);
+
+		guideDTO.setFilePath(guideReport.getFilePath());
+
+		return Response.ok(guideDTO).build();
 	}
 }

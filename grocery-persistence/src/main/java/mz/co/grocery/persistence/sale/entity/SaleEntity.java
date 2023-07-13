@@ -203,6 +203,11 @@ public class SaleEntity extends GenericEntity {
 	}
 
 	public Optional<Set<GuideEntity>> getGuides() {
-		return Optional.ofNullable(this.guides);
+		try {
+			Optional.ofNullable(this.guides).ifPresent(guides -> guides.size());
+			return Optional.ofNullable(this.guides);
+		} catch (final LazyInitializationException e) {
+			return Optional.empty();
+		}
 	}
 }

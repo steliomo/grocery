@@ -8,11 +8,13 @@ import javax.inject.Inject;
 import org.springframework.stereotype.Component;
 
 import mz.co.grocery.core.domain.customer.Customer;
+import mz.co.grocery.core.domain.guide.Guide;
 import mz.co.grocery.core.domain.sale.Sale;
 import mz.co.grocery.core.domain.sale.SaleItem;
 import mz.co.grocery.core.domain.unit.Unit;
 import mz.co.grocery.persistence.common.AbstractEntityMapper;
 import mz.co.grocery.persistence.customer.entity.CustomerEntity;
+import mz.co.grocery.persistence.guide.entity.GuideEntity;
 import mz.co.grocery.persistence.unit.entity.UnitEntity;
 import mz.co.msaude.boot.frameworks.mapper.EntityMapper;
 
@@ -29,6 +31,8 @@ public class SaleEntityMapper extends AbstractEntityMapper<SaleEntity, Sale> imp
 	private EntityMapper<CustomerEntity, Customer> customerMapper;
 
 	private EntityMapper<SaleItemEntity, SaleItem> saleItemMapper;
+
+	private EntityMapper<GuideEntity, Guide> guideMapper;
 
 	public SaleEntityMapper(final EntityMapper<UnitEntity, Unit> unitMapper,
 			final EntityMapper<CustomerEntity, Customer> customerMapper) {
@@ -67,6 +71,13 @@ public class SaleEntityMapper extends AbstractEntityMapper<SaleEntity, Sale> imp
 			domain.addItem(this.saleItemMapper.toDomain(item));
 		}));
 
+		entity.getGuides().ifPresent(guides -> {
+			guides.forEach(guide -> {
+				guide.setSale(null);
+				domain.addGuide(this.guideMapper.toDomain(guide));
+			});
+		});
+
 		domain.setSaleDate(entity.getSaleDate());
 		domain.setBilling(entity.getBilling());
 		domain.setTotal(entity.getTotal());
@@ -82,5 +93,10 @@ public class SaleEntityMapper extends AbstractEntityMapper<SaleEntity, Sale> imp
 	@Inject
 	public void setSaleItemMapper(final EntityMapper<SaleItemEntity, SaleItem> saleItemMapper) {
 		this.saleItemMapper = saleItemMapper;
+	}
+
+	@Inject
+	public void setGuideMapper(final EntityMapper<GuideEntity, Guide> guideMapper) {
+		this.guideMapper = guideMapper;
 	}
 }

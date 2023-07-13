@@ -8,6 +8,7 @@ import javax.inject.Inject;
 import org.springframework.stereotype.Component;
 
 import mz.co.grocery.core.domain.guide.Guide;
+import mz.co.grocery.core.domain.guide.GuideItem;
 import mz.co.grocery.core.domain.rent.Rent;
 import mz.co.grocery.core.domain.sale.Sale;
 import mz.co.grocery.persistence.common.AbstractEntityMapper;
@@ -26,6 +27,8 @@ public class GuideEntityMapper extends AbstractEntityMapper<GuideEntity, Guide> 
 	private EntityMapper<RentEntity, Rent> rentMapper;
 
 	private EntityMapper<SaleEntity, Sale> saleMapper;
+
+	private EntityMapper<GuideItemEntity, GuideItem> guideItemMapper;
 
 	@Override
 	public GuideEntity toEntity(final Guide domain) {
@@ -50,6 +53,12 @@ public class GuideEntityMapper extends AbstractEntityMapper<GuideEntity, Guide> 
 		domain.setIssueDate(entity.getIssueDate());
 		domain.setType(entity.getType());
 
+		entity.getGuideItems().ifPresent(items -> items.forEach(item -> {
+			item.setGuide(null);
+			item.getSaleItem().ifPresent(saleItem -> saleItem.setSale(null));
+			domain.addGuideItem(this.guideItemMapper.toDomain(item));
+		}));
+
 		return this.toDomain(entity, domain);
 	}
 
@@ -61,5 +70,10 @@ public class GuideEntityMapper extends AbstractEntityMapper<GuideEntity, Guide> 
 	@Inject
 	public void setSaleMapper(final EntityMapper<SaleEntity, Sale> saleMapper) {
 		this.saleMapper = saleMapper;
+	}
+
+	@Inject
+	public void setGuideItemMapper(final EntityMapper<GuideItemEntity, GuideItem> guideItemMapper) {
+		this.guideItemMapper = guideItemMapper;
 	}
 }

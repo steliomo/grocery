@@ -6,7 +6,7 @@ package mz.co.grocery.persistence.rent.adapter;
 import java.time.LocalDate;
 import java.util.List;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 import mz.co.grocery.core.application.rent.out.RentPaymentPort;
 import mz.co.grocery.core.common.PersistenceAdapter;

@@ -6,7 +6,7 @@ package mz.co.grocery.persistence.contract.adapter;
 import java.time.LocalDate;
 import java.util.List;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 import mz.co.grocery.core.application.contract.out.ContractPort;
 import mz.co.grocery.core.common.PersistenceAdapter;

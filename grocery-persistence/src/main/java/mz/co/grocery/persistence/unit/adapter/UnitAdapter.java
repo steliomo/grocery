@@ -5,7 +5,7 @@ package mz.co.grocery.persistence.unit.adapter;
 
 import java.util.List;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 import mz.co.grocery.core.application.unit.out.UnitPort;
 import mz.co.grocery.core.common.PersistenceAdapter;

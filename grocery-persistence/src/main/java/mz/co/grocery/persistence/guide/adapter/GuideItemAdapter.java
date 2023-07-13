@@ -3,7 +3,7 @@
  */
 package mz.co.grocery.persistence.guide.adapter;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 import mz.co.grocery.core.application.guide.out.GuideItemPort;
 import mz.co.grocery.core.common.PersistenceAdapter;

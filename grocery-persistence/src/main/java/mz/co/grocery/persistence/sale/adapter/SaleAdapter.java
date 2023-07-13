@@ -6,7 +6,7 @@ package mz.co.grocery.persistence.sale.adapter;
 import java.time.LocalDate;
 import java.util.List;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 import mz.co.grocery.core.application.sale.out.SalePort;
 import mz.co.grocery.core.common.PersistenceAdapter;
@@ -59,6 +59,7 @@ public class SaleAdapter implements SalePort {
 		return this.mapper.toDomain(entity);
 	}
 
+	@Transactional(readOnly = true)
 	@Override
 	public Sale fetchByUuid(final String uuid) throws BusinessException {
 		return this.repository.fetchByUuid(uuid);

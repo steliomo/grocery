@@ -2,7 +2,7 @@ package mz.co.grocery.persistence.expense.adapter;
 
 import java.util.List;
 
-import javax.transaction.Transactional;
+import org.springframework.transaction.annotation.Transactional;
 
 import mz.co.grocery.core.application.expense.in.ExpenseTypePort;
 import mz.co.grocery.core.common.PersistenceAdapter;
