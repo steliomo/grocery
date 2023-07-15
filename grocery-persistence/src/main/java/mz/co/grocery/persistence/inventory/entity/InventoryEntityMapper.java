@@ -3,9 +3,12 @@
  */
 package mz.co.grocery.persistence.inventory.entity;
 
+import javax.inject.Inject;
+
 import org.springframework.stereotype.Component;
 
 import mz.co.grocery.core.domain.inventory.Inventory;
+import mz.co.grocery.core.domain.inventory.StockInventory;
 import mz.co.grocery.core.domain.unit.Unit;
 import mz.co.grocery.persistence.common.AbstractEntityMapper;
 import mz.co.grocery.persistence.unit.entity.UnitEntity;
@@ -20,6 +23,8 @@ import mz.co.msaude.boot.frameworks.mapper.EntityMapper;
 public class InventoryEntityMapper extends AbstractEntityMapper<InventoryEntity, Inventory> implements EntityMapper<InventoryEntity, Inventory> {
 
 	private EntityMapper<UnitEntity, Unit> unitMapper;
+
+	private EntityMapper<StockInventoryEntity, StockInventory> stockInventoryMapper;
 
 	public InventoryEntityMapper(final EntityMapper<UnitEntity, Unit> unitMapper) {
 		this.unitMapper = unitMapper;
@@ -44,6 +49,17 @@ public class InventoryEntityMapper extends AbstractEntityMapper<InventoryEntity,
 		domain.setInventoryDate(entity.getInventoryDate());
 		domain.setInventoryStatus(entity.getInventoryStatus());
 
+		entity.getStockInventories().ifPresent(stockInventories -> stockInventories
+				.forEach(stockInventory -> {
+					stockInventory.setInventory(null);
+					domain.addStockInventory(this.stockInventoryMapper.toDomain(stockInventory));
+				}));
+
 		return this.toDomain(entity, domain);
+	}
+
+	@Inject
+	public void setStockInventoryMapper(final EntityMapper<StockInventoryEntity, StockInventory> stockInventoryMapper) {
+		this.stockInventoryMapper = stockInventoryMapper;
 	}
 }

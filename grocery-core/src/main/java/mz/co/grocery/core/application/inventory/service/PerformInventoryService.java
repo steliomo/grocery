@@ -4,6 +4,7 @@
 package mz.co.grocery.core.application.inventory.service;
 
 import java.util.Optional;
+import java.util.Set;
 
 import mz.co.grocery.core.application.inventory.in.PerformInventoroyUseCase;
 import mz.co.grocery.core.application.inventory.out.InventoryPort;
@@ -34,7 +35,7 @@ public class PerformInventoryService extends AbstractService implements PerformI
 	}
 
 	@Override
-	public Inventory performInventory(final UserContext userContext, final Inventory inventory)
+	public Inventory performInventory(final UserContext userContext, Inventory inventory)
 			throws BusinessException {
 
 		if (inventory.getStockInventories().isEmpty()) {
@@ -47,7 +48,6 @@ public class PerformInventoryService extends AbstractService implements PerformI
 			this.inventoryPort.updateInventory(userContext, foundInventory);
 
 			for (final StockInventory stockInventory : inventory.getStockInventories()) {
-
 				final Optional<StockInventory> optional = foundInventory.getStockInventories().stream()
 						.filter(foundStockInventory -> foundStockInventory.getStock().get().getUuid()
 								.equals(stockInventory.getStock().get().getUuid()))
@@ -55,6 +55,8 @@ public class PerformInventoryService extends AbstractService implements PerformI
 
 				if (optional.isPresent()) {
 					final StockInventory activeStockInventory = optional.get();
+
+					activeStockInventory.setInventory(foundInventory);
 					activeStockInventory.setFisicalInventory(stockInventory.getFisicalInventory());
 
 					this.stockInventoryPort.updateStockInventory(userContext, activeStockInventory);
@@ -68,9 +70,11 @@ public class PerformInventoryService extends AbstractService implements PerformI
 			return foundInventory;
 
 		} catch (final BusinessException exception) {
-			this.inventoryPort.createInventory(userContext, inventory);
+			final Set<StockInventory> stockInventories = inventory.getStockInventories();
 
-			for (final StockInventory stockInventory : inventory.getStockInventories()) {
+			inventory = this.inventoryPort.createInventory(userContext, inventory);
+
+			for (final StockInventory stockInventory : stockInventories) {
 				stockInventory.setInventory(inventory);
 
 				this.stockInventoryPort.createStockInventory(userContext, stockInventory);

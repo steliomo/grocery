@@ -57,15 +57,15 @@ public class RentResource extends AbstractResource {
 	private MakeRentPaymentUseCase makeRentPaymentUseCase;
 
 	@Inject
+	private ReportGeneratorPort reportGeneratorPort;
+
+	@Autowired
 	@BeanQualifier(TransportGuideIssuer.NAME)
 	private GuideIssuer transportGuideIssuer;
 
-	@Inject
+	@Autowired
 	@BeanQualifier(ReturnGuideIssuer.NAME)
 	private GuideIssuer returnGuideIssuer;
-
-	@Inject
-	private ReportGeneratorPort reportGeneratorPort;
 
 	@Autowired
 	private DTOMapper<RentDTO, Rent> rentMapper;

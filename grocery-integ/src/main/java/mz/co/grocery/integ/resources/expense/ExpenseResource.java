@@ -17,6 +17,8 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.springframework.beans.factory.annotation.Autowired;
+
 import mz.co.grocery.core.application.expense.in.RegistExpenseUseCase;
 import mz.co.grocery.core.application.expense.out.ExpensePort;
 import mz.co.grocery.core.common.WebAdapter;
@@ -43,7 +45,7 @@ public class ExpenseResource extends AbstractResource {
 	@Inject
 	private ExpensePort expensePort;
 
-	@Inject
+	@Autowired
 	private DTOMapper<ExpenseDTO, Expense> expenseMapper;
 
 	@POST

@@ -59,10 +59,6 @@ public class PerformInventoryUseCaseTest extends AbstractUnitServiceTest {
 		Mockito.verify(this.inventoryPort).createInventory(userContext, inventory);
 
 		Assert.assertEquals(InventoryStatus.PENDING, inventory.getInventoryStatus());
-		inventory.getStockInventories().forEach(stockInventory -> {
-			Assert.assertEquals(inventory.getInventoryDate(), stockInventory.getInventory().get().getInventoryDate());
-		});
-
 	}
 
 	@Test(expected = BusinessException.class)

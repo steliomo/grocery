@@ -86,7 +86,7 @@ public class InventoryEntity extends GenericEntity {
 		this.inventoryStatus = inventoryStatus;
 	}
 
-	public Set<StockInventoryEntity> getStockInventories() {
-		return this.stockInventories;
+	public Optional<Set<StockInventoryEntity>> getStockInventories() {
+		return Optional.ofNullable(this.stockInventories);
 	}
 }

@@ -4,6 +4,7 @@
 package mz.co.grocery.integ.resources.inventory.dto;
 
 import java.time.LocalDate;
+import java.util.HashSet;
 import java.util.Optional;
 import java.util.Set;
 
@@ -29,6 +30,10 @@ public class InventoryDTO extends GenericDTO {
 
 	private Set<StockInventoryDTO> stockInventoriesDTO;
 
+	public InventoryDTO() {
+		this.stockInventoriesDTO = new HashSet<>();
+	}
+
 	public Optional<UnitDTO> getUnitDTO() {
 		return Optional.ofNullable(this.unitDTO);
 	}
@@ -53,8 +58,8 @@ public class InventoryDTO extends GenericDTO {
 		this.inventoryStatus = inventoryStatus;
 	}
 
-	public Set<StockInventoryDTO> getStockInventoriesDTO() {
-		return this.stockInventoriesDTO;
+	public Optional<Set<StockInventoryDTO>> getStockInventoriesDTO() {
+		return Optional.ofNullable(this.stockInventoriesDTO);
 	}
 
 	public void addStockInventoryDTO(final StockInventoryDTO stockInventoryDTO) {

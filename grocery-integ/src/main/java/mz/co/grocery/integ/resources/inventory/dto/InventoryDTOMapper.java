@@ -53,6 +53,9 @@ public class InventoryDTOMapper extends AbstractDTOMapper<InventoryDTO, Inventor
 		domain.setInventoryDate(dto.getInventoryDate());
 		domain.setInventoryStatus(dto.getInventoryStatus());
 
+		dto.getStockInventoriesDTO().ifPresent(stockInventories -> stockInventories
+				.forEach(stockInventory -> domain.addStockInventory(this.stockInventoryMapper.toDomain(stockInventory))));
+
 		return this.toDomain(dto, domain);
 	}
 

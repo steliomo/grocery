@@ -62,6 +62,7 @@ public class StockAdapter implements StockPort {
 		return this.updateStock(userContext, stock);
 	}
 
+	@Transactional
 	@Override
 	public Stock regularize(final UserContext userContext, final Stock stock) throws BusinessException {
 
