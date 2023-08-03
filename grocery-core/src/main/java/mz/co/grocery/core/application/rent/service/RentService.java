@@ -4,6 +4,7 @@
 package mz.co.grocery.core.application.rent.service;
 
 import java.util.Optional;
+import java.util.Set;
 
 import mz.co.grocery.core.application.payment.in.PaymentUseCase;
 import mz.co.grocery.core.application.rent.in.RentUseCase;
@@ -42,19 +43,47 @@ public class RentService extends AbstractService implements RentUseCase {
 	}
 
 	@Override
-	public Rent rent(final UserContext userContext, final Rent rent) throws BusinessException {
+	public Rent rent(final UserContext userContext, Rent rent) throws BusinessException {
 
-		if (rent.getRentItems().get().isEmpty()) {
+		final Set<RentItem> items = rent.getRentItems().get();
+
+		if (items.isEmpty()) {
 			throw new BusinessException("cannot.create.rent.without.items");
 		}
 
-		final Optional<Rent> existingRent = this.rentPort.findRentByCustomerAndUnitAndStatus(rent.getCustomer().get(), rent.getUnit().get(),RentStatus.OPENED);
+		final Optional<Rent> existingRent = this.rentPort.findRentByCustomerAndUnitAndStatus(rent.getCustomer().get(), rent.getUnit().get(),
+				RentStatus.OPENED);
 
-		if (!existingRent.isPresent()) {
-			this.rentPort.createRent(userContext, rent);
+		if (existingRent.isPresent()) {
+
+			final Rent existing = existingRent.get();
+
+			this.createRentItems(userContext, existing, items);
+
+			existing.calculateTotalEstimated();
+
+			this.rentPort.updateRent(userContext, existing);
+
+		} else {
+
+			rent.setPaymentStatus();
+
+			rent = this.rentPort.createRent(userContext, rent);
+
+			this.createRentItems(userContext, rent, items);
+
+			rent.calculateTotalEstimated();
+
+			this.rentPort.updateRent(userContext, rent);
 		}
 
-		for (final RentItem rentItem : rent.getRentItems().get()) {
+		this.paymentUseCase.debitTransaction(userContext, rent.getUnit().get().getUuid());
+
+		return rent;
+	}
+
+	private void createRentItems(final UserContext userContext, final Rent rent, final Set<RentItem> items) throws BusinessException {
+		for (final RentItem rentItem : items) {
 
 			rentItem.setStockable();
 			rentItem.calculatePlannedTotal();
@@ -70,23 +99,9 @@ public class RentService extends AbstractService implements RentUseCase {
 			}
 
 			rentItem.setRent(rent);
-			existingRent.ifPresent(existing -> rentItem.setRent(existing));
+			rent.addRentItem(rentItem);
 
 			this.rentItemPort.createRentItem(userContext, rentItem);
 		}
-
-		rent.calculateTotalEstimated();
-		rent.setPaymentStatus();
-
-		if(existingRent.isPresent()) {
-			final Rent existing = existingRent.get();
-			existing.updateTotalEstimated(rent.getTotalEstimated());
-
-			this.rentPort.updateRent(userContext, existing);
-		}
-
-		this.paymentUseCase.debitTransaction(userContext, rent.getUnit().get().getUuid());
-
-		return rent;
 	}
 }

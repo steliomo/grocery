@@ -5,6 +5,7 @@ package mz.co.grocery.persistence.customer.adapter;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -12,7 +13,7 @@ import mz.co.grocery.core.application.customer.out.CustomerPort;
 import mz.co.grocery.core.common.PersistenceAdapter;
 import mz.co.grocery.core.domain.customer.Customer;
 import mz.co.grocery.core.domain.guide.GuideType;
-import mz.co.grocery.core.domain.quotation.QuotationStatus;
+import mz.co.grocery.core.domain.quotation.QuotationType;
 import mz.co.grocery.persistence.customer.entity.CustomerEntity;
 import mz.co.grocery.persistence.customer.repository.CustomerRepository;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
@@ -51,7 +52,8 @@ public class CustomerAdapter implements CustomerPort {
 
 	@Override
 	public List<Customer> findCustomersByUnit(final String unitUuid, final int currentPage, final int maxResult) throws BusinessException {
-		return this.customerRepository.findByUnit(unitUuid, currentPage, maxResult, EntityStatus.ACTIVE);
+		return this.customerRepository.findByUnit(unitUuid, currentPage, maxResult, EntityStatus.ACTIVE).stream().map(this.mapper::toDomain)
+				.collect(Collectors.toList());
 	}
 
 	@Override
@@ -62,7 +64,9 @@ public class CustomerAdapter implements CustomerPort {
 	@Override
 	public List<Customer> findCustomersWithRentPendingPeymentsByUnit(final String unitUuid, final int currentPage, final int maxResult)
 			throws BusinessException {
-		return this.customerRepository.findRentPendingPaymentsByUnit(unitUuid, currentPage, maxResult, EntityStatus.ACTIVE);
+		return this.customerRepository.findRentPendingPaymentsByUnit(unitUuid, currentPage, maxResult, EntityStatus.ACTIVE).stream()
+				.map(this.mapper::toDomain)
+				.collect(Collectors.toList());
 	}
 
 	@Override
@@ -75,7 +79,8 @@ public class CustomerAdapter implements CustomerPort {
 			final int maxResult)
 					throws BusinessException {
 		return this.customerRepository.findCustomersWithPendingOrIncompleteRentItemsToReturnByUnit(unitUuid, currentPage, maxResult,
-				EntityStatus.ACTIVE);
+				EntityStatus.ACTIVE).stream().map(this.mapper::toDomain)
+				.collect(Collectors.toList());
 	}
 
 	@Override
@@ -87,7 +92,9 @@ public class CustomerAdapter implements CustomerPort {
 	public List<Customer> findCustomersWithContractPendingPaymentByUnit(final String unitUuid, final int currentPage, final int maxResult,
 			final LocalDate currentDate)
 					throws BusinessException {
-		return this.customerRepository.findWithContractPendingPaymentByUnit(unitUuid, currentPage, maxResult, currentDate, EntityStatus.ACTIVE);
+		return this.customerRepository.findWithContractPendingPaymentByUnit(unitUuid, currentPage, maxResult, currentDate, EntityStatus.ACTIVE)
+				.stream().map(this.mapper::toDomain)
+				.collect(Collectors.toList());
 	}
 
 	@Override
@@ -97,36 +104,46 @@ public class CustomerAdapter implements CustomerPort {
 
 	@Override
 	public List<Customer> findCustomersSaleWithPendindOrIncompletePaymentByUnit(final String unitUuid) throws BusinessException {
-		return this.customerRepository.findCustomersSaleWithPendindOrIncompletePaymentByUnit(unitUuid, EntityStatus.ACTIVE);
+		return this.customerRepository.findCustomersSaleWithPendindOrIncompletePaymentByUnit(unitUuid, EntityStatus.ACTIVE).stream()
+				.map(this.mapper::toDomain)
+				.collect(Collectors.toList());
 	}
 
 	@Override
 	public List<Customer> findCustomersWithPendingOrInCompleteRentItemsToLoadByUnit(final String unitUuid) throws BusinessException {
-		return this.customerRepository.findCustomersWithPendingOrInCompleteRentItemsToLoadByUnit(unitUuid, EntityStatus.ACTIVE);
+		return this.customerRepository.findCustomersWithPendingOrInCompleteRentItemsToLoadByUnit(unitUuid, EntityStatus.ACTIVE).stream()
+				.map(this.mapper::toDomain)
+				.collect(Collectors.toList());
 	}
 
 	@Override
 	public List<Customer> findCustomersWithIssuedGuidesByTypeAndUnit(final GuideType guideType, final String unitUuid) throws BusinessException {
-		return this.customerRepository.findWithIssuedGuidesByTypeAndUnit(guideType, unitUuid, EntityStatus.ACTIVE);
+		return this.customerRepository.findWithIssuedGuidesByTypeAndUnit(guideType, unitUuid, EntityStatus.ACTIVE).stream().map(this.mapper::toDomain)
+				.collect(Collectors.toList());
 	}
 
 	@Override
 	public List<Customer> findCustomersWithPaymentsByUnit(final String unitUuid) throws BusinessException {
-		return this.customerRepository.findWithPaymentsByUnit(unitUuid, EntityStatus.ACTIVE);
+		return this.customerRepository.findWithPaymentsByUnit(unitUuid, EntityStatus.ACTIVE).stream().map(this.mapper::toDomain)
+				.collect(Collectors.toList());
 	}
 
 	@Override
 	public List<Customer> findCustomersWithPendingOrIncompleteDeliveryStatusSalesByUnit(final String unitUuid) throws BusinessException {
-		return this.customerRepository.findCustomersWithPendingOrIncompleteDeliveryStatusSalesByUnit(unitUuid, EntityStatus.ACTIVE);
+		return this.customerRepository.findCustomersWithPendingOrIncompleteDeliveryStatusSalesByUnit(unitUuid, EntityStatus.ACTIVE).stream()
+				.map(this.mapper::toDomain)
+				.collect(Collectors.toList());
 	}
 
 	@Override
 	public List<Customer> findCustomersWithDeliveredGuidesByUnit(final String unitUuid) throws BusinessException {
-		return this.customerRepository.findCustomersWithDeliveredGuidesByUnit(unitUuid, EntityStatus.ACTIVE);
+		return this.customerRepository.findCustomersWithDeliveredGuidesByUnit(unitUuid, EntityStatus.ACTIVE).stream().map(this.mapper::toDomain)
+				.collect(Collectors.toList());
 	}
 
 	@Override
-	public List<Customer> findCustomersWithPendingQuotationByUnit(final String unitUuid) throws BusinessException {
-		return this.customerRepository.findByUnitAndQuotationStatus(unitUuid, EntityStatus.ACTIVE, QuotationStatus.PENDING);
+	public List<Customer> findCustomersWithQuotationByUnitAndType(final String unitUuid, final QuotationType quotationType) throws BusinessException {
+		return this.customerRepository.findByUnitAndQuotationType(unitUuid, EntityStatus.ACTIVE, quotationType).stream().map(this.mapper::toDomain)
+				.collect(Collectors.toList());
 	}
 }

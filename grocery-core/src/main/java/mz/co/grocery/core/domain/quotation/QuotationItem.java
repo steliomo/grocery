@@ -52,9 +52,14 @@ public class QuotationItem extends Domain {
 	}
 
 	public BigDecimal getDays() {
+		if (this.quotation == null) {
+			return this.days;
+		}
+
 		if (QuotationType.SALE.equals(this.quotation.getType())) {
 			return BigDecimal.ZERO;
 		}
+
 		return this.days;
 	}
 

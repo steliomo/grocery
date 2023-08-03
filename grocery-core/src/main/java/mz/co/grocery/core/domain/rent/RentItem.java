@@ -48,6 +48,11 @@ public class RentItem extends Domain {
 
 	private ReturnStatus returnStatus;
 
+	public RentItem() {
+		this.plannedTotal = BigDecimal.ZERO;
+		this.discount = BigDecimal.ZERO;
+	}
+
 	public Optional<Rent> getRent() {
 		return Optional.ofNullable(this.rent);
 	}

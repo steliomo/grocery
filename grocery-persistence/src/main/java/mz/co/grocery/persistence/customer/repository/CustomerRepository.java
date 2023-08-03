@@ -6,9 +6,8 @@ package mz.co.grocery.persistence.customer.repository;
 import java.time.LocalDate;
 import java.util.List;
 
-import mz.co.grocery.core.domain.customer.Customer;
 import mz.co.grocery.core.domain.guide.GuideType;
-import mz.co.grocery.core.domain.quotation.QuotationStatus;
+import mz.co.grocery.core.domain.quotation.QuotationType;
 import mz.co.grocery.persistence.customer.entity.CustomerEntity;
 import mz.co.msaude.boot.frameworks.dao.GenericDAO;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
@@ -50,7 +49,7 @@ public interface CustomerRepository extends GenericDAO<CustomerEntity, Long> {
 
 		public static final String findCustomersWithDeliveredGuidesByUnit = "SELECT c FROM GuideEntity g INNER JOIN g.sale s INNER JOIN s.customer c WHERE s.unit.uuid = :unitUuid AND g.type = 'DELIVERY' AND s.saleType = 'INSTALLMENT' AND c.entityStatus = :entityStatus AND g.entityStatus = :entityStatus GROUP BY c.id ORDER BY g.issueDate DESC";
 
-		public static final String findByUnitAndQuotationStatus = "SELECT c FROM QuotationEntity q INNER JOIN q.customer c WHERE q.unit.uuid = :unitUuid AND q.status IN (:status) AND q.entityStatus = :entityStatus AND c.entityStatus = :entityStatus GROUP BY c.id ORDER BY q.issueDate DESC";
+		public static final String findByUnitAndQuotationType = "SELECT c FROM QuotationEntity q INNER JOIN q.customer c WHERE q.unit.uuid = :unitUuid AND q.type = :type AND q.entityStatus = :entityStatus AND c.entityStatus = :entityStatus GROUP BY c.id ORDER BY q.issueDate DESC";
 	}
 
 	class QUERY_NAME {
@@ -83,38 +82,41 @@ public interface CustomerRepository extends GenericDAO<CustomerEntity, Long> {
 
 		public static final String findCustomersWithDeliveredGuidesByUnit = "CustomerEntity.findCustomersWithDeliveredGuidesByUnit";
 
-		public static final String findByUnitAndQuotationStatus = "CustomerEntity.findByUnitAndQuotationStatus";
+		public static final String findByUnitAndQuotationType = "CustomerEntity.findByUnitAndQuotationType";
 	}
 
 	Long countByUnit(String unitUuid, EntityStatus entityStatus) throws BusinessException;
 
-	List<Customer> findByUnit(String unitUuid, int currentPage, int maxResult, EntityStatus entityStatus) throws BusinessException;
+	List<CustomerEntity> findByUnit(String unitUuid, int currentPage, int maxResult, EntityStatus entityStatus) throws BusinessException;
 
-	List<Customer> findRentPendingPaymentsByUnit(String unitUuid, int currentPage, int maxResult, EntityStatus entityStatus) throws BusinessException;
+	List<CustomerEntity> findRentPendingPaymentsByUnit(String unitUuid, int currentPage, int maxResult, EntityStatus entityStatus)
+			throws BusinessException;
 
 	Long countPendingPaymentsByUnit(String unitUuid, EntityStatus entityStatus) throws BusinessException;
 
-	List<Customer> findCustomersWithPendingOrIncompleteRentItemsToReturnByUnit(String unitUuid, int currentPage, int maxResult,
+	List<CustomerEntity> findCustomersWithPendingOrIncompleteRentItemsToReturnByUnit(String unitUuid, int currentPage, int maxResult,
 			EntityStatus entityStatus) throws BusinessException;
 
 	Long countCustomersWithPendingOrIncompleteRentItemsToReturnByUnit(String unitUuid, EntityStatus entityStatus) throws BusinessException;
 
-	List<Customer> findWithContractPendingPaymentByUnit(String unitUuid, int currentPage, int maxResult, LocalDate currentDate,
+	List<CustomerEntity> findWithContractPendingPaymentByUnit(String unitUuid, int currentPage, int maxResult, LocalDate currentDate,
 			EntityStatus entityStatus) throws BusinessException;
 
 	Long countCustomersWithContractPendingPaymentByUnit(String unitUuid, LocalDate currentDate, EntityStatus entityStatus) throws BusinessException;
 
-	List<Customer> findCustomersSaleWithPendindOrIncompletePaymentByUnit(String unitUuid, EntityStatus entityStatus) throws BusinessException;
+	List<CustomerEntity> findCustomersSaleWithPendindOrIncompletePaymentByUnit(String unitUuid, EntityStatus entityStatus) throws BusinessException;
 
-	List<Customer> findCustomersWithPendingOrInCompleteRentItemsToLoadByUnit(String unitUuid, EntityStatus entityStatus) throws BusinessException;
+	List<CustomerEntity> findCustomersWithPendingOrInCompleteRentItemsToLoadByUnit(String unitUuid, EntityStatus entityStatus)
+			throws BusinessException;
 
-	List<Customer> findWithIssuedGuidesByTypeAndUnit(GuideType guideType, String unitUuid, EntityStatus entityStatus) throws BusinessException;
+	List<CustomerEntity> findWithIssuedGuidesByTypeAndUnit(GuideType guideType, String unitUuid, EntityStatus entityStatus) throws BusinessException;
 
-	List<Customer> findWithPaymentsByUnit(String unitUuid, EntityStatus entityStatus) throws BusinessException;
+	List<CustomerEntity> findWithPaymentsByUnit(String unitUuid, EntityStatus entityStatus) throws BusinessException;
 
-	List<Customer> findCustomersWithPendingOrIncompleteDeliveryStatusSalesByUnit(String unitUuid, EntityStatus entityStatus) throws BusinessException;
+	List<CustomerEntity> findCustomersWithPendingOrIncompleteDeliveryStatusSalesByUnit(String unitUuid, EntityStatus entityStatus)
+			throws BusinessException;
 
-	List<Customer> findCustomersWithDeliveredGuidesByUnit(String unitUuid, EntityStatus entityStatus) throws BusinessException;
+	List<CustomerEntity> findCustomersWithDeliveredGuidesByUnit(String unitUuid, EntityStatus entityStatus) throws BusinessException;
 
-	List<Customer> findByUnitAndQuotationStatus(String unitUuid, EntityStatus entityStatus, QuotationStatus... status) throws BusinessException;
+	List<CustomerEntity> findByUnitAndQuotationType(String unitUuid, EntityStatus entityStatus, QuotationType type) throws BusinessException;
 }

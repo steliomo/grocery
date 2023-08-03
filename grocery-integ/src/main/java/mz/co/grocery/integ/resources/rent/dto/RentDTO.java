@@ -5,6 +5,7 @@ package mz.co.grocery.integ.resources.rent.dto;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.util.ArrayList;
 import java.util.Comparator;
 import java.util.List;
 import java.util.Optional;
@@ -48,6 +49,12 @@ public class RentDTO extends GenericDTO {
 	private List<RentPaymentDTO> rentPaymentsDTO;
 
 	private List<GuideDTO> guidesDTO;
+
+	public RentDTO() {
+		this.rentItemsDTO = new ArrayList<>();
+		this.rentPaymentsDTO = new ArrayList<>();
+		this.guidesDTO = new ArrayList<>();
+	}
 
 	public Optional<UnitDTO> getUnitDTO() {
 		return Optional.ofNullable(this.unitDTO);
@@ -121,8 +128,8 @@ public class RentDTO extends GenericDTO {
 		this.paymentStatus = paymentStatus;
 	}
 
-	public List<RentItemDTO> getRentItemsDTO() {
-		return this.rentItemsDTO;
+	public Optional<List<RentItemDTO>> getRentItemsDTO() {
+		return Optional.ofNullable(this.rentItemsDTO);
 	}
 
 	public void addRentItemDTO(final RentItemDTO rentItemDTO) {
@@ -133,25 +140,24 @@ public class RentDTO extends GenericDTO {
 		this.rentPaymentsDTO.add(rentPaymentDTO);
 	}
 
-	public List<RentPaymentDTO> getRentPaymentsDTO() {
-		if (this.rentPaymentsDTO == null) {
-			return this.rentPaymentsDTO;
+	public Optional<List<RentPaymentDTO>> getRentPaymentsDTO() {
+		if (Optional.ofNullable(this.rentPaymentsDTO).isPresent()) {
+			this.rentPaymentsDTO.sort(Comparator.comparing(RentPaymentDTO::getId));
+			return Optional.of(this.rentPaymentsDTO);
 		}
 
-		this.rentPaymentsDTO.sort(Comparator.comparing(RentPaymentDTO::getId));
-		return this.rentPaymentsDTO;
+		return Optional.empty();
 	}
 
 	public void addGuideDTO(final GuideDTO guideDTO) {
 		this.guidesDTO.add(guideDTO);
 	}
 
-	public List<GuideDTO> getGuidesDTO() {
-		if (this.guidesDTO == null) {
-			return this.guidesDTO;
+	public Optional<List<GuideDTO>> getGuidesDTO() {
+		if (Optional.ofNullable(this.guidesDTO).isPresent()) {
+			this.guidesDTO.sort(Comparator.comparing(GuideDTO::getId).reversed());
+			return Optional.of(this.guidesDTO);
 		}
-
-		this.guidesDTO.sort(Comparator.comparing(GuideDTO::getId));
-		return this.guidesDTO;
+		return Optional.empty();
 	}
 }

@@ -59,9 +59,14 @@ public class RentDTOMapper extends AbstractDTOMapper<RentDTO, Rent> implements D
 		dto.setTotalToRefund(domain.totalToRefund());
 		dto.setPaymentStatus(new EnumDTO(domain.getPaymentStatus().toString(), domain.getPaymentStatus().toString()));
 
-		domain.getRentItems().ifPresent(rentItems -> rentItems.forEach(rentItem -> dto.addRentItemDTO(this.rentItemMapper.toDTO(rentItem))));
+		domain.getRentItems().ifPresent(rentItems -> rentItems.forEach(rentItem -> {
+			rentItem.setRent(null);
+			dto.addRentItemDTO(this.rentItemMapper.toDTO(rentItem));
+		}));
+
 		domain.getRentPayments()
 		.ifPresent(rentPayments -> rentPayments.forEach(rentPayment -> dto.addRentPaymentDTO(this.rentPaymentMapper.toDTO(rentPayment))));
+
 		domain.getGuides().ifPresent(guides -> guides.forEach(guide -> dto.addGuideDTO(this.guideMapper.toDTO(guide))));
 
 		return this.toDTO(dto, domain);
@@ -73,6 +78,15 @@ public class RentDTOMapper extends AbstractDTOMapper<RentDTO, Rent> implements D
 
 		dto.getUnitDTO().ifPresent(unit -> domain.setUnit(this.unitMapper.toDomain(unit)));
 		dto.getCustomerDTO().ifPresent(customer -> domain.setCustomer(this.customerMapper.toDomain(customer)));
+
+		domain.setRentDate(dto.getRentDate());
+
+		dto.getRentItemsDTO().ifPresent(rentItems -> rentItems.forEach(rentItem -> domain.addRentItem(this.rentItemMapper.toDomain(rentItem))));
+
+		dto.getRentPaymentsDTO()
+		.ifPresent(rentPayments -> rentPayments.forEach(rentPayment -> domain.addRentPayment(this.rentPaymentMapper.toDomain(rentPayment))));
+
+		dto.getGuidesDTO().ifPresent(guides -> guides.forEach(guide -> domain.addGuide(this.guideMapper.toDomain(guide))));
 
 		return this.toDomain(dto, domain);
 	}

@@ -240,13 +240,15 @@ public class Rent extends Domain {
 		return this.rentStatus;
 	}
 
-	public void updateTotalEstimated(final BigDecimal estimated) {
-		this.totalEstimated = this.totalEstimated.add(estimated);
-	}
-
 	public void closeRentStatus() {
-		if (ReturnStatus.COMPLETE.equals(this.returnStatus)) {
+		if (ReturnStatus.COMPLETE.equals(this.returnStatus) && PaymentStatus.COMPLETE.equals(this.paymentStatus)) {
 			this.rentStatus = RentStatus.CLOSED;
 		}
+	}
+
+	public void cleanLists() {
+		this.rentItems = new HashSet<>();
+		this.rentPayments = new HashSet<>();
+		this.guides = new HashSet<>();
 	}
 }

@@ -3,10 +3,13 @@
  */
 package mz.co.grocery.persistence.quotation.entity;
 
+import javax.inject.Inject;
+
 import org.springframework.stereotype.Component;
 
 import mz.co.grocery.core.domain.customer.Customer;
 import mz.co.grocery.core.domain.quotation.Quotation;
+import mz.co.grocery.core.domain.quotation.QuotationItem;
 import mz.co.grocery.core.domain.unit.Unit;
 import mz.co.grocery.persistence.common.AbstractEntityMapper;
 import mz.co.grocery.persistence.customer.entity.CustomerEntity;
@@ -23,6 +26,8 @@ public class QuotationEntityMapper extends AbstractEntityMapper<QuotationEntity,
 	private EntityMapper<UnitEntity, Unit> unitMapper;
 
 	private EntityMapper<CustomerEntity, Customer> customerMapper;
+
+	private EntityMapper<QuotationItemEntity, QuotationItem> quotationItemMapper;
 
 	public QuotationEntityMapper(final EntityMapper<UnitEntity, Unit> unitMapper,
 			final EntityMapper<CustomerEntity, Customer> customerMapper) {
@@ -59,6 +64,16 @@ public class QuotationEntityMapper extends AbstractEntityMapper<QuotationEntity,
 		domain.setTotalValue(entity.getTotalValue());
 		domain.setDiscount(entity.getDiscount());
 
+		entity.getItems().ifPresent(items -> items.forEach(item -> {
+			item.setQuotation(null);
+			domain.addItem(this.quotationItemMapper.toDomain(item));
+		}));
+
 		return this.toDomain(entity, domain);
+	}
+
+	@Inject
+	public void setQuotationItemMapper(final EntityMapper<QuotationItemEntity, QuotationItem> quotationItemMapper) {
+		this.quotationItemMapper = quotationItemMapper;
 	}
 }

@@ -26,11 +26,15 @@ public class RentPaymentDTOMapper extends AbstractDTOMapper<RentPaymentDTO, Rent
 	public RentPaymentDTO toDTO(final RentPayment domain) {
 		final RentPaymentDTO dto = new RentPaymentDTO();
 
-		domain.getRent().ifPresent(rent -> dto.setRentDTO(this.rentMapper.toDTO(rent)));
+		domain.getRent().ifPresent(rent -> {
+			rent.cleanLists();
+			dto.setRentDTO(this.rentMapper.toDTO(rent));
+		});
+
 		dto.setPaymentValue(domain.getPaymentValue());
 		dto.setPaymentDate(domain.getPaymentDate());
 
-		return this.toDTO(domain);
+		return this.toDTO(dto, domain);
 	}
 
 	@Override

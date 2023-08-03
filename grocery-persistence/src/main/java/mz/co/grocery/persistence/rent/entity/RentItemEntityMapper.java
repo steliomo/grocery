@@ -47,15 +47,18 @@ public class RentItemEntityMapper extends AbstractEntityMapper<RentItemEntity, R
 
 		entity.setPlannedQuantity(domain.getPlannedQuantity());
 		entity.setPlannedDays(domain.getPlannedDays());
+		entity.setPlannedTotal(domain.getPlannedTotal());
+
 		entity.setLoadedQuantity(domain.getLoadedQuantity());
 		entity.setLoadingDate(domain.getLoadingDate());
+		entity.setLoadStatus(domain.getLoadStatus());
+
 		entity.setReturnedQuantity(domain.getReturnedQuantity());
 		entity.setReturnDate(domain.getReturnDate());
-		entity.setDiscount(domain.getDiscount());
-		entity.setPlannedTotal(domain.getPlannedTotal());
-		entity.setStockable(domain.isStockable());
-		entity.setLoadStatus(domain.getLoadStatus());
 		entity.setReturnStatus(domain.getReturnStatus());
+
+		entity.setDiscount(domain.getDiscount());
+		entity.setStockable(domain.isStockable());
 
 		return this.toEntity(entity, domain);
 	}
@@ -66,6 +69,7 @@ public class RentItemEntityMapper extends AbstractEntityMapper<RentItemEntity, R
 
 		entity.getRent().ifPresent(rent -> {
 			rent.noRentItems();
+			rent.noGuides();
 			domain.setRent(this.rentMapper.toDomain(rent));
 		});
 
@@ -74,15 +78,18 @@ public class RentItemEntityMapper extends AbstractEntityMapper<RentItemEntity, R
 
 		domain.setPlannedQuantity(entity.getPlannedQuantity());
 		domain.setPlannedDays(entity.getPlannedDays());
+		domain.setPlannedTotal(entity.getPlannedTotal());
+
 		domain.setLoadedQuantity(entity.getLoadedQuantity());
 		domain.setLoadingDate(entity.getLoadingDate());
+		domain.setLoadStatus(entity.getLoadStatus());
+
 		domain.setReturnedQuantity(entity.getReturnedQuantity());
 		domain.setReturnDate(entity.getReturnDate());
-		domain.setDiscount(entity.getDiscount());
-		domain.setPlannedTotal(entity.getPlannedTotal());
-		domain.setStockable(entity.getStockable());
-		domain.setLoadStatus(entity.getLoadStatus());
 		domain.setReturnStatus(entity.getReturnStatus());
+
+		domain.setDiscount(entity.getDiscount());
+		domain.setStockable(entity.getStockable());
 
 		return this.toDomain(entity, domain);
 	}

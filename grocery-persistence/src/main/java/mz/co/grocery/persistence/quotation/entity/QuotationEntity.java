@@ -15,12 +15,17 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+
+import org.hibernate.LazyInitializationException;
 
 import mz.co.grocery.core.domain.quotation.QuotationStatus;
 import mz.co.grocery.core.domain.quotation.QuotationType;
 import mz.co.grocery.persistence.customer.entity.CustomerEntity;
+import mz.co.grocery.persistence.quotation.repository.QuotationRepository;
 import mz.co.grocery.persistence.unit.entity.UnitEntity;
 import mz.co.msaude.boot.frameworks.model.GenericEntity;
 
@@ -28,6 +33,8 @@ import mz.co.msaude.boot.frameworks.model.GenericEntity;
  * @author Stélio Moiane
  *
  */
+@NamedQueries({
+	@NamedQuery(name = QuotationRepository.QUERY_NAME.fetchQuotationsByCustomer, query = QuotationRepository.QUERY.fetchQuotationsByCustomer) })
 @Entity
 @Table(name = "QUOTATIONS")
 public class QuotationEntity extends GenericEntity {
@@ -63,7 +70,12 @@ public class QuotationEntity extends GenericEntity {
 	private Set<QuotationItemEntity> items;
 
 	public Optional<CustomerEntity> getCustomer() {
-		return Optional.ofNullable(this.customer);
+		try {
+			Optional.ofNullable(this.customer).ifPresent(customer -> customer.getName());
+			return Optional.ofNullable(this.customer);
+		} catch (final LazyInitializationException e) {
+			return Optional.empty();
+		}
 	}
 
 	public void setCustomer(final CustomerEntity customer) {
@@ -95,7 +107,12 @@ public class QuotationEntity extends GenericEntity {
 	}
 
 	public Optional<UnitEntity> getUnit() {
-		return Optional.ofNullable(this.unit);
+		try {
+			Optional.ofNullable(this.unit).ifPresent(unit -> unit.getName());
+			return Optional.ofNullable(this.unit);
+		} catch (final LazyInitializationException e) {
+			return Optional.empty();
+		}
 	}
 
 	public void setUnit(final UnitEntity unit) {

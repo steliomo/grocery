@@ -8,6 +8,7 @@ import java.util.List;
 
 import mz.co.grocery.core.domain.customer.Customer;
 import mz.co.grocery.core.domain.guide.GuideType;
+import mz.co.grocery.core.domain.quotation.QuotationType;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.model.UserContext;
 
@@ -49,5 +50,5 @@ public interface CustomerPort {
 
 	List<Customer> findCustomersWithDeliveredGuidesByUnit(String unitUuid) throws BusinessException;
 
-	List<Customer> findCustomersWithPendingQuotationByUnit(String unitUuid) throws BusinessException;
+	List<Customer> findCustomersWithQuotationByUnitAndType(String unitUuid, QuotationType quotationType) throws BusinessException;
 }

@@ -7,7 +7,6 @@ import java.util.List;
 import java.util.Optional;
 
 import mz.co.grocery.core.domain.guide.GuideType;
-import mz.co.grocery.core.domain.rent.Rent;
 import mz.co.grocery.core.domain.rent.RentStatus;
 import mz.co.grocery.persistence.rent.entity.RentEntity;
 import mz.co.msaude.boot.frameworks.dao.GenericDAO;
@@ -57,13 +56,14 @@ public interface RentRepository extends GenericDAO<RentEntity, Long> {
 	List<RentEntity> fetchRentsWithPendingOrIncompleteRentItemToReturnByCustomer(String customerUuid, EntityStatus entityStatus)
 			throws BusinessException;
 
-	Rent fetchByUuid(String uuid) throws BusinessException;
+	RentEntity fetchByUuid(String uuid) throws BusinessException;
 
-	List<Rent> fetchWithIssuedGuidesByTypeAndCustomer(GuideType guideType, String customerUuid, EntityStatus entityStatus) throws BusinessException;
+	List<RentEntity> fetchWithIssuedGuidesByTypeAndCustomer(GuideType guideType, String customerUuid, EntityStatus entityStatus)
+			throws BusinessException;
 
-	List<Rent> fetchWithPaymentsByCustomer(String customerUuid, EntityStatus entityStatus) throws BusinessException;
+	List<RentEntity> fetchWithPaymentsByCustomer(String customerUuid, EntityStatus entityStatus) throws BusinessException;
 
-	Optional<RentEntity> findByCustomerAndUnitAndStatus(String customerUuid, String UnitUuid, RentStatus rentStatus, EntityStatus entityStatus)
+	Optional<RentEntity> findByCustomerAndUnitAndStatus(String customerUuid, String unitUuid, RentStatus rentStatus, EntityStatus entityStatus)
 			throws BusinessException;
 
 }

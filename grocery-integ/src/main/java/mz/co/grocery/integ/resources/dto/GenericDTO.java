@@ -5,6 +5,8 @@ package mz.co.grocery.integ.resources.dto;
 
 import java.time.LocalDateTime;
 
+import org.apache.commons.lang3.StringUtils;
+
 import mz.co.msaude.boot.frameworks.model.EntityStatus;
 
 /**
@@ -12,6 +14,10 @@ import mz.co.msaude.boot.frameworks.model.EntityStatus;
  *
  */
 public abstract class GenericDTO {
+
+	protected static final int LEFT_PAD = 5;
+
+	protected static final char PAD_CHAR = '0';
 
 	private Long id;
 
@@ -81,5 +87,9 @@ public abstract class GenericDTO {
 
 	public void setEntityStatus(final EntityStatus entityStatus) {
 		this.entityStatus = entityStatus;
+	}
+
+	public String getCode() {
+		return StringUtils.leftPad(String.valueOf(this.id), GenericDTO.LEFT_PAD, GenericDTO.PAD_CHAR);
 	}
 }

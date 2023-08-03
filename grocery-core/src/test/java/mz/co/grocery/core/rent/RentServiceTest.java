@@ -67,6 +67,8 @@ public class RentServiceTest extends AbstractUnitServiceTest {
 		Mockito.when(this.stockPort.findStockByUuid(null)).thenReturn(EntityFactory.gimme(Stock.class, StockTemplate.VALID));
 		final UserContext context = this.getUserContext();
 
+		Mockito.when(this.rentPort.createRent(context, this.rent)).thenReturn(this.rent);
+
 		this.rentUseCase.rent(context, this.rent);
 
 		Mockito.verify(this.rentPort).createRent(context, this.rent);
@@ -84,7 +86,16 @@ public class RentServiceTest extends AbstractUnitServiceTest {
 		final Stock stock = EntityFactory.gimme(Stock.class, StockTemplate.UNAVAILABLE);
 		Mockito.when(this.stockPort.findStockByUuid(null)).thenReturn(stock);
 
-		this.rentUseCase.rent(this.getUserContext(), this.rent);
+		final Rent rent = new Rent();
+
+		this.rent.getRentItems().get().forEach(rentItem -> rentItem.setStockable());
+
+		this.rent.getRentItems().get().stream().filter(rentItem -> rentItem.isStockable()).forEach(rentItem -> rent.addRentItem(rentItem));
+
+		rent.setCustomer(this.rent.getCustomer().get());
+		rent.setUnit(this.rent.getUnit().get());
+
+		this.rentUseCase.rent(this.getUserContext(), rent);
 	}
 
 	@Test(expected = BusinessException.class)
@@ -108,5 +119,26 @@ public class RentServiceTest extends AbstractUnitServiceTest {
 		Mockito.verify(this.rentPort, Mockito.times(1)).updateRent(ArgumentMatchers.any(), ArgumentMatchers.any());
 
 		Assert.assertEquals(RentStatus.OPENED, this.rent.getRentStatus());
+	}
+
+	@Test
+	public void shouldRentItemsForAnExistingRent() throws BusinessException {
+
+		Mockito.when(this.stockPort.findStockByUuid(null)).thenReturn(EntityFactory.gimme(Stock.class, StockTemplate.VALID));
+		final UserContext context = this.getUserContext();
+
+		Mockito.when(this.rentPort.findRentByCustomerAndUnitAndStatus(ArgumentMatchers.any(), ArgumentMatchers.any(), ArgumentMatchers.any()))
+		.thenReturn(Optional.of(this.rent));
+
+		this.rentUseCase.rent(context, this.rent);
+
+		Mockito.verify(this.rentPort).updateRent(context, this.rent);
+		Mockito.verify(this.rentItemPort, Mockito.times(20)).createRentItem(ArgumentMatchers.any(UserContext.class),
+				ArgumentMatchers.any(RentItem.class));
+		Mockito.verify(this.paymentUseCase).debitTransaction(context, this.rent.getUnit().get().getUuid());
+
+		Assert.assertFalse(this.rent.getRentItems().get().isEmpty());
+		Assert.assertEquals(this.rent.getRentItems().get().size(), 20);
+		Assert.assertEquals(PaymentStatus.PENDING, this.rent.getPaymentStatus());
 	}
 }

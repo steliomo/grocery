@@ -207,7 +207,12 @@ public class RentEntity extends GenericEntity {
 	}
 
 	public Optional<Set<GuideEntity>> getGuides() {
-		return Optional.ofNullable(this.guides);
+		try {
+			Optional.ofNullable(this.guides).ifPresent(guides -> guides.size());
+			return Optional.ofNullable(this.guides);
+		} catch (final LazyInitializationException e) {
+			return Optional.empty();
+		}
 	}
 
 	public void setGuides(final Set<GuideEntity> guides) {
@@ -238,5 +243,9 @@ public class RentEntity extends GenericEntity {
 
 	public void noRentPayment() {
 		this.rentPayments = null;
+	}
+
+	public void noGuides() {
+		this.guides = null;
 	}
 }

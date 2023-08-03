@@ -5,14 +5,15 @@ package mz.co.grocery.core.application.quotation.out;
 
 import java.util.List;
 
-import mz.co.grocery.core.domain.customer.Customer;
+import mz.co.grocery.core.domain.quotation.Quotation;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 
 /**
  * @author Stélio Moiane
  *
  */
-public interface FindCustomersPort {
+public interface QuotationPort {
 
-	List<Customer> findCustomersWithPendingQuotation() throws BusinessException;
+	List<Quotation> fetchQuotationsByCustomer(String customerUuid) throws BusinessException;
+
 }

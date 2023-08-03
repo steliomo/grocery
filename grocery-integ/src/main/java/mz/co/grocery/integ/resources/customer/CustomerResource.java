@@ -24,6 +24,7 @@ import mz.co.grocery.core.application.customer.out.CustomerPort;
 import mz.co.grocery.core.common.WebAdapter;
 import mz.co.grocery.core.domain.customer.Customer;
 import mz.co.grocery.core.domain.guide.GuideType;
+import mz.co.grocery.core.domain.quotation.QuotationType;
 import mz.co.grocery.integ.resources.AbstractResource;
 import mz.co.grocery.integ.resources.customer.dto.CustomerDTO;
 import mz.co.grocery.integ.resources.customer.dto.CustomersDTO;
@@ -61,7 +62,7 @@ public class CustomerResource extends AbstractResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response findCustomersByUnit(@PathParam("unitUuid") final String unitUuid, @QueryParam("currentPage") final int currentPage,
-			@QueryParam("maxResult") final int maxResult) throws BusinessException {
+	        @QueryParam("maxResult") final int maxResult) throws BusinessException {
 
 		final List<Customer> customers = this.customerPort.findCustomersByUnit(unitUuid, currentPage, maxResult);
 
@@ -74,8 +75,8 @@ public class CustomerResource extends AbstractResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response findCustomersWithPendingPaymentsByUnit(@PathParam("unitUuid") final String unitUuid,
-			@QueryParam("currentPage") final int currentPage,
-			@QueryParam("maxResult") final int maxResult) throws BusinessException {
+	        @QueryParam("currentPage") final int currentPage,
+	        @QueryParam("maxResult") final int maxResult) throws BusinessException {
 
 		final List<Customer> customers = this.customerPort.findCustomersWithRentPendingPeymentsByUnit(unitUuid, currentPage, maxResult);
 
@@ -88,11 +89,11 @@ public class CustomerResource extends AbstractResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response findCustomersWithPendingOrIncompleteRentItemsToReturnByUnit(@PathParam("unitUuid") final String unitUuid,
-			@QueryParam("currentPage") final int currentPage,
-			@QueryParam("maxResult") final int maxResult) throws BusinessException {
+	        @QueryParam("currentPage") final int currentPage,
+	        @QueryParam("maxResult") final int maxResult) throws BusinessException {
 
 		final List<Customer> customers = this.customerPort.findCustomersWithPendingOrIncompleteRentItemsToReturnByUnit(unitUuid, currentPage,
-				maxResult);
+		        maxResult);
 
 		final Long totalCustomers = this.customerPort.countCustomersWithPendingOrIncompleteRentItemsToReturnByUnit(unitUuid);
 
@@ -103,14 +104,14 @@ public class CustomerResource extends AbstractResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response findCustomersWithContractPendingPaymentByUnit(@PathParam("unitUuid") final String unitUuid,
-			@QueryParam("currentPage") final int currentPage,
-			@QueryParam("maxResult") final int maxResult, @QueryParam("currentDate") final String currentDate) throws BusinessException {
+	        @QueryParam("currentPage") final int currentPage,
+	        @QueryParam("maxResult") final int maxResult, @QueryParam("currentDate") final String currentDate) throws BusinessException {
 
 		final LocalDateAdapter adapter = new LocalDateAdapter();
 		final LocalDate localDate = adapter.unmarshal(currentDate);
 
 		final List<Customer> customers = this.customerPort.findCustomersWithContractPendingPaymentByUnit(unitUuid, currentPage, maxResult,
-				localDate);
+		        localDate);
 
 		final Long totalCustomers = this.customerPort.countCustomersWithContractPendingPaymentByUnit(unitUuid, localDate);
 
@@ -141,7 +142,7 @@ public class CustomerResource extends AbstractResource {
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response findCustomersWithIssuedGuidesByTypeAndUnit(@QueryParam("guideType") final GuideType guideType,
-			@QueryParam("unitUuid") final String unitUuid) throws BusinessException {
+	        @QueryParam("unitUuid") final String unitUuid) throws BusinessException {
 
 		final List<Customer> customers = this.customerPort.findCustomersWithIssuedGuidesByTypeAndUnit(guideType, unitUuid);
 
@@ -174,6 +175,17 @@ public class CustomerResource extends AbstractResource {
 	public Response findCustomersWithDeliveredGuidesByUnit(@PathParam("unitUuid") final String unitUuid) throws BusinessException {
 
 		final List<Customer> customers = this.customerPort.findCustomersWithDeliveredGuidesByUnit(unitUuid);
+
+		return Response.ok(new CustomersDTO(customers, BigDecimal.ZERO.longValue(), this.customerMapper)).build();
+	}
+
+	@Path("find-customers-with-quotations-by-unit-and-type")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response findCustomersWithQuotationsByUnitAndType(@QueryParam("unitUuid") final String unitUuid,
+	        @QueryParam("quotationType") QuotationType quotationType) throws BusinessException {
+
+		final List<Customer> customers = this.customerPort.findCustomersWithQuotationByUnitAndType(unitUuid, quotationType);
 
 		return Response.ok(new CustomersDTO(customers, BigDecimal.ZERO.longValue(), this.customerMapper)).build();
 	}

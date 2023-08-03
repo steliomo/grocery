@@ -10,8 +10,6 @@ import java.util.Optional;
 
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.apache.commons.lang3.StringUtils;
-
 import mz.co.grocery.core.domain.guide.GuideType;
 import mz.co.grocery.integ.resources.dto.GenericDTO;
 import mz.co.grocery.integ.resources.rent.dto.RentDTO;
@@ -23,10 +21,6 @@ import mz.co.msaude.boot.frameworks.util.LocalDateAdapter;
  *
  */
 public class GuideDTO extends GenericDTO {
-
-	private static final int LEFT_PAD = 5;
-
-	private static final char PAD_CHAR = '0';
 
 	private GuideType type;
 
@@ -91,9 +85,5 @@ public class GuideDTO extends GenericDTO {
 
 	public void setFilePath(final String filePath) {
 		this.filePath = filePath;
-	}
-
-	public String getCode() {
-		return StringUtils.leftPad(String.valueOf(this.getId()), GuideDTO.LEFT_PAD, GuideDTO.PAD_CHAR);
 	}
 }

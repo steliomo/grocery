@@ -13,6 +13,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
+import org.hibernate.LazyInitializationException;
+
 import mz.co.grocery.persistence.sale.entity.ServiceItemEntity;
 import mz.co.grocery.persistence.sale.entity.StockEntity;
 import mz.co.msaude.boot.frameworks.model.GenericEntity;
@@ -55,7 +57,12 @@ public class QuotationItemEntity extends GenericEntity {
 	}
 
 	public Optional<StockEntity> getStock() {
-		return Optional.ofNullable(this.stock);
+		try {
+			Optional.ofNullable(this.stock).ifPresent(stock -> stock.getQuantity());
+			return Optional.ofNullable(this.stock);
+		} catch (final LazyInitializationException e) {
+			return Optional.empty();
+		}
 	}
 
 	public void setStock(final StockEntity stock) {
@@ -63,7 +70,12 @@ public class QuotationItemEntity extends GenericEntity {
 	}
 
 	public Optional<ServiceItemEntity> getServiceItem() {
-		return Optional.ofNullable(this.serviceItem);
+		try {
+			Optional.ofNullable(this.serviceItem).ifPresent(serviceItem -> serviceItem.getSalePrice());
+			return Optional.ofNullable(this.serviceItem);
+		} catch (final LazyInitializationException e) {
+			return Optional.empty();
+		}
 	}
 
 	public void setServiceItem(final ServiceItemEntity serviceItem) {

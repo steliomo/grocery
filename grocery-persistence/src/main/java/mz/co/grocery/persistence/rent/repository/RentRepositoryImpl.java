@@ -5,7 +5,6 @@ package mz.co.grocery.persistence.rent.repository;
 
 import java.util.List;
 import java.util.Optional;
-import java.util.stream.Collectors;
 
 import javax.persistence.NoResultException;
 
@@ -13,12 +12,10 @@ import org.hibernate.jpa.QueryHints;
 import org.springframework.stereotype.Repository;
 
 import mz.co.grocery.core.domain.guide.GuideType;
-import mz.co.grocery.core.domain.rent.Rent;
 import mz.co.grocery.core.domain.rent.RentStatus;
 import mz.co.grocery.persistence.rent.entity.RentEntity;
 import mz.co.msaude.boot.frameworks.dao.GenericDAOImpl;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
-import mz.co.msaude.boot.frameworks.mapper.EntityMapper;
 import mz.co.msaude.boot.frameworks.model.EntityStatus;
 import mz.co.msaude.boot.frameworks.util.ParamBuilder;
 
@@ -33,12 +30,6 @@ public class RentRepositoryImpl extends GenericDAOImpl<RentEntity, Long> impleme
 	private static final int MIN_RESULTS = 0;
 
 	private static final int MAX_RESULTS = 30;
-
-	private EntityMapper<RentEntity, Rent> mapper;
-
-	public RentRepositoryImpl(final EntityMapper<RentEntity, Rent> mapper) {
-		this.mapper = mapper;
-	}
 
 	@Override
 	public List<RentEntity> findPendinPaymentsByCustomer(final String customerUuid, final EntityStatus entityStatus) throws BusinessException {
@@ -64,34 +55,32 @@ public class RentRepositoryImpl extends GenericDAOImpl<RentEntity, Long> impleme
 	}
 
 	@Override
-	public Rent fetchByUuid(final String uuid) throws BusinessException {
-		return this.mapper
-				.toDomain(this.findSingleByNamedQuery(RentRepository.QUERY_NAME.fetchByUuid, new ParamBuilder().add("uuid", uuid).process()));
+	public RentEntity fetchByUuid(final String uuid) throws BusinessException {
+		return this.findSingleByNamedQuery(RentRepository.QUERY_NAME.fetchByUuid, new ParamBuilder().add("uuid", uuid).process());
 	}
 
 	@Override
-	public List<Rent> fetchWithIssuedGuidesByTypeAndCustomer(final GuideType guideType, final String customerUuid, final EntityStatus entityStatus)
-			throws BusinessException {
+	public List<RentEntity> fetchWithIssuedGuidesByTypeAndCustomer(final GuideType guideType, final String customerUuid,
+			final EntityStatus entityStatus)
+					throws BusinessException {
 		return this.findByNamedQuery(RentRepository.QUERY_NAME.fetchRentsWithIssuedGuidesByTypeAndCustomer,
-				new ParamBuilder().add("guideType", guideType).add("customerUuid", customerUuid).add("entityStatus", entityStatus).process()).stream()
-				.map(this.mapper::toDomain).collect(Collectors.toList());
+				new ParamBuilder().add("guideType", guideType).add("customerUuid", customerUuid).add("entityStatus", entityStatus).process());
 	}
 
 	@Override
-	public List<Rent> fetchWithPaymentsByCustomer(final String customerUuid, final EntityStatus entityStatus) throws BusinessException {
+	public List<RentEntity> fetchWithPaymentsByCustomer(final String customerUuid, final EntityStatus entityStatus) throws BusinessException {
 		return this.findByQuery(RentRepository.QUERY_NAME.fetchRentsWithPaymentsByCustomer,
 				new ParamBuilder().add("customerUuid", customerUuid).add("entityStatus", entityStatus).process())
 				.setHint(QueryHints.HINT_PASS_DISTINCT_THROUGH, false).setFirstResult(RentRepositoryImpl.MIN_RESULTS)
 				.setMaxResults(RentRepositoryImpl.MAX_RESULTS)
-				.getResultList().stream()
-				.map(this.mapper::toDomain).collect(Collectors.toList());
+				.getResultList();
 	}
 
 	@Override
 	public Optional<RentEntity> findByCustomerAndUnitAndStatus(final String customerUuid, final String unitUuid, final RentStatus rentStatus,
 			final EntityStatus entityStatus) throws BusinessException {
 		try {
-			final RentEntity rentEntity = this.findSingleByNamedQuery(RentRepository.QUERY_NAME.findPendinPaymentsByCustomer,
+			final RentEntity rentEntity = this.findSingleByNamedQuery(RentRepository.QUERY_NAME.findByCustomerAndUnitAndStatus,
 					new ParamBuilder().add("customerUuid", customerUuid)
 					.add("unitUuid", unitUuid).add("rentStatus", rentStatus).add("entityStatus", entityStatus).process());
 

@@ -36,7 +36,13 @@ public class QuotationDTO extends GenericDTO {
 
 	private BigDecimal totalValue;
 
+	private BigDecimal discount;
+
 	private Set<QuotationItemDTO> items;
+
+	public QuotationDTO() {
+		this.items = new HashSet<>();
+	}
 
 	public void setCustomerDTO(final CustomerDTO customerDTO) {
 		this.customerDTO = customerDTO;
@@ -92,6 +98,14 @@ public class QuotationDTO extends GenericDTO {
 
 	public void setTotalValue(final BigDecimal totalValue) {
 		this.totalValue = totalValue;
+	}
+
+	public void setDiscount(final BigDecimal discount) {
+		this.discount = discount;
+	}
+
+	public BigDecimal getDiscount() {
+		return this.discount;
 	}
 
 	public Set<QuotationItemDTO> getItems() {

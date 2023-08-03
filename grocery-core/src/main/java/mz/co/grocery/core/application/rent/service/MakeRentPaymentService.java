@@ -55,6 +55,7 @@ public class MakeRentPaymentService extends AbstractService implements MakeRentP
 
 			rent.setTotalPaid(rentPayment.getPaymentValue());
 			rent.setPaymentStatus();
+			rent.closeRentStatus();
 			this.rentPort.updateRent(userContext, rent);
 
 			this.paymentUseCase.debitTransaction(userContext, rent.getUnit().get().getUuid());
@@ -73,6 +74,7 @@ public class MakeRentPaymentService extends AbstractService implements MakeRentP
 
 		rent.refund(rentPayment.getPaymentValue());
 		rent.setPaymentStatus();
+		rent.closeRentStatus();
 		this.rentPort.updateRent(userContext, rent);
 
 		this.paymentUseCase.debitTransaction(userContext, rent.getUnit().get().getUuid());

@@ -47,8 +47,12 @@ public class QuotationDTOMapper extends AbstractDTOMapper<QuotationDTO, Quotatio
 		dto.setIssueDate(domain.getIssueDate());
 		dto.setStatus(domain.getStatus());
 		dto.setTotalValue(domain.getTotalValue());
+		dto.setDiscount(domain.getDiscount());
 
-		domain.getItems().forEach(item -> dto.addItem(this.quotationItemMapper.toDTO(item)));
+		domain.getItems().forEach(item -> {
+			item.setQuotation(null);
+			dto.addItem(this.quotationItemMapper.toDTO(item));
+		});
 
 		return this.toDTO(dto, domain);
 	}
@@ -65,6 +69,12 @@ public class QuotationDTOMapper extends AbstractDTOMapper<QuotationDTO, Quotatio
 		domain.setIssueDate(dto.getIssueDate());
 		domain.setStatus(dto.getStatus());
 		domain.setTotalValue(dto.getTotalValue());
+
+		dto.getItems().forEach(item -> {
+			final QuotationItem quotationItem = this.quotationItemMapper.toDomain(item);
+			quotationItem.setQuotation(domain);
+			domain.addItem(quotationItem);
+		});
 
 		return this.toDomain(dto, domain);
 	}

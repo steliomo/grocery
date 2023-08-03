@@ -60,17 +60,20 @@ public class RentAdapter implements RentPort {
 
 	@Override
 	public List<Rent> fetchRentsWithIssuedGuidesByTypeAndCustomer(final GuideType guideType, final String customerUuid) throws BusinessException {
-		return this.repository.fetchWithIssuedGuidesByTypeAndCustomer(guideType, customerUuid, EntityStatus.ACTIVE);
+		return this.repository.fetchWithIssuedGuidesByTypeAndCustomer(guideType, customerUuid, EntityStatus.ACTIVE).stream()
+				.map(this.mapper::toDomain).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<Rent> fetchRentsWithPaymentsByCustomer(final String customerUuid) throws BusinessException {
-		return this.repository.fetchWithPaymentsByCustomer(customerUuid, EntityStatus.ACTIVE);
+		return this.repository.fetchWithPaymentsByCustomer(customerUuid, EntityStatus.ACTIVE).stream()
+				.map(this.mapper::toDomain).collect(Collectors.toList());
 	}
 
+	@Transactional(readOnly = true)
 	@Override
 	public Rent fetchByUuid(final String uuid) throws BusinessException {
-		return this.repository.fetchByUuid(uuid);
+		return this.mapper.toDomain(this.repository.fetchByUuid(uuid));
 	}
 
 	@Transactional

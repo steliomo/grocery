@@ -4,10 +4,13 @@
 package mz.co.grocery.persistence.quotation.adapter;
 
 import java.time.LocalDateTime;
+import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.transaction.annotation.Transactional;
 
 import mz.co.grocery.core.application.quotation.out.GenerateQuotationPdfPort;
+import mz.co.grocery.core.application.quotation.out.QuotationPort;
 import mz.co.grocery.core.application.quotation.out.SaveQuotationPort;
 import mz.co.grocery.core.application.report.ReportGeneratorPort;
 import mz.co.grocery.core.common.PersistenceAdapter;
@@ -17,6 +20,7 @@ import mz.co.grocery.persistence.quotation.entity.QuotationReport;
 import mz.co.grocery.persistence.quotation.repository.QuotationRepository;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.mapper.EntityMapper;
+import mz.co.msaude.boot.frameworks.model.EntityStatus;
 import mz.co.msaude.boot.frameworks.model.UserContext;
 
 /**
@@ -25,9 +29,9 @@ import mz.co.msaude.boot.frameworks.model.UserContext;
  */
 
 @PersistenceAdapter
-public class QuotationAdaper implements SaveQuotationPort, GenerateQuotationPdfPort {
+public class QuotationAdaper implements SaveQuotationPort, GenerateQuotationPdfPort, QuotationPort {
 
-	private QuotationRepository quotationRepository;
+	private QuotationRepository repository;
 
 	private EntityMapper<QuotationEntity, Quotation> mapper;
 
@@ -35,7 +39,7 @@ public class QuotationAdaper implements SaveQuotationPort, GenerateQuotationPdfP
 
 	public QuotationAdaper(final QuotationRepository quotationRepository, final ReportGeneratorPort reportGeneratorPort,
 			final EntityMapper<QuotationEntity, Quotation> mapper) {
-		this.quotationRepository = quotationRepository;
+		this.repository = quotationRepository;
 		this.reportGeneratorPort = reportGeneratorPort;
 		this.mapper = mapper;
 	}
@@ -45,7 +49,7 @@ public class QuotationAdaper implements SaveQuotationPort, GenerateQuotationPdfP
 	public Quotation save(final UserContext context, final Quotation quotation) throws BusinessException {
 		final QuotationEntity quotationEntity = this.mapper.toEntity(quotation);
 
-		this.quotationRepository.create(context, quotationEntity);
+		this.repository.create(context, quotationEntity);
 
 		quotation.setId(quotationEntity.getId());
 		quotation.setUuid(quotationEntity.getUuid());
@@ -57,5 +61,11 @@ public class QuotationAdaper implements SaveQuotationPort, GenerateQuotationPdfP
 		final QuotationReport quotationReport = new QuotationReport(quotation, quotationDataTime);
 		this.reportGeneratorPort.createPdfReport(quotationReport);
 		return quotationReport.getFilePath();
+	}
+
+	@Override
+	public List<Quotation> fetchQuotationsByCustomer(final String customerUuid) throws BusinessException {
+		return this.repository.fetchQuotationsByCustomer(customerUuid, EntityStatus.ACTIVE).stream().map(this.mapper::toDomain)
+				.collect(Collectors.toList());
 	}
 }
