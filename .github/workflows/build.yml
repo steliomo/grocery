@@ -32,6 +32,8 @@ jobs:
         
     - name: Build and install boot-framework
       run: mvn clean install -f boot-frameworks
-      
+    - name: Jasper fonts
+      run: apt-get update && apt-get install ttf-mscorefonts-installer
+   
     - name: Build with Maven
       run: mvn clean install
