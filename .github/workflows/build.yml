@@ -33,8 +33,14 @@ jobs:
     - name: Build and install boot-framework
       run: mvn clean install -f boot-frameworks
    
-    - name: Jasper fonts
-      run: sudo apt-get update && sudo apt-get install ttf-mscorefonts-installer && apt-get install ttf-dejavu-core ttf-dejavu-extra && sudo fc-cache -f -v
+    - name: Update Ubuntu
+      run: sudo apt-get update
+ 
+    - name: Install fonts 
+      run: sudo apt-get install ttf-mscorefonts-installer
+
+    - name: Update font Source
+      run: sudo fc-cache -f -v
    
     - name: Build with Maven
       run: mvn clean install
