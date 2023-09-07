@@ -59,7 +59,7 @@ public class CashSaleService extends AbstractService implements SaleUseCase {
 			throw new BusinessException("cannot.create.sale.without.items");
 		}
 
-		sale.setSaleStatus(SaleStatus.COMPLETE);
+		sale.setSaleStatus(SaleStatus.CLOSED);
 		sale.setDeliveryStatus(DeliveryStatus.NA);
 		sale.calculateTotal();
 		sale.calculateBilling();

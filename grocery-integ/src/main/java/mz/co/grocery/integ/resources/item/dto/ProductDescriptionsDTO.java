@@ -29,7 +29,8 @@ public class ProductDescriptionsDTO {
 	}
 
 	public List<ProductDescriptionDTO> getProductDescriptionsDTO() {
-		return this.productDescriptions.stream().map(productDescription -> this.productDescriptionMapper.toDTO(null)).collect(Collectors.toList());
+		return this.productDescriptions.stream().map(productDescription -> this.productDescriptionMapper.toDTO(productDescription))
+				.collect(Collectors.toList());
 	}
 
 	public Long getTotalItems() {

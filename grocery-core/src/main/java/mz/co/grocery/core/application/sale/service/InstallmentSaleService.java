@@ -67,7 +67,7 @@ public class InstallmentSaleService extends AbstractService implements SaleUseCa
 			throw new BusinessException("installment.sale.due.date.must.be.specified");
 		}
 
-		sale.setSaleStatus(SaleStatus.PENDING);
+		sale.setSaleStatus(SaleStatus.OPENED);
 		sale.setTotalPaid(BigDecimal.ZERO);
 		sale.setDeliveryStatus(DeliveryStatus.PENDING);
 		sale.calculateTotal();

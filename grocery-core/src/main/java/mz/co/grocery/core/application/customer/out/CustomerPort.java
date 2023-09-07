@@ -5,6 +5,7 @@ package mz.co.grocery.core.application.customer.out;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import mz.co.grocery.core.domain.customer.Customer;
 import mz.co.grocery.core.domain.guide.GuideType;
@@ -51,4 +52,6 @@ public interface CustomerPort {
 	List<Customer> findCustomersWithDeliveredGuidesByUnit(String unitUuid) throws BusinessException;
 
 	List<Customer> findCustomersWithQuotationByUnitAndType(String unitUuid, QuotationType quotationType) throws BusinessException;
+
+	Optional<Customer> findCustomerByContact(String contact) throws BusinessException;
 }

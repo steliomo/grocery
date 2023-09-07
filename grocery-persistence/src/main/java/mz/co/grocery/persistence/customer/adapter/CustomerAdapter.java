@@ -5,6 +5,7 @@ package mz.co.grocery.persistence.customer.adapter;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import org.springframework.transaction.annotation.Transactional;
@@ -29,13 +30,13 @@ import mz.co.msaude.boot.frameworks.model.UserContext;
 @PersistenceAdapter
 public class CustomerAdapter implements CustomerPort {
 
-	private CustomerRepository customerRepository;
+	private CustomerRepository repository;
 
 	private EntityMapper<CustomerEntity, Customer> mapper;
 
 	public CustomerAdapter(final CustomerRepository customerRepository,
 			final EntityMapper<CustomerEntity, Customer> mapper) {
-		this.customerRepository = customerRepository;
+		this.repository = customerRepository;
 		this.mapper = mapper;
 	}
 
@@ -45,105 +46,117 @@ public class CustomerAdapter implements CustomerPort {
 
 		final CustomerEntity entity = this.mapper.toEntity(customer);
 
-		this.customerRepository.create(userContext, entity);
+		this.repository.create(userContext, entity);
 
 		return this.mapper.toDomain(entity);
 	}
 
 	@Override
 	public List<Customer> findCustomersByUnit(final String unitUuid, final int currentPage, final int maxResult) throws BusinessException {
-		return this.customerRepository.findByUnit(unitUuid, currentPage, maxResult, EntityStatus.ACTIVE).stream().map(this.mapper::toDomain)
+		return this.repository.findByUnit(unitUuid, currentPage, maxResult, EntityStatus.ACTIVE).stream().map(this.mapper::toDomain)
 				.collect(Collectors.toList());
 	}
 
 	@Override
 	public Long countCustomersByUnit(final String unitUuid) throws BusinessException {
-		return this.customerRepository.countByUnit(unitUuid, EntityStatus.ACTIVE);
+		return this.repository.countByUnit(unitUuid, EntityStatus.ACTIVE);
 	}
 
 	@Override
 	public List<Customer> findCustomersWithRentPendingPeymentsByUnit(final String unitUuid, final int currentPage, final int maxResult)
 			throws BusinessException {
-		return this.customerRepository.findRentPendingPaymentsByUnit(unitUuid, currentPage, maxResult, EntityStatus.ACTIVE).stream()
+		return this.repository.findRentPendingPaymentsByUnit(unitUuid, currentPage, maxResult, EntityStatus.ACTIVE).stream()
 				.map(this.mapper::toDomain)
 				.collect(Collectors.toList());
 	}
 
 	@Override
 	public Long countCustomersWithPendingPeymentsByUnit(final String unitUuid) throws BusinessException {
-		return this.customerRepository.countPendingPaymentsByUnit(unitUuid, EntityStatus.ACTIVE);
+		return this.repository.countPendingPaymentsByUnit(unitUuid, EntityStatus.ACTIVE);
 	}
 
 	@Override
 	public List<Customer> findCustomersWithPendingOrIncompleteRentItemsToReturnByUnit(final String unitUuid, final int currentPage,
 			final int maxResult)
 					throws BusinessException {
-		return this.customerRepository.findCustomersWithPendingOrIncompleteRentItemsToReturnByUnit(unitUuid, currentPage, maxResult,
+		return this.repository.findCustomersWithPendingOrIncompleteRentItemsToReturnByUnit(unitUuid, currentPage, maxResult,
 				EntityStatus.ACTIVE).stream().map(this.mapper::toDomain)
 				.collect(Collectors.toList());
 	}
 
 	@Override
 	public Long countCustomersWithPendingOrIncompleteRentItemsToReturnByUnit(final String unitUuid) throws BusinessException {
-		return this.customerRepository.countCustomersWithPendingOrIncompleteRentItemsToReturnByUnit(unitUuid, EntityStatus.ACTIVE);
+		return this.repository.countCustomersWithPendingOrIncompleteRentItemsToReturnByUnit(unitUuid, EntityStatus.ACTIVE);
 	}
 
 	@Override
 	public List<Customer> findCustomersWithContractPendingPaymentByUnit(final String unitUuid, final int currentPage, final int maxResult,
 			final LocalDate currentDate)
 					throws BusinessException {
-		return this.customerRepository.findWithContractPendingPaymentByUnit(unitUuid, currentPage, maxResult, currentDate, EntityStatus.ACTIVE)
+		return this.repository.findWithContractPendingPaymentByUnit(unitUuid, currentPage, maxResult, currentDate, EntityStatus.ACTIVE)
 				.stream().map(this.mapper::toDomain)
 				.collect(Collectors.toList());
 	}
 
 	@Override
 	public Long countCustomersWithContractPendingPaymentByUnit(final String unitUuid, final LocalDate currentDate) throws BusinessException {
-		return this.customerRepository.countCustomersWithContractPendingPaymentByUnit(unitUuid, currentDate, EntityStatus.ACTIVE);
+		return this.repository.countCustomersWithContractPendingPaymentByUnit(unitUuid, currentDate, EntityStatus.ACTIVE);
 	}
 
 	@Override
 	public List<Customer> findCustomersSaleWithPendindOrIncompletePaymentByUnit(final String unitUuid) throws BusinessException {
-		return this.customerRepository.findCustomersSaleWithPendindOrIncompletePaymentByUnit(unitUuid, EntityStatus.ACTIVE).stream()
+		return this.repository.findCustomersSaleWithPendindOrIncompletePaymentByUnit(unitUuid, EntityStatus.ACTIVE).stream()
 				.map(this.mapper::toDomain)
 				.collect(Collectors.toList());
 	}
 
 	@Override
 	public List<Customer> findCustomersWithPendingOrInCompleteRentItemsToLoadByUnit(final String unitUuid) throws BusinessException {
-		return this.customerRepository.findCustomersWithPendingOrInCompleteRentItemsToLoadByUnit(unitUuid, EntityStatus.ACTIVE).stream()
+		return this.repository.findCustomersWithPendingOrInCompleteRentItemsToLoadByUnit(unitUuid, EntityStatus.ACTIVE).stream()
 				.map(this.mapper::toDomain)
 				.collect(Collectors.toList());
 	}
 
 	@Override
 	public List<Customer> findCustomersWithIssuedGuidesByTypeAndUnit(final GuideType guideType, final String unitUuid) throws BusinessException {
-		return this.customerRepository.findWithIssuedGuidesByTypeAndUnit(guideType, unitUuid, EntityStatus.ACTIVE).stream().map(this.mapper::toDomain)
+		return this.repository.findWithIssuedGuidesByTypeAndUnit(guideType, unitUuid, EntityStatus.ACTIVE).stream().map(this.mapper::toDomain)
 				.collect(Collectors.toList());
 	}
 
 	@Override
 	public List<Customer> findCustomersWithPaymentsByUnit(final String unitUuid) throws BusinessException {
-		return this.customerRepository.findWithPaymentsByUnit(unitUuid, EntityStatus.ACTIVE).stream().map(this.mapper::toDomain)
+		return this.repository.findWithPaymentsByUnit(unitUuid, EntityStatus.ACTIVE).stream().map(this.mapper::toDomain)
 				.collect(Collectors.toList());
 	}
 
 	@Override
 	public List<Customer> findCustomersWithPendingOrIncompleteDeliveryStatusSalesByUnit(final String unitUuid) throws BusinessException {
-		return this.customerRepository.findCustomersWithPendingOrIncompleteDeliveryStatusSalesByUnit(unitUuid, EntityStatus.ACTIVE).stream()
+		return this.repository.findCustomersWithPendingOrIncompleteDeliveryStatusSalesByUnit(unitUuid, EntityStatus.ACTIVE).stream()
 				.map(this.mapper::toDomain)
 				.collect(Collectors.toList());
 	}
 
 	@Override
 	public List<Customer> findCustomersWithDeliveredGuidesByUnit(final String unitUuid) throws BusinessException {
-		return this.customerRepository.findCustomersWithDeliveredGuidesByUnit(unitUuid, EntityStatus.ACTIVE).stream().map(this.mapper::toDomain)
+		return this.repository.findCustomersWithDeliveredGuidesByUnit(unitUuid, EntityStatus.ACTIVE).stream().map(this.mapper::toDomain)
 				.collect(Collectors.toList());
 	}
 
 	@Override
 	public List<Customer> findCustomersWithQuotationByUnitAndType(final String unitUuid, final QuotationType quotationType) throws BusinessException {
-		return this.customerRepository.findByUnitAndQuotationType(unitUuid, EntityStatus.ACTIVE, quotationType).stream().map(this.mapper::toDomain)
+		return this.repository.findByUnitAndQuotationType(unitUuid, EntityStatus.ACTIVE, quotationType).stream().map(this.mapper::toDomain)
 				.collect(Collectors.toList());
+	}
+
+	@Override
+	public Optional<Customer> findCustomerByContact(final String contact) throws BusinessException {
+
+		final Optional<CustomerEntity> foundCustomer = this.repository.findCustomerByContact(contact, EntityStatus.ACTIVE);
+
+		if (foundCustomer.isPresent()) {
+			return Optional.of(this.mapper.toDomain(foundCustomer.get()));
+		}
+
+		return Optional.empty();
 	}
 }

@@ -5,6 +5,9 @@ package mz.co.grocery.persistence.customer.repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
+
+import javax.persistence.NoResultException;
 
 import org.springframework.stereotype.Repository;
 
@@ -135,5 +138,15 @@ public class CustomerRepositoryImpl extends GenericDAOImpl<CustomerEntity, Long>
 				CustomerRepository.QUERY_NAME.findByUnitAndQuotationType,
 				new ParamBuilder().add("unitUuid", unitUuid).add("entityStatus", entityStatus).add("type", type).process()).setMaxResults(10)
 				.getResultList();
+	}
+
+	@Override
+	public Optional<CustomerEntity> findCustomerByContact(final String contact, final EntityStatus entityStatus) throws BusinessException {
+		try {
+			return Optional.of(this.findSingleByNamedQuery(CustomerRepository.QUERY_NAME.findCustomerByContact,
+					new ParamBuilder().add("contact", contact).add("entityStatus", entityStatus).process()));
+		} catch (final NoResultException e) {
+			return Optional.empty();
+		}
 	}
 }

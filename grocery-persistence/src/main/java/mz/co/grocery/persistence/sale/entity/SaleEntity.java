@@ -40,10 +40,11 @@ import mz.co.msaude.boot.frameworks.model.GenericEntity;
 @NamedQueries({
 	@NamedQuery(name = SaleRepository.QUERY_NAME.findPerPeriod, query = SaleRepository.QUERY.findPerPeriod),
 	@NamedQuery(name = SaleRepository.QUERY_NAME.findMonthlyPerPeriod, query = SaleRepository.QUERY.findMonthlyPerPeriod),
-	@NamedQuery(name = SaleRepository.QUERY_NAME.findPendingOrImpletePaymentSaleStatusByCustomer, query = SaleRepository.QUERY.findPendingOrImpletePaymentSaleStatusByCustomer),
+	@NamedQuery(name = SaleRepository.QUERY_NAME.findPendingOrImpletePaymentSalesByCustomer, query = SaleRepository.QUERY.findPendingOrImpletePaymentSalesByCustomer),
 	@NamedQuery(name = SaleRepository.QUERY_NAME.fetchSalesWithPendingOrIncompleteDeliveryStatusByCustomer, query = SaleRepository.QUERY.fetchSalesWithPendingOrIncompleteDeliveryStatusByCustomer),
 	@NamedQuery(name = SaleRepository.QUERY_NAME.fetchByUuid, query = SaleRepository.QUERY.fetchByUuid),
-	@NamedQuery(name = SaleRepository.QUERY_NAME.fetchSalesWithDeliveryGuidesByCustomer, query = SaleRepository.QUERY.fetchSalesWithDeliveryGuidesByCustomer)
+	@NamedQuery(name = SaleRepository.QUERY_NAME.fetchSalesWithDeliveryGuidesByCustomer, query = SaleRepository.QUERY.fetchSalesWithDeliveryGuidesByCustomer),
+	@NamedQuery(name = SaleRepository.QUERY_NAME.fetchOpenedTables, query = SaleRepository.QUERY.fetchOpenedTables)
 })
 @Entity
 @Table(name = "SALES")

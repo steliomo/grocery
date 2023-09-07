@@ -77,7 +77,7 @@ public class SalePaymentTest extends AbstractUnitServiceTest {
 		Assert.assertEquals(paymentValue, salePayment.getPaymentValue());
 		Assert.assertEquals(PaymenteDate, salePayment.getPaymentDate());
 		Assert.assertEquals(paymentValue, salePayment.getSale().get().getTotalPaid());
-		Assert.assertEquals(SaleStatus.INCOMPLETE, this.saleCaptor.getValue().getSaleStatus());
+		Assert.assertEquals(SaleStatus.IN_PROGRESS, this.saleCaptor.getValue().getSaleStatus());
 	}
 
 	@Test(expected = BusinessException.class)

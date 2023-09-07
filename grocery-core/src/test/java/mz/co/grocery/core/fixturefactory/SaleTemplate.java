@@ -32,7 +32,7 @@ public class SaleTemplate implements TemplateLoader {
 				this.add("saleDate", LocalDate.now());
 				this.add("items", new HashSet<SaleItem>());
 				this.add("saleType", this.random(SaleType.CASH, SaleType.INSTALLMENT));
-				this.add("saleStatus", this.random(SaleStatus.PENDING, SaleStatus.INCOMPLETE, SaleStatus.COMPLETE));
+				this.add("saleStatus", this.random(SaleStatus.OPENED, SaleStatus.IN_PROGRESS, SaleStatus.CLOSED));
 			}
 		});
 

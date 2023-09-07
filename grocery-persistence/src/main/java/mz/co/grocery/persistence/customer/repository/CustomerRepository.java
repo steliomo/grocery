@@ -5,6 +5,7 @@ package mz.co.grocery.persistence.customer.repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import mz.co.grocery.core.domain.guide.GuideType;
 import mz.co.grocery.core.domain.quotation.QuotationType;
@@ -37,7 +38,7 @@ public interface CustomerRepository extends GenericDAO<CustomerEntity, Long> {
 
 		public static final String countCustomersWithContractPendingPaymentByUnit = "SELECT COUNT(DISTINCT c) FROM ContractEntity ct INNER JOIN ct.customer c WHERE ct.unit.uuid = :unitUuid AND ct.referencePaymentDate <= :currentDate AND ct.entityStatus = :entityStatus";
 
-		public static final String findCustomersSaleWithPendindOrIncompletePaymentByUnit = "SELECT c FROM SaleEntity s INNER JOIN s.customer c WHERE s.unit.uuid = :unitUuid AND s.saleStatus IN ('PENDING','INCOMPLETE') AND s.entityStatus = :entityStatus GROUP BY c.id ORDER BY s.saleDate DESC";
+		public static final String findCustomersSaleWithPendindOrIncompletePaymentByUnit = "SELECT c FROM SaleEntity s INNER JOIN s.customer c WHERE s.unit.uuid = :unitUuid AND s.total > s.totalPaid AND s.entityStatus = :entityStatus GROUP BY c.id ORDER BY s.saleDate DESC";
 
 		public static final String findCustomersWithPendingOrInCompleteRentItemsToLoadByUnit = "SELECT c FROM RentEntity r INNER JOIN r.customer c INNER JOIN r.rentItems ri WHERE r.unit.uuid = :unitUuid AND ri.loadStatus IN ('PENDING','INCOMPLETE') AND c.entityStatus = :entityStatus GROUP BY c.id ORDER BY r.rentDate DESC";
 
@@ -50,6 +51,8 @@ public interface CustomerRepository extends GenericDAO<CustomerEntity, Long> {
 		public static final String findCustomersWithDeliveredGuidesByUnit = "SELECT c FROM GuideEntity g INNER JOIN g.sale s INNER JOIN s.customer c WHERE s.unit.uuid = :unitUuid AND g.type = 'DELIVERY' AND s.saleType = 'INSTALLMENT' AND c.entityStatus = :entityStatus AND g.entityStatus = :entityStatus GROUP BY c.id ORDER BY g.issueDate DESC";
 
 		public static final String findByUnitAndQuotationType = "SELECT c FROM QuotationEntity q INNER JOIN q.customer c WHERE q.unit.uuid = :unitUuid AND q.type = :type AND q.entityStatus = :entityStatus AND c.entityStatus = :entityStatus GROUP BY c.id ORDER BY q.issueDate DESC";
+
+		public static final String findCustomerByContact = "SELECT c FROM CustomerEntity c WHERE c.contact = :contact AND c.entityStatus = :entityStatus";
 	}
 
 	class QUERY_NAME {
@@ -83,6 +86,8 @@ public interface CustomerRepository extends GenericDAO<CustomerEntity, Long> {
 		public static final String findCustomersWithDeliveredGuidesByUnit = "CustomerEntity.findCustomersWithDeliveredGuidesByUnit";
 
 		public static final String findByUnitAndQuotationType = "CustomerEntity.findByUnitAndQuotationType";
+
+		public static final String findCustomerByContact = "CustomerEntity.findCustomerByContact";
 	}
 
 	Long countByUnit(String unitUuid, EntityStatus entityStatus) throws BusinessException;
@@ -119,4 +124,6 @@ public interface CustomerRepository extends GenericDAO<CustomerEntity, Long> {
 	List<CustomerEntity> findCustomersWithDeliveredGuidesByUnit(String unitUuid, EntityStatus entityStatus) throws BusinessException;
 
 	List<CustomerEntity> findByUnitAndQuotationType(String unitUuid, EntityStatus entityStatus, QuotationType type) throws BusinessException;
+
+	Optional<CustomerEntity> findCustomerByContact(String contact, EntityStatus entityStatus) throws BusinessException;
 }

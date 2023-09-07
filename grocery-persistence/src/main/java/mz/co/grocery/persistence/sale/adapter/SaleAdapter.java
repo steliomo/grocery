@@ -5,6 +5,7 @@ package mz.co.grocery.persistence.sale.adapter;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -62,7 +63,7 @@ public class SaleAdapter implements SalePort {
 	@Transactional(readOnly = true)
 	@Override
 	public Sale fetchByUuid(final String uuid) throws BusinessException {
-		return this.repository.fetchByUuid(uuid);
+		return this.mapper.toDomain(this.repository.fetchByUuid(uuid));
 	}
 
 	@Override
@@ -79,21 +80,31 @@ public class SaleAdapter implements SalePort {
 
 	@Override
 	public List<Sale> findPendingOrImpletePaymentSaleStatusByCustomer(final Customer customer) throws BusinessException {
-		return this.repository.findPendingOrImpletePaymentSaleStatusByCustomer(customer.getUuid(), EntityStatus.ACTIVE);
+		return this.repository.findPendingOrImpletePaymentSalesByCustomer(customer.getUuid(), EntityStatus.ACTIVE).stream().map(this.mapper::toDomain)
+				.collect(Collectors.toList());
 	}
 
 	@Override
 	public List<Sale> fetchSalesWithPendingOrIncompleteDeliveryStatusByCustomer(final Customer customer) throws BusinessException {
-		return this.repository.fetchSalesWithPendingOrIncompleteDeliveryStatusByCustomer(customer.getUuid(), EntityStatus.ACTIVE);
+		return this.repository.fetchSalesWithPendingOrIncompleteDeliveryStatusByCustomer(customer.getUuid(), EntityStatus.ACTIVE).stream()
+				.map(this.mapper::toDomain)
+				.collect(Collectors.toList());
 	}
 
 	@Override
 	public List<Sale> fetchSalesWithDeliveryGuidesByCustomer(final Customer customer) throws BusinessException {
-		return this.repository.fetchSalesWithDeliveryGuidesByCustomer(customer.getUuid(), EntityStatus.ACTIVE);
+		return this.repository.fetchSalesWithDeliveryGuidesByCustomer(customer.getUuid(), EntityStatus.ACTIVE).stream().map(this.mapper::toDomain)
+				.collect(Collectors.toList());
 	}
 
 	@Override
 	public Sale findByUuid(final String saleUuid) throws BusinessException {
 		return this.mapper.toDomain(this.repository.findByUuid(saleUuid));
+	}
+
+	@Override
+	public List<Sale> fetchOpenedTables(final String unitUuid) throws BusinessException {
+		return this.repository.fetchOpenedTables(unitUuid, EntityStatus.ACTIVE).stream().map(this.mapper::toDomain)
+				.collect(Collectors.toList());
 	}
 }

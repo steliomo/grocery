@@ -3,6 +3,8 @@
  */
 package mz.co.grocery.persistence.sale.adapter;
 
+import java.util.Optional;
+
 import org.springframework.transaction.annotation.Transactional;
 
 import mz.co.grocery.core.application.sale.out.SaleItemPort;
@@ -12,6 +14,7 @@ import mz.co.grocery.persistence.sale.entity.SaleItemEntity;
 import mz.co.grocery.persistence.sale.repository.SaleItemRepository;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.mapper.EntityMapper;
+import mz.co.msaude.boot.frameworks.model.EntityStatus;
 import mz.co.msaude.boot.frameworks.model.UserContext;
 
 /**
@@ -55,5 +58,29 @@ public class SaleItemAdapter implements SaleItemPort {
 	@Override
 	public SaleItem findByUuid(final String uuid) throws BusinessException {
 		return this.mapper.toDomain(this.repository.findByUuid(uuid));
+	}
+
+	@Override
+	public Optional<SaleItem> findBySaleAndProductUuid(final String saleUuid, final String productUuid) throws BusinessException {
+
+		final Optional<SaleItemEntity> foundSaleItem = this.repository.findBySaleAndProductUuid(saleUuid, productUuid, EntityStatus.ACTIVE);
+
+		if (foundSaleItem.isPresent()) {
+			return Optional.of(this.mapper.toDomain(foundSaleItem.get()));
+		}
+
+		return Optional.empty();
+	}
+
+	@Override
+	public Optional<SaleItem> findBySaleAndServiceUuid(final String saleUuid, final String serviceUuid) throws BusinessException {
+
+		final Optional<SaleItemEntity> foundSaleItem = this.repository.findBySaleAndServiceUuid(saleUuid, serviceUuid, EntityStatus.ACTIVE);
+
+		if (foundSaleItem.isPresent()) {
+			return Optional.of(this.mapper.toDomain(foundSaleItem.get()));
+		}
+
+		return Optional.empty();
 	}
 }

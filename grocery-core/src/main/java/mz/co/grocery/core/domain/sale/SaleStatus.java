@@ -9,9 +9,9 @@ package mz.co.grocery.core.domain.sale;
  */
 public enum SaleStatus {
 
-	PENDING,
+	OPENED,
 
-	INCOMPLETE,
+	IN_PROGRESS,
 
-	COMPLETE
+	CLOSED
 }

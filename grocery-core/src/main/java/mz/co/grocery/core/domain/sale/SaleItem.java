@@ -65,6 +65,12 @@ public class SaleItem extends Domain {
 	}
 
 	public BigDecimal getTotalSaleItem() {
+		if (this.stock != null) {
+			this.saleItemValue = this.stock.getSalePrice().multiply(this.quantity);
+			return this.saleItemValue.subtract(this.discount);
+		}
+
+		this.saleItemValue = this.serviceItem.getSalePrice().multiply(this.quantity);
 		return this.saleItemValue.subtract(this.discount);
 	}
 
@@ -138,5 +144,9 @@ public class SaleItem extends Domain {
 
 	public void setDeliveryStatus(final DeliveryStatus deliveryStatus) {
 		this.deliveryStatus = deliveryStatus;
+	}
+
+	public void addQuantity(final BigDecimal quantity) {
+		this.quantity = this.quantity.add(quantity);
 	}
 }

@@ -21,6 +21,8 @@ import javax.ws.rs.core.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import mz.co.grocery.core.application.expense.out.ExpensePort;
+import mz.co.grocery.core.application.pos.in.OpenTableUseCase;
+import mz.co.grocery.core.application.pos.in.RegistTableItemsUseCase;
 import mz.co.grocery.core.application.rent.out.RentPaymentPort;
 import mz.co.grocery.core.application.sale.in.SalePaymentUseCase;
 import mz.co.grocery.core.application.sale.in.SaleUseCase;
@@ -84,6 +86,12 @@ public class SaleResource extends AbstractResource {
 
 	@Autowired
 	private DTOMapper<CustomerDTO, Customer> customerMapper;
+
+	@Inject
+	private OpenTableUseCase openTableUseCase;
+
+	@Inject
+	private RegistTableItemsUseCase registTableItemsUseCase;
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -217,5 +225,54 @@ public class SaleResource extends AbstractResource {
 		sales.forEach(sale -> salesDTO.addSale(this.saleMapper.toDTO(sale)));
 
 		return Response.ok(salesDTO).build();
+	}
+
+	@Path("open-table")
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response openTable(final SaleDTO tableDTO) throws BusinessException {
+
+		final Sale table = this.openTableUseCase.openTable(this.getContext(), this.saleMapper.toDomain(tableDTO));
+
+		return Response.ok(this.saleMapper.toDTO(table)).build();
+	}
+
+	@Path("regist-items")
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response registItems(final SaleDTO tableDTO) throws BusinessException {
+
+		final Sale table = this.registTableItemsUseCase.registTableItems(this.getContext(), this.saleMapper.toDomain(tableDTO));
+
+		return Response.ok(this.saleMapper.toDTO(table)).build();
+	}
+
+	@Path("fetch-opened-tables")
+	@GET
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response fetchOpenedTables(@QueryParam("unitUuid") final String unitUuid)
+			throws BusinessException {
+
+		final List<Sale> tables = this.salePort.fetchOpenedTables(unitUuid);
+
+		final SalesDTO tablesDTO = new SalesDTO();
+
+		tables.forEach(table -> tablesDTO.addSale(this.saleMapper.toDTO(table)));
+
+		return Response.ok(tablesDTO).build();
+	}
+
+	@Path("fetch-table-by-uuid/{tableUuid}")
+	@GET
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response fetchTableByUuid(@PathParam("tableUuid") final String tableUuid) throws BusinessException {
+
+		final Sale table = this.salePort.fetchByUuid(tableUuid);
+
+		return Response.ok(this.saleMapper.toDTO(table)).build();
 	}
 }

@@ -6,6 +6,7 @@ package mz.co.grocery.persistence.customer;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.Set;
 
 import javax.inject.Inject;
@@ -412,5 +413,18 @@ public class CustomerPortTest extends AbstractIntegServiceTest {
 		final List<Customer> customers = this.customerPort.findCustomersWithDeliveredGuidesByUnit(sale.getUnit().get().getUuid());
 
 		Assert.assertFalse(customers.isEmpty());
+	}
+
+	@Test
+	public void shouldFindCustomerByContact() throws BusinessException {
+		Customer customer = EntityFactory.gimme(Customer.class, CustomerTemplate.VALID);
+		customer.setUnit(this.unit);
+		customer.setContact(customer.getContact() + "5");
+		customer = this.customerPort.createCustomer(this.getUserContext(), customer);
+
+		final Optional<Customer> foundCustomer = this.customerPort.findCustomerByContact(customer.getContact());
+
+		Assert.assertTrue(foundCustomer.isPresent());
+		Assert.assertEquals(customer.getContact(), foundCustomer.get().getContact());
 	}
 }

@@ -30,7 +30,8 @@ public class SaleItemTest extends AbstractUnitServiceTest {
 	@Test
 	public void shouldCalculateTotalItemSale() {
 
-		final BigDecimal totalSale = this.saleItem.getSaleItemValue().subtract(this.saleItem.getDiscount());
+		final BigDecimal totalSale = this.saleItem.getStock().get().getSalePrice().multiply(this.saleItem.getQuantity())
+				.subtract(this.saleItem.getDiscount());
 
 		Assert.assertEquals(totalSale, this.saleItem.getTotalSaleItem());
 	}

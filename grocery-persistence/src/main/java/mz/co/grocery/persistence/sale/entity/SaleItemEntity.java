@@ -13,18 +13,25 @@ import javax.persistence.Enumerated;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
 import org.hibernate.LazyInitializationException;
 
 import mz.co.grocery.core.domain.sale.DeliveryStatus;
+import mz.co.grocery.persistence.sale.repository.SaleItemRepository;
 import mz.co.msaude.boot.frameworks.model.GenericEntity;
 
 /**
  * @author Stélio Moiane
  *
  */
+@NamedQueries({
+	@NamedQuery(name = SaleItemRepository.QUERY_NAME.findBySaleAndProductUuid, query = SaleItemRepository.QUERY.findBySaleAndProductUuid),
+	@NamedQuery(name = SaleItemRepository.QUERY_NAME.findBySaleAndServiceUuid, query = SaleItemRepository.QUERY.findBySaleAndServiceUuid)
+})
 @Entity
 @Table(name = "SALE_ITEMS")
 public class SaleItemEntity extends GenericEntity {
@@ -92,7 +99,12 @@ public class SaleItemEntity extends GenericEntity {
 	}
 
 	public Optional<ServiceItemEntity> getServiceItem() {
-		return Optional.ofNullable(this.serviceItem);
+		try {
+			Optional.ofNullable(this.serviceItem).ifPresent(serviceItem -> serviceItem.getSalePrice());
+			return Optional.ofNullable(this.serviceItem);
+		} catch (final LazyInitializationException e) {
+			return Optional.empty();
+		}
 	}
 
 	public void setServiceItem(final ServiceItemEntity serviceItem) {

@@ -128,7 +128,7 @@ public class InstallmentSaleTest extends AbstractUnitServiceTest {
 
 		Assert.assertNotNull(sale.getCustomer());
 		Assert.assertEquals(SaleType.INSTALLMENT, sale.getSaleType());
-		Assert.assertEquals(SaleStatus.PENDING, sale.getSaleStatus());
+		Assert.assertEquals(SaleStatus.OPENED, sale.getSaleStatus());
 		Assert.assertEquals(BigDecimal.ZERO, sale.getTotalPaid());
 		Assert.assertEquals(DeliveryStatus.PENDING, sale.getDeliveryStatus());
 	}

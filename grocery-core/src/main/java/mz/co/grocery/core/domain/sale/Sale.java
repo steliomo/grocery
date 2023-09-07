@@ -136,11 +136,11 @@ public class Sale extends Domain {
 	public void updateSaleStatus() {
 
 		if (BigDecimalUtil.isEqual(this.total, this.totalPaid)) {
-			this.saleStatus = SaleStatus.COMPLETE;
+			this.saleStatus = SaleStatus.CLOSED;
 			return;
 		}
 
-		this.saleStatus = SaleStatus.INCOMPLETE;
+		this.saleStatus = SaleStatus.IN_PROGRESS;
 	}
 
 	public LocalDate getDueDate() {

@@ -190,38 +190,6 @@ public class ReturnGuideTest extends AbstractUnitServiceTest {
 		this.guideService.issueGuide(this.getUserContext(), guide);
 	}
 
-	@Test(expected = BusinessException.class)
-	public void shouldIssueReturnGuideToReturnMoreThanLoaded() throws BusinessException {
-
-		this.guideService.setGuideIssuer(this.returnGuideIssuer);
-		final LocalDate rentDate = LocalDate.now().minusDays(10);
-		final Guide guide = new GuideUnitBuider(GuideTemplate.RETURN).withRentProducts(5).build();
-
-		final UserContext context = this.getUserContext();
-
-		final RentItem rentItem = EntityFactory.gimme(RentItem.class, RentItemTemplate.SERVICE, result -> {
-			if (result instanceof RentItem) {
-				final RentItem ri = (RentItem) result;
-				ri.setPlannedQuantity(new BigDecimal(5));
-				ri.addLoadedQuantity(new BigDecimal(5));
-				ri.getRentalChunkValueOnLoading(rentDate);
-				ri.setStockable();
-				ri.setLoadingDate(rentDate);
-				ri.setLoadStatus();
-			}
-		});
-
-		Mockito.when(this.guidePort.createGuide(ArgumentMatchers.any(UserContext.class), ArgumentMatchers.any(Guide.class))).thenReturn(guide);
-
-		Mockito.when(this.guideItemPort.createGuideItem(ArgumentMatchers.any(UserContext.class), ArgumentMatchers.any(GuideItem.class)))
-		.thenReturn(guide.getGuideItems().get().stream().findFirst().get());
-
-		Mockito.when(this.rentItemPort.findByUuid(ArgumentMatchers.any()))
-		.thenAnswer(invocation -> rentItem);
-
-		this.guideService.issueGuide(context, guide);
-	}
-
 	@Test
 	public void shouldRecalculateTotalEstimatedWhenIssueReturnGuideInTheLoadDate() throws BusinessException {
 

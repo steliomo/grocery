@@ -55,7 +55,12 @@ public class ServiceItemEntity extends GenericEntity {
 	private BigDecimal salePrice;
 
 	public Optional<ServiceDescriptionEntity> getServiceDescription() {
-		return Optional.ofNullable(this.serviceDescription);
+		try {
+			Optional.ofNullable(this.serviceDescription).ifPresent(serviceDescription -> serviceDescription.getDescription());
+			return Optional.of(this.serviceDescription);
+		} catch (final LazyInitializationException e) {
+			return Optional.empty();
+		}
 	}
 
 	public void setServiceDescription(final ServiceDescriptionEntity serviceDescription) {

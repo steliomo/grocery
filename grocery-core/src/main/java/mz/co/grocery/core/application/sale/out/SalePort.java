@@ -35,4 +35,6 @@ public interface SalePort {
 	List<Sale> fetchSalesWithDeliveryGuidesByCustomer(Customer customer) throws BusinessException;
 
 	Sale findByUuid(String saleUuid) throws BusinessException;
+
+	List<Sale> fetchOpenedTables(String unitUuid) throws BusinessException;
 }
