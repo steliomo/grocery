@@ -67,6 +67,6 @@
 	</tr>
 </table>
 <p>Obrigado</p>
-<p>Negócio na mão (NNM) © 2022 ©</p>
+<p>Negócio na mão (NNM) © 2023 ©</p>
 </body>
 </html>
