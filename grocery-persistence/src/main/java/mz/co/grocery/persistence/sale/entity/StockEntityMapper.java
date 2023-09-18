@@ -46,6 +46,7 @@ public class StockEntityMapper extends AbstractEntityMapper<StockEntity, Stock> 
 		entity.setMinimumStock(domain.getMinimumStock());
 		entity.setStockStatus(domain.getStockStatus());
 		entity.setInventoryDate(domain.getInventoryDate());
+		entity.setInventoryQuantity(domain.getInventoryQuantity());
 		entity.setStockUpdateDate(domain.getStockUpdateDate());
 		entity.setStockUpdateQuantity(domain.getStockUpdateQuantity());
 		entity.setProductStockStatus(domain.getProductStockStatus());
@@ -70,6 +71,7 @@ public class StockEntityMapper extends AbstractEntityMapper<StockEntity, Stock> 
 		domain.setMinimumStock(entity.getMinimumStock());
 		domain.setStockStatus(entity.getStockStatus());
 		domain.setInventoryDate(entity.getInventoryDate());
+		domain.setInventoryQuantity(entity.getInventoryQuantity());
 		domain.setStockUpdateDate(entity.getStockUpdateDate());
 		domain.setStockUpdateQuantity(entity.getStockUpdateQuantity());
 		domain.setProductStockStatus(entity.getProductStockStatus());
