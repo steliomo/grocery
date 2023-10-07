@@ -4,6 +4,7 @@
 package mz.co.grocery.persistence.item.adapter;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -67,7 +68,8 @@ public class ProductUnitAdapter implements ProductUnitPort {
 
 	@Override
 	public List<ProductUnit> findAllProductUnits() throws BusinessException {
-		return this.repository.findAll(EntityStatus.ACTIVE);
+		return this.repository.findAll(EntityStatus.ACTIVE).stream().map(this.mapper::toDomain)
+				.collect(Collectors.toList());
 	}
 
 	@Override

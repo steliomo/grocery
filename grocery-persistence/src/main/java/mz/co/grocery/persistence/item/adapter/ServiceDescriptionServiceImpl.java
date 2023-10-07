@@ -4,6 +4,7 @@
 package mz.co.grocery.persistence.item.adapter;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -59,7 +60,8 @@ public class ServiceDescriptionServiceImpl implements ServiceDescriptionPort {
 
 	@Override
 	public List<ServiceDescription> findAllServiceDescriptions(final int currentPage, final int maxResult) throws BusinessException {
-		return this.repository.findAll(currentPage, maxResult, EntityStatus.ACTIVE);
+		return this.repository.findAll(currentPage, maxResult, EntityStatus.ACTIVE).stream().map(this.mapper::toDomain)
+				.collect(Collectors.toList());
 	}
 
 	@Override
@@ -69,11 +71,12 @@ public class ServiceDescriptionServiceImpl implements ServiceDescriptionPort {
 
 	@Override
 	public ServiceDescription fetchServiceDescriptionByUuid(final String serviceDescriptionUuid) throws BusinessException {
-		return this.repository.fetchByUuid(serviceDescriptionUuid);
+		return this.mapper.toDomain(this.repository.fetchByUuid(serviceDescriptionUuid));
 	}
 
 	@Override
 	public List<ServiceDescription> fetchServiceDescriptionByName(final String serviceDescriptionName) throws BusinessException {
-		return this.repository.fetchByName(serviceDescriptionName, EntityStatus.ACTIVE);
+		return this.repository.fetchByName(serviceDescriptionName, EntityStatus.ACTIVE).stream().map(this.mapper::toDomain)
+				.collect(Collectors.toList());
 	}
 }

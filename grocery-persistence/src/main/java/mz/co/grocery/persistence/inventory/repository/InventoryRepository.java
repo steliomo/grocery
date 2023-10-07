@@ -3,7 +3,6 @@
  */
 package mz.co.grocery.persistence.inventory.repository;
 
-import mz.co.grocery.core.domain.inventory.Inventory;
 import mz.co.grocery.core.domain.inventory.InventoryStatus;
 import mz.co.grocery.core.domain.unit.Unit;
 import mz.co.grocery.persistence.inventory.entity.InventoryEntity;
@@ -27,9 +26,9 @@ public interface InventoryRepository extends GenericDAO<InventoryEntity, Long> {
 		public static final String fetchByUuid = "InventoryEntity.fetchByUuid";
 	}
 
-	Inventory fetchByGroceryAndStatus(Unit grocery, InventoryStatus inventoryStatus, EntityStatus entityStatus)
+	InventoryEntity fetchByGroceryAndStatus(Unit grocery, InventoryStatus inventoryStatus, EntityStatus entityStatus)
 			throws BusinessException;
 
-	Inventory fetchByUuid(String inventoryUuid, EntityStatus entityStatus) throws BusinessException;
+	InventoryEntity fetchByUuid(String inventoryUuid, EntityStatus entityStatus) throws BusinessException;
 
 }

@@ -5,16 +5,13 @@ package mz.co.grocery.persistence.unit.repository;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Repository;
 
 import mz.co.grocery.core.domain.unit.UnitDetail;
-import mz.co.grocery.core.domain.unit.UnitUser;
 import mz.co.grocery.persistence.unit.entity.UnitUserEntity;
 import mz.co.msaude.boot.frameworks.dao.GenericDAOImpl;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
-import mz.co.msaude.boot.frameworks.mapper.EntityMapper;
 import mz.co.msaude.boot.frameworks.model.EntityStatus;
 import mz.co.msaude.boot.frameworks.util.ParamBuilder;
 
@@ -25,14 +22,8 @@ import mz.co.msaude.boot.frameworks.util.ParamBuilder;
 @Repository
 public class UnitUserRepositoryImpl extends GenericDAOImpl<UnitUserEntity, Long> implements UnitUserRepository {
 
-	private EntityMapper<UnitUserEntity, UnitUser> mapper;
-
-	public UnitUserRepositoryImpl(final EntityMapper<UnitUserEntity, UnitUser> mapper) {
-		this.mapper = mapper;
-	}
-
 	@Override
-	public List<UnitUser> fetchAllGroceryUsers(final int currentPage, final int maxResult,
+	public List<UnitUserEntity> fetchAllGroceryUsers(final int currentPage, final int maxResult,
 			final EntityStatus entityStatus) throws BusinessException {
 
 		final List<Long> groceryUserIds = this
@@ -45,14 +36,13 @@ public class UnitUserRepositoryImpl extends GenericDAOImpl<UnitUserEntity, Long>
 		}
 
 		return this.findByNamedQuery(UnitUserRepository.QUERY_NAME.fetchAll,
-				new ParamBuilder().add("groceryUserIds", groceryUserIds).process()).stream().map(this.mapper::toDomain)
-				.collect(Collectors.toList());
+				new ParamBuilder().add("groceryUserIds", groceryUserIds).process());
 	}
 
 	@Override
-	public UnitUser fetchByUser(final String user, final EntityStatus entityStatus) throws BusinessException {
-		return this.mapper.toDomain(this.findSingleByNamedQuery(UnitUserRepository.QUERY_NAME.fetchByUser,
-				new ParamBuilder().add("user", user).add("entityStatus", entityStatus).process()));
+	public UnitUserEntity fetchByUser(final String user, final EntityStatus entityStatus) throws BusinessException {
+		return this.findSingleByNamedQuery(UnitUserRepository.QUERY_NAME.fetchByUser,
+				new ParamBuilder().add("user", user).add("entityStatus", entityStatus).process());
 	}
 
 	@Override

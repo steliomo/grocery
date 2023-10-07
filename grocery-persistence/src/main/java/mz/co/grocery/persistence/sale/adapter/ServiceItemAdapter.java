@@ -4,6 +4,7 @@
 package mz.co.grocery.persistence.sale.adapter;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,7 +57,7 @@ public class ServiceItemAdapter implements ServiceItemPort {
 
 	@Override
 	public List<ServiceItem> fetchAllServiceItems(final int currentPage, final int maxResult) throws BusinessException {
-		return this.repository.fetchAll(currentPage, maxResult, EntityStatus.ACTIVE);
+		return this.repository.fetchAll(currentPage, maxResult, EntityStatus.ACTIVE).stream().map(this.mapper::toDomain).collect(Collectors.toList());
 	}
 
 	@Override
@@ -66,24 +67,26 @@ public class ServiceItemAdapter implements ServiceItemPort {
 
 	@Override
 	public ServiceItem fetchServiceItemByUuid(final String serviceItemUuid) throws BusinessException {
-		return this.repository.fetchByUuid(serviceItemUuid);
+		return this.mapper.toDomain(this.repository.fetchByUuid(serviceItemUuid));
 	}
 
 	@Override
 	public List<ServiceItem> fetchServiceItemByName(final String serviceItemName) throws BusinessException {
-		return this.repository.fetchByName(serviceItemName, EntityStatus.ACTIVE);
+		return this.repository.fetchByName(serviceItemName, EntityStatus.ACTIVE).stream().map(this.mapper::toDomain).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<ServiceItem> fetchServiceItemsByServiceAndUnit(final mz.co.grocery.core.domain.item.Service service, final Unit unit)
 			throws BusinessException {
-		return this.repository.fetchByServiceAndUnit(service, unit, EntityStatus.ACTIVE);
+		return this.repository.fetchByServiceAndUnit(service, unit, EntityStatus.ACTIVE).stream().map(this.mapper::toDomain)
+				.collect(Collectors.toList());
 	}
 
 	@Override
 	public List<ServiceItem> fetchServiceItemsNotInThisUnitByService(final mz.co.grocery.core.domain.item.Service service, final Unit unit)
 			throws BusinessException {
-		return this.repository.fetchNotInThisUnitByService(service, unit, EntityStatus.ACTIVE);
+		return this.repository.fetchNotInThisUnitByService(service, unit, EntityStatus.ACTIVE).stream().map(this.mapper::toDomain)
+				.collect(Collectors.toList());
 	}
 
 	@Override

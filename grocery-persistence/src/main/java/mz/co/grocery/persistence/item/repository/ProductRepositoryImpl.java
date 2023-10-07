@@ -4,7 +4,6 @@
 package mz.co.grocery.persistence.item.repository;
 
 import java.util.List;
-import java.util.stream.Collectors;
 
 import org.springframework.stereotype.Repository;
 
@@ -26,39 +25,33 @@ import mz.co.msaude.boot.frameworks.util.ParamBuilder;
 @Repository
 public class ProductRepositoryImpl extends GenericDAOImpl<ProductEntity, Long> implements ProductRepository {
 
-	private EntityMapper<ProductEntity, Product> mapper;
-
 	public ProductRepositoryImpl(final @BeanQualifier(ProductEntityMapper.NAME) EntityMapper<ProductEntity, Product> mapper) {
-		this.mapper = mapper;
 	}
 
 	@Override
-	public List<Product> findAll(final EntityStatus entityStatus) throws BusinessException {
+	public List<ProductEntity> findAll(final EntityStatus entityStatus) throws BusinessException {
 		return this.findByNamedQuery(ProductRepository.QUERY_NAME.findAll,
-				new ParamBuilder().add("entityStatus", entityStatus).process()).stream().map(this.mapper::toDomain).collect(Collectors.toList());
+				new ParamBuilder().add("entityStatus", entityStatus).process());
 	}
 
 	@Override
-	public List<Product> findByName(final String name, final EntityStatus entityStatus) throws BusinessException {
+	public List<ProductEntity> findByName(final String name, final EntityStatus entityStatus) throws BusinessException {
 
 		return this.findByNamedQuery(ProductRepository.QUERY_NAME.findByName,
-				new ParamBuilder().add("name", "%" + name + "%").add("entityStatus", entityStatus).process()).stream().map(this.mapper::toDomain)
-				.collect(Collectors.toList());
+				new ParamBuilder().add("name", "%" + name + "%").add("entityStatus", entityStatus).process());
 	}
 
 	@Override
-	public List<Product> findByGrocery(final Unit grocery, final EntityStatus entityStatus)
+	public List<ProductEntity> findByGrocery(final Unit grocery, final EntityStatus entityStatus)
 			throws BusinessException {
 		return this.findByNamedQuery(ProductRepository.QUERY_NAME.findByGrocery,
-				new ParamBuilder().add("groceryUuid", grocery.getUuid()).add("entityStatus", entityStatus).process()).stream()
-				.map(this.mapper::toDomain).collect(Collectors.toList());
+				new ParamBuilder().add("groceryUuid", grocery.getUuid()).add("entityStatus", entityStatus).process());
 	}
 
 	@Override
-	public List<Product> findNotInThisGrocery(final Unit grocery, final EntityStatus entityStatus)
+	public List<ProductEntity> findNotInThisGrocery(final Unit grocery, final EntityStatus entityStatus)
 			throws BusinessException {
 		return this.findByNamedQuery(ProductRepository.QUERY_NAME.findNotInThisGrocery,
-				new ParamBuilder().add("groceryUuid", grocery.getUuid()).add("entityStatus", entityStatus).process()).stream()
-				.map(this.mapper::toDomain).collect(Collectors.toList());
+				new ParamBuilder().add("groceryUuid", grocery.getUuid()).add("entityStatus", entityStatus).process());
 	}
 }

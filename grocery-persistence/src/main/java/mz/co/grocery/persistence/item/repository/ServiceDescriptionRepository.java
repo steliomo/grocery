@@ -5,7 +5,6 @@ package mz.co.grocery.persistence.item.repository;
 
 import java.util.List;
 
-import mz.co.grocery.core.domain.item.ServiceDescription;
 import mz.co.grocery.persistence.item.entity.ServiceDescriptionEntity;
 import mz.co.msaude.boot.frameworks.dao.GenericDAO;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
@@ -33,9 +32,9 @@ public interface ServiceDescriptionRepository extends GenericDAO<ServiceDescript
 		public static final String fetchByName = "ServiceDescriptionEntity.fetchByName";
 	}
 
-	List<ServiceDescription> findAll(int currentPage, int maxResult, EntityStatus entityStatus) throws BusinessException;
+	List<ServiceDescriptionEntity> findAll(int currentPage, int maxResult, EntityStatus entityStatus) throws BusinessException;
 
-	ServiceDescription fetchByUuid(String serviceDescriptionUuid) throws BusinessException;
+	ServiceDescriptionEntity fetchByUuid(String serviceDescriptionUuid) throws BusinessException;
 
-	List<ServiceDescription> fetchByName(String serviceDescriptionName, EntityStatus entityStatus) throws BusinessException;
+	List<ServiceDescriptionEntity> fetchByName(String serviceDescriptionName, EntityStatus entityStatus) throws BusinessException;
 }

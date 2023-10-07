@@ -37,12 +37,12 @@ public class InventoryAdapter implements InventoryPort {
 	@Override
 	public Inventory fetchInventoryByGroceryAndStatus(final Unit grocery, final InventoryStatus inventoryStatus)
 			throws BusinessException {
-		return this.repository.fetchByGroceryAndStatus(grocery, inventoryStatus, EntityStatus.ACTIVE);
+		return this.mapper.toDomain(this.repository.fetchByGroceryAndStatus(grocery, inventoryStatus, EntityStatus.ACTIVE));
 	}
 
 	@Override
 	public Inventory fetchInventoryUuid(final String inventoryUuid) throws BusinessException {
-		return this.repository.fetchByUuid(inventoryUuid, EntityStatus.ACTIVE);
+		return this.mapper.toDomain(this.repository.fetchByUuid(inventoryUuid, EntityStatus.ACTIVE));
 	}
 
 	@Transactional

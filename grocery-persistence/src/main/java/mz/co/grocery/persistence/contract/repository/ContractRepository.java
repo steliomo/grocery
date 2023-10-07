@@ -6,7 +6,6 @@ package mz.co.grocery.persistence.contract.repository;
 import java.time.LocalDate;
 import java.util.List;
 
-import mz.co.grocery.core.domain.contract.Contract;
 import mz.co.grocery.persistence.contract.entity.ContractEntity;
 import mz.co.msaude.boot.frameworks.dao.GenericDAO;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
@@ -26,7 +25,7 @@ public interface ContractRepository extends GenericDAO<ContractEntity, Long> {
 		public static final String findPendingContractsForPaymentByCustomer = "ContractEntity.findPendingContractsForPaymentByCustomer";
 	}
 
-	List<Contract> findPendingContractsForPaymentByCustomerUuid(String customerUuid, LocalDate currentDate, EntityStatus entityStatus)
+	List<ContractEntity> findPendingContractsForPaymentByCustomerUuid(String customerUuid, LocalDate currentDate, EntityStatus entityStatus)
 			throws BusinessException;
 
 }

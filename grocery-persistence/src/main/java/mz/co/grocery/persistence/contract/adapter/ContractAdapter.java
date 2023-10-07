@@ -5,6 +5,7 @@ package mz.co.grocery.persistence.contract.adapter;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,7 +41,8 @@ public class ContractAdapter implements ContractPort {
 	@Override
 	public List<Contract> findPendingContractsForPaymentByCustomerUuid(final String customerUuid, final LocalDate currentDate)
 			throws BusinessException {
-		return this.repository.findPendingContractsForPaymentByCustomerUuid(customerUuid, currentDate, EntityStatus.ACTIVE);
+		return this.repository.findPendingContractsForPaymentByCustomerUuid(customerUuid, currentDate, EntityStatus.ACTIVE).stream()
+				.map(this.mapper::toDomain).collect(Collectors.toList());
 	}
 
 	@Transactional

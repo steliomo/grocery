@@ -4,6 +4,7 @@
 package mz.co.grocery.persistence.item.adapter;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -63,7 +64,8 @@ public class ServiceAdapter extends AbstractService implements ServicePort {
 
 	@Override
 	public List<Service> findAllServices(final int currentPage, final int maxResult) throws BusinessException {
-		return this.repository.findAll(currentPage, maxResult, EntityStatus.ACTIVE);
+		return this.repository.findAll(currentPage, maxResult, EntityStatus.ACTIVE).stream().map(this.mapper::toDomain)
+				.collect(Collectors.toList());
 	}
 
 	@Override
@@ -73,16 +75,19 @@ public class ServiceAdapter extends AbstractService implements ServicePort {
 
 	@Override
 	public List<Service> findServicesByName(final String serviceName) throws BusinessException {
-		return this.repository.findByName(serviceName, EntityStatus.ACTIVE);
+		return this.repository.findByName(serviceName, EntityStatus.ACTIVE).stream().map(this.mapper::toDomain)
+				.collect(Collectors.toList());
 	}
 
 	@Override
 	public List<Service> findServicesByUnit(final Unit unit) throws BusinessException {
-		return this.repository.findByUnit(unit, EntityStatus.ACTIVE);
+		return this.repository.findByUnit(unit, EntityStatus.ACTIVE).stream().map(this.mapper::toDomain)
+				.collect(Collectors.toList());
 	}
 
 	@Override
 	public List<Service> findServicesNotInthisUnit(final Unit unit) throws BusinessException {
-		return this.repository.findNotInThisUnit(unit, EntityStatus.ACTIVE);
+		return this.repository.findNotInThisUnit(unit, EntityStatus.ACTIVE).stream().map(this.mapper::toDomain)
+				.collect(Collectors.toList());
 	}
 }

@@ -5,7 +5,6 @@ package mz.co.grocery.persistence.item.repository;
 
 import java.util.List;
 
-import mz.co.grocery.core.domain.item.ProductDescription;
 import mz.co.grocery.persistence.item.entity.ProductDescriptionEntity;
 import mz.co.msaude.boot.frameworks.dao.GenericDAO;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
@@ -37,13 +36,13 @@ public interface ProductDescriptionRepository extends GenericDAO<ProductDescript
 		public static final String fetchByUuid = "ProductDescriptionEntity.fetchByUuid";
 	}
 
-	List<ProductDescription> fetchdAll(int currentPage, int maxResult, EntityStatus entityStatus)
+	List<ProductDescriptionEntity> fetchdAll(int currentPage, int maxResult, EntityStatus entityStatus)
 			throws BusinessException;
 
 	@Override
 	Long count(EntityStatus entityStatus) throws BusinessException;
 
-	List<ProductDescription> fetchByDescription(String description, EntityStatus entityStatus) throws BusinessException;
+	List<ProductDescriptionEntity> fetchByDescription(String description, EntityStatus entityStatus) throws BusinessException;
 
-	ProductDescription fetchByUuid(String productDescriptionUuid, EntityStatus entityStatus) throws BusinessException;
+	ProductDescriptionEntity fetchByUuid(String productDescriptionUuid, EntityStatus entityStatus) throws BusinessException;
 }

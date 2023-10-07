@@ -2,7 +2,6 @@ package mz.co.grocery.persistence.expense.repository;
 
 import java.util.List;
 
-import mz.co.grocery.core.domain.expense.ExpenseType;
 import mz.co.grocery.persistence.expense.entity.ExpenseTypeEntity;
 import mz.co.msaude.boot.frameworks.dao.GenericDAO;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
@@ -24,5 +23,5 @@ public interface ExpenseTypeRepository extends GenericDAO<ExpenseTypeEntity, Lon
 		public static final String findAll = "ExpenseTypeEntity.findAll";
 	}
 
-	List<ExpenseType> findAll(int currentPage, int maxResult, EntityStatus entityStatus) throws BusinessException;
+	List<ExpenseTypeEntity> findAll(int currentPage, int maxResult, EntityStatus entityStatus) throws BusinessException;
 }

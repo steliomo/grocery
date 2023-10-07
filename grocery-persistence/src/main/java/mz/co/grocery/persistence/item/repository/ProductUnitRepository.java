@@ -5,7 +5,6 @@ package mz.co.grocery.persistence.item.repository;
 
 import java.util.List;
 
-import mz.co.grocery.core.domain.item.ProductUnit;
 import mz.co.grocery.persistence.item.entity.ProductUnitEntity;
 import mz.co.msaude.boot.frameworks.dao.GenericDAO;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
@@ -25,5 +24,5 @@ public interface ProductUnitRepository extends GenericDAO<ProductUnitEntity, Lon
 		public static final String findAll = "ProductUnitEntity.findAll";
 	}
 
-	List<ProductUnit> findAll(EntityStatus entityStatus) throws BusinessException;
+	List<ProductUnitEntity> findAll(EntityStatus entityStatus) throws BusinessException;
 }

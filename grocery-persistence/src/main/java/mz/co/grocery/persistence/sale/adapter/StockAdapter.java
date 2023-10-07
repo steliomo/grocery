@@ -5,6 +5,7 @@ package mz.co.grocery.persistence.sale.adapter;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -79,7 +80,7 @@ public class StockAdapter implements StockPort {
 
 	@Override
 	public List<Stock> fetchAllStocks(final int currentPage, final int maxResult) throws BusinessException {
-		return this.repositoty.fetchAll(currentPage, maxResult, EntityStatus.ACTIVE);
+		return this.repositoty.fetchAll(currentPage, maxResult, EntityStatus.ACTIVE).stream().map(this.mapper::toDomain).collect(Collectors.toList());
 	}
 
 	@Override
@@ -89,12 +90,13 @@ public class StockAdapter implements StockPort {
 
 	@Override
 	public Stock fetchStockByUuid(final String stockUuid) throws BusinessException {
-		return this.repositoty.fetchByUuid(stockUuid, EntityStatus.ACTIVE);
+		return this.mapper.toDomain(this.repositoty.fetchByUuid(stockUuid, EntityStatus.ACTIVE));
 	}
 
 	@Override
 	public List<Stock> fetchStocksByProductDescription(final String description) throws BusinessException {
-		return this.repositoty.fetchByProductDescription(description, EntityStatus.ACTIVE);
+		return this.repositoty.fetchByProductDescription(description, EntityStatus.ACTIVE).stream().map(this.mapper::toDomain)
+				.collect(Collectors.toList());
 	}
 
 	@Override
@@ -105,29 +107,33 @@ public class StockAdapter implements StockPort {
 	@Override
 	public List<Stock> fetchStockByGroceryAndProduct(final String groceryUuid, final String productUuid)
 			throws BusinessException {
-		return this.repositoty.fetchByGroceryAndProduct(groceryUuid, productUuid, EntityStatus.ACTIVE);
+		return this.repositoty.fetchByGroceryAndProduct(groceryUuid, productUuid, EntityStatus.ACTIVE).stream().map(this.mapper::toDomain)
+				.collect(Collectors.toList());
 	}
 
 	@Override
 	public List<Stock> fetchStocksByGrocery(final String groceryUuid) throws BusinessException {
-		return this.repositoty.fetchByGrocery(groceryUuid, EntityStatus.ACTIVE);
+		return this.repositoty.fetchByGrocery(groceryUuid, EntityStatus.ACTIVE).stream().map(this.mapper::toDomain).collect(Collectors.toList());
 	}
 
 	@Override
 	public List<Stock> fetchLowStocksByGroceryAndSalePeriod(final String groceryUuid, final LocalDate startDate,
 			final LocalDate endDate)
 					throws BusinessException {
-		return this.repositoty.fetchByGroceryAndSalePeriod(groceryUuid, startDate, endDate, EntityStatus.ACTIVE);
+		return this.repositoty.fetchByGroceryAndSalePeriod(groceryUuid, startDate, endDate, EntityStatus.ACTIVE).stream().map(this.mapper::toDomain)
+				.collect(Collectors.toList());
 	}
 
 	@Override
 	public List<Stock> fetchStockNotInthisGroceryByProduct(final String groceryUuid, final String productUuid)
 			throws BusinessException {
-		return this.repositoty.fetchNotInThisGroceryByProduct(groceryUuid, productUuid, EntityStatus.ACTIVE);
+		return this.repositoty.fetchNotInThisGroceryByProduct(groceryUuid, productUuid, EntityStatus.ACTIVE).stream().map(this.mapper::toDomain)
+				.collect(Collectors.toList());
 	}
 
 	@Override
 	public List<Stock> fetchStocksInAnalysisByUnit(final String unitUuid) throws BusinessException {
-		return this.repositoty.fetchInAnalysisByUnitUuid(unitUuid, EntityStatus.ACTIVE);
+		return this.repositoty.fetchInAnalysisByUnitUuid(unitUuid, EntityStatus.ACTIVE).stream().map(this.mapper::toDomain)
+				.collect(Collectors.toList());
 	}
 }

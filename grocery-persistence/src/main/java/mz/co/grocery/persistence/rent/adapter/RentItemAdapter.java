@@ -59,6 +59,6 @@ public class RentItemAdapter implements RentItemPort {
 
 	@Override
 	public RentItem fetchByUuid(final String uuid) throws BusinessException {
-		return this.repository.fetchByUuid(uuid);
+		return this.mapper.toDomain(this.repository.fetchByUuid(uuid));
 	}
 }

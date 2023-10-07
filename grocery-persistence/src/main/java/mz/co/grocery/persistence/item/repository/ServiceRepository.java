@@ -5,7 +5,6 @@ package mz.co.grocery.persistence.item.repository;
 
 import java.util.List;
 
-import mz.co.grocery.core.domain.item.Service;
 import mz.co.grocery.core.domain.unit.Unit;
 import mz.co.grocery.persistence.item.entity.ServiceEntity;
 import mz.co.msaude.boot.frameworks.dao.GenericDAO;
@@ -35,11 +34,11 @@ public interface ServiceRepository extends GenericDAO<ServiceEntity, Long> {
 
 	}
 
-	List<Service> findAll(int currentPage, int maxResult, EntityStatus entityStatus) throws BusinessException;
+	List<ServiceEntity> findAll(int currentPage, int maxResult, EntityStatus entityStatus) throws BusinessException;
 
-	List<Service> findByName(String serviceName, EntityStatus entityStatus) throws BusinessException;
+	List<ServiceEntity> findByName(String serviceName, EntityStatus entityStatus) throws BusinessException;
 
-	List<Service> findByUnit(Unit unit, EntityStatus entityStatus) throws BusinessException;
+	List<ServiceEntity> findByUnit(Unit unit, EntityStatus entityStatus) throws BusinessException;
 
-	List<Service> findNotInThisUnit(Unit unit, EntityStatus entityStatus) throws BusinessException;
+	List<ServiceEntity> findNotInThisUnit(Unit unit, EntityStatus entityStatus) throws BusinessException;
 }

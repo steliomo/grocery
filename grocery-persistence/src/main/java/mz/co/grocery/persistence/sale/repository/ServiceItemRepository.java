@@ -6,7 +6,6 @@ package mz.co.grocery.persistence.sale.repository;
 import java.util.List;
 
 import mz.co.grocery.core.domain.item.Service;
-import mz.co.grocery.core.domain.sale.ServiceItem;
 import mz.co.grocery.core.domain.unit.Unit;
 import mz.co.grocery.persistence.sale.entity.ServiceItemEntity;
 import mz.co.msaude.boot.frameworks.dao.GenericDAO;
@@ -37,14 +36,14 @@ public interface ServiceItemRepository extends GenericDAO<ServiceItemEntity, Lon
 		public static final String fetchNotInThisUnitByService = "ServiceItemEntity.fetchNotInThisUnitByService";
 	}
 
-	List<ServiceItem> fetchAll(int currentPage, int maxResult, EntityStatus entityStatus) throws BusinessException;
+	List<ServiceItemEntity> fetchAll(int currentPage, int maxResult, EntityStatus entityStatus) throws BusinessException;
 
-	ServiceItem fetchByUuid(String serviceItemUuid) throws BusinessException;
+	ServiceItemEntity fetchByUuid(String serviceItemUuid) throws BusinessException;
 
-	List<ServiceItem> fetchByName(String serviceItemName, EntityStatus entityStatus) throws BusinessException;
+	List<ServiceItemEntity> fetchByName(String serviceItemName, EntityStatus entityStatus) throws BusinessException;
 
-	List<ServiceItem> fetchByServiceAndUnit(Service service, Unit unit, EntityStatus entityStatus) throws BusinessException;
+	List<ServiceItemEntity> fetchByServiceAndUnit(Service service, Unit unit, EntityStatus entityStatus) throws BusinessException;
 
-	List<ServiceItem> fetchNotInThisUnitByService(Service service, Unit unit, EntityStatus entityStatus) throws BusinessException;
+	List<ServiceItemEntity> fetchNotInThisUnitByService(Service service, Unit unit, EntityStatus entityStatus) throws BusinessException;
 
 }

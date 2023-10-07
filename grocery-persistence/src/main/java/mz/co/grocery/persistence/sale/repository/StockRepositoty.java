@@ -6,7 +6,6 @@ package mz.co.grocery.persistence.sale.repository;
 import java.time.LocalDate;
 import java.util.List;
 
-import mz.co.grocery.core.domain.sale.Stock;
 import mz.co.grocery.persistence.sale.entity.StockEntity;
 import mz.co.msaude.boot.frameworks.dao.GenericDAO;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
@@ -61,23 +60,23 @@ public interface StockRepositoty extends GenericDAO<StockEntity, Long> {
 		public static final String fetchInAnalysisByUnitUuid = "StockEntity.fetchInAnalysisByUnitUuid";
 	}
 
-	List<Stock> fetchAll(int currentPage, int maxResult, EntityStatus entityStatus) throws BusinessException;
+	List<StockEntity> fetchAll(int currentPage, int maxResult, EntityStatus entityStatus) throws BusinessException;
 
-	Stock fetchByUuid(String stockUuid, EntityStatus entityStatus) throws BusinessException;
+	StockEntity fetchByUuid(String stockUuid, EntityStatus entityStatus) throws BusinessException;
 
-	List<Stock> fetchByProductDescription(String description, EntityStatus entityStatus) throws BusinessException;
+	List<StockEntity> fetchByProductDescription(String description, EntityStatus entityStatus) throws BusinessException;
 
-	List<Stock> fetchByGroceryAndProduct(String groceryUuid, String productUuid, EntityStatus entityStatus)
+	List<StockEntity> fetchByGroceryAndProduct(String groceryUuid, String productUuid, EntityStatus entityStatus)
 			throws BusinessException;
 
-	List<Stock> fetchByGrocery(String groceryUuid, EntityStatus entityStatus) throws BusinessException;
+	List<StockEntity> fetchByGrocery(String groceryUuid, EntityStatus entityStatus) throws BusinessException;
 
-	List<Stock> fetchByGroceryAndSalePeriod(String groceryUuid, LocalDate startDate, LocalDate endDate,
+	List<StockEntity> fetchByGroceryAndSalePeriod(String groceryUuid, LocalDate startDate, LocalDate endDate,
 			EntityStatus entityStatus)
 					throws BusinessException;
 
-	List<Stock> fetchNotInThisGroceryByProduct(String groceryUuid, String productUuid, EntityStatus entityStatus)
+	List<StockEntity> fetchNotInThisGroceryByProduct(String groceryUuid, String productUuid, EntityStatus entityStatus)
 			throws BusinessException;
 
-	List<Stock> fetchInAnalysisByUnitUuid(String unitUuid, EntityStatus entityStatus) throws BusinessException;
+	List<StockEntity> fetchInAnalysisByUnitUuid(String unitUuid, EntityStatus entityStatus) throws BusinessException;
 }

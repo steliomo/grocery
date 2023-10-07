@@ -3,7 +3,6 @@
  */
 package mz.co.grocery.persistence.rent.repository;
 
-import mz.co.grocery.core.domain.rent.RentItem;
 import mz.co.grocery.persistence.rent.entity.RentItemEntity;
 import mz.co.msaude.boot.frameworks.dao.GenericDAO;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
@@ -22,6 +21,6 @@ public interface RentItemRepository extends GenericDAO<RentItemEntity, Long> {
 		public static final String fetchByUuid = "RentItemEntity.fetchByUuid";
 	}
 
-	RentItem fetchByUuid(String rentItemUuid) throws BusinessException;
+	RentItemEntity fetchByUuid(String rentItemUuid) throws BusinessException;
 
 }

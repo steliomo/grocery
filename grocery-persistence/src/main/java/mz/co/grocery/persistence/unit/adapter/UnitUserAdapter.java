@@ -4,6 +4,7 @@
 package mz.co.grocery.persistence.unit.adapter;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -51,7 +52,8 @@ public class UnitUserAdapter extends AbstractService implements UnitUserPort {
 
 	@Override
 	public List<UnitUser> fetchAllUnitUsers(final int currentPage, final int maxResult) throws BusinessException {
-		return this.repository.fetchAllGroceryUsers(currentPage, maxResult, EntityStatus.ACTIVE);
+		return this.repository.fetchAllGroceryUsers(currentPage, maxResult, EntityStatus.ACTIVE).stream().map(this.mapper::toDomain)
+				.collect(Collectors.toList());
 	}
 
 	@Override
@@ -61,7 +63,7 @@ public class UnitUserAdapter extends AbstractService implements UnitUserPort {
 
 	@Override
 	public UnitUser fetchUnitUserByUser(final String user) throws BusinessException {
-		return this.repository.fetchByUser(user, EntityStatus.ACTIVE);
+		return this.mapper.toDomain(this.repository.fetchByUser(user, EntityStatus.ACTIVE));
 	}
 
 	@Override

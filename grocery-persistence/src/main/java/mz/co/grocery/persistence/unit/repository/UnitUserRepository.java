@@ -6,7 +6,6 @@ package mz.co.grocery.persistence.unit.repository;
 import java.util.List;
 
 import mz.co.grocery.core.domain.unit.UnitDetail;
-import mz.co.grocery.core.domain.unit.UnitUser;
 import mz.co.grocery.persistence.unit.entity.UnitUserEntity;
 import mz.co.msaude.boot.frameworks.dao.GenericDAO;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
@@ -33,10 +32,10 @@ public interface UnitUserRepository extends GenericDAO<UnitUserEntity, Long> {
 
 	}
 
-	List<UnitUser> fetchAllGroceryUsers(int currentPage, int maxResult, EntityStatus entityStatus)
+	List<UnitUserEntity> fetchAllGroceryUsers(int currentPage, int maxResult, EntityStatus entityStatus)
 			throws BusinessException;
 
-	UnitUser fetchByUser(String user, EntityStatus entityStatus) throws BusinessException;
+	UnitUserEntity fetchByUser(String user, EntityStatus entityStatus) throws BusinessException;
 
 	UnitDetail findUnitDetailByUuid(String unitUuid, EntityStatus entityStatus) throws BusinessException;
 }

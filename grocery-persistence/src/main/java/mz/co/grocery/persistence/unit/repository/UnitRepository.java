@@ -5,7 +5,6 @@ package mz.co.grocery.persistence.unit.repository;
 
 import java.util.List;
 
-import mz.co.grocery.core.domain.unit.Unit;
 import mz.co.grocery.persistence.unit.entity.UnitEntity;
 import mz.co.msaude.boot.frameworks.dao.GenericDAO;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
@@ -29,7 +28,7 @@ public interface UnitRepository extends GenericDAO<UnitEntity, Long> {
 		public static final String findByName = "UnitEntity.findByName";
 	}
 
-	List<Unit> findAll(int currentPage, int maxResul, EntityStatus entityStatus) throws BusinessException;
+	List<UnitEntity> findAll(int currentPage, int maxResul, EntityStatus entityStatus) throws BusinessException;
 
-	List<Unit> findByName(String unitName, EntityStatus entityStatus) throws BusinessException;
+	List<UnitEntity> findByName(String unitName, EntityStatus entityStatus) throws BusinessException;
 }

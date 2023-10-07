@@ -4,6 +4,7 @@
 package mz.co.grocery.persistence.item.adapter;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -60,7 +61,8 @@ public class ProductDescriptionAdapter implements ProductDescriptionPort {
 	@Override
 	public List<ProductDescription> fetchdAllProductDescriptions(final int currentPage, final int maxResult)
 			throws BusinessException {
-		return this.repository.fetchdAll(currentPage, maxResult, EntityStatus.ACTIVE);
+		return this.repository.fetchdAll(currentPage, maxResult, EntityStatus.ACTIVE).stream().map(this.mapper::toDomain)
+				.collect(Collectors.toList());
 	}
 
 	@Override
@@ -71,13 +73,13 @@ public class ProductDescriptionAdapter implements ProductDescriptionPort {
 	@Override
 	public List<ProductDescription> fetchProductDescriptionByDescription(final String description)
 			throws BusinessException {
-		return this.repository.fetchByDescription(description, EntityStatus.ACTIVE);
+		return this.repository.fetchByDescription(description, EntityStatus.ACTIVE).stream().map(this.mapper::toDomain).collect(Collectors.toList());
 	}
 
 	@Override
 	public ProductDescription fetchProductDescriptionByUuid(final String productDescriptionUuid)
 			throws BusinessException {
-		return this.repository.fetchByUuid(productDescriptionUuid, EntityStatus.ACTIVE);
+		return this.mapper.toDomain(this.repository.fetchByUuid(productDescriptionUuid, EntityStatus.ACTIVE));
 	}
 
 	@Override

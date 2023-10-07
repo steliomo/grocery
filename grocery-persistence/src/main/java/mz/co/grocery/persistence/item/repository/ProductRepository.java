@@ -5,7 +5,6 @@ package mz.co.grocery.persistence.item.repository;
 
 import java.util.List;
 
-import mz.co.grocery.core.domain.item.Product;
 import mz.co.grocery.core.domain.unit.Unit;
 import mz.co.grocery.persistence.item.entity.ProductEntity;
 import mz.co.msaude.boot.frameworks.dao.GenericDAO;
@@ -32,11 +31,11 @@ public interface ProductRepository extends GenericDAO<ProductEntity, Long> {
 		public static final String findNotInThisGrocery = "ProductEntity.findNotInThisGrocery";
 	}
 
-	List<Product> findAll(EntityStatus entityStatus) throws BusinessException;
+	List<ProductEntity> findAll(EntityStatus entityStatus) throws BusinessException;
 
-	List<Product> findByName(String name, EntityStatus entityStatus) throws BusinessException;
+	List<ProductEntity> findByName(String name, EntityStatus entityStatus) throws BusinessException;
 
-	List<Product> findByGrocery(Unit grocery, EntityStatus entityStatus) throws BusinessException;
+	List<ProductEntity> findByGrocery(Unit grocery, EntityStatus entityStatus) throws BusinessException;
 
-	List<Product> findNotInThisGrocery(Unit grocery, EntityStatus entityStatus) throws BusinessException;
+	List<ProductEntity> findNotInThisGrocery(Unit grocery, EntityStatus entityStatus) throws BusinessException;
 }

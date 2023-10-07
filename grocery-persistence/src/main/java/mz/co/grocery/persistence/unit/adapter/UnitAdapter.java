@@ -4,6 +4,7 @@
 package mz.co.grocery.persistence.unit.adapter;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -57,7 +58,7 @@ public class UnitAdapter implements UnitPort {
 
 	@Override
 	public List<Unit> findAllGroceries(final int currentPage, final int maxResult) throws BusinessException {
-		return this.repository.findAll(currentPage, maxResult, EntityStatus.ACTIVE);
+		return this.repository.findAll(currentPage, maxResult, EntityStatus.ACTIVE).stream().map(this.mapper::toDomain).collect(Collectors.toList());
 	}
 
 	@Override
@@ -72,6 +73,6 @@ public class UnitAdapter implements UnitPort {
 
 	@Override
 	public List<Unit> findUnitsByName(final String unitName) throws BusinessException {
-		return this.repository.findByName(unitName, EntityStatus.ACTIVE);
+		return this.repository.findByName(unitName, EntityStatus.ACTIVE).stream().map(this.mapper::toDomain).collect(Collectors.toList());
 	}
 }

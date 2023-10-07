@@ -1,6 +1,7 @@
 package mz.co.grocery.persistence.expense.adapter;
 
 import java.util.List;
+import java.util.stream.Collectors;
 
 import org.springframework.transaction.annotation.Transactional;
 
@@ -56,7 +57,8 @@ public class ExpenseTypeAdapter implements ExpenseTypePort {
 	@Override
 	public List<ExpenseType> findAllExpensesType(final int currentPage, final int maxResult) throws BusinessException {
 
-		return this.repository.findAll(currentPage, maxResult, EntityStatus.ACTIVE);
+		return this.repository.findAll(currentPage, maxResult, EntityStatus.ACTIVE).stream().map(this.mapper::toDomain)
+				.collect(Collectors.toList());
 	}
 
 	@Override
