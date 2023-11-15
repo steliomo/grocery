@@ -18,13 +18,13 @@ import javax.ws.rs.core.Response;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import mz.co.grocery.core.application.document.DocumentGeneratorPort;
 import mz.co.grocery.core.application.guide.in.GuideIssuer;
 import mz.co.grocery.core.application.guide.service.ReturnGuideIssuer;
 import mz.co.grocery.core.application.guide.service.TransportGuideIssuer;
 import mz.co.grocery.core.application.rent.in.MakeRentPaymentUseCase;
 import mz.co.grocery.core.application.rent.in.RentUseCase;
 import mz.co.grocery.core.application.rent.out.RentPort;
-import mz.co.grocery.core.application.report.ReportGeneratorPort;
 import mz.co.grocery.core.common.BeanQualifier;
 import mz.co.grocery.core.common.WebAdapter;
 import mz.co.grocery.core.domain.guide.GuideType;
@@ -57,7 +57,7 @@ public class RentResource extends AbstractResource {
 	private MakeRentPaymentUseCase makeRentPaymentUseCase;
 
 	@Inject
-	private ReportGeneratorPort reportGeneratorPort;
+	private DocumentGeneratorPort reportGeneratorPort;
 
 	@Autowired
 	@BeanQualifier(TransportGuideIssuer.NAME)
@@ -138,7 +138,7 @@ public class RentResource extends AbstractResource {
 
 		final RentReport rentReport = new RentReport(rent);
 
-		this.reportGeneratorPort.createPdfReport(rentReport);
+		this.reportGeneratorPort.generatePdfDocument(rentReport);
 
 		return Response.ok(rentReport).build();
 	}

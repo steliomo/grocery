@@ -23,6 +23,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import mz.co.grocery.core.application.expense.out.ExpensePort;
 import mz.co.grocery.core.application.pos.in.OpenTableUseCase;
 import mz.co.grocery.core.application.pos.in.RegistTableItemsUseCase;
+import mz.co.grocery.core.application.pos.in.SendTableBillUseCase;
 import mz.co.grocery.core.application.rent.out.RentPaymentPort;
 import mz.co.grocery.core.application.sale.in.SalePaymentUseCase;
 import mz.co.grocery.core.application.sale.in.SaleUseCase;
@@ -92,6 +93,9 @@ public class SaleResource extends AbstractResource {
 
 	@Inject
 	private RegistTableItemsUseCase registTableItemsUseCase;
+
+	@Inject
+	private SendTableBillUseCase sendTableBillUseCase;
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -274,5 +278,17 @@ public class SaleResource extends AbstractResource {
 		final Sale table = this.salePort.fetchByUuid(tableUuid);
 
 		return Response.ok(this.saleMapper.toDTO(table)).build();
+	}
+
+	@POST
+	@Path("send-table-bill")
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response sendTableBill(final SaleDTO saleDTO) throws BusinessException {
+		Sale sale = this.saleMapper.toDomain(saleDTO);
+
+		sale = this.sendTableBillUseCase.sendBill(sale);
+
+		return Response.ok(this.saleMapper.toDTO(sale)).build();
 	}
 }

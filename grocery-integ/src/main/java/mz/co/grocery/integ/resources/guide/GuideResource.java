@@ -13,12 +13,12 @@ import javax.ws.rs.core.Response;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import mz.co.grocery.core.application.document.DocumentGeneratorPort;
 import mz.co.grocery.core.application.guide.in.GuideIssuer;
 import mz.co.grocery.core.application.guide.in.IssueGuideUseCase;
 import mz.co.grocery.core.application.guide.service.DeliveryGuideIssuer;
 import mz.co.grocery.core.application.guide.service.ReturnGuideIssuer;
 import mz.co.grocery.core.application.guide.service.TransportGuideIssuer;
-import mz.co.grocery.core.application.report.ReportGeneratorPort;
 import mz.co.grocery.core.common.BeanQualifier;
 import mz.co.grocery.core.common.WebAdapter;
 import mz.co.grocery.core.domain.guide.Guide;
@@ -59,7 +59,7 @@ public class GuideResource extends AbstractResource {
 	private ApplicationTranslator translator;
 
 	@Inject
-	private ReportGeneratorPort reportGeneratorPort;
+	private DocumentGeneratorPort reportGeneratorPort;
 
 	@Path("issue-transport-guide")
 	@POST
@@ -113,9 +113,9 @@ public class GuideResource extends AbstractResource {
 
 		final GuideReport guideReport = new GuideReport(guide, guide.getGuideItems().get(), this.translator);
 
-		this.reportGeneratorPort.createPdfReport(guideReport);
+		this.reportGeneratorPort.generatePdfDocument(guideReport);
 
-		guideDTO.setFilePath(guideReport.getFilePath());
+		guideDTO.setFilename(guideReport.getFilename());
 
 		return Response.ok(guideDTO).build();
 	}

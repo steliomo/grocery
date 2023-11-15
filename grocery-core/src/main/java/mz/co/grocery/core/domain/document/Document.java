@@ -1,7 +1,7 @@
 /**
  *
  */
-package mz.co.grocery.core.domain.report;
+package mz.co.grocery.core.domain.document;
 
 import java.util.Collection;
 import java.util.Map;
@@ -10,7 +10,7 @@ import java.util.Map;
  * @author Stélio Moiane
  *
  */
-public interface Report {
+public interface Document {
 
 	int LEFT_PAD = 5;
 
@@ -18,7 +18,7 @@ public interface Report {
 
 	String PDF = "pdf";
 
-	String getFilePath();
+	String getFilename();
 
 	Map<String, Object> getParameters();
 

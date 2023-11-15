@@ -29,7 +29,7 @@ public class Guide extends Domain {
 
 	private GuideType type;
 
-	private String filePath;
+	private String filename;
 
 	private Set<GuideItem> guideItems;
 
@@ -77,12 +77,12 @@ public class Guide extends Domain {
 		this.guideItems.add(guideItem);
 	}
 
-	public String getFilePath() {
-		return this.filePath;
+	public String getFilename() {
+		return this.filename;
 	}
 
-	public void setFilePath(final String filePath) {
-		this.filePath = filePath;
+	public void setFilename(final String filename) {
+		this.filename = filename;
 	}
 
 	public Unit getUnit() {

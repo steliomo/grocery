@@ -33,7 +33,7 @@ public class GuideDTO extends GenericDTO {
 
 	private List<GuideItemDTO> guideItemsDTO;
 
-	private String filePath;
+	private String filename;
 
 	public GuideDTO() {
 		this.guideItemsDTO = new ArrayList<>();
@@ -79,11 +79,11 @@ public class GuideDTO extends GenericDTO {
 		this.guideItemsDTO.add(guideItemDTO);
 	}
 
-	public String getFilePath() {
-		return this.filePath;
+	public String getFilename() {
+		return this.filename;
 	}
 
-	public void setFilePath(final String filePath) {
-		this.filePath = filePath;
+	public void setFilename(final String filename) {
+		this.filename = filename;
 	}
 }

@@ -9,10 +9,10 @@ import java.util.stream.Collectors;
 
 import org.springframework.transaction.annotation.Transactional;
 
+import mz.co.grocery.core.application.document.DocumentGeneratorPort;
 import mz.co.grocery.core.application.quotation.out.GenerateQuotationPdfPort;
 import mz.co.grocery.core.application.quotation.out.QuotationPort;
 import mz.co.grocery.core.application.quotation.out.SaveQuotationPort;
-import mz.co.grocery.core.application.report.ReportGeneratorPort;
 import mz.co.grocery.core.common.PersistenceAdapter;
 import mz.co.grocery.core.domain.quotation.Quotation;
 import mz.co.grocery.persistence.quotation.entity.QuotationEntity;
@@ -35,9 +35,9 @@ public class QuotationAdaper implements SaveQuotationPort, GenerateQuotationPdfP
 
 	private EntityMapper<QuotationEntity, Quotation> mapper;
 
-	private ReportGeneratorPort reportGeneratorPort;
+	private DocumentGeneratorPort reportGeneratorPort;
 
-	public QuotationAdaper(final QuotationRepository quotationRepository, final ReportGeneratorPort reportGeneratorPort,
+	public QuotationAdaper(final QuotationRepository quotationRepository, final DocumentGeneratorPort reportGeneratorPort,
 			final EntityMapper<QuotationEntity, Quotation> mapper) {
 		this.repository = quotationRepository;
 		this.reportGeneratorPort = reportGeneratorPort;
@@ -59,8 +59,8 @@ public class QuotationAdaper implements SaveQuotationPort, GenerateQuotationPdfP
 	@Override
 	public String generatePdf(final Quotation quotation, final LocalDateTime quotationDataTime) throws BusinessException {
 		final QuotationReport quotationReport = new QuotationReport(quotation, quotationDataTime);
-		this.reportGeneratorPort.createPdfReport(quotationReport);
-		return quotationReport.getFilePath();
+		this.reportGeneratorPort.generatePdfDocument(quotationReport);
+		return quotationReport.getFilename();
 	}
 
 	@Override

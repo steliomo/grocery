@@ -42,7 +42,7 @@ public class GuideDTOMapper extends AbstractDTOMapper<GuideDTO, Guide> implement
 		domain.getRent().ifPresent(rent -> dto.setRentDTO(this.rentMapper.toDTO(rent)));
 		domain.getSale().ifPresent(sale -> dto.setSaleDTO(this.saleMapper.toDTO(sale)));
 		dto.setIssueDate(domain.getIssueDate());
-		dto.setFilePath(domain.getFilePath());
+		dto.setFilename(domain.getFilename());
 
 		domain.getGuideItems().ifPresent(guideItems -> guideItems.forEach(guideItem -> dto.addGuideItemDTO(this.guideItemMapper.toDTO(guideItem))));
 
@@ -58,7 +58,7 @@ public class GuideDTOMapper extends AbstractDTOMapper<GuideDTO, Guide> implement
 		dto.getRentDTO().ifPresent(rent -> domain.setRent(this.rentMapper.toDomain(rent)));
 		dto.getSaleDTO().ifPresent(sale -> domain.setSale(this.saleMapper.toDomain(sale)));
 		domain.setIssueDate(dto.getIssueDate());
-		domain.setFilePath(dto.getFilePath());
+		domain.setFilename(dto.getFilename());
 
 		dto.getGuideItemsDTO()
 		.ifPresent(guideItems -> guideItems.forEach(guideItem -> domain.addGuideItem(this.guideItemMapper.toDomain(guideItem))));

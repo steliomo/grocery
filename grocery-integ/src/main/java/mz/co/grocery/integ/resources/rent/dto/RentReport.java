@@ -12,15 +12,15 @@ import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
 
+import mz.co.grocery.core.domain.document.Document;
 import mz.co.grocery.core.domain.rent.Rent;
 import mz.co.grocery.core.domain.rent.RentItem;
-import mz.co.grocery.core.domain.report.Report;
 
 /**
  * @author Stélio Moiane
  *
  */
-public class RentReport implements Report {
+public class RentReport implements Document {
 
 	public static final String REPORT_XML_NAME = "reports/quotation.jrxml";
 
@@ -73,7 +73,7 @@ public class RentReport implements Report {
 	}
 
 	@Override
-	public String getFilePath() {
+	public String getFilename() {
 		return this.name;
 	}
 

@@ -13,14 +13,14 @@ import java.util.Set;
 
 import org.apache.commons.lang3.StringUtils;
 
-import mz.co.grocery.core.domain.report.Report;
+import mz.co.grocery.core.domain.document.Document;
 import mz.co.grocery.core.util.ApplicationTranslator;
 
 /**
  * @author Stélio Moiane
  *
  */
-public class GuideReport implements Report {
+public class GuideReport implements Document {
 
 	public static final String REPORT_XML_NAME = "reports/guide.jrxml";
 
@@ -39,7 +39,7 @@ public class GuideReport implements Report {
 	public GuideReport(final Guide guide, final Set<GuideItem> items, final ApplicationTranslator translator) {
 		this.guide = guide;
 		this.items = items;
-		this.code = StringUtils.leftPad(String.valueOf(this.guide.getId()), Report.LEFT_PAD, Report.PAD_CHAR);
+		this.code = StringUtils.leftPad(String.valueOf(this.guide.getId()), Document.LEFT_PAD, Document.PAD_CHAR);
 		this.setParameters(guide, translator);
 		this.addItems(this.guide);
 		this.generateFileName(this.guide);
@@ -79,7 +79,7 @@ public class GuideReport implements Report {
 	}
 
 	@Override
-	public String getFilePath() {
+	public String getFilename() {
 		return this.fileName;
 	}
 

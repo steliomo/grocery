@@ -1,14 +1,14 @@
 /**
  *
  */
-package mz.co.grocery.persistence.report;
+package mz.co.grocery.persistence.document;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 
-import mz.co.grocery.core.application.report.ReportGeneratorPort;
+import mz.co.grocery.core.application.document.DocumentGeneratorPort;
 import mz.co.grocery.core.common.PersistenceAdapter;
-import mz.co.grocery.core.domain.report.Report;
+import mz.co.grocery.core.domain.document.Document;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import net.sf.jasperreports.engine.JRException;
 import net.sf.jasperreports.engine.JasperCompileManager;
@@ -23,22 +23,24 @@ import net.sf.jasperreports.engine.data.JRBeanCollectionDataSource;
  *
  */
 @PersistenceAdapter
-public class ReportGeneratorAdapter implements ReportGeneratorPort {
+public class DocumentGeneratorAdapter implements DocumentGeneratorPort {
 
 	@Override
-	public void createPdfReport(final Report report) throws BusinessException {
+	public String generatePdfDocument(final Document report) throws BusinessException {
 
-		try (FileInputStream fileInputStream = new FileInputStream(ReportGeneratorPort.FILE_DIR + report.getXml())) {
+		try (FileInputStream fileInputStream = new FileInputStream(DocumentGeneratorPort.FILE_DIR + report.getXml())) {
 
 			final JasperReport jasperReport = JasperCompileManager.compileReport(fileInputStream);
 
 			final JRBeanCollectionDataSource jrBeanCollectionDataSource = new JRBeanCollectionDataSource(report.getData());
 
 			final JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, report.getParameters(), jrBeanCollectionDataSource);
-			JasperExportManager.exportReportToPdfFile(jasperPrint, ReportGeneratorPort.FILE_DIR + report.getFilePath());
+			JasperExportManager.exportReportToPdfFile(jasperPrint, DocumentGeneratorPort.FILE_DIR + report.getFilename());
 		} catch (final IOException | JRException e) {
 			e.printStackTrace();
 			throw new BusinessException(e.getMessage());
 		}
+
+		return report.getFilename();
 	}
 }

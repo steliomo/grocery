@@ -15,16 +15,16 @@ import java.util.Map;
 
 import org.apache.commons.lang3.StringUtils;
 
+import mz.co.grocery.core.domain.document.Document;
 import mz.co.grocery.core.domain.quotation.Quotation;
 import mz.co.grocery.core.domain.quotation.QuotationItem;
 import mz.co.grocery.core.domain.quotation.QuotationType;
-import mz.co.grocery.core.domain.report.Report;
 
 /**
  * @author Stélio Moiane
  *
  */
-public class QuotationReport implements Report {
+public class QuotationReport implements Document {
 
 	private static final BigDecimal VAT = new BigDecimal(0.16);
 
@@ -48,12 +48,12 @@ public class QuotationReport implements Report {
 		final String time = String.valueOf(this.quotationDateTime).replace("-", "").replace("/", "").replace(".", "").replace(":", "")
 				.replace(":", "")
 				.replace("T", "");
-		this.fileName = this.quotation.getType().toString() + "_" + time + "." + Report.PDF;
+		this.fileName = this.quotation.getType().toString() + "_" + time + "." + Document.PDF;
 
 	}
 
 	@Override
-	public String getFilePath() {
+	public String getFilename() {
 		return this.fileName;
 	}
 
@@ -61,7 +61,7 @@ public class QuotationReport implements Report {
 	public Map<String, Object> getParameters() {
 		final Map<String, Object> parameters = new HashMap<>();
 
-		final String code = StringUtils.leftPad(String.valueOf(this.quotation.getId()), Report.LEFT_PAD, Report.PAD_CHAR);
+		final String code = StringUtils.leftPad(String.valueOf(this.quotation.getId()), Document.LEFT_PAD, Document.PAD_CHAR);
 
 		final BigDecimal vat = this.quotation.getTotalValue().multiply(QuotationReport.VAT);
 		final BigDecimal grandTotal = this.quotation.getTotalValue().add(vat).subtract(this.quotation.getDiscount());

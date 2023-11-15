@@ -48,6 +48,8 @@ public class Sale extends Domain {
 
 	private Set<Guide> guides;
 
+	private String filename;
+
 	public Sale() {
 		this.items = new HashSet<>();
 		this.guides = new HashSet<>();
@@ -188,5 +190,13 @@ public class Sale extends Domain {
 
 	public void addGuide(final Guide guide) {
 		this.guides.add(guide);
+	}
+
+	public void setFilename(final String filename) {
+		this.filename = filename;
+	}
+
+	public String getFilename() {
+		return this.filename;
 	}
 }

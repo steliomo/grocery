@@ -13,6 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
+import mz.co.grocery.core.application.document.DocumentGeneratorPort;
 import mz.co.grocery.core.application.guide.in.GuideIssuer;
 import mz.co.grocery.core.application.guide.in.IssueGuideUseCase;
 import mz.co.grocery.core.application.guide.out.GuideItemPort;
@@ -22,7 +23,6 @@ import mz.co.grocery.core.application.guide.service.ReturnGuideIssuer;
 import mz.co.grocery.core.application.payment.in.PaymentUseCase;
 import mz.co.grocery.core.application.rent.out.RentItemPort;
 import mz.co.grocery.core.application.rent.out.RentPort;
-import mz.co.grocery.core.application.report.ReportGeneratorPort;
 import mz.co.grocery.core.application.sale.out.StockPort;
 import mz.co.grocery.core.config.AbstractUnitServiceTest;
 import mz.co.grocery.core.domain.guide.Guide;
@@ -52,7 +52,7 @@ public class ReturnGuideTest extends AbstractUnitServiceTest {
 	private ApplicationTranslator translator;
 
 	@Mock
-	private ReportGeneratorPort reportGeneratorPort;
+	private DocumentGeneratorPort reportGeneratorPort;
 
 	@Mock
 	private PaymentUseCase paymentUseCase;
