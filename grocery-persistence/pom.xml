@@ -6,7 +6,7 @@
 	<parent>
 		<groupId>mz.co.grocery</groupId>
 		<artifactId>grocery</artifactId>
-		<version>2.9.1-SNAPSHOT</version>
+		<version>2.9.1</version>
 	</parent>
 
 	<artifactId>grocery-persistence</artifactId>
