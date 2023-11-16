@@ -56,7 +56,8 @@ public class SendTableBillService implements SendTableBillUseCase {
 
 		sale.setFilename(filename);
 
-		final Message textMessage = new Message(sale.getCustomer().get().getContact(), sale.getCustomer().get().getName(), MessageType.TEXT);
+		final Message textMessage = new Message(sale.getCustomer().get().getName(), sale.getCustomer().get().getContact(), MessageType.TEXT,
+				Boolean.FALSE);
 
 		final Message documentMessage = new Message(sale.getCustomer().get().getContact(), MessageType.DOCUMENT,
 				sale.getFilename());

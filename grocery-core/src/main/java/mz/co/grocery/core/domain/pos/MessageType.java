@@ -8,8 +8,9 @@ package mz.co.grocery.core.domain.pos;
  *
  */
 public enum MessageType {
-
 	TEXT,
+
+	TEMPLATE,
 
 	DOCUMENT,
 

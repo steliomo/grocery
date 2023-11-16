@@ -17,6 +17,9 @@ public class WhatsApp {
 	@Value("${whatsapp.message.url}")
 	private String url;
 
+	@Value("${whatsapp.message.recipient.type}")
+	private String recipient;
+
 	@Value("${whatsapp.message.token}")
 	private String token;
 
@@ -41,6 +44,9 @@ public class WhatsApp {
 	@Value("${whatsapp.message.document.type}")
 	private String documentType;
 
+	@Value("${whatsapp.message.template.type}")
+	private String templateType;
+
 	@Value("${document.url}")
 	private String documentUrl;
 
@@ -62,6 +68,10 @@ public class WhatsApp {
 		return this.product;
 	}
 
+	public String getRecipient() {
+		return this.recipient;
+	}
+
 	public String getWelcome() {
 		return this.welcome;
 	}
@@ -80,6 +90,10 @@ public class WhatsApp {
 
 	public String getTextType() {
 		return this.textType;
+	}
+
+	public String getTemplateType() {
+		return this.templateType;
 	}
 
 	public String getDocumentType() {

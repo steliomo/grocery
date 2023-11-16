@@ -12,26 +12,29 @@ public class Message {
 
 	private String customer;
 
-	private String to;
+	private String contact;
 
 	private MessageType type;
 
 	private String documentName;
 
-	public Message(final String to, final MessageType type, final String documentName) {
-		this.to = to;
+	private Boolean hasUrlText;
+
+	public Message(final String contact, final MessageType type, final String documentName) {
+		this.contact = contact;
 		this.type = type;
 		this.documentName = documentName;
 	}
 
-	public Message(final String to, final String customer, final MessageType type) {
-		this.to = to;
-		this.type = type;
+	public Message(final String customer, final String contact, final MessageType type, final Boolean hasUrlText) {
 		this.customer = customer;
+		this.contact = contact;
+		this.type = type;
+		this.hasUrlText = hasUrlText;
 	}
 
-	public String getTo() {
-		return this.to;
+	public String getContact() {
+		return this.contact;
 	}
 
 	public MessageType getType() {
@@ -44,5 +47,9 @@ public class Message {
 
 	public String getCustomer() {
 		return this.customer;
+	}
+
+	public Boolean hasUrlText() {
+		return this.hasUrlText;
 	}
 }

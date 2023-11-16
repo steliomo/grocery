@@ -18,15 +18,28 @@ public class WhatsAppMessage {
 
 	private String messaging_product;
 
+	private String recipient_type;
+
 	private String to;
 
 	private String type;
+
+	private WhatsAppText text;
 
 	private WhatsAppDocument document;
 
 	private WhatsAppTemplate template;
 
 	public WhatsAppMessage() {
+	}
+
+	public WhatsAppMessage(final String messaging_product, final String recipient_type, final String to, final String type, final WhatsAppText text) {
+		this.messaging_product = messaging_product;
+		this.recipient_type = recipient_type;
+		this.to = to;
+
+		this.type = type;
+		this.text = text;
 	}
 
 	public WhatsAppMessage(final String messaging_product, final String to, final String type, final WhatsAppTemplate template) {
@@ -47,12 +60,20 @@ public class WhatsAppMessage {
 		return this.messaging_product;
 	}
 
+	public String getRecipient_type() {
+		return this.recipient_type;
+	}
+
 	public String getTo() {
 		return this.to;
 	}
 
 	public String getType() {
 		return this.type;
+	}
+
+	public WhatsAppText getText() {
+		return this.text;
 	}
 
 	public WhatsAppDocument getDocument() {

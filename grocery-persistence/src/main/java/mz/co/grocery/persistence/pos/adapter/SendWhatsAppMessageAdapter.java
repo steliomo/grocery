@@ -13,6 +13,7 @@ import mz.co.grocery.persistence.pos.model.WhatsAppDocument;
 import mz.co.grocery.persistence.pos.model.WhatsAppMessage;
 import mz.co.grocery.persistence.pos.model.WhatsAppParameter;
 import mz.co.grocery.persistence.pos.model.WhatsAppTemplate;
+import mz.co.grocery.persistence.pos.model.WhatsAppText;
 import mz.co.grocery.persistence.pos.service.WhatsAppAPIService;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 
@@ -40,7 +41,7 @@ public class SendWhatsAppMessageAdapter implements SendMessagesPort {
 
 			switch (message.getType()) {
 
-			case TEXT:
+			case TEMPLATE:
 
 				final WhatsAppParameter parameter = new WhatsAppParameter(this.whatsApp.getParameterType(), message.getCustomer());
 
@@ -50,20 +51,35 @@ public class SendWhatsAppMessageAdapter implements SendMessagesPort {
 				final WhatsAppTemplate template = new WhatsAppTemplate(this.whatsApp.getBill(), new Language(this.whatsApp.getLanguage()));
 				template.addComponent(component);
 
-				final WhatsAppMessage textMessage = new WhatsAppMessage(this.whatsApp.getProduct(), message.getTo(), this.whatsApp.getTextType(),
+				final WhatsAppMessage templateMessage = new WhatsAppMessage(this.whatsApp.getProduct(), message.getContact(),
+						this.whatsApp.getTemplateType(),
 						template);
 
-				this.whatsAppAPIService.sendMessage(textMessage);
+				this.whatsAppAPIService.sendMessage(templateMessage);
 				break;
 
-			default:
+			case DOCUMENT:
 
 				final WhatsAppDocument document = new WhatsAppDocument(message.getDocumentName(), this.whatsApp.getDocumentUrl());
-				final WhatsAppMessage documentMessage = new WhatsAppMessage(this.whatsApp.getProduct(), message.getTo(),
+				final WhatsAppMessage documentMessage = new WhatsAppMessage(this.whatsApp.getProduct(), message.getContact(),
 						this.whatsApp.getDocumentType(),
 						document);
 
 				this.whatsAppAPIService.sendMessage(documentMessage);
+				break;
+
+			default:
+
+				final String messageContent = String.format(this.whatsApp.getBill(), message.getCustomer());
+
+				final WhatsAppText text = new WhatsAppText(message.hasUrlText(), messageContent);
+
+				final WhatsAppMessage textMessage = new WhatsAppMessage(this.whatsApp.getProduct(), this.whatsApp.getRecipient(),
+						message.getContact(),
+						this.whatsApp.getTextType(),
+						text);
+
+				this.whatsAppAPIService.sendMessage(textMessage);
 			}
 		}
 	}
