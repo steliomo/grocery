@@ -32,6 +32,9 @@ public class WhatsApp {
 	@Value("${whatsapp.message.bill}")
 	private String bill;
 
+	@Value("${whatsapp.message.template.bill}")
+	private String templateBill;
+
 	@Value("${whatsapp.message.receipt}")
 	private String receipt;
 
@@ -50,11 +53,14 @@ public class WhatsApp {
 	@Value("${document.url}")
 	private String documentUrl;
 
-	@Value("${whatsapp.component.type}")
-	private String componentType;
+	@Value("${whatsapp.component.body.type}")
+	private String bodyType;
 
-	@Value("${whatsapp.component.parameter.type}")
-	private String parameterType;
+	@Value("${whatsapp.component.header.type}")
+	private String headerType;
+
+	@Value("${whatsapp.component.text.parameter.type}")
+	private String textParameterType;
 
 	public String getUrl() {
 		return this.url;
@@ -78,6 +84,10 @@ public class WhatsApp {
 
 	public String getBill() {
 		return this.bill;
+	}
+
+	public String getTemplateBill() {
+		return this.templateBill;
 	}
 
 	public String getReceipt() {
@@ -104,11 +114,15 @@ public class WhatsApp {
 		return this.documentUrl;
 	}
 
-	public String getComponentType() {
-		return this.componentType;
+	public String getHeaderType() {
+		return this.headerType;
 	}
 
-	public String getParameterType() {
-		return this.parameterType;
+	public String getBodyType() {
+		return this.bodyType;
+	}
+
+	public String getTextParameterType() {
+		return this.textParameterType;
 	}
 }

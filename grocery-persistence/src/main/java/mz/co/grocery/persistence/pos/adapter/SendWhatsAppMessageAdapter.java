@@ -43,13 +43,17 @@ public class SendWhatsAppMessageAdapter implements SendMessagesPort {
 
 			case TEMPLATE:
 
-				final WhatsAppParameter parameter = new WhatsAppParameter(this.whatsApp.getParameterType(), message.getCustomer());
+				final WhatsAppParameter headerParameter = new WhatsAppParameter(this.whatsApp.getTextParameterType(), message.getUnit());
+				final WhatsAppComponent headerComponent = new WhatsAppComponent(this.whatsApp.getHeaderType());
+				headerComponent.addParameter(headerParameter);
 
-				final WhatsAppComponent component = new WhatsAppComponent(this.whatsApp.getComponentType());
-				component.addParameter(parameter);
+				final WhatsAppParameter bodyParameter = new WhatsAppParameter(this.whatsApp.getTextParameterType(), message.getCustomer());
+				final WhatsAppComponent bodyComponent = new WhatsAppComponent(this.whatsApp.getBodyType());
+				bodyComponent.addParameter(bodyParameter);
 
-				final WhatsAppTemplate template = new WhatsAppTemplate(this.whatsApp.getBill(), new Language(this.whatsApp.getLanguage()));
-				template.addComponent(component);
+				final WhatsAppTemplate template = new WhatsAppTemplate(this.whatsApp.getTemplateBill(), new Language(this.whatsApp.getLanguage()));
+				template.addComponent(headerComponent);
+				template.addComponent(bodyComponent);
 
 				final WhatsAppMessage templateMessage = new WhatsAppMessage(this.whatsApp.getProduct(), message.getContact(),
 						this.whatsApp.getTemplateType(),

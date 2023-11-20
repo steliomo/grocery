@@ -10,6 +10,8 @@ package mz.co.grocery.core.domain.pos;
 
 public class Message {
 
+	private String unit;
+
 	private String customer;
 
 	private String contact;
@@ -31,6 +33,17 @@ public class Message {
 		this.contact = contact;
 		this.type = type;
 		this.hasUrlText = hasUrlText;
+	}
+
+	public Message(final String unit, final String customer, final String contact, final MessageType type) {
+		this.unit = unit;
+		this.customer = customer;
+		this.contact = contact;
+		this.type = type;
+	}
+
+	public String getUnit() {
+		return this.unit;
 	}
 
 	public String getContact() {

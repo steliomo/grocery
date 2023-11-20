@@ -5,7 +5,6 @@ package mz.co.grocery.core.pos;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
-import java.util.Optional;
 
 import org.junit.Assert;
 import org.junit.Before;
@@ -17,6 +16,7 @@ import org.mockito.Mockito;
 
 import mz.co.grocery.core.application.customer.out.CustomerPort;
 import mz.co.grocery.core.application.pos.in.OpenTableUseCase;
+import mz.co.grocery.core.application.pos.out.SaleNotifier;
 import mz.co.grocery.core.application.pos.service.OpenTableService;
 import mz.co.grocery.core.application.sale.out.SalePort;
 import mz.co.grocery.core.common.Clock;
@@ -48,8 +48,11 @@ public class OpenTableUseCaseTest extends AbstractUnitServiceTest {
 	@Mock
 	private Clock clock;
 
+	@Mock
+	private SaleNotifier saleNotifier;
+
 	@InjectMocks
-	private OpenTableUseCase openTableUseCase = new OpenTableService(this.clock, this.customerPort, this.salePort);
+	private OpenTableUseCase openTableUseCase = new OpenTableService(this.clock, this.customerPort);
 
 	private UserContext context;
 
@@ -70,11 +73,16 @@ public class OpenTableUseCaseTest extends AbstractUnitServiceTest {
 	@Test
 	public void shouldOpenTable() throws BusinessException {
 
+		Mockito.when(this.saleNotifier.notify(this.context, this.sale)).thenReturn(this.sale);
+		Mockito.when(this.customerPort.createCustomer(ArgumentMatchers.any(UserContext.class),
+				ArgumentMatchers.any(Customer.class))).thenReturn(this.sale.getCustomer().get());
+
 		this.openTableUseCase.openTable(this.context, this.sale);
 
 		Mockito.verify(this.customerPort, Mockito.times(1)).createCustomer(ArgumentMatchers.any(UserContext.class),
 				ArgumentMatchers.any(Customer.class));
-		Mockito.verify(this.salePort, Mockito.times(1)).createSale(this.context, this.sale);
+
+		Mockito.verify(this.saleNotifier, Mockito.times(1)).notify(this.context, this.sale);
 
 		Assert.assertEquals(this.sale.getSaleDate(), LocalDate.now());
 		Assert.assertEquals(this.sale.getSaleStatus(), SaleStatus.OPENED);
@@ -84,14 +92,16 @@ public class OpenTableUseCaseTest extends AbstractUnitServiceTest {
 
 	@Test
 	public void shouldOpenTableWithAnExistingCustomer() throws BusinessException {
-		Mockito.when(this.customerPort.findCustomerByContact(ArgumentMatchers.anyString()))
-		.thenReturn(Optional.of(EntityFactory.gimme(Customer.class, CustomerTemplate.VALID)));
+		Mockito.when(this.saleNotifier.notify(this.context, this.sale)).thenReturn(this.sale);
+		Mockito.when(this.customerPort.findCustomerByContact(this.sale.getCustomer().get().getContact()))
+		.thenReturn(this.sale.getCustomer());
 
 		this.openTableUseCase.openTable(this.context, this.sale);
 
 		Mockito.verify(this.customerPort, Mockito.times(0)).createCustomer(ArgumentMatchers.any(UserContext.class),
 				ArgumentMatchers.any(Customer.class));
-		Mockito.verify(this.salePort, Mockito.times(1)).createSale(this.context, this.sale);
+
+		Mockito.verify(this.saleNotifier, Mockito.times(1)).notify(this.context, this.sale);
 
 		Assert.assertEquals(this.sale.getSaleDate(), LocalDate.now());
 		Assert.assertEquals(this.sale.getSaleStatus(), SaleStatus.OPENED);

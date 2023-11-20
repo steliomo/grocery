@@ -8,7 +8,7 @@ import java.util.Optional;
 
 import mz.co.grocery.core.application.customer.out.CustomerPort;
 import mz.co.grocery.core.application.pos.in.OpenTableUseCase;
-import mz.co.grocery.core.application.sale.out.SalePort;
+import mz.co.grocery.core.application.pos.out.SaleNotifier;
 import mz.co.grocery.core.common.Clock;
 import mz.co.grocery.core.common.UseCase;
 import mz.co.grocery.core.domain.customer.Customer;
@@ -32,12 +32,11 @@ public class OpenTableService extends AbstractService implements OpenTableUseCas
 
 	private CustomerPort customerPort;
 
-	private SalePort salePort;
+	private SaleNotifier saleNotifier;
 
-	public OpenTableService(final Clock clock, final CustomerPort customerPort, final SalePort salePort) {
+	public OpenTableService(final Clock clock, final CustomerPort customerPort) {
 		this.clock = clock;
 		this.customerPort = customerPort;
-		this.salePort = salePort;
 	}
 
 	@Override
@@ -74,9 +73,13 @@ public class OpenTableService extends AbstractService implements OpenTableUseCas
 		sale.setSaleStatus(SaleStatus.OPENED);
 		sale.setSaleType(SaleType.INSTALLMENT);
 
-		sale = this.salePort.createSale(context, sale);
+		sale = this.saleNotifier.notify(context, sale);
 
 		return sale;
 	}
 
+	@Override
+	public void setSaleNotifier(final SaleNotifier saleNotifier) {
+		this.saleNotifier = saleNotifier;
+	}
 }

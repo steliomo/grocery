@@ -24,6 +24,8 @@ import mz.co.grocery.core.application.expense.out.ExpensePort;
 import mz.co.grocery.core.application.pos.in.OpenTableUseCase;
 import mz.co.grocery.core.application.pos.in.RegistTableItemsUseCase;
 import mz.co.grocery.core.application.pos.in.SendTableBillUseCase;
+import mz.co.grocery.core.application.pos.out.SaleListner;
+import mz.co.grocery.core.application.pos.out.SaleNotifier;
 import mz.co.grocery.core.application.rent.out.RentPaymentPort;
 import mz.co.grocery.core.application.sale.in.SalePaymentUseCase;
 import mz.co.grocery.core.application.sale.in.SaleUseCase;
@@ -44,6 +46,8 @@ import mz.co.grocery.integ.resources.customer.dto.CustomerDTO;
 import mz.co.grocery.integ.resources.sale.dto.SaleDTO;
 import mz.co.grocery.integ.resources.sale.dto.SalePaymentDTO;
 import mz.co.grocery.integ.resources.sale.dto.SalesDTO;
+import mz.co.grocery.persistence.pos.adapter.SendSaleTemplateMessageToWhastAppListner;
+import mz.co.grocery.persistence.pos.adapter.SendSaleToDBListner;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.mapper.DTOMapper;
 import mz.co.msaude.boot.frameworks.util.LocalDateAdapter;
@@ -96,6 +100,17 @@ public class SaleResource extends AbstractResource {
 
 	@Inject
 	private SendTableBillUseCase sendTableBillUseCase;
+
+	@Inject
+	private SaleNotifier saleNotifier;
+
+	@Autowired
+	@BeanQualifier(SendSaleToDBListner.NAME)
+	private SaleListner sendToDBListner;
+
+	@Autowired
+	@BeanQualifier(SendSaleTemplateMessageToWhastAppListner.NAME)
+	private SaleListner sendTemplateMessageListner;
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -236,6 +251,10 @@ public class SaleResource extends AbstractResource {
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response openTable(final SaleDTO tableDTO) throws BusinessException {
+
+		this.saleNotifier.registListner(this.sendToDBListner);
+		this.saleNotifier.registListner(this.sendTemplateMessageListner);
+		this.openTableUseCase.setSaleNotifier(this.saleNotifier);
 
 		final Sale table = this.openTableUseCase.openTable(this.getContext(), this.saleMapper.toDomain(tableDTO));
 

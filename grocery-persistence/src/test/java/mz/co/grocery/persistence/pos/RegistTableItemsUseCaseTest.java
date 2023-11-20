@@ -15,7 +15,10 @@ import org.junit.Test;
 import mz.co.grocery.core.application.customer.out.CustomerPort;
 import mz.co.grocery.core.application.pos.in.OpenTableUseCase;
 import mz.co.grocery.core.application.pos.in.RegistTableItemsUseCase;
+import mz.co.grocery.core.application.pos.out.SaleListner;
+import mz.co.grocery.core.application.pos.out.SaleNotifier;
 import mz.co.grocery.core.application.unit.out.UnitPort;
+import mz.co.grocery.core.common.BeanQualifier;
 import mz.co.grocery.core.domain.customer.Customer;
 import mz.co.grocery.core.domain.sale.Sale;
 import mz.co.grocery.core.domain.sale.SaleItem;
@@ -26,6 +29,7 @@ import mz.co.grocery.persistence.config.AbstractIntegServiceTest;
 import mz.co.grocery.persistence.fixturefactory.CustomerTemplate;
 import mz.co.grocery.persistence.fixturefactory.SaleItemTemplate;
 import mz.co.grocery.persistence.fixturefactory.UnitTemplate;
+import mz.co.grocery.persistence.pos.adapter.SendSaleToDBListner;
 import mz.co.grocery.persistence.saleable.StockBuilder;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.fixturefactory.EntityFactory;
@@ -51,6 +55,13 @@ public class RegistTableItemsUseCaseTest extends AbstractIntegServiceTest {
 	@Inject
 	private StockBuilder stockBuilder;
 
+	@Inject
+	private SaleNotifier saleNotifier;
+
+	@Inject
+	@BeanQualifier(SendSaleToDBListner.NAME)
+	private SaleListner sendToDBListner;
+
 	private Sale table;
 
 	private Stock stock;
@@ -68,6 +79,9 @@ public class RegistTableItemsUseCaseTest extends AbstractIntegServiceTest {
 
 		this.table.setUnit(unit);
 		this.table.setCustomer(customer);
+
+		this.saleNotifier.registListner(this.sendToDBListner);
+		this.openTableUseCase.setSaleNotifier(this.saleNotifier);
 
 		this.table = this.openTableUseCase.openTable(this.getUserContext(), this.table);
 
