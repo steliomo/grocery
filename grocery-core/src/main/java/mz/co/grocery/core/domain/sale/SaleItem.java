@@ -149,4 +149,12 @@ public class SaleItem extends Domain {
 	public void addQuantity(final BigDecimal quantity) {
 		this.quantity = this.quantity.add(quantity);
 	}
+
+	public BigDecimal getUnitPrice() {
+		if (this.stock != null) {
+			return this.stock.getSalePrice();
+		}
+
+		return this.serviceItem.getSalePrice();
+	}
 }

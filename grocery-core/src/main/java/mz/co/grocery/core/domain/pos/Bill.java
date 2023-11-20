@@ -70,7 +70,7 @@ public class Bill implements Document {
 		this.items = new ArrayList<>();
 
 		this.sale.getItems().get().forEach(saleItem -> {
-			this.items.add(new BillItem(saleItem.getName(), this.formatter.format(saleItem.getSaleItemValue()), saleItem.getQuantity().toString(),
+			this.items.add(new BillItem(saleItem.getName(), this.formatter.format(saleItem.getUnitPrice()), saleItem.getQuantity().toString(),
 					this.formatter.format(saleItem.getTotalSaleItem())));
 		});
 
