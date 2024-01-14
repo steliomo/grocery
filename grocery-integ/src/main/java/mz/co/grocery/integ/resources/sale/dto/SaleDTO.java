@@ -54,6 +54,8 @@ public class SaleDTO extends GenericDTO {
 
 	private List<GuideDTO> guidesDTO;
 
+	private Integer tableNumber;
+
 	public SaleDTO() {
 		this.saleItemsDTO = new HashSet<>();
 		this.guidesDTO = new ArrayList<>();
@@ -155,5 +157,13 @@ public class SaleDTO extends GenericDTO {
 
 	public void addGuideDTO(final GuideDTO guideDTO) {
 		this.guidesDTO.add(guideDTO);
+	}
+
+	public Integer getTableNumber() {
+		return this.tableNumber;
+	}
+
+	public void setTableNumber(final Integer tableNumber) {
+		this.tableNumber = tableNumber;
 	}
 }

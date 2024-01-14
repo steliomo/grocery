@@ -100,6 +100,9 @@ public class SaleEntity extends GenericEntity {
 	@OneToMany(fetch = FetchType.LAZY, mappedBy = "sale")
 	private Set<GuideEntity> guides;
 
+	@Column(name = "TABLE_NUMBER")
+	private Integer tableNumber;
+
 	public Optional<UnitEntity> getUnit() {
 		try {
 			Optional.ofNullable(this.unit).ifPresent(unit -> unit.getName());
@@ -210,5 +213,13 @@ public class SaleEntity extends GenericEntity {
 		} catch (final LazyInitializationException e) {
 			return Optional.empty();
 		}
+	}
+
+	public Integer getTableNumber() {
+		return this.tableNumber;
+	}
+
+	public void setTableNumber(final Integer tableNumber) {
+		this.tableNumber = tableNumber;
 	}
 }

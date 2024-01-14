@@ -29,6 +29,12 @@ public class UnitDTO extends GenericDTO {
 
 	private BigDecimal balance;
 
+	private Integer numberOfTables;
+
+	private String logoPath;
+
+	private String signaturePath;
+
 	public String getName() {
 		return this.name;
 	}
@@ -83,5 +89,29 @@ public class UnitDTO extends GenericDTO {
 
 	public void setBalance(final BigDecimal balance) {
 		this.balance = balance;
+	}
+
+	public Integer getNumberOfTables() {
+		return this.numberOfTables;
+	}
+
+	public void setNumberOfTables(final Integer numberOfTables) {
+		this.numberOfTables = numberOfTables;
+	}
+
+	public String getLogoPath() {
+		return this.logoPath;
+	}
+
+	public void setLogoPath(final String logoPath) {
+		this.logoPath = logoPath;
+	}
+
+	public String getSignaturePath() {
+		return this.signaturePath;
+	}
+
+	public void setSignaturePath(final String signaturePath) {
+		this.signaturePath = signaturePath;
 	}
 }

@@ -55,6 +55,7 @@ public class SaleEntityMapper extends AbstractEntityMapper<SaleEntity, Sale> imp
 		entity.setTotalPaid(domain.getTotalPaid());
 		entity.setDueDate(domain.getDueDate());
 		entity.setDeliveryStatus(domain.getDeliveryStatus());
+		entity.setTableNumber(domain.getTableNumber());
 
 		return this.toEntity(entity, domain);
 	}
@@ -86,6 +87,7 @@ public class SaleEntityMapper extends AbstractEntityMapper<SaleEntity, Sale> imp
 		domain.setTotalPaid(entity.getTotalPaid());
 		domain.setDueDate(entity.getDueDate());
 		domain.setDeliveryStatus(entity.getDeliveryStatus());
+		domain.setTableNumber(entity.getTableNumber());
 
 		return this.toDomain(entity, domain);
 	}

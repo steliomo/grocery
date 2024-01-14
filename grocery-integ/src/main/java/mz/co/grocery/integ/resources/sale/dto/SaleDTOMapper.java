@@ -63,6 +63,8 @@ public class SaleDTOMapper extends AbstractDTOMapper<SaleDTO, Sale> implements D
 		domain.getItems().ifPresent(items -> items.forEach(saleItem -> dto.addSaleItemsDTO(this.saleItemMapper.toDTO(saleItem))));
 		domain.getGuides().ifPresent(guides -> guides.forEach(guide -> dto.addGuideDTO(this.guideMapper.toDTO(guide))));
 
+		dto.setTableNumber(domain.getTableNumber());
+
 		return this.toDTO(dto, domain);
 	}
 
@@ -85,6 +87,8 @@ public class SaleDTOMapper extends AbstractDTOMapper<SaleDTO, Sale> implements D
 
 		dto.getSaleItemsDTO().ifPresent(items -> items.forEach(saleItem -> domain.addItem(this.saleItemMapper.toDomain(saleItem))));
 		dto.getGuidesDTO().ifPresent(guides -> guides.forEach(guide -> domain.addGuide(this.guideMapper.toDomain(guide))));
+
+		domain.setTableNumber(dto.getTableNumber());
 
 		return this.toDomain(dto, domain);
 	}

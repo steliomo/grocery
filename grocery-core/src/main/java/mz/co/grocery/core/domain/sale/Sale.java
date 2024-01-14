@@ -50,6 +50,8 @@ public class Sale extends Domain {
 
 	private String filename;
 
+	private Integer tableNumber;
+
 	public Sale() {
 		this.items = new HashSet<>();
 		this.guides = new HashSet<>();
@@ -198,5 +200,13 @@ public class Sale extends Domain {
 
 	public String getFilename() {
 		return this.filename;
+	}
+
+	public void setTableNumber(final Integer tableNumber) {
+		this.tableNumber = tableNumber;
+	}
+
+	public Integer getTableNumber() {
+		return this.tableNumber;
 	}
 }

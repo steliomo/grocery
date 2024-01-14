@@ -28,6 +28,9 @@ public class UnitEntityMapper extends AbstractEntityMapper<UnitEntity, Unit> imp
 		entity.setEmail(domain.getEmail());
 		entity.setUnitType(domain.getUnitType());
 		entity.setBalance(domain.getBalance());
+		entity.setNumberOfTables(domain.getNumberOfTables());
+		entity.setLogoPath(domain.getLogoPath());
+		entity.setSignaturePath(domain.getSignaturePath());
 
 		return this.toEntity(entity, domain);
 	}
@@ -43,6 +46,9 @@ public class UnitEntityMapper extends AbstractEntityMapper<UnitEntity, Unit> imp
 		domain.setEmail(entity.getEmail());
 		domain.setUnitType(entity.getUnitType());
 		domain.setBalance(entity.getBalance());
+		domain.setNumberOfTables(entity.getNumberOfTables());
+		domain.setLogoPath(entity.getLogoPath());
+		domain.setSignaturePath(entity.getSignaturePath());
 
 		return this.toDomain(entity, domain);
 	}

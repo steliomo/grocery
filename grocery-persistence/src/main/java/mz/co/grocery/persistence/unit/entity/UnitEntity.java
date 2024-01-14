@@ -62,6 +62,16 @@ public class UnitEntity extends GenericEntity {
 	@Column(name = "BALANCE", nullable = false)
 	private BigDecimal balance = BigDecimal.ZERO;
 
+	@NotNull
+	@Column(name = "NUMBER_OF_TABLES", nullable = false)
+	private Integer numberOfTables = BigDecimal.ZERO.intValue();
+
+	@Column(name = "LOGO_PATH", length = 50)
+	private String logoPath;
+
+	@Column(name = "SIGNATURE_PATH", length = 50)
+	private String signaturePath;
+
 	public String getName() {
 		return this.name;
 	}
@@ -120,5 +130,29 @@ public class UnitEntity extends GenericEntity {
 
 	public synchronized void debitTransaction(final BigDecimal defaultDebit) {
 		this.balance = this.balance.subtract(defaultDebit);
+	}
+
+	public Integer getNumberOfTables() {
+		return this.numberOfTables;
+	}
+
+	public void setNumberOfTables(final Integer numberOfTables) {
+		this.numberOfTables = numberOfTables;
+	}
+
+	public String getLogoPath() {
+		return this.logoPath;
+	}
+
+	public void setLogoPath(final String logoPath) {
+		this.logoPath = logoPath;
+	}
+
+	public String getSignaturePath() {
+		return this.signaturePath;
+	}
+
+	public void setSignaturePath(final String signaturePath) {
+		this.signaturePath = signaturePath;
 	}
 }

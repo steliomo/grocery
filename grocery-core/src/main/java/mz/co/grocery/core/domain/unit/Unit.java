@@ -27,8 +27,15 @@ public class Unit extends Domain {
 
 	private BigDecimal balance;
 
+	private Integer numberOfTables;
+
+	private String logoPath;
+
+	private String signaturePath;
+
 	public Unit() {
 		this.balance = BigDecimal.ZERO;
+		this.numberOfTables = BigDecimal.ZERO.intValue();
 	}
 
 	public String getName() {
@@ -89,5 +96,29 @@ public class Unit extends Domain {
 
 	public synchronized void debitTransaction(final BigDecimal defaultDebit) {
 		this.balance = this.balance.subtract(defaultDebit);
+	}
+
+	public void setNumberOfTables(final Integer numberOfTables) {
+		this.numberOfTables = numberOfTables;
+	}
+
+	public Integer getNumberOfTables() {
+		return this.numberOfTables;
+	}
+
+	public String getLogoPath() {
+		return this.logoPath;
+	}
+
+	public void setLogoPath(final String logoPath) {
+		this.logoPath = logoPath;
+	}
+
+	public String getSignaturePath() {
+		return this.signaturePath;
+	}
+
+	public void setSignaturePath(final String signaturePath) {
+		this.signaturePath = signaturePath;
 	}
 }

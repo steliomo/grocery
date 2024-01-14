@@ -30,6 +30,7 @@ public class UnitTemplate implements TemplateLoader {
 				this.add("email", "steliomo@gmail.com");
 				this.add("unitType", UnitType.GROCERY);
 				this.add("balance", new BigDecimal(10));
+				this.add("balance", new BigDecimal(10));
 			}
 		});
 	}
