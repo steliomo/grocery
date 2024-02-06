@@ -3,6 +3,7 @@
  */
 package mz.co.grocery.integ.resources.config;
 
+import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Service;
@@ -68,5 +69,7 @@ public class JerseyConfig extends ResourceConfig {
 		this.register(ReportResource.class);
 		this.register(GuideResource.class);
 		this.register(QuotationResource.class);
+
+		this.register(MultiPartFeature.class);
 	}
 }

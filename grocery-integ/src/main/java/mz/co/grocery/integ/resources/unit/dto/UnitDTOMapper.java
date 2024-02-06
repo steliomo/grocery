@@ -30,7 +30,7 @@ public class UnitDTOMapper extends AbstractDTOMapper<UnitDTO, Unit> implements D
 		dto.setBalance(domain.getBalance());
 		dto.setNumberOfTables(domain.getNumberOfTables());
 		dto.setLogoPath(domain.getLogoPath());
-		dto.setSignaturePath(domain.getLogoPath());
+		dto.setSignaturePath(domain.getSignaturePath());
 
 		return this.toDTO(dto, domain);
 	}
@@ -50,7 +50,7 @@ public class UnitDTOMapper extends AbstractDTOMapper<UnitDTO, Unit> implements D
 		dto.setNumberOfTables(dto.getNumberOfTables());
 
 		domain.setLogoPath(dto.getLogoPath());
-		domain.setSignaturePath(dto.getLogoPath());
+		domain.setSignaturePath(dto.getSignaturePath());
 
 		return this.toDomain(dto, domain);
 	}

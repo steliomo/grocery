@@ -3,6 +3,7 @@
  */
 package mz.co.grocery.integ.resources.unit;
 
+import java.io.InputStream;
 import java.util.List;
 
 import javax.inject.Inject;
@@ -10,13 +11,17 @@ import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.glassfish.jersey.media.multipart.FormDataContentDisposition;
+import org.glassfish.jersey.media.multipart.FormDataParam;
 import org.springframework.beans.factory.annotation.Autowired;
 
+import mz.co.grocery.core.application.unit.in.UploadUnitLogoUseCase;
 import mz.co.grocery.core.application.unit.out.UnitPort;
 import mz.co.grocery.core.common.WebAdapter;
 import mz.co.grocery.core.domain.unit.Unit;
@@ -42,6 +47,9 @@ public class UnitResource extends AbstractResource {
 
 	@Inject
 	private ApplicationTranslator translator;
+
+	@Inject
+	private UploadUnitLogoUseCase uploadUnitLogoUseCase;
 
 	@Autowired
 	private DTOMapper<UnitDTO, Unit> unitMapper;
@@ -82,5 +90,18 @@ public class UnitResource extends AbstractResource {
 	public Response findUnitTypes() throws BusinessException {
 		final EnumsDTO<UnitType> enumsDTO = new EnumsDTO<>(this.translator, UnitType.values());
 		return Response.ok(enumsDTO).build();
+	}
+
+	@POST
+	@Path("logo-upload/{unitUuid}")
+	@Consumes(MediaType.MULTIPART_FORM_DATA)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response uploadUnitLogo(@FormDataParam("file") final InputStream uploadedInputStream,
+			@FormDataParam("file") final FormDataContentDisposition fileDetails, @PathParam("unitUuid") final String unitUuid)
+					throws BusinessException {
+
+		final Unit unit = this.uploadUnitLogoUseCase.uploadLogo(this.getContext(), uploadedInputStream, fileDetails.getFileName(), unitUuid);
+
+		return Response.ok(this.unitMapper.toDTO(unit)).build();
 	}
 }
