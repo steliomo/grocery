@@ -179,18 +179,22 @@ public class UserResource extends AbstractResource {
 
 		final String userId = this.resourceOnwnerService.createUser(context, user);
 
-		final UnitUser groceryUser = this.unitUserMapper.toDomain(user.getUnitUserDTO());
-		groceryUser.setUserRole(UserRole.MANAGER);
-		groceryUser.setExpiryDate(LocalDate.now().plusMonths(3));
-		groceryUser.setUser(userId);
+		// TODO: implement a useCase to signup this is not clean and the business logic is exposed
 
-		final Unit unit = groceryUser.getUnit().get();
+		UnitUser unitUser = this.unitUserMapper.toDomain(user.getUnitUserDTO());
+		unitUser.setUserRole(UserRole.MANAGER);
+		unitUser.setExpiryDate(LocalDate.now().plusMonths(3));
+		unitUser.setUser(userId);
+
+		Unit unit = unitUser.getUnit().get();
 		unit.setBalance(new BigDecimal(this.balance.getInitial()));
 
-		this.unitPort.createUnit(context, unit);
-		this.unitUserPort.createUnitUser(context, groceryUser);
+		unit = this.unitPort.createUnit(context, unit);
+		unitUser.setUnit(unit);
 
-		this.sendSignUpEmail(user, groceryUser);
+		unitUser = this.unitUserPort.createUnitUser(context, unitUser);
+
+		this.sendSignUpEmail(user, unitUser);
 
 		user.setPassword(null);
 
