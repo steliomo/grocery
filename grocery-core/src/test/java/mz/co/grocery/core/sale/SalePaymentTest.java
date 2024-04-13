@@ -15,6 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
+import mz.co.grocery.core.application.payment.in.PaymentUseCase;
 import mz.co.grocery.core.application.sale.in.SalePaymentUseCase;
 import mz.co.grocery.core.application.sale.out.SalePaymentPort;
 import mz.co.grocery.core.application.sale.out.SalePort;
@@ -41,8 +42,11 @@ public class SalePaymentTest extends AbstractUnitServiceTest {
 	@Mock
 	private SalePaymentPort salePaymentPort;
 
+	@Mock
+	PaymentUseCase paymentUseCase;
+
 	@InjectMocks
-	private final SalePaymentUseCase salePaymentService = new SalePaymentService(this.salePort, this.salePaymentPort);
+	private final SalePaymentUseCase salePaymentService = new SalePaymentService(this.salePort, this.salePaymentPort, this.paymentUseCase);
 
 	@Captor
 	private ArgumentCaptor<SalePayment> salePaymentCaptor;

@@ -30,12 +30,12 @@ public class IssueQuotationService extends AbstractService implements IssueQuota
 	private PaymentUseCase paymentService;
 
 	public IssueQuotationService(final Clock clock, final SaveQuotationPort saveQuotationPort, final SaveQuotationItemPort saveQuotationItemPort,
-			final GenerateQuotationPdfPort generateQuotationPdfPort, final PaymentUseCase paymentService) {
+			final GenerateQuotationPdfPort generateQuotationPdfPort, final PaymentUseCase paymentUseCase) {
 		this.clock = clock;
 		this.saveQuotationPort = saveQuotationPort;
 		this.saveQuotationItemPort = saveQuotationItemPort;
 		this.generateQuotationPdfPort = generateQuotationPdfPort;
-		this.paymentService = paymentService;
+		this.paymentService = paymentUseCase;
 	}
 
 	@Override
