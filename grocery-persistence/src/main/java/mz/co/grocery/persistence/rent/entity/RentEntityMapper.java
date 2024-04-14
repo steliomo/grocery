@@ -3,6 +3,8 @@
  */
 package mz.co.grocery.persistence.rent.entity;
 
+import java.util.HashSet;
+
 import javax.inject.Inject;
 
 import org.springframework.stereotype.Component;
@@ -78,7 +80,7 @@ public class RentEntityMapper extends AbstractEntityMapper<RentEntity, Rent> imp
 		domain.setTotalCalculated(entity.getTotalCalculated());
 
 		entity.getRentItems().ifPresent(rentItems -> rentItems.forEach(rentItem -> {
-			rentItem.setRent(null);
+			rentItem.getRent().get().setRentItems(new HashSet<>());
 			domain.addRentItem(this.rentItemMapper.toDomain(rentItem));
 		}));
 
@@ -86,7 +88,7 @@ public class RentEntityMapper extends AbstractEntityMapper<RentEntity, Rent> imp
 		.ifPresent(rentPayments -> rentPayments.forEach(rentPayment -> domain.addRentPayment(this.rentPaymentMapper.toDomain(rentPayment))));
 
 		entity.getGuides().ifPresent(guides -> guides.forEach(guide -> {
-			guide.setRent(null);
+			guide.getRent().get().setRentItems(new HashSet<>());
 			domain.addGuide(this.guideMapper.toDomain(guide));
 		}));
 

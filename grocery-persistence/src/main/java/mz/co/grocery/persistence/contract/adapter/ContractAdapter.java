@@ -7,8 +7,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.transaction.annotation.Transactional;
-
 import mz.co.grocery.core.application.contract.out.ContractPort;
 import mz.co.grocery.core.common.PersistenceAdapter;
 import mz.co.grocery.core.domain.contract.Contract;
@@ -45,7 +43,6 @@ public class ContractAdapter implements ContractPort {
 				.map(this.mapper::toDomain).collect(Collectors.toList());
 	}
 
-	@Transactional
 	@Override
 	public Contract createContract(final UserContext context, final Contract contract) throws BusinessException {
 		final ContractEntity entity = this.mapper.toEntity(contract);
@@ -55,7 +52,6 @@ public class ContractAdapter implements ContractPort {
 		return this.mapper.toDomain(entity);
 	}
 
-	@Transactional
 	@Override
 	public Contract updateContract(final UserContext userContext, final Contract contract) throws BusinessException {
 		final ContractEntity entity = this.mapper.toEntity(contract);

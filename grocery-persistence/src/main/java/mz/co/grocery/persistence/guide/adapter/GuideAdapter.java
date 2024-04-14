@@ -3,8 +3,6 @@
  */
 package mz.co.grocery.persistence.guide.adapter;
 
-import org.springframework.transaction.annotation.Transactional;
-
 import mz.co.grocery.core.application.guide.out.GuidePort;
 import mz.co.grocery.core.common.PersistenceAdapter;
 import mz.co.grocery.core.domain.guide.Guide;
@@ -31,7 +29,6 @@ public class GuideAdapter implements GuidePort {
 		this.mapper = mapper;
 	}
 
-	@Transactional
 	@Override
 	public Guide createGuide(final UserContext userContext, final Guide guide) throws BusinessException {
 

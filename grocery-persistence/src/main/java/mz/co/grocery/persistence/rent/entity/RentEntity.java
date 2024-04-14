@@ -228,6 +228,10 @@ public class RentEntity extends GenericEntity {
 		}
 	}
 
+	public void setRentItems(final Set<RentItemEntity> rentItems) {
+		this.rentItems = rentItems;
+	}
+
 	public Optional<Set<RentPaymentEntity>> getRentPayments() {
 		try {
 			Optional.ofNullable(this.rentPayments).ifPresent(items -> items.size());

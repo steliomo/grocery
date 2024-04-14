@@ -3,8 +3,6 @@ package mz.co.grocery.persistence.expense.adapter;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.transaction.annotation.Transactional;
-
 import mz.co.grocery.core.application.expense.in.ExpenseTypePort;
 import mz.co.grocery.core.common.PersistenceAdapter;
 import mz.co.grocery.core.domain.expense.ExpenseType;
@@ -32,7 +30,6 @@ public class ExpenseTypeAdapter implements ExpenseTypePort {
 		this.mapper = mapper;
 	}
 
-	@Transactional
 	@Override
 	public ExpenseType createExpenseType(final UserContext userContext, final ExpenseType expenseType)
 			throws BusinessException {
@@ -43,7 +40,6 @@ public class ExpenseTypeAdapter implements ExpenseTypePort {
 		return this.mapper.toDomain(entity);
 	}
 
-	@Transactional
 	@Override
 	public ExpenseType updateExpenseType(final UserContext userContext, final ExpenseType expenseType) throws BusinessException {
 

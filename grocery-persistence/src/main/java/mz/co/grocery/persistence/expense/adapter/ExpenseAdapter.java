@@ -7,8 +7,6 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 
-import org.springframework.transaction.annotation.Transactional;
-
 import mz.co.grocery.core.application.expense.out.ExpensePort;
 import mz.co.grocery.core.common.PersistenceAdapter;
 import mz.co.grocery.core.domain.expense.Expense;
@@ -67,7 +65,6 @@ public class ExpenseAdapter implements ExpensePort {
 		return this.repository.findExpensesByUnitAndPeriod(unitUuid, startDate, endDate, EntityStatus.ACTIVE);
 	}
 
-	@Transactional
 	@Override
 	public Expense createExpense(final UserContext userContext, final Expense expense) throws BusinessException {
 

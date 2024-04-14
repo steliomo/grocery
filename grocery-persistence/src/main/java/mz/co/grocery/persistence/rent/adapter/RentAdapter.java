@@ -7,8 +7,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.springframework.transaction.annotation.Transactional;
-
 import mz.co.grocery.core.application.rent.out.RentPort;
 import mz.co.grocery.core.common.PersistenceAdapter;
 import mz.co.grocery.core.domain.customer.Customer;
@@ -70,13 +68,11 @@ public class RentAdapter implements RentPort {
 				.map(this.mapper::toDomain).collect(Collectors.toList());
 	}
 
-	@Transactional(readOnly = true)
 	@Override
 	public Rent fetchByUuid(final String uuid) throws BusinessException {
 		return this.mapper.toDomain(this.repository.fetchByUuid(uuid));
 	}
 
-	@Transactional
 	@Override
 	public Rent updateRent(final UserContext userContext, final Rent rent) throws BusinessException {
 
@@ -92,7 +88,6 @@ public class RentAdapter implements RentPort {
 		return this.mapper.toDomain(this.repository.findByUuid(uuid));
 	}
 
-	@Transactional
 	@Override
 	public Rent createRent(final UserContext userContext, final Rent rent) throws BusinessException {
 

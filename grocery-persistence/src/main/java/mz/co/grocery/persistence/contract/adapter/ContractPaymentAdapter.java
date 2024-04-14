@@ -3,8 +3,6 @@
  */
 package mz.co.grocery.persistence.contract.adapter;
 
-import org.springframework.transaction.annotation.Transactional;
-
 import mz.co.grocery.core.application.contract.out.ContractPaymentPort;
 import mz.co.grocery.core.common.PersistenceAdapter;
 import mz.co.grocery.core.domain.contract.ContractPayment;
@@ -32,7 +30,6 @@ public class ContractPaymentAdapter implements ContractPaymentPort {
 		this.mapper = mapper;
 	}
 
-	@Transactional
 	@Override
 	public ContractPayment createContractPayment(final UserContext userContext, final ContractPayment contractPayment) throws BusinessException {
 		final ContractPaymentEntity entity = this.mapper.toEntity(contractPayment);

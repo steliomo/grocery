@@ -215,6 +215,10 @@ public class SaleEntity extends GenericEntity {
 		}
 	}
 
+	public void setGuides(final Set<GuideEntity> guides) {
+		this.guides = guides;
+	}
+
 	public Integer getTableNumber() {
 		return this.tableNumber;
 	}

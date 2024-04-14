@@ -6,8 +6,6 @@ package mz.co.grocery.persistence.item.adapter;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.transaction.annotation.Transactional;
-
 import mz.co.grocery.core.application.item.out.ProductUnitPort;
 import mz.co.grocery.core.common.PersistenceAdapter;
 import mz.co.grocery.core.domain.item.ProductUnit;
@@ -35,7 +33,6 @@ public class ProductUnitAdapter implements ProductUnitPort {
 		this.mapper = mapper;
 	}
 
-	@Transactional
 	@Override
 	public ProductUnit createProductUnit(final UserContext userContext, final ProductUnit productUnit)
 			throws BusinessException {
@@ -46,7 +43,6 @@ public class ProductUnitAdapter implements ProductUnitPort {
 		return this.mapper.toDomain(entity);
 	}
 
-	@Transactional
 	@Override
 	public ProductUnit updateProductUnit(final UserContext userContext, final ProductUnit productUnit)
 			throws BusinessException {

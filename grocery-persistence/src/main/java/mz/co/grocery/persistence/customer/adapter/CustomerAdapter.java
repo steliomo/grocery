@@ -8,8 +8,6 @@ import java.util.List;
 import java.util.Optional;
 import java.util.stream.Collectors;
 
-import org.springframework.transaction.annotation.Transactional;
-
 import mz.co.grocery.core.application.customer.out.CustomerPort;
 import mz.co.grocery.core.common.PersistenceAdapter;
 import mz.co.grocery.core.domain.customer.Customer;
@@ -40,7 +38,7 @@ public class CustomerAdapter implements CustomerPort {
 		this.mapper = mapper;
 	}
 
-	@Transactional
+
 	@Override
 	public Customer createCustomer(final UserContext userContext, final Customer customer) throws BusinessException {
 

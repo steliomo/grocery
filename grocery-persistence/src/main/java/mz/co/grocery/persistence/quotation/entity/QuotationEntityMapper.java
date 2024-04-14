@@ -3,6 +3,8 @@
  */
 package mz.co.grocery.persistence.quotation.entity;
 
+import java.util.HashSet;
+
 import javax.inject.Inject;
 
 import org.springframework.stereotype.Component;
@@ -65,7 +67,7 @@ public class QuotationEntityMapper extends AbstractEntityMapper<QuotationEntity,
 		domain.setDiscount(entity.getDiscount());
 
 		entity.getItems().ifPresent(items -> items.forEach(item -> {
-			item.setQuotation(null);
+			item.getQuotation().get().setItems(new HashSet<>());
 			domain.addItem(this.quotationItemMapper.toDomain(item));
 		}));
 

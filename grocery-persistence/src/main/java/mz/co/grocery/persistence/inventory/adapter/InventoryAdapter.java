@@ -3,8 +3,6 @@
  */
 package mz.co.grocery.persistence.inventory.adapter;
 
-import org.springframework.transaction.annotation.Transactional;
-
 import mz.co.grocery.core.application.inventory.out.InventoryPort;
 import mz.co.grocery.core.common.PersistenceAdapter;
 import mz.co.grocery.core.domain.inventory.Inventory;
@@ -45,7 +43,6 @@ public class InventoryAdapter implements InventoryPort {
 		return this.mapper.toDomain(this.repository.fetchByUuid(inventoryUuid, EntityStatus.ACTIVE));
 	}
 
-	@Transactional
 	@Override
 	public Inventory createInventory(final UserContext userContext, final Inventory inventory) throws BusinessException {
 
@@ -56,7 +53,6 @@ public class InventoryAdapter implements InventoryPort {
 		return this.mapper.toDomain(entity);
 	}
 
-	@Transactional
 	@Override
 	public Inventory updateInventory(final UserContext userContext, final Inventory inventory) throws BusinessException {
 

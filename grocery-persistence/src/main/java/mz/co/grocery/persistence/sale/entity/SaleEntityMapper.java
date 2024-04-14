@@ -3,6 +3,8 @@
  */
 package mz.co.grocery.persistence.sale.entity;
 
+import java.util.HashSet;
+
 import javax.inject.Inject;
 
 import org.springframework.stereotype.Component;
@@ -68,13 +70,13 @@ public class SaleEntityMapper extends AbstractEntityMapper<SaleEntity, Sale> imp
 		entity.getCustomer().ifPresent(customer -> domain.setCustomer(this.customerMapper.toDomain(customer)));
 
 		entity.getItems().ifPresent(items -> items.forEach(item -> {
-			item.setSale(null);
+			item.getSale().get().setItems(new HashSet<>());
 			domain.addItem(this.saleItemMapper.toDomain(item));
 		}));
 
 		entity.getGuides().ifPresent(guides -> {
 			guides.forEach(guide -> {
-				guide.setSale(null);
+				guide.getSale().get().setGuides(new HashSet<>());
 				domain.addGuide(this.guideMapper.toDomain(guide));
 			});
 		});

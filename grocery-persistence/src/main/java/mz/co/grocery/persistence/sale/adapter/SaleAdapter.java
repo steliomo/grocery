@@ -7,8 +7,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.transaction.annotation.Transactional;
-
 import mz.co.grocery.core.application.sale.out.SalePort;
 import mz.co.grocery.core.common.PersistenceAdapter;
 import mz.co.grocery.core.domain.customer.Customer;
@@ -38,7 +36,6 @@ public class SaleAdapter implements SalePort {
 		this.mapper = mapper;
 	}
 
-	@Transactional
 	@Override
 	public Sale createSale(final UserContext context, final Sale sale) throws BusinessException {
 
@@ -49,7 +46,6 @@ public class SaleAdapter implements SalePort {
 		return this.mapper.toDomain(entity);
 	}
 
-	@Transactional
 	@Override
 	public Sale updateSale(final UserContext context, final Sale sale) throws BusinessException {
 
@@ -60,7 +56,6 @@ public class SaleAdapter implements SalePort {
 		return this.mapper.toDomain(entity);
 	}
 
-	@Transactional(readOnly = true)
 	@Override
 	public Sale fetchByUuid(final String uuid) throws BusinessException {
 		return this.mapper.toDomain(this.repository.fetchByUuid(uuid));

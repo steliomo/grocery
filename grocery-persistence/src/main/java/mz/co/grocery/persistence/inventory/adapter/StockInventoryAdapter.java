@@ -3,8 +3,6 @@
  */
 package mz.co.grocery.persistence.inventory.adapter;
 
-import org.springframework.transaction.annotation.Transactional;
-
 import mz.co.grocery.core.application.inventory.out.StockInventoryPort;
 import mz.co.grocery.core.common.PersistenceAdapter;
 import mz.co.grocery.core.domain.inventory.StockInventory;
@@ -32,7 +30,6 @@ public class StockInventoryAdapter extends AbstractService implements StockInven
 		this.mapper = mapper;
 	}
 
-	@Transactional
 	@Override
 	public StockInventory createStockInventory(final UserContext userContext, final StockInventory stockInventory)
 			throws BusinessException {
@@ -43,7 +40,6 @@ public class StockInventoryAdapter extends AbstractService implements StockInven
 		return this.mapper.toDomain(entity);
 	}
 
-	@Transactional
 	@Override
 	public StockInventory updateStockInventory(final UserContext userContext, final StockInventory stockInventory)
 			throws BusinessException {

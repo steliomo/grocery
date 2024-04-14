@@ -6,8 +6,6 @@ package mz.co.grocery.persistence.rent.adapter;
 import java.time.LocalDate;
 import java.util.List;
 
-import org.springframework.transaction.annotation.Transactional;
-
 import mz.co.grocery.core.application.rent.out.RentPaymentPort;
 import mz.co.grocery.core.common.PersistenceAdapter;
 import mz.co.grocery.core.domain.rent.RentPayment;
@@ -37,7 +35,6 @@ public class RentPaymentAdapter implements RentPaymentPort {
 		this.mapper = mapper;
 	}
 
-	@Transactional
 	@Override
 	public RentPayment createRentPayment(final UserContext userContext, final RentPayment rentPayment) throws BusinessException {
 		final RentPaymentEntity entity = this.mapper.toEntity(rentPayment);

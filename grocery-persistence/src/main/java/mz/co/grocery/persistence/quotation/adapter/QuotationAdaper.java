@@ -7,8 +7,6 @@ import java.time.LocalDateTime;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.transaction.annotation.Transactional;
-
 import mz.co.grocery.core.application.document.DocumentGeneratorPort;
 import mz.co.grocery.core.application.quotation.out.GenerateQuotationPdfPort;
 import mz.co.grocery.core.application.quotation.out.QuotationPort;
@@ -44,7 +42,6 @@ public class QuotationAdaper implements SaveQuotationPort, GenerateQuotationPdfP
 		this.mapper = mapper;
 	}
 
-	@Transactional
 	@Override
 	public Quotation save(final UserContext context, final Quotation quotation) throws BusinessException {
 		final QuotationEntity quotationEntity = this.mapper.toEntity(quotation);

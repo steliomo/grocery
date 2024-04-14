@@ -3,8 +3,6 @@
  */
 package mz.co.grocery.persistence.rent.adapter;
 
-import org.springframework.transaction.annotation.Transactional;
-
 import mz.co.grocery.core.application.rent.out.RentItemPort;
 import mz.co.grocery.core.common.PersistenceAdapter;
 import mz.co.grocery.core.domain.rent.RentItem;
@@ -37,7 +35,6 @@ public class RentItemAdapter implements RentItemPort {
 		return this.mapper.toDomain(this.repository.findByUuid(uuid));
 	}
 
-	@Transactional
 	@Override
 	public RentItem updateRentItem(final UserContext userContext, final RentItem rentItem) throws BusinessException {
 		final RentItemEntity entity = this.mapper.toEntity(rentItem);
@@ -47,7 +44,6 @@ public class RentItemAdapter implements RentItemPort {
 		return this.mapper.toDomain(entity);
 	}
 
-	@Transactional
 	@Override
 	public RentItem createRentItem(final UserContext userContext, final RentItem rentItem) throws BusinessException {
 		final RentItemEntity entity = this.mapper.toEntity(rentItem);

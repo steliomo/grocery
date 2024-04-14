@@ -6,8 +6,6 @@ package mz.co.grocery.persistence.item.adapter;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.transaction.annotation.Transactional;
-
 import mz.co.grocery.core.application.item.out.ServicePort;
 import mz.co.grocery.core.common.PersistenceAdapter;
 import mz.co.grocery.core.domain.item.Service;
@@ -37,7 +35,6 @@ public class ServiceAdapter extends AbstractService implements ServicePort {
 		this.mapper = mapper;
 	}
 
-	@Transactional
 	@Override
 	public Service createService(final UserContext userContext, final Service service) throws BusinessException {
 		final ServiceEntity entity = this.mapper.toEntity(service);
@@ -47,7 +44,6 @@ public class ServiceAdapter extends AbstractService implements ServicePort {
 		return this.mapper.toDomain(entity);
 	}
 
-	@Transactional
 	@Override
 	public Service updateService(final UserContext userContext, final Service service) throws BusinessException {
 		final ServiceEntity entity = this.mapper.toEntity(service);

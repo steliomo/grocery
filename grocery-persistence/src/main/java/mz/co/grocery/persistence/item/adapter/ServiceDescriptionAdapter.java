@@ -6,8 +6,6 @@ package mz.co.grocery.persistence.item.adapter;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.transaction.annotation.Transactional;
-
 import mz.co.grocery.core.application.item.out.ServiceDescriptionPort;
 import mz.co.grocery.core.common.PersistenceAdapter;
 import mz.co.grocery.core.domain.item.ServiceDescription;
@@ -24,19 +22,18 @@ import mz.co.msaude.boot.frameworks.model.UserContext;
  */
 
 @PersistenceAdapter
-public class ServiceDescriptionServiceImpl implements ServiceDescriptionPort {
+public class ServiceDescriptionAdapter implements ServiceDescriptionPort {
 
 	private ServiceDescriptionRepository repository;
 
 	private EntityMapper<ServiceDescriptionEntity, ServiceDescription> mapper;
 
-	public ServiceDescriptionServiceImpl(final ServiceDescriptionRepository repository,
+	public ServiceDescriptionAdapter(final ServiceDescriptionRepository repository,
 			final EntityMapper<ServiceDescriptionEntity, ServiceDescription> mapper) {
 		this.repository = repository;
 		this.mapper = mapper;
 	}
 
-	@Transactional
 	@Override
 	public ServiceDescription createServiceDescription(final UserContext userContext, final ServiceDescription serviceDescription)
 			throws BusinessException {
@@ -47,7 +44,6 @@ public class ServiceDescriptionServiceImpl implements ServiceDescriptionPort {
 		return this.mapper.toDomain(entity);
 	}
 
-	@Transactional
 	@Override
 	public ServiceDescription updateServiceDescription(final UserContext userContext, final ServiceDescription serviceDescription)
 			throws BusinessException {

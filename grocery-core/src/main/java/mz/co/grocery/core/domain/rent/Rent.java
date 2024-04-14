@@ -159,6 +159,13 @@ public class Rent extends Domain {
 	}
 
 	public void setPaymentStatus() {
+
+		if (LoadStatus.COMPLETE.equals(this.loadStatus) && ReturnStatus.COMPLETE.equals(this.returnStatus)
+				&& BigDecimalUtil.isZero(this.totalCalculated)) {
+			this.paymentStatus = PaymentStatus.COMPLETE;
+			return;
+		}
+
 		if (BigDecimalUtil.isZero(this.totalPaid)) {
 			this.paymentStatus = PaymentStatus.PENDING;
 			return;

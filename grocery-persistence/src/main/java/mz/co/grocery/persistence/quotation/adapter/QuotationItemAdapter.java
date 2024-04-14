@@ -3,8 +3,6 @@
  */
 package mz.co.grocery.persistence.quotation.adapter;
 
-import org.springframework.transaction.annotation.Transactional;
-
 import mz.co.grocery.core.application.quotation.out.SaveQuotationItemPort;
 import mz.co.grocery.core.common.PersistenceAdapter;
 import mz.co.grocery.core.domain.quotation.QuotationItem;
@@ -31,7 +29,6 @@ public class QuotationItemAdapter implements SaveQuotationItemPort {
 		this.mapper = mapper;
 	}
 
-	@Transactional
 	@Override
 	public QuotationItem save(final UserContext context, final QuotationItem quotationItem) throws BusinessException {
 		final QuotationItemEntity entity = this.mapper.toEntity(quotationItem);

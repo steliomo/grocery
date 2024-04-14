@@ -5,8 +5,6 @@ package mz.co.grocery.persistence.sale.adapter;
 
 import java.util.Optional;
 
-import org.springframework.transaction.annotation.Transactional;
-
 import mz.co.grocery.core.application.sale.out.SaleItemPort;
 import mz.co.grocery.core.common.PersistenceAdapter;
 import mz.co.grocery.core.domain.sale.SaleItem;
@@ -35,7 +33,6 @@ public class SaleItemAdapter implements SaleItemPort {
 		this.mapper = mapper;
 	}
 
-	@Transactional
 	@Override
 	public SaleItem createSaleItem(final UserContext context, final SaleItem saleItem) throws BusinessException {
 		final SaleItemEntity entity = this.mapper.toEntity(saleItem);
@@ -45,7 +42,6 @@ public class SaleItemAdapter implements SaleItemPort {
 		return this.mapper.toDomain(entity);
 	}
 
-	@Transactional
 	@Override
 	public SaleItem updateSaleItem(final UserContext userContext, final SaleItem saleItem) throws BusinessException {
 		final SaleItemEntity entity = this.mapper.toEntity(saleItem);

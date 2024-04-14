@@ -7,8 +7,6 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
-import org.springframework.transaction.annotation.Transactional;
-
 import mz.co.grocery.core.application.sale.out.StockPort;
 import mz.co.grocery.core.common.PersistenceAdapter;
 import mz.co.grocery.core.domain.sale.Stock;
@@ -36,7 +34,6 @@ public class StockAdapter implements StockPort {
 		this.mapper = mapper;
 	}
 
-	@Transactional
 	@Override
 	public Stock createStock(final UserContext userContext, final Stock stock) throws BusinessException {
 		final StockEntity entity = this.mapper.toEntity(stock);
@@ -46,7 +43,6 @@ public class StockAdapter implements StockPort {
 		return this.mapper.toDomain(entity);
 	}
 
-	@Transactional
 	@Override
 	public Stock updateStock(final UserContext userContext, final Stock stock) throws BusinessException {
 		final StockEntity entity = this.mapper.toEntity(stock);
@@ -63,7 +59,6 @@ public class StockAdapter implements StockPort {
 		return this.updateStock(userContext, stock);
 	}
 
-	@Transactional
 	@Override
 	public Stock regularize(final UserContext userContext, final Stock stock) throws BusinessException {
 
