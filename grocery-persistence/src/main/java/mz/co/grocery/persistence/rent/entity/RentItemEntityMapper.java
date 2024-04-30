@@ -30,6 +30,12 @@ public class RentItemEntityMapper extends AbstractEntityMapper<RentItemEntity, R
 
 	private EntityMapper<ServiceItemEntity, ServiceItem> serviceItemMapper;
 
+	public RentItemEntityMapper(final EntityMapper<StockEntity, Stock> stockMapper,
+			final EntityMapper<ServiceItemEntity, ServiceItem> serviceItemMapper) {
+		this.stockMapper = stockMapper;
+		this.serviceItemMapper = serviceItemMapper;
+	}
+
 	@Override
 	public RentItemEntity toEntity(final RentItem domain) {
 
@@ -97,15 +103,5 @@ public class RentItemEntityMapper extends AbstractEntityMapper<RentItemEntity, R
 	@Inject
 	public void setRentMapper(final EntityMapper<RentEntity, Rent> rentMapper) {
 		this.rentMapper = rentMapper;
-	}
-
-	@Inject
-	public void setStockMapper(final EntityMapper<StockEntity, Stock> stockMapper) {
-		this.stockMapper = stockMapper;
-	}
-
-	@Inject
-	public void setServiceItemMapper(final EntityMapper<ServiceItemEntity, ServiceItem> serviceItemMapper) {
-		this.serviceItemMapper = serviceItemMapper;
 	}
 }

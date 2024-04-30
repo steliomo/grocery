@@ -13,5 +13,7 @@ public enum SaleStatus {
 
 	IN_PROGRESS,
 
-	CLOSED
+	CLOSED,
+
+	CANCELLED
 }

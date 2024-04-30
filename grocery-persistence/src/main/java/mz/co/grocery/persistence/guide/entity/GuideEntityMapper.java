@@ -3,8 +3,6 @@
  */
 package mz.co.grocery.persistence.guide.entity;
 
-import java.util.HashSet;
-
 import javax.inject.Inject;
 
 import org.springframework.stereotype.Component;
@@ -56,8 +54,8 @@ public class GuideEntityMapper extends AbstractEntityMapper<GuideEntity, Guide> 
 		domain.setType(entity.getType());
 
 		entity.getGuideItems().ifPresent(items -> items.forEach(item -> {
-			item.getGuide().get().setGuideItems(new HashSet<>());
-			item.getSaleItem().ifPresent(saleItem -> saleItem.getSale().get().setItems(new HashSet<>()));
+			item.setGuide(null);
+			item.getSaleItem().ifPresent(saleItem -> saleItem.setSale(null));
 			domain.addGuideItem(this.guideItemMapper.toDomain(item));
 		}));
 

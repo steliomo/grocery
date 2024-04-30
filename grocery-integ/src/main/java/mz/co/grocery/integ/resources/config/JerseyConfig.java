@@ -5,7 +5,6 @@ package mz.co.grocery.integ.resources.config;
 
 import org.glassfish.jersey.media.multipart.MultiPartFeature;
 import org.glassfish.jersey.server.ResourceConfig;
-import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Service;
 
 import mz.co.grocery.integ.resources.contract.ContractResource;
@@ -36,11 +35,11 @@ import mz.co.grocery.integ.resources.user.UserResource;
  *
  */
 
-@Configuration
 @Service
 public class JerseyConfig extends ResourceConfig {
 
 	public JerseyConfig() {
+
 		this.register(CORSFilter.class);
 		this.register(ProductResource.class);
 		this.register(ProductUnitResource.class);

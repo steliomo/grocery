@@ -9,10 +9,12 @@ import java.util.Set;
 import mz.co.grocery.core.application.pos.in.RegistTableItemsUseCase;
 import mz.co.grocery.core.application.sale.out.SaleItemPort;
 import mz.co.grocery.core.application.sale.out.SalePort;
+import mz.co.grocery.core.application.sale.out.StockPort;
 import mz.co.grocery.core.common.UseCase;
 import mz.co.grocery.core.domain.sale.Sale;
 import mz.co.grocery.core.domain.sale.SaleItem;
 import mz.co.grocery.core.domain.sale.SaleStatus;
+import mz.co.grocery.core.domain.sale.Stock;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.model.UserContext;
 import mz.co.msaude.boot.frameworks.service.AbstractService;
@@ -28,9 +30,12 @@ public class RegistTableItemsService extends AbstractService implements RegistTa
 
 	private SalePort salePort;
 
-	public RegistTableItemsService(final SaleItemPort saleItemPort, final SalePort salePort) {
+	private StockPort stockPort;
+
+	public RegistTableItemsService(final SaleItemPort saleItemPort, final SalePort salePort, final StockPort stockPort) {
 		this.saleItemPort = saleItemPort;
 		this.salePort = salePort;
+		this.stockPort = stockPort;
 	}
 
 	@Override
@@ -47,6 +52,8 @@ public class RegistTableItemsService extends AbstractService implements RegistTa
 			saleItem.setSale(table);
 
 			if (saleItem.isProduct()) {
+
+				this.updateStock(context, saleItem);
 
 				final Optional<SaleItem> product = this.saleItemPort.findBySaleAndProductUuid(table.getUuid(), saleItem.getStock().get().getUuid());
 
@@ -83,6 +90,12 @@ public class RegistTableItemsService extends AbstractService implements RegistTa
 		saleItem.setDeliveryStatus();
 
 		this.saleItemPort.createSaleItem(context, saleItem);
+	}
+
+	private void updateStock(final UserContext context, final SaleItem saleItem) throws BusinessException {
+		final Stock stock = this.stockPort.findStockByUuid(saleItem.getStock().get().getUuid());
+		stock.subtractStock(saleItem.getQuantity());
+		this.stockPort.updateStock(context, stock);
 	}
 
 	private void updateSaleItem(final UserContext context, final SaleItem saleItem, final Optional<SaleItem> product) throws BusinessException {

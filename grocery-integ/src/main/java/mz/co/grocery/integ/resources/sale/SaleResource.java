@@ -21,6 +21,7 @@ import javax.ws.rs.core.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import mz.co.grocery.core.application.expense.out.ExpensePort;
+import mz.co.grocery.core.application.pos.in.CancelTableUseCase;
 import mz.co.grocery.core.application.pos.in.OpenTableUseCase;
 import mz.co.grocery.core.application.pos.in.RegistTableItemsUseCase;
 import mz.co.grocery.core.application.pos.in.SendTableBillUseCase;
@@ -111,6 +112,9 @@ public class SaleResource extends AbstractResource {
 	@Autowired
 	@BeanQualifier(SendSaleTemplateMessageToWhastAppListner.NAME)
 	private SaleListner sendTemplateMessageListner;
+
+	@Inject
+	private CancelTableUseCase cancelTableUseCase;
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -309,5 +313,16 @@ public class SaleResource extends AbstractResource {
 		sale = this.sendTableBillUseCase.sendBill(sale);
 
 		return Response.ok(this.saleMapper.toDTO(sale)).build();
+	}
+
+	@Path("cancel-table")
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response cancelTable(final SaleDTO tableDTO) throws BusinessException {
+
+		final Sale table = this.cancelTableUseCase.cancel(this.getContext(), this.saleMapper.toDomain(tableDTO));
+
+		return Response.ok(this.saleMapper.toDTO(table)).build();
 	}
 }

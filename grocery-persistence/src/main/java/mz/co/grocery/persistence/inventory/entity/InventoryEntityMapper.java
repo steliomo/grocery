@@ -51,7 +51,10 @@ public class InventoryEntityMapper extends AbstractEntityMapper<InventoryEntity,
 
 		entity.getStockInventories().ifPresent(stockInventories -> stockInventories
 				.forEach(stockInventory -> {
-					stockInventory.setInventory(null);
+					final InventoryEntity inventory = new InventoryEntity();
+					inventory.setId(entity.getId());
+
+					stockInventory.setInventory(inventory);
 					domain.addStockInventory(this.stockInventoryMapper.toDomain(stockInventory));
 				}));
 

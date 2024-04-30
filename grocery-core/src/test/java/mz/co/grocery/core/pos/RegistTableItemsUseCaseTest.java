@@ -17,6 +17,7 @@ import mz.co.grocery.core.application.pos.in.RegistTableItemsUseCase;
 import mz.co.grocery.core.application.pos.service.RegistTableItemsService;
 import mz.co.grocery.core.application.sale.out.SaleItemPort;
 import mz.co.grocery.core.application.sale.out.SalePort;
+import mz.co.grocery.core.application.sale.out.StockPort;
 import mz.co.grocery.core.config.AbstractUnitServiceTest;
 import mz.co.grocery.core.domain.customer.Customer;
 import mz.co.grocery.core.domain.sale.Sale;
@@ -44,8 +45,11 @@ public class RegistTableItemsUseCaseTest extends AbstractUnitServiceTest {
 	@Mock
 	private SaleItemPort saleItemPort;
 
+	@Mock
+	private StockPort stockPort;
+
 	@InjectMocks
-	private RegistTableItemsUseCase registTableItemsUseCase = new RegistTableItemsService(this.saleItemPort, this.salePort);
+	private RegistTableItemsUseCase registTableItemsUseCase = new RegistTableItemsService(this.saleItemPort, this.salePort, this.stockPort);
 
 	private Sale sale;
 
@@ -69,6 +73,8 @@ public class RegistTableItemsUseCaseTest extends AbstractUnitServiceTest {
 		final Stock stock = new Stock();
 		stock.setPurchasePrice(new BigDecimal(100));
 		stock.setSalePrice(new BigDecimal(150));
+		stock.setQuantity(new BigDecimal(10));
+		stock.setMinimumStock(new BigDecimal(5));
 
 		saleItem.setStock(stock);
 
@@ -80,6 +86,7 @@ public class RegistTableItemsUseCaseTest extends AbstractUnitServiceTest {
 		this.sale.addItem(saleItem);
 
 		Mockito.when(this.salePort.fetchByUuid(this.sale.getUuid())).thenReturn(this.sale);
+		Mockito.when(this.stockPort.findStockByUuid(saleItem.getStock().get().getUuid())).thenReturn(stock);
 
 		this.registTableItemsUseCase.registTableItems(this.context, this.sale);
 
@@ -99,6 +106,8 @@ public class RegistTableItemsUseCaseTest extends AbstractUnitServiceTest {
 		final Stock stock = new Stock();
 		stock.setPurchasePrice(new BigDecimal(100));
 		stock.setSalePrice(new BigDecimal(150));
+		stock.setQuantity(new BigDecimal(10));
+		stock.setMinimumStock(new BigDecimal(5));
 
 		saleItem.setStock(stock);
 
@@ -111,6 +120,7 @@ public class RegistTableItemsUseCaseTest extends AbstractUnitServiceTest {
 
 		Mockito.when(this.saleItemPort.findBySaleAndProductUuid(this.sale.getUuid(), saleItem.getUuid())).thenReturn(Optional.of(saleItem));
 		Mockito.when(this.salePort.fetchByUuid(this.sale.getUuid())).thenReturn(this.sale);
+		Mockito.when(this.stockPort.findStockByUuid(saleItem.getStock().get().getUuid())).thenReturn(stock);
 
 		this.registTableItemsUseCase.registTableItems(this.context, this.sale);
 

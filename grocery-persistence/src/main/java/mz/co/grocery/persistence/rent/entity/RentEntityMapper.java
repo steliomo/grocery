@@ -3,8 +3,6 @@
  */
 package mz.co.grocery.persistence.rent.entity;
 
-import java.util.HashSet;
-
 import javax.inject.Inject;
 
 import org.springframework.stereotype.Component;
@@ -80,15 +78,27 @@ public class RentEntityMapper extends AbstractEntityMapper<RentEntity, Rent> imp
 		domain.setTotalCalculated(entity.getTotalCalculated());
 
 		entity.getRentItems().ifPresent(rentItems -> rentItems.forEach(rentItem -> {
-			rentItem.getRent().get().setRentItems(new HashSet<>());
+			final RentEntity rent = new RentEntity();
+			rent.setId(entity.getId());
+
+			rentItem.setRent(rent);
 			domain.addRentItem(this.rentItemMapper.toDomain(rentItem));
 		}));
 
 		entity.getRentPayments()
-		.ifPresent(rentPayments -> rentPayments.forEach(rentPayment -> domain.addRentPayment(this.rentPaymentMapper.toDomain(rentPayment))));
+		.ifPresent(rentPayments -> rentPayments.forEach(rentPayment -> {
+			final RentEntity rent = new RentEntity();
+			rent.setId(entity.getId());
+
+			rentPayment.setRent(rent);
+			domain.addRentPayment(this.rentPaymentMapper.toDomain(rentPayment));
+		}));
 
 		entity.getGuides().ifPresent(guides -> guides.forEach(guide -> {
-			guide.getRent().get().setRentItems(new HashSet<>());
+			final RentEntity rent = new RentEntity();
+			rent.setId(entity.getId());
+
+			guide.setRent(rent);
 			domain.addGuide(this.guideMapper.toDomain(guide));
 		}));
 

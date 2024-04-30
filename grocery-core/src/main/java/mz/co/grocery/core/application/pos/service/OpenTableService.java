@@ -40,42 +40,42 @@ public class OpenTableService extends AbstractService implements OpenTableUseCas
 	}
 
 	@Override
-	public Sale openTable(final UserContext context, Sale sale) throws BusinessException {
+	public Sale openTable(final UserContext context, Sale table) throws BusinessException {
 
-		if (!sale.getUnit().isPresent()) {
+		if (!table.getUnit().isPresent()) {
 			throw new BusinessException("sale.must.have.unit");
 		}
 
-		if (!sale.getCustomer().isPresent()) {
+		if (!table.getCustomer().isPresent()) {
 			throw new BusinessException("sale.owner.must.be.specified");
 		}
 
-		final Optional<Customer> customer = this.customerPort.findCustomerByContact(sale.getCustomer().get().getContact());
+		final Optional<Customer> customer = this.customerPort.findCustomerByContact(table.getCustomer().get().getContact());
 
 		if (customer.isPresent()) {
-			sale.setCustomer(customer.get());
+			table.setCustomer(customer.get());
 		} else {
 
-			final Customer newCustomer = sale.getCustomer().get();
-			newCustomer.setUnit(sale.getUnit().get());
+			final Customer newCustomer = table.getCustomer().get();
+			newCustomer.setUnit(table.getUnit().get());
 			newCustomer.setAddress("NA");
 
 			final Customer createdCustomer = this.customerPort.createCustomer(context, newCustomer);
 
-			sale.setCustomer(createdCustomer);
+			table.setCustomer(createdCustomer);
 		}
 
-		sale.setSaleDate(this.clock.todayDate());
-		sale.setTotal(BigDecimal.ZERO);
-		sale.setBilling(BigDecimal.ZERO);
-		sale.setTotalPaid(BigDecimal.ZERO);
-		sale.setDeliveryStatus(DeliveryStatus.NA);
-		sale.setSaleStatus(SaleStatus.OPENED);
-		sale.setSaleType(SaleType.INSTALLMENT);
+		table.setSaleDate(this.clock.todayDate());
+		table.setTotal(BigDecimal.ZERO);
+		table.setBilling(BigDecimal.ZERO);
+		table.setTotalPaid(BigDecimal.ZERO);
+		table.setDeliveryStatus(DeliveryStatus.NA);
+		table.setSaleStatus(SaleStatus.OPENED);
+		table.setSaleType(SaleType.INSTALLMENT);
 
-		sale = this.saleNotifier.notify(context, sale);
+		table = this.saleNotifier.notify(context, table);
 
-		return sale;
+		return table;
 	}
 
 	@Override

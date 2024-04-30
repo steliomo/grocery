@@ -3,6 +3,8 @@
  */
 package mz.co.grocery.persistence.guide.entity;
 
+import javax.inject.Inject;
+
 import org.springframework.stereotype.Component;
 
 import mz.co.grocery.core.domain.guide.Guide;
@@ -28,9 +30,8 @@ public class GuideItemEntityMapper extends AbstractEntityMapper<GuideItemEntity,
 
 	private EntityMapper<SaleItemEntity, SaleItem> saleItemMapper;
 
-	public GuideItemEntityMapper(final EntityMapper<GuideEntity, Guide> guideMapper, final EntityMapper<RentItemEntity, RentItem> rentItemMapper,
+	public GuideItemEntityMapper(final EntityMapper<RentItemEntity, RentItem> rentItemMapper,
 			final EntityMapper<SaleItemEntity, SaleItem> saleItemMapper) {
-		this.guideMapper = guideMapper;
 		this.rentItemMapper = rentItemMapper;
 		this.saleItemMapper = saleItemMapper;
 	}
@@ -59,5 +60,10 @@ public class GuideItemEntityMapper extends AbstractEntityMapper<GuideItemEntity,
 		domain.setQuantity(entity.getQuantity());
 
 		return this.toDomain(entity, domain);
+	}
+
+	@Inject
+	public void setGuideMapper(final EntityMapper<GuideEntity, Guide> guideMapper) {
+		this.guideMapper = guideMapper;
 	}
 }
