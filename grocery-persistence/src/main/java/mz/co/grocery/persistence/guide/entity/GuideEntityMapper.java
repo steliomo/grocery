@@ -54,8 +54,17 @@ public class GuideEntityMapper extends AbstractEntityMapper<GuideEntity, Guide> 
 		domain.setType(entity.getType());
 
 		entity.getGuideItems().ifPresent(items -> items.forEach(item -> {
-			item.setGuide(null);
-			item.getSaleItem().ifPresent(saleItem -> saleItem.setSale(null));
+			final GuideEntity guide = new GuideEntity();
+			guide.setId(entity.getId());
+			item.setGuide(guide);
+
+			item.getSaleItem().ifPresent(saleItem -> {
+				final SaleEntity sale = new SaleEntity();
+				sale.setId(saleItem.getSale().get().getId());
+
+				saleItem.setSale(sale);
+			});
+
 			domain.addGuideItem(this.guideItemMapper.toDomain(item));
 		}));
 
