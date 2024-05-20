@@ -62,7 +62,7 @@ public class StockAdapter implements StockPort {
 	@Override
 	public Stock regularize(final UserContext userContext, final Stock stock) throws BusinessException {
 
-		final Stock stockToRegularize = this.mapper.toDomain(this.repositoty.findByUuid(stock.getUuid()));
+		final Stock stockToRegularize = this.mapper.toDomain(this.repositoty.fetchByUuid(stock.getUuid(), EntityStatus.ACTIVE));
 
 		stockToRegularize.setQuantity(stock.getInventoryQuantity());
 		stockToRegularize.setStockUpdateDate(LocalDate.now());
