@@ -4,14 +4,11 @@
 package mz.co.grocery.core.application.pos.service;
 
 import java.math.BigDecimal;
-import java.util.Optional;
 
-import mz.co.grocery.core.application.customer.out.CustomerPort;
 import mz.co.grocery.core.application.pos.in.OpenTableUseCase;
 import mz.co.grocery.core.application.pos.out.SaleNotifier;
 import mz.co.grocery.core.common.Clock;
 import mz.co.grocery.core.common.UseCase;
-import mz.co.grocery.core.domain.customer.Customer;
 import mz.co.grocery.core.domain.customer.SaleType;
 import mz.co.grocery.core.domain.sale.DeliveryStatus;
 import mz.co.grocery.core.domain.sale.Sale;
@@ -30,13 +27,10 @@ public class OpenTableService extends AbstractService implements OpenTableUseCas
 
 	private Clock clock;
 
-	private CustomerPort customerPort;
-
 	private SaleNotifier saleNotifier;
 
-	public OpenTableService(final Clock clock, final CustomerPort customerPort) {
+	public OpenTableService(final Clock clock) {
 		this.clock = clock;
-		this.customerPort = customerPort;
 	}
 
 	@Override
@@ -48,21 +42,6 @@ public class OpenTableService extends AbstractService implements OpenTableUseCas
 
 		if (!table.getCustomer().isPresent()) {
 			throw new BusinessException("sale.owner.must.be.specified");
-		}
-
-		final Optional<Customer> customer = this.customerPort.findCustomerByContact(table.getCustomer().get().getContact());
-
-		if (customer.isPresent()) {
-			table.setCustomer(customer.get());
-		} else {
-
-			final Customer newCustomer = table.getCustomer().get();
-			newCustomer.setUnit(table.getUnit().get());
-			newCustomer.setAddress("NA");
-
-			final Customer createdCustomer = this.customerPort.createCustomer(context, newCustomer);
-
-			table.setCustomer(createdCustomer);
 		}
 
 		table.setSaleDate(this.clock.todayDate());

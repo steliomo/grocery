@@ -24,7 +24,7 @@ public interface CustomerRepository extends GenericDAO<CustomerEntity, Long> {
 
 		public static final String countByUnit = "SELECT COUNT(c) FROM CustomerEntity c WHERE c.unit.uuid = :unitUuid AND c.entityStatus = :entityStatus";
 
-		public static final String findByUnit = "SELECT c FROM CustomerEntity c WHERE c.unit.uuid = :unitUuid AND c.entityStatus = :entityStatus";
+		public static final String findByUnit = "SELECT c FROM CustomerEntity c WHERE c.unit.uuid = :unitUuid AND c.entityStatus = :entityStatus ORDER BY c.name";
 
 		public static final String findRentPendingPaymentsByUnit = "SELECT c FROM RentEntity r INNER JOIN r.customer c WHERE c.unit.uuid = :unitUuid AND c.entityStatus = :entityStatus AND r.paymentStatus IN ('PENDING', 'INCOMPLETE', 'OVER_PAYMENT') GROUP BY c.id ORDER BY c.name";
 

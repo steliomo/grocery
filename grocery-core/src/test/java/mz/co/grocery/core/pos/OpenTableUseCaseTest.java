@@ -9,12 +9,10 @@ import java.time.LocalDate;
 import org.junit.Assert;
 import org.junit.Before;
 import org.junit.Test;
-import org.mockito.ArgumentMatchers;
 import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
-import mz.co.grocery.core.application.customer.out.CustomerPort;
 import mz.co.grocery.core.application.pos.in.OpenTableUseCase;
 import mz.co.grocery.core.application.pos.out.SaleNotifier;
 import mz.co.grocery.core.application.pos.service.OpenTableService;
@@ -40,9 +38,6 @@ import mz.co.msaude.boot.frameworks.model.UserContext;
 public class OpenTableUseCaseTest extends AbstractUnitServiceTest {
 
 	@Mock
-	private CustomerPort customerPort;
-
-	@Mock
 	private SalePort salePort;
 
 	@Mock
@@ -52,7 +47,7 @@ public class OpenTableUseCaseTest extends AbstractUnitServiceTest {
 	private SaleNotifier saleNotifier;
 
 	@InjectMocks
-	private OpenTableUseCase openTableUseCase = new OpenTableService(this.clock, this.customerPort);
+	private OpenTableUseCase openTableUseCase = new OpenTableService(this.clock);
 
 	private UserContext context;
 
@@ -74,13 +69,8 @@ public class OpenTableUseCaseTest extends AbstractUnitServiceTest {
 	public void shouldOpenTable() throws BusinessException {
 
 		Mockito.when(this.saleNotifier.notify(this.context, this.sale)).thenReturn(this.sale);
-		Mockito.when(this.customerPort.createCustomer(ArgumentMatchers.any(UserContext.class),
-				ArgumentMatchers.any(Customer.class))).thenReturn(this.sale.getCustomer().get());
 
 		this.openTableUseCase.openTable(this.context, this.sale);
-
-		Mockito.verify(this.customerPort, Mockito.times(1)).createCustomer(ArgumentMatchers.any(UserContext.class),
-				ArgumentMatchers.any(Customer.class));
 
 		Mockito.verify(this.saleNotifier, Mockito.times(1)).notify(this.context, this.sale);
 
@@ -93,13 +83,8 @@ public class OpenTableUseCaseTest extends AbstractUnitServiceTest {
 	@Test
 	public void shouldOpenTableWithAnExistingCustomer() throws BusinessException {
 		Mockito.when(this.saleNotifier.notify(this.context, this.sale)).thenReturn(this.sale);
-		Mockito.when(this.customerPort.findCustomerByContact(this.sale.getCustomer().get().getContact()))
-		.thenReturn(this.sale.getCustomer());
 
 		this.openTableUseCase.openTable(this.context, this.sale);
-
-		Mockito.verify(this.customerPort, Mockito.times(0)).createCustomer(ArgumentMatchers.any(UserContext.class),
-				ArgumentMatchers.any(Customer.class));
 
 		Mockito.verify(this.saleNotifier, Mockito.times(1)).notify(this.context, this.sale);
 
