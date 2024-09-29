@@ -21,6 +21,7 @@ import mz.co.grocery.core.domain.customer.Customer;
 import mz.co.grocery.core.domain.sale.Sale;
 import mz.co.grocery.core.domain.sale.SaleItem;
 import mz.co.grocery.core.domain.sale.SaleStatus;
+import mz.co.grocery.core.domain.sale.ServiceItem;
 import mz.co.grocery.core.domain.sale.Stock;
 import mz.co.grocery.core.domain.unit.Unit;
 import mz.co.grocery.core.fixturefactory.CustomerTemplate;
@@ -55,6 +56,7 @@ public class CancelTableUseCaseTest extends AbstractUnitServiceTest {
 		table.setCustomer(EntityFactory.gimme(Customer.class, CustomerTemplate.VALID));
 
 		Mockito.when(this.salePort.updateSale(this.getUserContext(), table)).thenReturn(table);
+		Mockito.when(this.salePort.findByUuid(table.getUuid())).thenReturn(table);
 
 		this.cancelTableUseCase.cancel(this.getUserContext(), table);
 
@@ -68,29 +70,38 @@ public class CancelTableUseCaseTest extends AbstractUnitServiceTest {
 		table.setUnit(EntityFactory.gimme(Unit.class, UnitTemplate.VALID));
 		table.setCustomer(EntityFactory.gimme(Customer.class, CustomerTemplate.VALID));
 
-		final SaleItem saleItem = new SaleItem();
+		final SaleItem productSaleItem = new SaleItem();
+		final SaleItem serviceSaleItem = new SaleItem();
 
 		final Stock stock = new Stock();
 		stock.setPurchasePrice(new BigDecimal(100));
 		stock.setSalePrice(new BigDecimal(150));
 		stock.setQuantity(BigDecimal.ZERO);
 
-		saleItem.setStock(stock);
+		final ServiceItem serviceItem = new ServiceItem();
+		serviceItem.setSalePrice(new BigDecimal(10));
 
-		saleItem.setQuantity(new BigDecimal(10));
-		saleItem.setDeliveredQuantity(new BigDecimal(10));
-		saleItem.setSaleItemValue(new BigDecimal(100));
-		saleItem.setDiscount(BigDecimal.ZERO);
+		serviceSaleItem.setServiceItem(serviceItem);
 
-		table.addItem(saleItem);
+		productSaleItem.setStock(stock);
 
-		Mockito.when(this.stockPort.fetchStockByUuid(saleItem.getStock().get().getUuid())).thenReturn(stock);
+		productSaleItem.setQuantity(new BigDecimal(10));
+		productSaleItem.setDeliveredQuantity(new BigDecimal(10));
+		productSaleItem.setSaleItemValue(new BigDecimal(100));
+		productSaleItem.setDiscount(BigDecimal.ZERO);
+
+		table.addItem(productSaleItem);
+		table.addItem(serviceSaleItem);
+
+		Mockito.when(this.stockPort.findStockByUuid(productSaleItem.getStock().get().getUuid())).thenReturn(stock);
+		Mockito.when(this.salePort.findByUuid(table.getUuid())).thenReturn(table);
 
 		final UserContext context = this.getUserContext();
 
 		this.cancelTableUseCase.cancel(context, table);
 
-		Mockito.verify(this.stockPort, Mockito.times(1)).fetchStockByUuid(saleItem.getStock().get().getUuid());
+		Mockito.verify(this.salePort, Mockito.times(1)).findByUuid(table.getUuid());
+		Mockito.verify(this.stockPort, Mockito.times(1)).findStockByUuid(productSaleItem.getStock().get().getUuid());
 		Mockito.verify(this.stockPort, Mockito.times(1)).updateStock(context, stock);
 		Mockito.verify(this.salePort, Mockito.times(1)).updateSale(context, table);
 

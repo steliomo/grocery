@@ -18,11 +18,10 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
-import org.hibernate.LazyInitializationException;
-
 import mz.co.grocery.core.domain.sale.DeliveryStatus;
 import mz.co.grocery.persistence.sale.repository.SaleItemRepository;
 import mz.co.msaude.boot.frameworks.model.GenericEntity;
+import mz.co.msaude.boot.frameworks.util.ProxyUtil;
 
 /**
  * @author Stélio Moiane
@@ -73,12 +72,14 @@ public class SaleItemEntity extends GenericEntity {
 	private DeliveryStatus deliveryStatus;
 
 	public Optional<SaleEntity> getSale() {
-		try {
-			Optional.ofNullable(this.sale).ifPresent(sale -> sale.getSaleDate());
-			return Optional.ofNullable(this.sale);
-		} catch (final LazyInitializationException e) {
-			return Optional.empty();
+		if (ProxyUtil.isProxy(this.sale)) {
+			final SaleEntity sale = new SaleEntity();
+			sale.setId(ProxyUtil.getIdentifier(this.sale));
+
+			return Optional.of(sale);
 		}
+
+		return Optional.ofNullable(this.sale);
 	}
 
 	public void setSale(final SaleEntity sale) {
@@ -86,12 +87,14 @@ public class SaleItemEntity extends GenericEntity {
 	}
 
 	public Optional<StockEntity> getStock() {
-		try {
-			Optional.ofNullable(this.stock).ifPresent(stock -> stock.getQuantity());
-			return Optional.ofNullable(this.stock);
-		} catch (final LazyInitializationException e) {
-			return Optional.empty();
+		if (ProxyUtil.isProxy(this.stock)) {
+			final StockEntity stock = new StockEntity();
+			stock.setId(ProxyUtil.getIdentifier(this.stock));
+
+			return Optional.of(stock);
 		}
+
+		return Optional.ofNullable(this.stock);
 	}
 
 	public void setStock(final StockEntity stock) {
@@ -99,12 +102,14 @@ public class SaleItemEntity extends GenericEntity {
 	}
 
 	public Optional<ServiceItemEntity> getServiceItem() {
-		try {
-			Optional.ofNullable(this.serviceItem).ifPresent(serviceItem -> serviceItem.getSalePrice());
-			return Optional.ofNullable(this.serviceItem);
-		} catch (final LazyInitializationException e) {
-			return Optional.empty();
+		if (ProxyUtil.isProxy(this.serviceItem)) {
+			final ServiceItemEntity serviceItem = new ServiceItemEntity();
+			serviceItem.setId(ProxyUtil.getIdentifier(this.serviceItem));
+
+			return Optional.of(serviceItem);
 		}
+
+		return Optional.ofNullable(this.serviceItem);
 	}
 
 	public void setServiceItem(final ServiceItemEntity serviceItem) {

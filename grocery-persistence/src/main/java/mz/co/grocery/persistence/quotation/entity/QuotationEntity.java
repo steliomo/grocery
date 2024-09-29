@@ -20,14 +20,13 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import org.hibernate.LazyInitializationException;
-
 import mz.co.grocery.core.domain.quotation.QuotationStatus;
 import mz.co.grocery.core.domain.quotation.QuotationType;
 import mz.co.grocery.persistence.customer.entity.CustomerEntity;
 import mz.co.grocery.persistence.quotation.repository.QuotationRepository;
 import mz.co.grocery.persistence.unit.entity.UnitEntity;
 import mz.co.msaude.boot.frameworks.model.GenericEntity;
+import mz.co.msaude.boot.frameworks.util.ProxyUtil;
 
 /**
  * @author Stélio Moiane
@@ -70,12 +69,14 @@ public class QuotationEntity extends GenericEntity {
 	private Set<QuotationItemEntity> items;
 
 	public Optional<CustomerEntity> getCustomer() {
-		try {
-			Optional.ofNullable(this.customer).ifPresent(customer -> customer.getName());
-			return Optional.ofNullable(this.customer);
-		} catch (final LazyInitializationException e) {
-			return Optional.empty();
+		if (ProxyUtil.isProxy(this.customer)) {
+			final CustomerEntity customer = new CustomerEntity();
+			customer.setId(ProxyUtil.getIdentifier(this.customer));
+
+			return Optional.of(customer);
 		}
+
+		return Optional.ofNullable(this.customer);
 	}
 
 	public void setCustomer(final CustomerEntity customer) {
@@ -107,12 +108,14 @@ public class QuotationEntity extends GenericEntity {
 	}
 
 	public Optional<UnitEntity> getUnit() {
-		try {
-			Optional.ofNullable(this.unit).ifPresent(unit -> unit.getName());
-			return Optional.ofNullable(this.unit);
-		} catch (final LazyInitializationException e) {
-			return Optional.empty();
+
+		if (ProxyUtil.isProxy(this.unit)) {
+			final UnitEntity unit = new UnitEntity();
+			unit.setId(ProxyUtil.getIdentifier(this.unit));
+			return Optional.of(unit);
 		}
+
+		return Optional.ofNullable(this.unit);
 	}
 
 	public void setUnit(final UnitEntity unit) {

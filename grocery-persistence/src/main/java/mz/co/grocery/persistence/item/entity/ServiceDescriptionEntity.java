@@ -15,10 +15,9 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
-import org.hibernate.LazyInitializationException;
-
 import mz.co.grocery.persistence.item.repository.ServiceDescriptionRepository;
 import mz.co.msaude.boot.frameworks.model.GenericEntity;
+import mz.co.msaude.boot.frameworks.util.ProxyUtil;
 
 /**
  * @author Stélio Moiane
@@ -42,12 +41,13 @@ public class ServiceDescriptionEntity extends GenericEntity {
 	private String description;
 
 	public Optional<ServiceEntity> getService() {
-		try {
-			Optional.ofNullable(this.service).ifPresent(service -> service.getName());
-			return Optional.of(this.service);
-		} catch (final LazyInitializationException e) {
-			return Optional.empty();
+		if (ProxyUtil.isProxy(this.service)) {
+			final ServiceEntity service = new ServiceEntity();
+			service.setId(ProxyUtil.getIdentifier(this.service));
+			return Optional.of(service);
 		}
+
+		return Optional.ofNullable(this.service);
 	}
 
 	public void setService(final ServiceEntity service) {

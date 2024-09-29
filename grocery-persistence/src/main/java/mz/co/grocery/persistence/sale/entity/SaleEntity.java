@@ -22,8 +22,6 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
-import org.hibernate.LazyInitializationException;
-
 import mz.co.grocery.core.domain.customer.SaleType;
 import mz.co.grocery.core.domain.sale.DeliveryStatus;
 import mz.co.grocery.core.domain.sale.SaleStatus;
@@ -32,6 +30,7 @@ import mz.co.grocery.persistence.guide.entity.GuideEntity;
 import mz.co.grocery.persistence.sale.repository.SaleRepository;
 import mz.co.grocery.persistence.unit.entity.UnitEntity;
 import mz.co.msaude.boot.frameworks.model.GenericEntity;
+import mz.co.msaude.boot.frameworks.util.ProxyUtil;
 
 /**
  * @author Stélio Moiane
@@ -104,12 +103,14 @@ public class SaleEntity extends GenericEntity {
 	private Integer tableNumber;
 
 	public Optional<UnitEntity> getUnit() {
-		try {
-			Optional.ofNullable(this.unit).ifPresent(unit -> unit.getName());
-			return Optional.ofNullable(this.unit);
-		} catch (final LazyInitializationException e) {
-			return Optional.empty();
+
+		if (ProxyUtil.isProxy(this.unit)) {
+			final UnitEntity unit = new UnitEntity();
+			unit.setId(ProxyUtil.getIdentifier(this.unit));
+			return Optional.of(unit);
 		}
+
+		return Optional.ofNullable(this.unit);
 	}
 
 	public void setUnit(final UnitEntity unit) {
@@ -141,12 +142,11 @@ public class SaleEntity extends GenericEntity {
 	}
 
 	public Optional<Set<SaleItemEntity>> getItems() {
-		try {
-			Optional.ofNullable(this.items).ifPresent(items -> items.size());
-			return Optional.ofNullable(this.items);
-		} catch (final LazyInitializationException e) {
+		if (ProxyUtil.isProxy(this.items)) {
 			return Optional.empty();
 		}
+
+		return Optional.ofNullable(this.items);
 	}
 
 	public void setItems(final Set<SaleItemEntity> items) {
@@ -154,12 +154,14 @@ public class SaleEntity extends GenericEntity {
 	}
 
 	public Optional<CustomerEntity> getCustomer() {
-		try {
-			Optional.ofNullable(this.customer).ifPresent(customer -> customer.getName());
-			return Optional.ofNullable(this.customer);
-		} catch (final LazyInitializationException e) {
-			return Optional.empty();
+		if (ProxyUtil.isProxy(this.customer)) {
+			final CustomerEntity customer = new CustomerEntity();
+			customer.setId(ProxyUtil.getIdentifier(this.customer));
+
+			return Optional.of(customer);
 		}
+
+		return Optional.ofNullable(this.customer);
 	}
 
 	public void setCustomer(final CustomerEntity customer) {
@@ -207,12 +209,11 @@ public class SaleEntity extends GenericEntity {
 	}
 
 	public Optional<Set<GuideEntity>> getGuides() {
-		try {
-			Optional.ofNullable(this.guides).ifPresent(guides -> guides.size());
-			return Optional.ofNullable(this.guides);
-		} catch (final LazyInitializationException e) {
+		if (ProxyUtil.isProxy(this.guides)) {
 			return Optional.empty();
 		}
+
+		return Optional.ofNullable(this.guides);
 	}
 
 	public void setGuides(final Set<GuideEntity> guides) {

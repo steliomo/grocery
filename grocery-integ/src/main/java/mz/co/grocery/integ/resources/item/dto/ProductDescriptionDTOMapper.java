@@ -33,9 +33,13 @@ implements DTOMapper<ProductDescriptionDTO, ProductDescription> {
 	public ProductDescriptionDTO toDTO(final ProductDescription domain) {
 		final ProductDescriptionDTO dto = new ProductDescriptionDTO();
 
-		domain.getProduct().ifPresent(product -> dto.setProductDTO(this.productMapper.toDTO(product)));
+		domain.getProduct().ifPresent(product -> {
+			dto.setProductDTO(this.productMapper.toDTO(product));
+			dto.setName(domain.getName());
+		});
+
 		domain.getProductUnit().ifPresent(productUnit -> dto.setProductUnitDTO(this.productUnitMapper.toDTO(productUnit)));
-		dto.setName(domain.getName());
+
 		dto.setDescription(domain.getDescription());
 
 		return this.toDTO(dto, domain);

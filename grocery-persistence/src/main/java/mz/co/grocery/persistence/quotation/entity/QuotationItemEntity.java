@@ -13,11 +13,10 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.Table;
 
-import org.hibernate.LazyInitializationException;
-
 import mz.co.grocery.persistence.sale.entity.ServiceItemEntity;
 import mz.co.grocery.persistence.sale.entity.StockEntity;
 import mz.co.msaude.boot.frameworks.model.GenericEntity;
+import mz.co.msaude.boot.frameworks.util.ProxyUtil;
 
 /**
  * @author Stélio Moiane
@@ -57,12 +56,14 @@ public class QuotationItemEntity extends GenericEntity {
 	}
 
 	public Optional<StockEntity> getStock() {
-		try {
-			Optional.ofNullable(this.stock).ifPresent(stock -> stock.getQuantity());
-			return Optional.ofNullable(this.stock);
-		} catch (final LazyInitializationException e) {
-			return Optional.empty();
+		if (ProxyUtil.isProxy(this.stock)) {
+			final StockEntity stock = new StockEntity();
+			stock.setId(ProxyUtil.getIdentifier(this.stock));
+
+			return Optional.of(stock);
 		}
+
+		return Optional.ofNullable(this.stock);
 	}
 
 	public void setStock(final StockEntity stock) {
@@ -70,12 +71,14 @@ public class QuotationItemEntity extends GenericEntity {
 	}
 
 	public Optional<ServiceItemEntity> getServiceItem() {
-		try {
-			Optional.ofNullable(this.serviceItem).ifPresent(serviceItem -> serviceItem.getSalePrice());
-			return Optional.ofNullable(this.serviceItem);
-		} catch (final LazyInitializationException e) {
-			return Optional.empty();
+		if (ProxyUtil.isProxy(this.serviceItem)) {
+
+			final ServiceItemEntity serviceItem = new ServiceItemEntity();
+			serviceItem.setId(ProxyUtil.getIdentifier(this.serviceItem));
+			return Optional.of(serviceItem);
 		}
+
+		return Optional.ofNullable(this.serviceItem);
 	}
 
 	public void setServiceItem(final ServiceItemEntity serviceItem) {

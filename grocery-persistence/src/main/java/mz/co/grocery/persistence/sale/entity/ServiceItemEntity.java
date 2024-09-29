@@ -16,12 +16,11 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
-import org.hibernate.LazyInitializationException;
-
 import mz.co.grocery.persistence.item.entity.ServiceDescriptionEntity;
 import mz.co.grocery.persistence.sale.repository.ServiceItemRepository;
 import mz.co.grocery.persistence.unit.entity.UnitEntity;
 import mz.co.msaude.boot.frameworks.model.GenericEntity;
+import mz.co.msaude.boot.frameworks.util.ProxyUtil;
 
 /**
  * @author Stélio Moiane
@@ -55,12 +54,15 @@ public class ServiceItemEntity extends GenericEntity {
 	private BigDecimal salePrice;
 
 	public Optional<ServiceDescriptionEntity> getServiceDescription() {
-		try {
-			Optional.ofNullable(this.serviceDescription).ifPresent(serviceDescription -> serviceDescription.getDescription());
-			return Optional.of(this.serviceDescription);
-		} catch (final LazyInitializationException e) {
-			return Optional.empty();
+
+		if (ProxyUtil.isProxy(this.serviceDescription)) {
+			final ServiceDescriptionEntity serviceDescription = new ServiceDescriptionEntity();
+			serviceDescription.setId(ProxyUtil.getIdentifier(this.serviceDescription));
+
+			return Optional.of(serviceDescription);
 		}
+
+		return Optional.ofNullable(this.serviceDescription);
 	}
 
 	public void setServiceDescription(final ServiceDescriptionEntity serviceDescription) {
@@ -68,12 +70,14 @@ public class ServiceItemEntity extends GenericEntity {
 	}
 
 	public Optional<UnitEntity> getUnit() {
-		try {
-			Optional.ofNullable(this.unit).ifPresent(unit -> unit.getName());
-			return Optional.ofNullable(this.unit);
-		} catch (final LazyInitializationException e) {
-			return Optional.empty();
+
+		if (ProxyUtil.isProxy(this.unit)) {
+			final UnitEntity unit = new UnitEntity();
+			unit.setId(ProxyUtil.getIdentifier(this.unit));
+			return Optional.of(unit);
 		}
+
+		return Optional.ofNullable(this.unit);
 	}
 
 	public void setUnit(final UnitEntity unit) {

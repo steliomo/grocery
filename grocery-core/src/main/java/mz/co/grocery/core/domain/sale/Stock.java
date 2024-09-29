@@ -146,6 +146,11 @@ public class Stock extends Domain implements Item {
 
 	public void setMinimumStock(final BigDecimal minimumStock) {
 		this.minimumStock = minimumStock;
+
+		if(minimumStock == null) {
+			return;
+		}
+
 		this.setStockStatus();
 	}
 

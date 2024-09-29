@@ -41,13 +41,16 @@ public class CancelTableService implements CancelTableUseCase {
 	public Sale cancel(final UserContext context, Sale table) throws BusinessException {
 
 		final Set<SaleItem> items = table.getItems().get();
+		final String unit = table.getUnit().get().getUuid();
 
 		if (items.isEmpty()) {
+			table = this.salePort.findByUuid(table.getUuid());
+
 			table.setSaleStatus(SaleStatus.CANCELLED);
 
 			table = this.salePort.updateSale(context, table);
 
-			this.paymentUseCase.debitTransaction(context, table.getUnit().get().getUuid());
+			this.paymentUseCase.debitTransaction(context, unit);
 
 			return table;
 		}
@@ -55,18 +58,20 @@ public class CancelTableService implements CancelTableUseCase {
 		for (final SaleItem saleItem : items) {
 
 			if (saleItem.isProduct()) {
-				final Stock stock = this.stockPort.fetchStockByUuid(saleItem.getStock().get().getUuid());
+				final Stock stock = this.stockPort.findStockByUuid(saleItem.getStock().get().getUuid());
 				stock.addQuantity(saleItem.getQuantity());
 
 				this.stockPort.updateStock(context, stock);
 			}
 		}
 
+		table = this.salePort.findByUuid(table.getUuid());
+
 		table.setSaleStatus(SaleStatus.CANCELLED);
 
 		this.salePort.updateSale(context, table);
 
-		this.paymentUseCase.debitTransaction(context, table.getUnit().get().getUuid());
+		this.paymentUseCase.debitTransaction(context, unit);
 
 		return table;
 	}

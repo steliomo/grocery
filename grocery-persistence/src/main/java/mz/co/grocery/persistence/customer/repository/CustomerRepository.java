@@ -38,7 +38,7 @@ public interface CustomerRepository extends GenericDAO<CustomerEntity, Long> {
 
 		public static final String countCustomersWithContractPendingPaymentByUnit = "SELECT COUNT(DISTINCT c) FROM ContractEntity ct INNER JOIN ct.customer c WHERE ct.unit.uuid = :unitUuid AND ct.referencePaymentDate <= :currentDate AND ct.entityStatus = :entityStatus";
 
-		public static final String findCustomersSaleWithPendindOrIncompletePaymentByUnit = "SELECT c FROM SaleEntity s INNER JOIN s.customer c WHERE s.unit.uuid = :unitUuid AND s.total > s.totalPaid AND s.entityStatus = :entityStatus GROUP BY c.id ORDER BY s.saleDate DESC";
+		public static final String findCustomersSaleWithPendindOrIncompletePaymentByUnit = "SELECT c FROM SaleEntity s INNER JOIN s.customer c WHERE s.unit.uuid = :unitUuid AND s.total > s.totalPaid AND s.saleStatus <> 'CANCELLED' AND s.entityStatus = :entityStatus GROUP BY c.id ORDER BY s.saleDate DESC";
 
 		public static final String findCustomersWithPendingOrInCompleteRentItemsToLoadByUnit = "SELECT c FROM RentEntity r INNER JOIN r.customer c INNER JOIN r.rentItems ri WHERE r.unit.uuid = :unitUuid AND ri.loadStatus IN ('PENDING','INCOMPLETE') AND c.entityStatus = :entityStatus GROUP BY c.id ORDER BY r.rentDate DESC";
 

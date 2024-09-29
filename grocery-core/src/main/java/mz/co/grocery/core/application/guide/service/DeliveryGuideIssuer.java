@@ -95,7 +95,7 @@ public class DeliveryGuideIssuer implements GuideIssuer {
 			this.saleItemPort.updateSaleItem(userContext, saleItem);
 
 			if (saleItem.isProduct()) {
-				final Stock stock = this.stockPort.findStockByUuid(saleItem.getStock().get().getUuid());
+				final Stock stock = this.stockPort.findStockById(saleItem.getStock().get().getId());
 				stock.subtractStock(guideItem.getQuantity());
 				this.stockPort.updateStock(userContext, stock);
 			}

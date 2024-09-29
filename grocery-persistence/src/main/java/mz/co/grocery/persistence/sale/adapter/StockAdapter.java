@@ -131,4 +131,9 @@ public class StockAdapter implements StockPort {
 		return this.repositoty.fetchInAnalysisByUnitUuid(unitUuid, EntityStatus.ACTIVE).stream().map(this.mapper::toDomain)
 				.collect(Collectors.toList());
 	}
+
+	@Override
+	public Stock findStockById(final Long stockId) throws BusinessException {
+		return this.mapper.toDomain(this.repositoty.findById(stockId));
+	}
 }

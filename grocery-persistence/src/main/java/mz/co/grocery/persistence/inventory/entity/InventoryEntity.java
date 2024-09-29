@@ -20,12 +20,11 @@ import javax.persistence.OneToMany;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
-import org.hibernate.LazyInitializationException;
-
 import mz.co.grocery.core.domain.inventory.InventoryStatus;
 import mz.co.grocery.persistence.inventory.repository.InventoryRepository;
 import mz.co.grocery.persistence.unit.entity.UnitEntity;
 import mz.co.msaude.boot.frameworks.model.GenericEntity;
+import mz.co.msaude.boot.frameworks.util.ProxyUtil;
 
 /**
  * @author Stélio Moiane
@@ -58,12 +57,14 @@ public class InventoryEntity extends GenericEntity {
 	private Set<StockInventoryEntity> stockInventories;
 
 	public Optional<UnitEntity> getUnit() {
-		try {
-			Optional.ofNullable(this.unit).ifPresent(unit -> unit.getName());
-			return Optional.ofNullable(this.unit);
-		} catch (final LazyInitializationException e) {
-			return Optional.empty();
+		if (ProxyUtil.isProxy(this.unit)) {
+			final UnitEntity unit = new UnitEntity();
+			unit.setId(ProxyUtil.getIdentifier(this.unit));
+
+			return Optional.of(unit);
 		}
+
+		return Optional.ofNullable(this.unit);
 	}
 
 	public void setUnit(final UnitEntity unit) {

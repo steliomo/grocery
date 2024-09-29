@@ -35,6 +35,8 @@ public interface StockPort {
 
 	Stock findStockByUuid(String stockUuid) throws BusinessException;
 
+	Stock findStockById(Long stockId) throws BusinessException;
+
 	List<Stock> fetchStockByGroceryAndProduct(String groceryUuid, String productUuid) throws BusinessException;
 
 	List<Stock> fetchStocksByGrocery(String groceryUuid) throws BusinessException;

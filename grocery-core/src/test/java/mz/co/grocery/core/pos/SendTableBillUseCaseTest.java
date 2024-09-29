@@ -58,4 +58,22 @@ public class SendTableBillUseCaseTest extends AbstractUnitServiceTest {
 		Mockito.verify(this.documentGeneratorPort, Mockito.times(1)).generatePdfDocument(ArgumentMatchers.any());
 		Assert.assertNotNull(table.getFilename());
 	}
+
+	@Test(expected = BusinessException.class)
+	public void shouldNotSendInvoiceToWhatsAppForEmptyItens() throws BusinessException {
+
+		final Sale table = new Sale();
+
+		this.sendTableInvoiceUseCase.sendBill(table);
+	}
+
+	@Test(expected = BusinessException.class)
+	public void shouldNotSendInvoiceToWhatsAppIFCustomerDoesNotExist() throws BusinessException {
+
+		final Sale table = new Sale();
+
+		table.addItem(new SaleItem());
+
+		this.sendTableInvoiceUseCase.sendBill(table);
+	}
 }

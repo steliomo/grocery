@@ -43,7 +43,7 @@ public class SalePaymentService extends AbstractService implements SalePaymentUs
 			final LocalDate paymentDate)
 					throws BusinessException {
 
-		final Sale sale = this.salePort.findByUuid(saleUuid);
+		final Sale sale = this.salePort.fetchByUuid(saleUuid);
 
 		if (!SaleType.INSTALLMENT.equals(sale.getSaleType())) {
 			throw new BusinessException("cannot.perform.payment.for.non.installment.sale");

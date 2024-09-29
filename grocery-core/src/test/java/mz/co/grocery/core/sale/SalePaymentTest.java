@@ -68,7 +68,7 @@ public class SalePaymentTest extends AbstractUnitServiceTest {
 
 		final UserContext userContext = this.getUserContext();
 
-		Mockito.when(this.salePort.findByUuid(sale.getUuid())).thenReturn(sale);
+		Mockito.when(this.salePort.fetchByUuid(sale.getUuid())).thenReturn(sale);
 
 		this.salePaymentService.payInstallmentSale(userContext, sale.getUuid(), paymentValue, PaymenteDate);
 
@@ -95,7 +95,7 @@ public class SalePaymentTest extends AbstractUnitServiceTest {
 		final BigDecimal paymentValue = new BigDecimal(100);
 		final LocalDate PaymenteDate = LocalDate.now();
 
-		Mockito.when(this.salePort.findByUuid(sale.getUuid())).thenReturn(sale);
+		Mockito.when(this.salePort.fetchByUuid(sale.getUuid())).thenReturn(sale);
 
 		this.salePaymentService.payInstallmentSale(this.getUserContext(), sale.getUuid(), paymentValue, PaymenteDate);
 	}
@@ -113,7 +113,7 @@ public class SalePaymentTest extends AbstractUnitServiceTest {
 		final BigDecimal paymentValue = sale.getRemainingPayment().add(new BigDecimal(100));
 		final LocalDate PaymenteDate = LocalDate.now();
 
-		Mockito.when(this.salePort.findByUuid(sale.getUuid())).thenReturn(sale);
+		Mockito.when(this.salePort.fetchByUuid(sale.getUuid())).thenReturn(sale);
 
 		this.salePaymentService.payInstallmentSale(this.getUserContext(), sale.getUuid(), paymentValue, PaymenteDate);
 	}

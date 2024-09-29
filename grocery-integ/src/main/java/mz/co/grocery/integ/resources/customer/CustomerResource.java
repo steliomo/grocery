@@ -46,6 +46,9 @@ public class CustomerResource extends AbstractResource {
 	@Autowired
 	private DTOMapper<CustomerDTO, Customer> customerMapper;
 
+//	workaround for customer pagination
+	private static final int MAX_RESULT_FACTOR = 2;
+
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
@@ -64,7 +67,7 @@ public class CustomerResource extends AbstractResource {
 	public Response findCustomersByUnit(@PathParam("unitUuid") final String unitUuid, @QueryParam("currentPage") final int currentPage,
 	        @QueryParam("maxResult") final int maxResult) throws BusinessException {
 
-		final List<Customer> customers = this.customerPort.findCustomersByUnit(unitUuid, currentPage, maxResult);
+		final List<Customer> customers = this.customerPort.findCustomersByUnit(unitUuid, currentPage, maxResult * MAX_RESULT_FACTOR);
 
 		final Long totalCustomers = this.customerPort.countCustomersByUnit(unitUuid);
 

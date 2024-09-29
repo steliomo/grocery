@@ -19,13 +19,12 @@ import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
-import org.hibernate.LazyInitializationException;
-
 import mz.co.grocery.core.domain.sale.StockStatus;
 import mz.co.grocery.persistence.item.entity.ProductDescriptionEntity;
 import mz.co.grocery.persistence.sale.repository.StockRepositoty;
 import mz.co.grocery.persistence.unit.entity.UnitEntity;
 import mz.co.msaude.boot.frameworks.model.GenericEntity;
+import mz.co.msaude.boot.frameworks.util.ProxyUtil;
 
 /**
  * @author Stélio Moiane
@@ -105,12 +104,13 @@ public class StockEntity extends GenericEntity {
 	private BigDecimal unitPerM2;
 
 	public Optional<UnitEntity> getUnit() {
-		try {
-			Optional.ofNullable(this.unit).ifPresent(unit -> unit.getName());
-			return Optional.ofNullable(this.unit);
-		} catch (final LazyInitializationException e) {
-			return Optional.empty();
+		if (ProxyUtil.isProxy(this.unit)) {
+			final UnitEntity unit = new UnitEntity();
+			unit.setId(ProxyUtil.getIdentifier(this.unit));
+			return Optional.of(unit);
 		}
+
+		return Optional.ofNullable(this.unit);
 	}
 
 	public void setUnit(final UnitEntity unit) {
@@ -118,12 +118,13 @@ public class StockEntity extends GenericEntity {
 	}
 
 	public Optional<ProductDescriptionEntity> getProductDescription() {
-		try {
-			Optional.ofNullable(this.productDescription).ifPresent(productDescription -> productDescription.getDescription());
-			return Optional.ofNullable(this.productDescription);
-		} catch (final LazyInitializationException e) {
-			return Optional.empty();
+		if (ProxyUtil.isProxy(this.productDescription)) {
+			final ProductDescriptionEntity productDescription = new ProductDescriptionEntity();
+			productDescription.setId(ProxyUtil.getIdentifier(this.productDescription));
+			return Optional.of(productDescription);
 		}
+
+		return Optional.ofNullable(this.productDescription);
 	}
 
 	public void setProductDescription(final ProductDescriptionEntity productDescription) {

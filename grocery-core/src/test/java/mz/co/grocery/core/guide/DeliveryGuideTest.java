@@ -135,7 +135,7 @@ public class DeliveryGuideTest extends AbstractUnitServiceTest {
 
 		Mockito.when(this.guidePort.createGuide(ArgumentMatchers.any(UserContext.class), ArgumentMatchers.any(Guide.class))).thenReturn(guide);
 		Mockito.when(this.saleItemPort.findByUuid(ArgumentMatchers.any())).thenReturn(saleItem);
-		Mockito.when(this.stockPort.findStockByUuid(ArgumentMatchers.any())).thenReturn(saleItem.getStock().get());
+		Mockito.when(this.stockPort.findStockById(ArgumentMatchers.any())).thenReturn(saleItem.getStock().get());
 		Mockito.when(this.salePort.fetchByUuid(ArgumentMatchers.any())).thenReturn(guide.getSale().get());
 
 		this.guideService.issueGuide(this.getUserContext(), guide);

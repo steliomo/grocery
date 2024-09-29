@@ -103,9 +103,9 @@ public class CancelTableUseCaseTest extends AbstractIntegServiceTest {
 	@Test
 	public void shouldCancelTableWithoutItensUseCase() throws BusinessException {
 
-		this.cancelTableUseCase.cancel(this.getUserContext(), this.table);
+		final Sale canceledTable = this.cancelTableUseCase.cancel(this.getUserContext(), this.table);
 
-		Assert.assertEquals(SaleStatus.CANCELLED, this.table.getSaleStatus());
+		Assert.assertEquals(SaleStatus.CANCELLED, canceledTable.getSaleStatus());
 	}
 
 	@Test
@@ -121,10 +121,11 @@ public class CancelTableUseCaseTest extends AbstractIntegServiceTest {
 
 		this.registTableItemsUseCase.registTableItems(this.getUserContext(), this.table);
 
-		final Sale foundTable = this.salePort.fetchByUuid(this.table.getUuid());
+		final Sale foundTable = this.salePort.findByUuid(this.table.getUuid());
+		foundTable.setUnit(this.table.getUnit().get());
 
-		this.cancelTableUseCase.cancel(this.getUserContext(), foundTable);
+		final Sale canceledTable = this.cancelTableUseCase.cancel(this.getUserContext(), foundTable);
 
-		Assert.assertEquals(SaleStatus.CANCELLED, foundTable.getSaleStatus());
+		Assert.assertEquals(SaleStatus.CANCELLED, canceledTable.getSaleStatus());
 	}
 }
