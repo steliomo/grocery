@@ -15,8 +15,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import mz.co.grocery.core.application.inventory.out.InventoryPort;
-import mz.co.grocery.core.application.payment.in.PaymentUseCase;
-import mz.co.grocery.core.application.sale.in.SaleUseCase;
+import mz.co.grocery.core.application.payment.in.SubscriptionUseCase;
 import mz.co.grocery.core.application.sale.out.SaleItemPort;
 import mz.co.grocery.core.application.sale.out.SalePort;
 import mz.co.grocery.core.application.sale.out.StockPort;
@@ -57,11 +56,10 @@ public class InstallmentSaleTest extends AbstractUnitServiceTest {
 	private SaleItemPort saleItemPort;
 
 	@Mock
-	private PaymentUseCase paymentUseCase;
+	private SubscriptionUseCase paymentUseCase;
 
 	@InjectMocks
-	private final SaleUseCase saleService = new InstallmentSaleService(this.salePort, this.saleItemPort, this.paymentUseCase,
-			this.inventoryPort);
+	private InstallmentSaleService saleService;
 
 	@Test(expected = BusinessException.class)
 	public void shouldNotRegistInstallmentSalewithPendingInventory() throws BusinessException {
@@ -123,8 +121,6 @@ public class InstallmentSaleTest extends AbstractUnitServiceTest {
 		Mockito.verify(this.salePort, Mockito.times(1)).createSale(ArgumentMatchers.any(UserContext.class), ArgumentMatchers.any(Sale.class));
 		Mockito.verify(this.saleItemPort, Mockito.times(10)).createSaleItem(ArgumentMatchers.any(UserContext.class),
 				ArgumentMatchers.any(SaleItem.class));
-		Mockito.verify(this.paymentUseCase, Mockito.times(1)).debitTransaction(this.getUserContext(),
-				null);
 
 		Assert.assertNotNull(sale.getCustomer());
 		Assert.assertEquals(SaleType.INSTALLMENT, sale.getSaleType());

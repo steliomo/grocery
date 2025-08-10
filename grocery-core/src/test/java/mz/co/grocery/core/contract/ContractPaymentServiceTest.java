@@ -11,7 +11,6 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
-import mz.co.grocery.core.application.contract.in.PaymentContractUseCase;
 import mz.co.grocery.core.application.contract.out.ContractPaymentPort;
 import mz.co.grocery.core.application.contract.out.ContractPort;
 import mz.co.grocery.core.application.contract.service.ContractPaymentService;
@@ -34,7 +33,7 @@ public class ContractPaymentServiceTest extends AbstractUnitServiceTest {
 	private ContractPort contractPort;
 
 	@InjectMocks
-	private final PaymentContractUseCase contractPaymentService = new ContractPaymentService(this.contractPaymentPort, this.contractPort);
+	private ContractPaymentService contractPaymentService;
 
 	@Test
 	public void shouldPerformContractPayment() throws BusinessException {

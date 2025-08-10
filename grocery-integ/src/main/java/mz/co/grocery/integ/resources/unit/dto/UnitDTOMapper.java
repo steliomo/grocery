@@ -27,10 +27,10 @@ public class UnitDTOMapper extends AbstractDTOMapper<UnitDTO, Unit> implements D
 		dto.setPhoneNumberOptional(domain.getPhoneNumberOptional());
 		dto.setEmail(domain.getEmail());
 		dto.setUnitType(domain.getUnitType());
-		dto.setBalance(domain.getBalance());
 		dto.setNumberOfTables(domain.getNumberOfTables());
 		dto.setLogoPath(domain.getLogoPath());
 		dto.setSignaturePath(domain.getSignaturePath());
+		dto.setSubscriptionEndDate(domain.getSubscriptionEndDate());
 
 		return this.toDTO(dto, domain);
 	}
@@ -45,12 +45,10 @@ public class UnitDTOMapper extends AbstractDTOMapper<UnitDTO, Unit> implements D
 		domain.setPhoneNumberOptional(dto.getPhoneNumberOptional());
 		domain.setEmail(dto.getEmail());
 		domain.setUnitType(dto.getUnitType());
-
-		dto.getBalance().ifPresent(balance -> domain.setBalance(balance));
 		dto.setNumberOfTables(dto.getNumberOfTables());
-
 		domain.setLogoPath(dto.getLogoPath());
 		domain.setSignaturePath(dto.getSignaturePath());
+		domain.setSubscriptionEndDate(dto.getSubscriptionEndDate());
 
 		return this.toDomain(dto, domain);
 	}

@@ -9,7 +9,6 @@ import java.util.Set;
 import mz.co.grocery.core.application.document.DocumentGeneratorPort;
 import mz.co.grocery.core.application.guide.in.GuideIssuer;
 import mz.co.grocery.core.application.guide.in.IssueGuideUseCase;
-import mz.co.grocery.core.application.payment.in.PaymentUseCase;
 import mz.co.grocery.core.common.UseCase;
 import mz.co.grocery.core.domain.document.Document;
 import mz.co.grocery.core.domain.guide.Guide;
@@ -27,19 +26,15 @@ import mz.co.msaude.boot.frameworks.service.AbstractService;
 @UseCase
 public class IssueGuideService extends AbstractService implements IssueGuideUseCase {
 
-	private PaymentUseCase paymentUseCase;
-
 	private DocumentGeneratorPort reportGeneratorPort;
 
 	private ApplicationTranslator translator;
 
 	private GuideIssuer guideIssuer;
 
-	public IssueGuideService(final ApplicationTranslator translator, final DocumentGeneratorPort reportGeneratorPort,
-			final PaymentUseCase paymentUseCase) {
+	public IssueGuideService(final ApplicationTranslator translator, final DocumentGeneratorPort reportGeneratorPort) {
 		this.translator = translator;
 		this.reportGeneratorPort = reportGeneratorPort;
-		this.paymentUseCase = paymentUseCase;
 	}
 
 	@Override
@@ -58,8 +53,6 @@ public class IssueGuideService extends AbstractService implements IssueGuideUseC
 		guide.setFilename(report.getFilename());
 
 		this.reportGeneratorPort.generatePdfDocument(report);
-
-		this.paymentUseCase.debitTransaction(userContext, guide.getUnit().getUuid());
 
 		return guide;
 	}

@@ -14,13 +14,11 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import mz.co.grocery.core.application.document.DocumentGeneratorPort;
-import mz.co.grocery.core.application.guide.in.GuideIssuer;
-import mz.co.grocery.core.application.guide.in.IssueGuideUseCase;
 import mz.co.grocery.core.application.guide.out.GuideItemPort;
 import mz.co.grocery.core.application.guide.out.GuidePort;
 import mz.co.grocery.core.application.guide.service.IssueGuideService;
 import mz.co.grocery.core.application.guide.service.TransportGuideIssuer;
-import mz.co.grocery.core.application.payment.in.PaymentUseCase;
+import mz.co.grocery.core.application.payment.in.SubscriptionUseCase;
 import mz.co.grocery.core.application.rent.out.RentItemPort;
 import mz.co.grocery.core.application.rent.out.RentPort;
 import mz.co.grocery.core.application.sale.out.StockPort;
@@ -54,7 +52,7 @@ public class TransportGuideTest extends AbstractUnitServiceTest {
 	private DocumentGeneratorPort reportGeneratorPort;
 
 	@Mock
-	private PaymentUseCase paymentUseCase;
+	private SubscriptionUseCase paymentUseCase;
 
 	@Mock
 	private GuidePort guidePort;
@@ -72,11 +70,10 @@ public class TransportGuideTest extends AbstractUnitServiceTest {
 	private StockPort stockPort;
 
 	@InjectMocks
-	private final IssueGuideUseCase guideService = new IssueGuideService(this.translator, this.reportGeneratorPort, this.paymentUseCase);
+	private IssueGuideService guideService;
 
 	@InjectMocks
-	private final GuideIssuer transportGuideIssuer = new TransportGuideIssuer(this.guidePort, this.guideItemPort, this.rentItemPort,
-			this.rentPort, this.stockPort);
+	private TransportGuideIssuer transportGuideIssuer;
 
 	@Test
 	public void shouldIssueTransportGuideForProducts() throws BusinessException {
@@ -116,7 +113,6 @@ public class TransportGuideTest extends AbstractUnitServiceTest {
 				ArgumentMatchers.any(Stock.class));
 		Mockito.verify(this.rentPort, Mockito.times(1)).updateRent(context, guide.getRent().get());
 		Mockito.verify(this.guidePort, Mockito.times(1)).createGuide(context, guide);
-		Mockito.verify(this.paymentUseCase, Mockito.times(1)).debitTransaction(context, guide.getUnit().getUuid());
 
 		Assert.assertEquals(LocalDate.now(), guide.getIssueDate());
 		Assert.assertEquals(GuideType.TRANSPORT, guide.getType());
@@ -187,7 +183,6 @@ public class TransportGuideTest extends AbstractUnitServiceTest {
 				ArgumentMatchers.any(Stock.class));
 		Mockito.verify(this.rentPort, Mockito.times(1)).updateRent(context, guide.getRent().get());
 		Mockito.verify(this.guidePort, Mockito.times(1)).createGuide(context, guide);
-		Mockito.verify(this.paymentUseCase, Mockito.times(1)).debitTransaction(context, guide.getUnit().getUuid());
 
 		Assert.assertEquals(LocalDate.now(), guide.getIssueDate());
 		Assert.assertEquals(GuideType.TRANSPORT, guide.getType());

@@ -13,8 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
-import mz.co.grocery.core.application.payment.in.PaymentUseCase;
-import mz.co.grocery.core.application.rent.in.RentUseCase;
+import mz.co.grocery.core.application.payment.in.SubscriptionUseCase;
 import mz.co.grocery.core.application.rent.out.RentItemPort;
 import mz.co.grocery.core.application.rent.out.RentPort;
 import mz.co.grocery.core.application.rent.service.RentService;
@@ -47,10 +46,10 @@ public class RentServiceTest extends AbstractUnitServiceTest {
 	private RentPort rentPort;
 
 	@Mock
-	private PaymentUseCase paymentUseCase;
+	private SubscriptionUseCase paymentUseCase;
 
 	@InjectMocks
-	private final RentUseCase rentUseCase = new RentService(this.rentPort, this.stockPort, this.rentItemPort, this.paymentUseCase);
+	private RentService rentUseCase;
 
 	private Rent rent;
 
@@ -74,7 +73,6 @@ public class RentServiceTest extends AbstractUnitServiceTest {
 		Mockito.verify(this.rentPort).createRent(context, this.rent);
 		Mockito.verify(this.rentItemPort, Mockito.times(20)).createRentItem(ArgumentMatchers.any(UserContext.class),
 				ArgumentMatchers.any(RentItem.class));
-		Mockito.verify(this.paymentUseCase).debitTransaction(context, this.rent.getUnit().get().getUuid());
 
 		Assert.assertFalse(this.rent.getRentItems().get().isEmpty());
 		Assert.assertEquals(this.rent.getRentItems().get().size(), 20);
@@ -135,7 +133,6 @@ public class RentServiceTest extends AbstractUnitServiceTest {
 		Mockito.verify(this.rentPort).updateRent(context, this.rent);
 		Mockito.verify(this.rentItemPort, Mockito.times(20)).createRentItem(ArgumentMatchers.any(UserContext.class),
 				ArgumentMatchers.any(RentItem.class));
-		Mockito.verify(this.paymentUseCase).debitTransaction(context, this.rent.getUnit().get().getUuid());
 
 		Assert.assertFalse(this.rent.getRentItems().get().isEmpty());
 		Assert.assertEquals(this.rent.getRentItems().get().size(), 20);

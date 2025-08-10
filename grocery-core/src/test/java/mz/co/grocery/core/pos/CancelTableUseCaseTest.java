@@ -11,8 +11,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
-import mz.co.grocery.core.application.payment.in.PaymentUseCase;
-import mz.co.grocery.core.application.pos.in.CancelTableUseCase;
+import mz.co.grocery.core.application.payment.in.SubscriptionUseCase;
 import mz.co.grocery.core.application.pos.service.CancelTableService;
 import mz.co.grocery.core.application.sale.out.SalePort;
 import mz.co.grocery.core.application.sale.out.StockPort;
@@ -43,10 +42,10 @@ public class CancelTableUseCaseTest extends AbstractUnitServiceTest {
 	private StockPort stockPort;
 
 	@Mock
-	private PaymentUseCase paymentUseCase;
+	private SubscriptionUseCase paymentUseCase;
 
 	@InjectMocks
-	private CancelTableUseCase cancelTableUseCase = new CancelTableService(this.salePort, this.stockPort, this.paymentUseCase);
+	private CancelTableService cancelTableUseCase;
 
 	@Test
 	public void shouldCancelTableWithoutItensUseCase() throws BusinessException {

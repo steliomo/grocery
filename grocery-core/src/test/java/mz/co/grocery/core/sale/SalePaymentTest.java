@@ -15,8 +15,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
-import mz.co.grocery.core.application.payment.in.PaymentUseCase;
-import mz.co.grocery.core.application.sale.in.SalePaymentUseCase;
+import mz.co.grocery.core.application.payment.in.SubscriptionUseCase;
 import mz.co.grocery.core.application.sale.out.SalePaymentPort;
 import mz.co.grocery.core.application.sale.out.SalePort;
 import mz.co.grocery.core.application.sale.service.SalePaymentService;
@@ -43,10 +42,10 @@ public class SalePaymentTest extends AbstractUnitServiceTest {
 	private SalePaymentPort salePaymentPort;
 
 	@Mock
-	PaymentUseCase paymentUseCase;
+	SubscriptionUseCase paymentUseCase;
 
 	@InjectMocks
-	private final SalePaymentUseCase salePaymentService = new SalePaymentService(this.salePort, this.salePaymentPort, this.paymentUseCase);
+	private SalePaymentService salePaymentUseCase;
 
 	@Captor
 	private ArgumentCaptor<SalePayment> salePaymentCaptor;
@@ -70,7 +69,7 @@ public class SalePaymentTest extends AbstractUnitServiceTest {
 
 		Mockito.when(this.salePort.fetchByUuid(sale.getUuid())).thenReturn(sale);
 
-		this.salePaymentService.payInstallmentSale(userContext, sale.getUuid(), paymentValue, PaymenteDate);
+		this.salePaymentUseCase.payInstallmentSale(userContext, sale.getUuid(), paymentValue, PaymenteDate);
 
 		Mockito.verify(this.salePort, Mockito.times(1)).updateSale(userContext, sale);
 		Mockito.verify(this.salePaymentPort).createSalePayment(ArgumentMatchers.eq(userContext), this.salePaymentCaptor.capture());
@@ -97,7 +96,7 @@ public class SalePaymentTest extends AbstractUnitServiceTest {
 
 		Mockito.when(this.salePort.fetchByUuid(sale.getUuid())).thenReturn(sale);
 
-		this.salePaymentService.payInstallmentSale(this.getUserContext(), sale.getUuid(), paymentValue, PaymenteDate);
+		this.salePaymentUseCase.payInstallmentSale(this.getUserContext(), sale.getUuid(), paymentValue, PaymenteDate);
 	}
 
 	@Test(expected = BusinessException.class)
@@ -115,6 +114,6 @@ public class SalePaymentTest extends AbstractUnitServiceTest {
 
 		Mockito.when(this.salePort.fetchByUuid(sale.getUuid())).thenReturn(sale);
 
-		this.salePaymentService.payInstallmentSale(this.getUserContext(), sale.getUuid(), paymentValue, PaymenteDate);
+		this.salePaymentUseCase.payInstallmentSale(this.getUserContext(), sale.getUuid(), paymentValue, PaymenteDate);
 	}
 }

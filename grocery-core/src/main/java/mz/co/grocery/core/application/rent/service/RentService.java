@@ -6,7 +6,6 @@ package mz.co.grocery.core.application.rent.service;
 import java.util.Optional;
 import java.util.Set;
 
-import mz.co.grocery.core.application.payment.in.PaymentUseCase;
 import mz.co.grocery.core.application.rent.in.RentUseCase;
 import mz.co.grocery.core.application.rent.out.RentItemPort;
 import mz.co.grocery.core.application.rent.out.RentPort;
@@ -33,13 +32,10 @@ public class RentService extends AbstractService implements RentUseCase {
 
 	private RentItemPort rentItemPort;
 
-	private PaymentUseCase paymentUseCase;
-
-	public RentService(final RentPort rentPort, final StockPort stockPort, final RentItemPort rentItemPort, final PaymentUseCase paymentUseCase) {
+	public RentService(final RentPort rentPort, final StockPort stockPort, final RentItemPort rentItemPort) {
 		this.rentPort = rentPort;
 		this.stockPort = stockPort;
 		this.rentItemPort = rentItemPort;
-		this.paymentUseCase = paymentUseCase;
 	}
 
 	@Override
@@ -76,8 +72,6 @@ public class RentService extends AbstractService implements RentUseCase {
 
 			this.rentPort.updateRent(userContext, rent);
 		}
-
-		this.paymentUseCase.debitTransaction(userContext, rent.getUnit().get().getUuid());
 
 		return rent;
 	}

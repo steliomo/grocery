@@ -3,7 +3,7 @@
  */
 package mz.co.grocery.persistence.fixturefactory;
 
-import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import br.com.six2six.fixturefactory.Fixture;
 import br.com.six2six.fixturefactory.Rule;
@@ -29,8 +29,7 @@ public class UnitTemplate implements TemplateLoader {
 				this.add("phoneNumberOptional", "+258840546824");
 				this.add("email", "steliomo@gmail.com");
 				this.add("unitType", UnitType.GROCERY);
-				this.add("balance", new BigDecimal(10));
-				this.add("balance", new BigDecimal(10));
+				this.add("subscriptionEndDate", LocalDate.now());
 			}
 		});
 	}

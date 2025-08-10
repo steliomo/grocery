@@ -3,8 +3,7 @@
  */
 package mz.co.grocery.integ.resources.unit.dto;
 
-import java.math.BigDecimal;
-import java.util.Optional;
+import java.time.LocalDate;
 
 import mz.co.grocery.core.domain.unit.UnitType;
 import mz.co.grocery.integ.resources.dto.GenericDTO;
@@ -27,13 +26,13 @@ public class UnitDTO extends GenericDTO {
 
 	private UnitType unitType;
 
-	private BigDecimal balance;
-
 	private Integer numberOfTables;
 
 	private String logoPath;
 
 	private String signaturePath;
+
+	private LocalDate subscriptionEndDate;
 
 	public String getName() {
 		return this.name;
@@ -83,14 +82,6 @@ public class UnitDTO extends GenericDTO {
 		this.unitType = unitType;
 	}
 
-	public Optional<BigDecimal> getBalance() {
-		return Optional.ofNullable(this.balance);
-	}
-
-	public void setBalance(final BigDecimal balance) {
-		this.balance = balance;
-	}
-
 	public Integer getNumberOfTables() {
 		return this.numberOfTables;
 	}
@@ -113,5 +104,13 @@ public class UnitDTO extends GenericDTO {
 
 	public void setSignaturePath(final String signaturePath) {
 		this.signaturePath = signaturePath;
+	}
+
+	public LocalDate getSubscriptionEndDate() {
+		return this.subscriptionEndDate;
+	}
+
+	public void setSubscriptionEndDate(final LocalDate subscriptionEndDate) {
+		this.subscriptionEndDate = subscriptionEndDate;
 	}
 }

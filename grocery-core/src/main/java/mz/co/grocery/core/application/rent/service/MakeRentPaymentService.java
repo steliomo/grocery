@@ -5,7 +5,6 @@ package mz.co.grocery.core.application.rent.service;
 
 import java.math.BigDecimal;
 
-import mz.co.grocery.core.application.payment.in.PaymentUseCase;
 import mz.co.grocery.core.application.rent.in.MakeRentPaymentUseCase;
 import mz.co.grocery.core.application.rent.out.RentPaymentPort;
 import mz.co.grocery.core.application.rent.out.RentPort;
@@ -30,12 +29,9 @@ public class MakeRentPaymentService extends AbstractService implements MakeRentP
 
 	private RentPaymentPort rentPaymentPort;
 
-	private PaymentUseCase paymentUseCase;
-
-	public MakeRentPaymentService(final RentPort rentPort, final RentPaymentPort rentPaymentPort, final PaymentUseCase paymentUseCase) {
+	public MakeRentPaymentService(final RentPort rentPort, final RentPaymentPort rentPaymentPort) {
 		this.rentPort = rentPort;
 		this.rentPaymentPort = rentPaymentPort;
-		this.paymentUseCase = paymentUseCase;
 	}
 
 	@Override
@@ -58,7 +54,6 @@ public class MakeRentPaymentService extends AbstractService implements MakeRentP
 			rent.closeRentStatus();
 			this.rentPort.updateRent(userContext, rent);
 
-			this.paymentUseCase.debitTransaction(userContext, rent.getUnit().get().getUuid());
 			return rentPayment;
 		}
 
@@ -76,8 +71,6 @@ public class MakeRentPaymentService extends AbstractService implements MakeRentP
 		rent.setPaymentStatus();
 		rent.closeRentStatus();
 		this.rentPort.updateRent(userContext, rent);
-
-		this.paymentUseCase.debitTransaction(userContext, rent.getUnit().get().getUuid());
 
 		return rentPayment;
 	}

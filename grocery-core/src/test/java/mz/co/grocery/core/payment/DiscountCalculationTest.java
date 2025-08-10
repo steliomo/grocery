@@ -21,9 +21,8 @@ public class DiscountCalculationTest {
 	@Test
 	public void shouldCalculateDiscount() {
 
-		final Discount discount = Voucher.THREE_THOUSANT.getDiscount();
-		discount.calculate();
+		final Discount discount = Voucher.QUARTERLY.getDiscount();
 
-		Assert.assertEquals(discount.calculate(), new BigDecimal(150).setScale(1, RoundingMode.FLOOR));
+		Assert.assertEquals(discount.getDiscount(), new BigDecimal(45).setScale(1, RoundingMode.FLOOR));
 	}
 }

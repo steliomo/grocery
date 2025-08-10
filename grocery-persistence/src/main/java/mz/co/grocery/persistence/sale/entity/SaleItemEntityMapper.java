@@ -3,6 +3,8 @@
  */
 package mz.co.grocery.persistence.sale.entity;
 
+import javax.inject.Inject;
+
 import org.springframework.stereotype.Component;
 
 import mz.co.grocery.core.domain.sale.Sale;
@@ -26,9 +28,8 @@ public class SaleItemEntityMapper extends AbstractEntityMapper<SaleItemEntity, S
 
 	private EntityMapper<ServiceItemEntity, ServiceItem> serviceItemMapper;
 
-	public SaleItemEntityMapper(final EntityMapper<SaleEntity, Sale> saleMapper, final EntityMapper<StockEntity, Stock> stockMapper,
+	public SaleItemEntityMapper(final EntityMapper<StockEntity, Stock> stockMapper,
 			final EntityMapper<ServiceItemEntity, ServiceItem> serviceItemMapper) {
-		this.saleMapper = saleMapper;
 		this.stockMapper = stockMapper;
 		this.serviceItemMapper = serviceItemMapper;
 	}
@@ -67,5 +68,10 @@ public class SaleItemEntityMapper extends AbstractEntityMapper<SaleItemEntity, S
 		domain.setDeliveryStatus(entity.getDeliveryStatus());
 
 		return this.toDomain(entity, domain);
+	}
+
+	@Inject
+	public void setSaleMapper(final EntityMapper<SaleEntity, Sale> saleMapper) {
+		this.saleMapper = saleMapper;
 	}
 }

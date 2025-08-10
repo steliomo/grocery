@@ -14,12 +14,11 @@ import org.mockito.Mockito;
 
 import mz.co.grocery.core.application.document.DocumentGeneratorPort;
 import mz.co.grocery.core.application.guide.in.GuideIssuer;
-import mz.co.grocery.core.application.guide.in.IssueGuideUseCase;
 import mz.co.grocery.core.application.guide.out.GuideItemPort;
 import mz.co.grocery.core.application.guide.out.GuidePort;
 import mz.co.grocery.core.application.guide.service.DeliveryGuideIssuer;
 import mz.co.grocery.core.application.guide.service.IssueGuideService;
-import mz.co.grocery.core.application.payment.in.PaymentUseCase;
+import mz.co.grocery.core.application.payment.in.SubscriptionUseCase;
 import mz.co.grocery.core.application.sale.out.SaleItemPort;
 import mz.co.grocery.core.application.sale.out.SalePort;
 import mz.co.grocery.core.application.sale.out.StockPort;
@@ -55,7 +54,7 @@ public class DeliveryGuideTest extends AbstractUnitServiceTest {
 	private DocumentGeneratorPort reportGeneratorPort;
 
 	@Mock
-	private PaymentUseCase paymentUseCase;
+	private SubscriptionUseCase paymentUseCase;
 
 	@Mock
 	private GuidePort guidePort;
@@ -73,7 +72,7 @@ public class DeliveryGuideTest extends AbstractUnitServiceTest {
 	private SalePort salePort;
 
 	@InjectMocks
-	private final IssueGuideUseCase guideService = new IssueGuideService(this.translator, this.reportGeneratorPort, this.paymentUseCase);
+	private IssueGuideService guideService;
 
 	@InjectMocks
 	private final GuideIssuer deliveryGuideIssuer = new DeliveryGuideIssuer(this.guidePort, this.guideItemPort, this.saleItemPort, this.stockPort,
@@ -145,7 +144,6 @@ public class DeliveryGuideTest extends AbstractUnitServiceTest {
 				ArgumentMatchers.any(GuideItem.class));
 		Mockito.verify(this.saleItemPort, Mockito.times(3)).updateSaleItem(ArgumentMatchers.any(UserContext.class),
 				ArgumentMatchers.any(SaleItem.class));
-		Mockito.verify(this.paymentUseCase, Mockito.times(1)).debitTransaction(this.getUserContext(), guide.getUnit().getUuid());
 		Mockito.verify(this.salePort, Mockito.times(1)).fetchByUuid(ArgumentMatchers.any());
 		Mockito.verify(this.salePort, Mockito.times(1)).updateSale(ArgumentMatchers.any(), ArgumentMatchers.any());
 

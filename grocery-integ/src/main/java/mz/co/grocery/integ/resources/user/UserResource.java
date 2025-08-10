@@ -3,7 +3,6 @@
  */
 package mz.co.grocery.integ.resources.user;
 
-import java.math.BigDecimal;
 import java.time.LocalDate;
 
 import javax.inject.Inject;
@@ -26,7 +25,6 @@ import org.springframework.security.core.Authentication;
 
 import mz.co.grocery.core.application.unit.out.UnitPort;
 import mz.co.grocery.core.application.unit.out.UnitUserPort;
-import mz.co.grocery.core.common.Balance;
 import mz.co.grocery.core.common.WebAdapter;
 import mz.co.grocery.core.domain.unit.Unit;
 import mz.co.grocery.core.domain.unit.UnitUser;
@@ -75,9 +73,6 @@ public class UserResource extends AbstractResource {
 
 	@Inject
 	private ApplicationTranslator translator;
-
-	@Inject
-	private Balance balance;
 
 	@Autowired
 	private DTOMapper<UnitUserDTO, UnitUser> unitUserMapper;
@@ -187,7 +182,9 @@ public class UserResource extends AbstractResource {
 		unitUser.setUser(userId);
 
 		Unit unit = unitUser.getUnit().get();
-		unit.setBalance(new BigDecimal(this.balance.getInitial()));
+
+		// start with 10 tables
+		unit.setNumberOfTables(10);
 
 		unit = this.unitPort.createUnit(context, unit);
 		unitUser.setUnit(unit);

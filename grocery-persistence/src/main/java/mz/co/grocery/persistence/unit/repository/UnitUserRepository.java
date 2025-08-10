@@ -21,7 +21,7 @@ public interface UnitUserRepository extends GenericDAO<UnitUserEntity, Long> {
 		public static final String findAllIds = "SELECT gu.id FROM UnitUserEntity gu WHERE gu.entityStatus = :entityStatus";
 		public static final String fetchAll = "SELECT gu FROM UnitUserEntity gu INNER JOIN FETCH gu.unit WHERE gu.id IN (:groceryUserIds)";
 		public static final String fetchByUser = "SELECT gu FROM UnitUserEntity gu INNER JOIN FETCH gu.unit WHERE gu.user = :user AND gu.entityStatus = :entityStatus";
-		public static final String findUnitDetailByUuid = "SELECT NEW mz.co.grocery.core.domain.unit.UnitDetail(g.uuid, g.name, COUNT(gu.id), g.balance) FROM UnitUserEntity gu INNER JOIN gu.unit g WHERE g.uuid = :unitUuid AND gu.entityStatus = :entityStatus";
+		public static final String findUnitDetailByUuid = "SELECT NEW mz.co.grocery.core.domain.unit.UnitDetail(g.uuid, g.name, COUNT(gu.id), g.subscriptionEndDate) FROM UnitUserEntity gu INNER JOIN gu.unit g WHERE g.uuid = :unitUuid AND gu.entityStatus = :entityStatus";
 	}
 
 	class QUERY_NAME {

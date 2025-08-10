@@ -3,7 +3,7 @@
  */
 package mz.co.grocery.core.domain.unit;
 
-import java.math.BigDecimal;
+import java.time.LocalDate;
 
 /**
  * @author Stélio Moiane
@@ -17,13 +17,13 @@ public class UnitDetail {
 
 	private final Long users;
 
-	private final BigDecimal balance;
+	private final LocalDate subscriptionEndDate;
 
-	public UnitDetail(final String uuid, final String name, final Long users, final BigDecimal balance) {
+	public UnitDetail(final String uuid, final String name, final Long users, final LocalDate subscriptionEndDate) {
 		this.uuid = uuid;
 		this.name = name;
 		this.users = users;
-		this.balance = balance;
+		this.subscriptionEndDate = subscriptionEndDate;
 	}
 
 	public String getUuid() {
@@ -38,7 +38,7 @@ public class UnitDetail {
 		return this.users;
 	}
 
-	public BigDecimal getBalance() {
-		return this.balance;
+	public LocalDate getSubscriptionEndDate() {
+		return this.subscriptionEndDate;
 	}
 }

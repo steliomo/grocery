@@ -25,6 +25,7 @@
 	<parameter name="customerName" class="java.lang.String"/>
 	<parameter name="saleDate" class="java.lang.String"/>
 	<parameter name="code" class="java.lang.String"/>
+	<parameter name="logoPath" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
@@ -40,7 +41,7 @@
 			</line>
 			<image>
 				<reportElement positionType="Float" stretchType="ElementGroupHeight" x="0" y="0" width="230" height="137" uuid="9aae9ee0-e972-4c13-b725-9e659c7dae40"/>
-				<imageExpression><![CDATA["/opt/grocery/data/reports/kay_logo.png"]]></imageExpression>
+				<imageExpression><![CDATA[$P{logoPath}]]></imageExpression>
 			</image>
 			<rectangle>
 				<reportElement x="230" y="0" width="325" height="40" backcolor="#EFEBE9" uuid="35303a61-8bd1-4703-9c92-895dec90ec61"/>

@@ -21,6 +21,7 @@ import javax.ws.rs.core.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import mz.co.grocery.core.application.item.out.ProductPort;
+import mz.co.grocery.core.application.unit.in.VerifySubscriptionValidatyUseCase;
 import mz.co.grocery.core.common.WebAdapter;
 import mz.co.grocery.core.domain.item.Product;
 import mz.co.grocery.core.domain.unit.Unit;
@@ -46,6 +47,9 @@ public class ProductResource extends AbstractResource {
 
 	@Autowired
 	private DTOMapper<UnitDTO, Unit> unitMapper;
+
+	@Inject
+	private VerifySubscriptionValidatyUseCase verifySubscriptionValidatyUseCase;
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -107,6 +111,8 @@ public class ProductResource extends AbstractResource {
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response findProductByGroceryUuid(@PathParam("groceryUuid") final String unitUuid)
 			throws BusinessException {
+
+		this.verifySubscriptionValidatyUseCase.isSubscriptionValid(unitUuid);
 
 		final UnitDTO unitDTO = new UnitDTO();
 		unitDTO.setUuid(unitUuid);

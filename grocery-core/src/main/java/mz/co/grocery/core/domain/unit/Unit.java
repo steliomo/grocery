@@ -4,6 +4,7 @@
 package mz.co.grocery.core.domain.unit;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import mz.co.grocery.core.common.Domain;
 
@@ -25,16 +26,15 @@ public class Unit extends Domain {
 
 	private UnitType unitType;
 
-	private BigDecimal balance;
-
 	private Integer numberOfTables;
 
 	private String logoPath;
 
 	private String signaturePath;
 
+	private LocalDate subscriptionEndDate;
+
 	public Unit() {
-		this.balance = BigDecimal.ZERO;
 		this.numberOfTables = BigDecimal.ZERO.intValue();
 	}
 
@@ -86,18 +86,6 @@ public class Unit extends Domain {
 		this.unitType = unitType;
 	}
 
-	public void setBalance(final BigDecimal balance) {
-		this.balance = this.balance.add(balance);
-	}
-
-	public BigDecimal getBalance() {
-		return this.balance;
-	}
-
-	public synchronized void debitTransaction(final BigDecimal defaultDebit) {
-		this.balance = this.balance.subtract(defaultDebit);
-	}
-
 	public void setNumberOfTables(final Integer numberOfTables) {
 		this.numberOfTables = numberOfTables;
 	}
@@ -120,5 +108,37 @@ public class Unit extends Domain {
 
 	public void setSignaturePath(final String signaturePath) {
 		this.signaturePath = signaturePath;
+	}
+
+	public LocalDate getSubscriptionEndDate() {
+		return this.subscriptionEndDate;
+	}
+
+	public void setSubscriptionEndDate(final LocalDate subscriptionEndDate) {
+		this.subscriptionEndDate = subscriptionEndDate;
+	}
+
+	public void updateSubscription(final Integer days) {
+
+		if (this.subscriptionEndDate == null) {
+			this.subscriptionEndDate = LocalDate.now().plusDays(days);
+
+			return;
+		}
+
+		this.subscriptionEndDate = this.subscriptionEndDate.plusDays(days);
+	}
+
+	public Boolean isSubscriptionValid() {
+
+		if (this.subscriptionEndDate == null) {
+			return Boolean.FALSE;
+		}
+
+		if (this.subscriptionEndDate.isBefore(LocalDate.now())) {
+			return Boolean.FALSE;
+		}
+
+		return Boolean.TRUE;
 	}
 }

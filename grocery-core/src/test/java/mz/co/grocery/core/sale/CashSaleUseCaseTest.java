@@ -15,8 +15,7 @@ import org.mockito.Mock;
 import org.mockito.Mockito;
 
 import mz.co.grocery.core.application.inventory.out.InventoryPort;
-import mz.co.grocery.core.application.payment.in.PaymentUseCase;
-import mz.co.grocery.core.application.sale.in.SaleUseCase;
+import mz.co.grocery.core.application.payment.in.SubscriptionUseCase;
 import mz.co.grocery.core.application.sale.out.SaleItemPort;
 import mz.co.grocery.core.application.sale.out.SalePort;
 import mz.co.grocery.core.application.sale.out.StockPort;
@@ -53,14 +52,13 @@ public class CashSaleUseCaseTest extends AbstractUnitServiceTest {
 	private SaleItemPort saleItemPort;
 
 	@Mock
-	private PaymentUseCase paymentUseCase;
+	private SubscriptionUseCase paymentUseCase;
 
 	@Mock
 	private InventoryPort inventoryPort;
 
 	@InjectMocks
-	private SaleUseCase saleUseCase = new CashSaleService(this.salePort, this.stockPort, this.saleItemPort,
-			this.paymentUseCase, this.inventoryPort);
+	private CashSaleService saleUseCase;
 
 	private Sale sale;
 

@@ -61,6 +61,7 @@ public class Bill implements Document {
 		this.parameters.put("customerName", this.sale.getCustomer().get().getName());
 		this.parameters.put("phoneNumber", this.sale.getCustomer().get().getContact());
 		this.parameters.put("grandTotal", this.formatter.format(this.sale.getTotal()));
+		this.parameters.put("logoPath", this.sale.getUnit().get().getLogoPath());
 
 		return this.parameters;
 	}

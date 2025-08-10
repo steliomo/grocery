@@ -4,6 +4,7 @@
 package mz.co.grocery.persistence.unit.entity;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -15,10 +16,12 @@ import javax.persistence.Table;
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotEmpty;
 import javax.validation.constraints.NotNull;
+import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
 import mz.co.grocery.core.domain.unit.UnitType;
 import mz.co.grocery.persistence.unit.repository.UnitRepository;
 import mz.co.msaude.boot.frameworks.model.GenericEntity;
+import mz.co.msaude.boot.frameworks.util.LocalDateAdapter;
 
 /**
  * @author Stélio Moiane
@@ -59,10 +62,6 @@ public class UnitEntity extends GenericEntity {
 	private UnitType unitType;
 
 	@NotNull
-	@Column(name = "BALANCE", nullable = false)
-	private BigDecimal balance = BigDecimal.ZERO;
-
-	@NotNull
 	@Column(name = "NUMBER_OF_TABLES", nullable = false)
 	private Integer numberOfTables = BigDecimal.ZERO.intValue();
 
@@ -71,6 +70,10 @@ public class UnitEntity extends GenericEntity {
 
 	@Column(name = "SIGNATURE_PATH", length = 50)
 	private String signaturePath;
+
+	@Column(name = "SUBSCRIPTION_END_DATE")
+	@XmlJavaTypeAdapter(LocalDateAdapter.class)
+	private LocalDate subscriptionEndDate;
 
 	public String getName() {
 		return this.name;
@@ -120,18 +123,6 @@ public class UnitEntity extends GenericEntity {
 		this.unitType = unitType;
 	}
 
-	public void setBalance(final BigDecimal balance) {
-		this.balance = this.balance.add(balance);
-	}
-
-	public BigDecimal getBalance() {
-		return this.balance;
-	}
-
-	public synchronized void debitTransaction(final BigDecimal defaultDebit) {
-		this.balance = this.balance.subtract(defaultDebit);
-	}
-
 	public Integer getNumberOfTables() {
 		return this.numberOfTables;
 	}
@@ -154,5 +145,13 @@ public class UnitEntity extends GenericEntity {
 
 	public void setSignaturePath(final String signaturePath) {
 		this.signaturePath = signaturePath;
+	}
+
+	public LocalDate getSubscriptionEndDate() {
+		return this.subscriptionEndDate;
+	}
+
+	public void setSubscriptionEndDate(final LocalDate subscriptionEndDate) {
+		this.subscriptionEndDate = subscriptionEndDate;
 	}
 }

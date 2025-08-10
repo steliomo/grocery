@@ -10,7 +10,12 @@ import java.math.BigDecimal;
  *
  */
 public interface Discount {
-	BigDecimal calculate();
 
-	BigDecimal getVoucher();
+	BigDecimal SUBSCRITION_BASE_VALUE = new BigDecimal(10);
+
+	BigDecimal getDiscount();
+
+	BigDecimal getTotal();
+
+	Integer getDays();
 }

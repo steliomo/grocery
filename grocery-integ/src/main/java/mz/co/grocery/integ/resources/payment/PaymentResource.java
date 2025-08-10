@@ -13,17 +13,13 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
-import mz.co.grocery.core.application.payment.in.PaymentUseCase;
+import mz.co.grocery.core.application.payment.in.SubscriptionUseCase;
 import mz.co.grocery.core.common.WebAdapter;
-import mz.co.grocery.core.domain.payment.Payment;
+import mz.co.grocery.core.domain.payment.SubscriptionDetails;
 import mz.co.grocery.core.domain.payment.Voucher;
 import mz.co.grocery.core.util.ApplicationTranslator;
 import mz.co.grocery.integ.resources.AbstractResource;
 import mz.co.grocery.integ.resources.common.EnumsDTO;
-import mz.co.grocery.integ.resources.payment.dto.MpesaRequestDTO;
-import mz.co.grocery.integ.resources.payment.dto.MpesaResponseDTO;
-import mz.co.grocery.integ.resources.payment.service.MpesaPaymentGatewayServieImpl;
-import mz.co.grocery.integ.resources.payment.service.PaymentGatewayService;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 
 /**
@@ -38,10 +34,7 @@ public class PaymentResource extends AbstractResource {
 	private ApplicationTranslator translator;
 
 	@Inject
-	private PaymentUseCase paymentService;
-
-	@Inject
-	private Mpesa mpesa;
+	private SubscriptionUseCase paymentService;
 
 	@GET
 	@Path("vouchers")
@@ -55,31 +48,17 @@ public class PaymentResource extends AbstractResource {
 	@Path("calculate-payment/{voucher}")
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response calculatePayment(@PathParam("voucher") final Voucher voucher) {
-		final Payment payment = new Payment(voucher);
+		final SubscriptionDetails payment = new SubscriptionDetails(voucher);
 		return Response.ok(payment).build();
 	}
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
-	public Response makePayment(final Payment payment) throws BusinessException {
+	public Response makePayment(final SubscriptionDetails subscriptionDetails) throws BusinessException {
 
-		final PaymentGatewayService<MpesaRequestDTO, MpesaResponseDTO> paymentGatewayServie = new MpesaPaymentGatewayServieImpl(this.mpesa);
-		final MpesaResponseDTO mpesaResponseDTO = paymentGatewayServie
-				.makePayment(
-						new MpesaRequestDTO(this.getContext().getUsername(), payment.getMpesaNumber(), payment.getTotal().toPlainString(),
-								this.mpesa.getThirtPartyReference(),
-								this.mpesa.getProviderCode()));
+		this.paymentService.updateSubscription(this.getContext(), subscriptionDetails);
 
-		if ("INS-10".equals(mpesaResponseDTO.getOutput_ResponseCode())) {
-			throw new BusinessException(this.translator.getTranslation("duplicated.transaction"));
-		}
-
-		payment.setStatus(mpesaResponseDTO.getOutput_ResponseCode());
-		payment.setStatusDescription(mpesaResponseDTO.getOutput_ResponseDesc());
-
-		this.paymentService.updateSubscription(this.getContext(), payment);
-
-		return Response.ok(payment).build();
+		return Response.ok(subscriptionDetails).build();
 	}
 }

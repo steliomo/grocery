@@ -11,19 +11,24 @@ import java.math.BigDecimal;
  */
 public class NoDiscount implements Discount {
 
-	private final BigDecimal voucher;
+	private Integer days;
 
-	public NoDiscount(final BigDecimal voucher) {
-		this.voucher = voucher;
+	public NoDiscount(final Integer days) {
+		this.days = days;
 	}
 
 	@Override
-	public BigDecimal calculate() {
+	public BigDecimal getDiscount() {
 		return BigDecimal.ZERO;
 	}
 
 	@Override
-	public BigDecimal getVoucher() {
-		return this.voucher;
+	public BigDecimal getTotal() {
+		return Discount.SUBSCRITION_BASE_VALUE.multiply(new BigDecimal(this.days));
+	}
+
+	@Override
+	public Integer getDays() {
+		return this.days;
 	}
 }

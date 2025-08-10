@@ -6,7 +6,6 @@ package mz.co.grocery.core.application.sale.service;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 
-import mz.co.grocery.core.application.payment.in.PaymentUseCase;
 import mz.co.grocery.core.application.sale.in.SalePaymentUseCase;
 import mz.co.grocery.core.application.sale.out.SalePaymentPort;
 import mz.co.grocery.core.application.sale.out.SalePort;
@@ -14,7 +13,6 @@ import mz.co.grocery.core.common.UseCase;
 import mz.co.grocery.core.domain.customer.SaleType;
 import mz.co.grocery.core.domain.sale.Sale;
 import mz.co.grocery.core.domain.sale.SalePayment;
-import mz.co.grocery.core.domain.sale.SaleStatus;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.model.UserContext;
 import mz.co.msaude.boot.frameworks.service.AbstractService;
@@ -30,12 +28,9 @@ public class SalePaymentService extends AbstractService implements SalePaymentUs
 
 	private SalePaymentPort salePaymentPort;
 
-	private PaymentUseCase paymentUseCase;
-
-	public SalePaymentService(final SalePort salePort, final SalePaymentPort salePaymentPort, final PaymentUseCase paymentUseCase) {
+	public SalePaymentService(final SalePort salePort, final SalePaymentPort salePaymentPort) {
 		this.salePort = salePort;
 		this.salePaymentPort = salePaymentPort;
-		this.paymentUseCase = paymentUseCase;
 	}
 
 	@Override
@@ -60,10 +55,6 @@ public class SalePaymentService extends AbstractService implements SalePaymentUs
 		final SalePayment salePayment = new SalePayment(sale, paymentValue, paymentDate);
 
 		this.salePaymentPort.createSalePayment(userContext, salePayment);
-
-		if (SaleStatus.CLOSED.equals(sale.getSaleStatus())) {
-			this.paymentUseCase.debitTransaction(userContext, sale.getUnit().get().getUuid());
-		}
 
 		return salePayment;
 	}

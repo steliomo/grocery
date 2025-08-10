@@ -13,8 +13,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
-import mz.co.grocery.core.application.payment.in.PaymentUseCase;
-import mz.co.grocery.core.application.quotation.in.IssueQuotationUseCase;
+import mz.co.grocery.core.application.payment.in.SubscriptionUseCase;
 import mz.co.grocery.core.application.quotation.out.GenerateQuotationPdfPort;
 import mz.co.grocery.core.application.quotation.out.SaveQuotationItemPort;
 import mz.co.grocery.core.application.quotation.out.SaveQuotationPort;
@@ -51,11 +50,10 @@ public class IssueQuotationUseCaseTest extends AbstractUnitServiceTest {
 	private GenerateQuotationPdfPort generateQuotationPdfPort;
 
 	@Mock
-	private PaymentUseCase paymentService;
+	private SubscriptionUseCase paymentService;
 
 	@InjectMocks
-	private final IssueQuotationUseCase issueQuotationUseCase = new IssueQuotationService(this.clock, this.saveQuotationPort, this.quotationItemPort,
-			this.generateQuotationPdfPort, this.paymentService);
+	private IssueQuotationService issueQuotationUseCase;
 
 	@Test
 	public void shouldIssueRentQuotation() throws BusinessException {
@@ -70,7 +68,6 @@ public class IssueQuotationUseCaseTest extends AbstractUnitServiceTest {
 		Mockito.verify(this.quotationItemPort, Mockito.times(5)).save(ArgumentMatchers.any(UserContext.class),
 				ArgumentMatchers.any(QuotationItem.class));
 		Mockito.verify(this.generateQuotationPdfPort, Mockito.times(1)).generatePdf(quotation, this.clock.todayDateTime());
-		Mockito.verify(this.paymentService, Mockito.times(1)).debitTransaction(this.getUserContext(), quotation.getUnit().get().getUuid());
 
 		final BigDecimal expected = quotation.getItems().stream().map(QuotationItem::getTotal).reduce(BigDecimal.ZERO, BigDecimal::add)
 				.subtract(quotation.getDiscount());

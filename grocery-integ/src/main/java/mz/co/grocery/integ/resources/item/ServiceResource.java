@@ -20,6 +20,7 @@ import javax.ws.rs.core.Response;
 import org.springframework.beans.factory.annotation.Autowired;
 
 import mz.co.grocery.core.application.item.out.ServicePort;
+import mz.co.grocery.core.application.unit.in.VerifySubscriptionValidatyUseCase;
 import mz.co.grocery.core.common.WebAdapter;
 import mz.co.grocery.core.domain.item.Service;
 import mz.co.grocery.core.domain.unit.Unit;
@@ -46,6 +47,9 @@ public class ServiceResource extends AbstractResource {
 
 	@Autowired
 	private DTOMapper<UnitDTO, Unit> unitMapper;
+
+	@Inject
+	private VerifySubscriptionValidatyUseCase verifySubscriptionValidatyUseCase;
 
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
@@ -114,6 +118,8 @@ public class ServiceResource extends AbstractResource {
 	public Response findServiceByUnitUuid(@PathParam("unitUuid") final String unitUuid) throws BusinessException {
 		final UnitDTO unitDTO = new UnitDTO();
 		unitDTO.setUuid(unitUuid);
+
+		this.verifySubscriptionValidatyUseCase.isSubscriptionValid(unitUuid);
 
 		final List<Service> services = this.servicePort.findServicesByUnit(this.unitMapper.toDomain(unitDTO));
 

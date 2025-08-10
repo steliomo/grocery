@@ -27,10 +27,10 @@ public class UnitEntityMapper extends AbstractEntityMapper<UnitEntity, Unit> imp
 		entity.setPhoneNumberOptional(domain.getPhoneNumberOptional());
 		entity.setEmail(domain.getEmail());
 		entity.setUnitType(domain.getUnitType());
-		entity.setBalance(domain.getBalance());
 		entity.setNumberOfTables(domain.getNumberOfTables());
 		entity.setLogoPath(domain.getLogoPath());
 		entity.setSignaturePath(domain.getSignaturePath());
+		entity.setSubscriptionEndDate(domain.getSubscriptionEndDate());
 
 		return this.toEntity(entity, domain);
 	}
@@ -45,10 +45,10 @@ public class UnitEntityMapper extends AbstractEntityMapper<UnitEntity, Unit> imp
 		domain.setPhoneNumberOptional(entity.getPhoneNumberOptional());
 		domain.setEmail(entity.getEmail());
 		domain.setUnitType(entity.getUnitType());
-		domain.setBalance(entity.getBalance());
 		domain.setNumberOfTables(entity.getNumberOfTables());
 		domain.setLogoPath(entity.getLogoPath());
 		domain.setSignaturePath(entity.getSignaturePath());
+		domain.setSubscriptionEndDate(entity.getSubscriptionEndDate());
 
 		return this.toDomain(entity, domain);
 	}

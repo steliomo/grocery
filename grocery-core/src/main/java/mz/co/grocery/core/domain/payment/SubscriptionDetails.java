@@ -9,11 +9,11 @@ import java.math.BigDecimal;
  * @author Stélio Moiane
  *
  */
-public class Payment {
+public class SubscriptionDetails {
 
 	private Voucher voucher;
 
-	private String mpesaNumber;
+	private String walletNumber;
 
 	private BigDecimal discountValue;
 
@@ -25,23 +25,23 @@ public class Payment {
 
 	private String unitUuid;
 
-	public Payment() {
+	public SubscriptionDetails() {
 	}
 
-	public Payment(final Voucher voucher) {
+	public SubscriptionDetails(final Voucher voucher) {
 		this.voucher = voucher;
 
 		final Discount discount = this.voucher.getDiscount();
-		this.discountValue = discount.calculate();
-		this.total = discount.getVoucher().subtract(this.discountValue);
+		this.discountValue = discount.getDiscount();
+		this.total = discount.getTotal();
 	}
 
 	public Voucher getVoucher() {
 		return this.voucher;
 	}
 
-	public String getMpesaNumber() {
-		return this.mpesaNumber;
+	public String getWalletNumber() {
+		return this.walletNumber;
 	}
 
 	public BigDecimal getDiscountValue() {
@@ -72,7 +72,7 @@ public class Payment {
 		return this.unitUuid;
 	}
 
-	public BigDecimal getVoucherValue() {
-		return this.voucher.getDiscount().getVoucher();
+	public Integer getDays() {
+		return this.voucher.getDiscount().getDays();
 	}
 }

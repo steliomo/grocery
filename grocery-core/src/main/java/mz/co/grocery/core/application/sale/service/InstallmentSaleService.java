@@ -7,7 +7,6 @@ import java.math.BigDecimal;
 import java.util.Set;
 
 import mz.co.grocery.core.application.inventory.out.InventoryPort;
-import mz.co.grocery.core.application.payment.in.PaymentUseCase;
 import mz.co.grocery.core.application.sale.in.SaleUseCase;
 import mz.co.grocery.core.application.sale.out.SaleItemPort;
 import mz.co.grocery.core.application.sale.out.SalePort;
@@ -36,15 +35,11 @@ public class InstallmentSaleService extends AbstractService implements SaleUseCa
 
 	private SaleItemPort saleItemPort;
 
-	private PaymentUseCase paymentUseCase;
-
 	private InventoryPort inventoryPort;
 
-	public InstallmentSaleService(final SalePort salePort, final SaleItemPort saleItemPort, final PaymentUseCase paymentUseCase,
-			final InventoryPort inventoryPort) {
+	public InstallmentSaleService(final SalePort salePort, final SaleItemPort saleItemPort, final InventoryPort inventoryPort) {
 		this.salePort = salePort;
 		this.saleItemPort = saleItemPort;
-		this.paymentUseCase = paymentUseCase;
 		this.inventoryPort = inventoryPort;
 	}
 
@@ -83,8 +78,6 @@ public class InstallmentSaleService extends AbstractService implements SaleUseCa
 
 			saleItem = this.saleItemPort.createSaleItem(userContext, saleItem);
 		}
-
-		this.paymentUseCase.debitTransaction(userContext, sale.getUnit().get().getUuid());
 
 		return sale;
 	}

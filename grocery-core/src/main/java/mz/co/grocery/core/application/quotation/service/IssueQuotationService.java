@@ -3,7 +3,6 @@
  */
 package mz.co.grocery.core.application.quotation.service;
 
-import mz.co.grocery.core.application.payment.in.PaymentUseCase;
 import mz.co.grocery.core.application.quotation.in.IssueQuotationUseCase;
 import mz.co.grocery.core.application.quotation.out.GenerateQuotationPdfPort;
 import mz.co.grocery.core.application.quotation.out.SaveQuotationItemPort;
@@ -27,15 +26,13 @@ public class IssueQuotationService extends AbstractService implements IssueQuota
 	private SaveQuotationPort saveQuotationPort;
 	private SaveQuotationItemPort saveQuotationItemPort;
 	private GenerateQuotationPdfPort generateQuotationPdfPort;
-	private PaymentUseCase paymentService;
 
 	public IssueQuotationService(final Clock clock, final SaveQuotationPort saveQuotationPort, final SaveQuotationItemPort saveQuotationItemPort,
-			final GenerateQuotationPdfPort generateQuotationPdfPort, final PaymentUseCase paymentUseCase) {
+			final GenerateQuotationPdfPort generateQuotationPdfPort) {
 		this.clock = clock;
 		this.saveQuotationPort = saveQuotationPort;
 		this.saveQuotationItemPort = saveQuotationItemPort;
 		this.generateQuotationPdfPort = generateQuotationPdfPort;
-		this.paymentService = paymentUseCase;
 	}
 
 	@Override
@@ -63,8 +60,6 @@ public class IssueQuotationService extends AbstractService implements IssueQuota
 
 		final String name = this.generateQuotationPdfPort.generatePdf(quotation, this.clock.todayDateTime());
 		quotation.setName(name);
-
-		this.paymentService.debitTransaction(context, quotation.getUnit().get().getUuid());
 
 		return quotation;
 	}

@@ -3,35 +3,19 @@
  */
 package mz.co.grocery.core.domain.payment;
 
-import java.math.BigDecimal;
-
 /**
  * @author Stélio Moiane
  *
  */
 public enum Voucher {
 
-	TEN(new NoDiscount(new BigDecimal(10))),
+	MONTHLY(new NoDiscount(new Integer(30))),
 
-	TWENTY(new NoDiscount(new BigDecimal(20))),
+	QUARTERLY(new UptoOneMonthDiscount(new Integer(90))),
 
-	FIFTY(new NoDiscount(new BigDecimal(50))),
+	SEMI_ANNUAL(new UptoOneMonthDiscount(new Integer(180))),
 
-	HUNDRED(new NoDiscount(new BigDecimal(100))),
-
-	TWO_HUNDRED(new NoDiscount(new BigDecimal(200))),
-
-	THREE_HUNDRED(new NoDiscount(new BigDecimal(300))),
-
-	FIVE_HUNDRED(new UptoFiveHundredDiscount(new BigDecimal(500))),
-
-	ONE_THOUSANT(new UptoFiveHundredDiscount(new BigDecimal(1000))),
-
-	TWO_THOUSANT(new UptoFiveHundredDiscount(new BigDecimal(2000))),
-
-	THREE_THOUSANT(new UptoFiveHundredDiscount(new BigDecimal(3000))),
-
-	FIVE_THOUSANT(new UptoFiveHundredDiscount(new BigDecimal(5000)));
+	YEARLY(new UptoOneMonthDiscount(new Integer(360)));
 
 	private final Discount discount;
 
@@ -42,5 +26,4 @@ public enum Voucher {
 	public Discount getDiscount() {
 		return this.discount;
 	}
-
 }

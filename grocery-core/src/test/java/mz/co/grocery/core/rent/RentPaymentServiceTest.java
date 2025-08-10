@@ -12,8 +12,7 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
-import mz.co.grocery.core.application.payment.in.PaymentUseCase;
-import mz.co.grocery.core.application.rent.in.MakeRentPaymentUseCase;
+import mz.co.grocery.core.application.payment.in.SubscriptionUseCase;
 import mz.co.grocery.core.application.rent.out.RentPaymentPort;
 import mz.co.grocery.core.application.rent.out.RentPort;
 import mz.co.grocery.core.application.rent.service.MakeRentPaymentService;
@@ -23,9 +22,9 @@ import mz.co.grocery.core.domain.rent.Rent;
 import mz.co.grocery.core.domain.rent.RentItem;
 import mz.co.grocery.core.domain.rent.RentPayment;
 import mz.co.grocery.core.domain.unit.Unit;
-import mz.co.grocery.core.fixturefactory.UnitTemplate;
 import mz.co.grocery.core.fixturefactory.RentItemTemplate;
 import mz.co.grocery.core.fixturefactory.RentPaymentTemplate;
+import mz.co.grocery.core.fixturefactory.UnitTemplate;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.fixturefactory.EntityFactory;
 
@@ -42,10 +41,10 @@ public class RentPaymentServiceTest extends AbstractUnitServiceTest {
 	private RentPaymentPort rentPaymentPort;
 
 	@Mock
-	private PaymentUseCase paymentUseCase;
+	private SubscriptionUseCase paymentUseCase;
 
 	@InjectMocks
-	private final MakeRentPaymentUseCase rentService = new MakeRentPaymentService(this.rentPort, this.rentPaymentPort, this.paymentUseCase);
+	private MakeRentPaymentService rentService;
 
 	private Rent rent;
 
