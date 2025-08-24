@@ -333,7 +333,7 @@ public class SaleResource extends AbstractResource {
 
 	@Scheduled(cron = "0 15 0 * * ?")
 	public void sendSalesDailyReport() throws BusinessException {
-		final LocalDate reortDate = LocalDate.now();
+		final LocalDate reortDate = LocalDate.now().minusDays(1);
 
 		this.sendDailySalesReportUseCase.sendReport(reortDate);
 	}
