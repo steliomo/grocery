@@ -3,6 +3,7 @@
  */
 package mz.co.grocery.persistence.unit.repository;
 
+import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -44,4 +45,9 @@ public class UnitRepositoryImpl extends GenericDAOImpl<UnitEntity, Long> impleme
 				new ParamBuilder().add("unitName", "%" + unitName + "%").add("entityStatus", entityStatus).process());
 	}
 
+	@Override
+	public List<UnitEntity> findUnitsWithDailySales(final LocalDate saleDate, final EntityStatus entityStatus) throws BusinessException {
+		return this.findByNamedQuery(UnitRepository.QUERY_NAME.findUnitsWithDailySales,
+				new ParamBuilder().add("saleDate", saleDate).add("entityStatus", entityStatus).process());
+	}
 }

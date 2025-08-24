@@ -3,6 +3,7 @@
  */
 package mz.co.grocery.core.application.unit.out;
 
+import java.time.LocalDate;
 import java.util.List;
 
 import mz.co.grocery.core.domain.unit.Unit;
@@ -27,4 +28,5 @@ public interface UnitPort {
 
 	List<Unit> findUnitsByName(String unitName) throws BusinessException;
 
+	List<Unit> findUnitsWithDailySales(LocalDate saleDate) throws BusinessException;
 }

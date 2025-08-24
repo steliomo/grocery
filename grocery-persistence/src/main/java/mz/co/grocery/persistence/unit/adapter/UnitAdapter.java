@@ -3,6 +3,7 @@
  */
 package mz.co.grocery.persistence.unit.adapter;
 
+import java.time.LocalDate;
 import java.util.List;
 import java.util.stream.Collectors;
 
@@ -70,5 +71,11 @@ public class UnitAdapter implements UnitPort {
 	@Override
 	public List<Unit> findUnitsByName(final String unitName) throws BusinessException {
 		return this.repository.findByName(unitName, EntityStatus.ACTIVE).stream().map(this.mapper::toDomain).collect(Collectors.toList());
+	}
+
+	@Override
+	public List<Unit> findUnitsWithDailySales(final LocalDate saleDate) throws BusinessException {
+		return this.repository.findUnitsWithDailySales(saleDate, EntityStatus.ACTIVE).stream().map(this.mapper::toDomain)
+				.collect(Collectors.toList());
 	}
 }

@@ -19,6 +19,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.scheduling.annotation.Scheduled;
 
 import mz.co.grocery.core.application.expense.out.ExpensePort;
 import mz.co.grocery.core.application.pos.in.CancelTableUseCase;
@@ -30,6 +31,7 @@ import mz.co.grocery.core.application.pos.out.SaleNotifier;
 import mz.co.grocery.core.application.rent.out.RentPaymentPort;
 import mz.co.grocery.core.application.sale.in.SalePaymentUseCase;
 import mz.co.grocery.core.application.sale.in.SaleUseCase;
+import mz.co.grocery.core.application.sale.in.SendDailySalesReportUseCase;
 import mz.co.grocery.core.application.sale.out.SalePort;
 import mz.co.grocery.core.application.sale.service.CashSaleService;
 import mz.co.grocery.core.application.sale.service.InstallmentSaleService;
@@ -104,6 +106,9 @@ public class SaleResource extends AbstractResource {
 
 	@Inject
 	private SaleNotifier saleNotifier;
+
+	@Inject
+	private SendDailySalesReportUseCase sendDailySalesReportUseCase;
 
 	@Autowired
 	@BeanQualifier(SendSaleToDBListner.NAME)
@@ -324,5 +329,12 @@ public class SaleResource extends AbstractResource {
 		final Sale table = this.cancelTableUseCase.cancel(this.getContext(), this.saleMapper.toDomain(tableDTO));
 
 		return Response.ok(this.saleMapper.toDTO(table)).build();
+	}
+
+	@Scheduled(cron = "0 15 0 * * ?")
+	public void sendSalesDailyReport() throws BusinessException {
+		final LocalDate reortDate = LocalDate.now();
+
+		this.sendDailySalesReportUseCase.sendReport(reortDate);
 	}
 }

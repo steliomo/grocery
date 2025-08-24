@@ -3,12 +3,15 @@
  */
 package mz.co.grocery.persistence.sale.repository;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import javax.persistence.NoResultException;
 
 import org.springframework.stereotype.Repository;
 
+import mz.co.grocery.core.domain.sale.SaleItemReport;
 import mz.co.grocery.persistence.sale.entity.SaleItemEntity;
 import mz.co.msaude.boot.frameworks.dao.GenericDAOImpl;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
@@ -44,5 +47,13 @@ public class SaleItemRepositoryImpl extends GenericDAOImpl<SaleItemEntity, Long>
 		} catch (final NoResultException e) {
 			return Optional.empty();
 		}
+	}
+
+	@Override
+	public List<SaleItemReport> findSaleItemsByUnitAndPeriod(final String unitUuid, final LocalDate startDate, final LocalDate endDate,
+			final EntityStatus entityStatus)
+					throws BusinessException {
+		return this.findByNamedQuery(SaleItemRepository.QUERY_NAME.findSaleItemsByUnitAndPeriod, new ParamBuilder().add("unitUuid", unitUuid)
+				.add("startDate", startDate).add("endDate", endDate).add("entityStatus", entityStatus).process(), SaleItemReport.class);
 	}
 }

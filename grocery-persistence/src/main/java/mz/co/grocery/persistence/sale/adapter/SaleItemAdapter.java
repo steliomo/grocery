@@ -3,11 +3,14 @@
  */
 package mz.co.grocery.persistence.sale.adapter;
 
+import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 import mz.co.grocery.core.application.sale.out.SaleItemPort;
 import mz.co.grocery.core.common.PersistenceAdapter;
 import mz.co.grocery.core.domain.sale.SaleItem;
+import mz.co.grocery.core.domain.sale.SaleItemReport;
 import mz.co.grocery.persistence.sale.entity.SaleItemEntity;
 import mz.co.grocery.persistence.sale.repository.SaleItemRepository;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
@@ -78,5 +81,10 @@ public class SaleItemAdapter implements SaleItemPort {
 		}
 
 		return Optional.empty();
+	}
+
+	@Override
+	public List<SaleItemReport> findSaleItemsByUnitAndPeriod(final String unitUuid, final LocalDate startDate, final LocalDate endDate) throws BusinessException {
+		return this.repository.findSaleItemsByUnitAndPeriod(unitUuid, startDate, endDate, EntityStatus.ACTIVE);
 	}
 }

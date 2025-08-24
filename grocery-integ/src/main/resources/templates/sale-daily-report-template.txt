@@ -14,7 +14,7 @@
         }
         
         table th {
-        	border: 1px solid #017a84;;
+        	border: 1px solid #017a84;
         	padding: 7px;
         }
         
@@ -37,34 +37,30 @@
  	</style>
   	<meta charset="UTF-8">
 </head>
-<p>O(A) Utilizador(a) <b>${fullName}</b> foi cadastrado com sucesso conforme os detalhes abaixo:</p>
+
+<p>Prezado cliente.</p>
+<p> Encontre em anexo o relatório de vendas conforme os detalhes da tabela abaixo.<p>
+
 <table>
 	<tr>
-		<th colspan="2">Detalhes do Utilizador</th>
+		<th colspan="2">Relatório de Vendas</th>
 	</tr>
+	
 	<tr>
-		<td width="120px">Nome do utilizador</td>
-		<td width="400px">${username}</td>
+		<td width="120px"><strong>Data<strong/></td>
+		<td width="400px">${saleDate}</td>
 	</tr>
+	
 	<tr>
-		<td>Senha</td>
-		<td>${password}</td>
+		<td width="120px"><strong>Nome<strong/></td>
+		<td width="400px">${unitName}</td>
 	</tr>
+	
 	<tr>
-		<td>Email</td>
-		<td>${email}</td>
+		<td width="120px"><strong>Contacto<strong/></td>
+		<td width="400px">${phoneNumber}</td>
 	</tr>
-	<tr>
-		<th colspan="2">Detalhes do Estabelecimento</th>
-	</tr>
-	<tr>
-		<td>Nome do Estabelecimento</td>
-		<td>${grocery}</td>
-	</tr>
-	<tr>
-		<td>Endereço</td>
-		<td>${address}</td>
-	</tr>
+
 </table>
 <p>Obrigado</p>
 <p>Negócio na mão (NNM) © 2025 ©</p>
