@@ -101,6 +101,7 @@ public class RegistTableItemsService extends AbstractService implements RegistTa
 	private void updateSaleItem(final UserContext context, final SaleItem saleItem, final Optional<SaleItem> product) throws BusinessException {
 		final SaleItem item = product.get();
 		item.addQuantity(saleItem.getQuantity());
+		item.getTotalSaleItem();
 		item.addDeliveredQuantity(saleItem.getQuantity());
 		item.setDeliveryStatus();
 
