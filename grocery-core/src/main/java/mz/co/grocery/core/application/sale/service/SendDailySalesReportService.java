@@ -18,6 +18,7 @@ import mz.co.grocery.core.domain.email.EmailDetails;
 import mz.co.grocery.core.domain.email.EmailType;
 import mz.co.grocery.core.domain.sale.SaleItemReport;
 import mz.co.grocery.core.domain.sale.SaleReportDocument;
+import mz.co.grocery.core.domain.sale.SaleStatus;
 import mz.co.grocery.core.domain.unit.Unit;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.service.AbstractService;
@@ -53,7 +54,8 @@ public class SendDailySalesReportService extends AbstractService implements Send
 
 		for (final Unit unit : units) {
 
-			final List<SaleItemReport> saleItems = this.saleItemPort.findSaleItemsByUnitAndPeriod(unit.getUuid(), saleDate, saleDate);
+			final List<SaleItemReport> saleItems = this.saleItemPort.findSaleItemsByUnitAndPeriodAndSaleStatus(unit.getUuid(), saleDate, saleDate,
+					SaleStatus.CLOSED);
 
 			final Document document = new SaleReportDocument(unit, saleDate, saleItems);
 

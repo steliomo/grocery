@@ -27,5 +27,7 @@ public enum UnitType {
 
 	WASTE_COLLECTION,
 
-	BOUTIQUE;
+	BOUTIQUE,
+
+	FARM_SHOP;
 }

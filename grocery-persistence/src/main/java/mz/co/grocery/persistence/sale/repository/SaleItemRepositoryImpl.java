@@ -12,6 +12,7 @@ import javax.persistence.NoResultException;
 import org.springframework.stereotype.Repository;
 
 import mz.co.grocery.core.domain.sale.SaleItemReport;
+import mz.co.grocery.core.domain.sale.SaleStatus;
 import mz.co.grocery.persistence.sale.entity.SaleItemEntity;
 import mz.co.msaude.boot.frameworks.dao.GenericDAOImpl;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
@@ -50,10 +51,12 @@ public class SaleItemRepositoryImpl extends GenericDAOImpl<SaleItemEntity, Long>
 	}
 
 	@Override
-	public List<SaleItemReport> findSaleItemsByUnitAndPeriod(final String unitUuid, final LocalDate startDate, final LocalDate endDate,
+	public List<SaleItemReport> findSaleItemsByUnitAndPeriodAndSaleStatus(final String unitUuid, final LocalDate startDate, final LocalDate endDate,
+			final SaleStatus saleStatus,
 			final EntityStatus entityStatus)
 					throws BusinessException {
-		return this.findByNamedQuery(SaleItemRepository.QUERY_NAME.findSaleItemsByUnitAndPeriod, new ParamBuilder().add("unitUuid", unitUuid)
-				.add("startDate", startDate).add("endDate", endDate).add("entityStatus", entityStatus).process(), SaleItemReport.class);
+		return this.findByNamedQuery(SaleItemRepository.QUERY_NAME.findSaleItemsByUnitAndPeriodAndSaleStatus, new ParamBuilder().add("unitUuid", unitUuid)
+				.add("startDate", startDate).add("endDate", endDate).add("saleStatus", saleStatus).add("entityStatus", entityStatus).process(),
+				SaleItemReport.class);
 	}
 }
