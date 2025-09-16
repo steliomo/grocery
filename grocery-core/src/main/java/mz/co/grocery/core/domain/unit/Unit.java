@@ -119,14 +119,7 @@ public class Unit extends Domain {
 	}
 
 	public void updateSubscription(final Integer days) {
-
-		if (this.subscriptionEndDate == null) {
-			this.subscriptionEndDate = LocalDate.now().plusDays(days);
-
-			return;
-		}
-
-		this.subscriptionEndDate = this.subscriptionEndDate.plusDays(days);
+		this.subscriptionEndDate = LocalDate.now().plusDays(days);
 	}
 
 	public Boolean isSubscriptionValid() {
