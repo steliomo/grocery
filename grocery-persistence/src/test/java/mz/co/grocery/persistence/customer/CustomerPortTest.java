@@ -427,4 +427,17 @@ public class CustomerPortTest extends AbstractIntegServiceTest {
 		Assert.assertTrue(foundCustomer.isPresent());
 		Assert.assertEquals(customer.getContact(), foundCustomer.get().getContact());
 	}
+
+	@Test
+	public void shouldFindCustomersInDeptByUnit() throws BusinessException {
+
+		final int currentPage = 0;
+		final int maxResult = 10;
+
+		final Sale sale = this.saleBuilder.sale().withProducts(5).withCustomer().withUnit().saleType(SaleType.CREDIT).build();
+
+		final List<Customer> customers = this.customerPort.findCustomersInDeptByUnit(sale.getUnit().get().getUuid(), currentPage, maxResult);
+
+		Assert.assertFalse(customers.isEmpty());
+	}
 }

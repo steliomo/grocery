@@ -144,6 +144,11 @@ public class Sale extends Domain {
 			return;
 		}
 
+		if (SaleType.CREDIT.equals(this.saleType)) {
+			this.saleStatus = SaleStatus.PENDING;
+			return;
+		}
+
 		this.saleStatus = SaleStatus.IN_PROGRESS;
 	}
 

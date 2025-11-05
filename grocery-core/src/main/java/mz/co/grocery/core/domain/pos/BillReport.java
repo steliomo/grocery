@@ -22,7 +22,7 @@ import mz.co.grocery.core.domain.sale.Sale;
  *
  */
 
-public class Bill implements Document {
+public class BillReport implements Document {
 
 	public static final String DOCUMENT_XML_NAME = "reports/sale_bill.jrxml";
 
@@ -38,14 +38,14 @@ public class Bill implements Document {
 
 	private Clock clock;
 
-	public Bill(final Sale sale, final Clock clock) {
+	public BillReport(final Sale sale, final Clock clock) {
 		this.sale = sale;
 		this.clock = clock;
 
 		this.formatter = new DecimalFormat("#,###.00 MT");
 		this.parameters = new HashMap<>();
 
-		this.filename = this.generateFilename(sale);
+		this.filename = this.generateFilename();
 	}
 
 	@Override
@@ -80,10 +80,10 @@ public class Bill implements Document {
 
 	@Override
 	public String getXml() {
-		return Bill.DOCUMENT_XML_NAME;
+		return BillReport.DOCUMENT_XML_NAME;
 	}
 
-	private String generateFilename(final Sale sale) {
+	private String generateFilename() {
 		final String time = String.valueOf(this.clock.todayDateTime()).replace("-", "").replace("/", "").replace(".", "").replace(":", "")
 				.replace(":", "")
 				.replace("T", "");

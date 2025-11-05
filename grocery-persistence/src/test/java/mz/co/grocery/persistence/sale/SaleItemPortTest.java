@@ -18,8 +18,10 @@ import mz.co.grocery.core.application.sale.out.SaleItemPort;
 import mz.co.grocery.core.application.sale.out.SalePort;
 import mz.co.grocery.core.application.sale.out.ServiceItemPort;
 import mz.co.grocery.core.application.unit.out.UnitPort;
+import mz.co.grocery.core.domain.customer.SaleType;
 import mz.co.grocery.core.domain.item.Service;
 import mz.co.grocery.core.domain.item.ServiceDescription;
+import mz.co.grocery.core.domain.pos.DebtItem;
 import mz.co.grocery.core.domain.sale.Sale;
 import mz.co.grocery.core.domain.sale.SaleItem;
 import mz.co.grocery.core.domain.sale.ServiceItem;
@@ -59,6 +61,9 @@ public class SaleItemPortTest extends AbstractIntegServiceTest {
 
 	@Inject
 	private ServiceItemPort serviceItemPort;
+
+	@Inject
+	private SaleBuilder saleBuilder;
 
 	private Sale sale;
 
@@ -120,5 +125,16 @@ public class SaleItemPortTest extends AbstractIntegServiceTest {
 				item.getServiceItem().get().getUuid());
 
 		Assert.assertTrue(foundSaleItem.isPresent());
+	}
+
+	@Test
+	public void shouldFindDeptItemsByCustomer() throws BusinessException {
+
+		final Sale sale = this.saleBuilder.sale().withProducts(5).withCustomer().withUnit().saleType(SaleType.CREDIT).build();
+
+		final List<DebtItem> deptItems = this.saleItemPort.findDeptItemsByCustomer(sale.getCustomer().get().getUuid());
+
+		Assert.assertFalse(deptItems.isEmpty());
+		Assert.assertEquals(5, deptItems.size());
 	}
 }

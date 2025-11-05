@@ -3,12 +3,15 @@
  */
 package mz.co.grocery.persistence.sale.repository;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import org.hibernate.jpa.QueryHints;
 import org.springframework.stereotype.Repository;
 
+import mz.co.grocery.core.domain.pos.Debt;
 import mz.co.grocery.core.domain.sale.SaleReport;
 import mz.co.grocery.persistence.sale.entity.SaleEntity;
 import mz.co.msaude.boot.frameworks.dao.GenericDAOImpl;
@@ -74,5 +77,38 @@ public class SaleRepositoryImpl extends GenericDAOImpl<SaleEntity, Long> impleme
 	public List<SaleEntity> fetchOpenedTables(final String unitUuid, final EntityStatus entityStatus) throws BusinessException {
 		return this.findByNamedQuery(SaleRepository.QUERY_NAME.fetchOpenedTables,
 				new ParamBuilder().add("unitUuid", unitUuid).add("entityStatus", entityStatus).process());
+	}
+
+	@Override
+	public List<SaleEntity> findCreditSaleTypeAndPendingSaleStatusSalesByCustomer(final String customerUuid, final EntityStatus entityStatus)
+			throws BusinessException {
+		return this.findByNamedQuery(SaleRepository.QUERY_NAME.findCreditSaleTypeAndPendingSaleStatusSalesByCustomer,
+				new ParamBuilder().add("customerUuid", customerUuid).add("entityStatus", entityStatus).process());
+	}
+
+	@Override
+	public Debt findDeptByCustomer(final String customerUuid, final EntityStatus entityStatus) throws BusinessException {
+		return this.findSingleByNamedQuery(SaleRepository.QUERY_NAME.findDeptByCustomer,
+				new ParamBuilder().add("customerUuid", customerUuid).add("entityStatus", entityStatus).process(), Debt.class);
+	}
+
+	@Override
+	public Optional<BigDecimal> findTotalCashByUnitAndPeriod(final String unitUuid, final LocalDate startDate, final LocalDate endDate,
+			final EntityStatus entityStatus)
+					throws BusinessException {
+		return Optional.ofNullable(this.findSingleByNamedQuery(SaleRepository.QUERY_NAME.findTotalCashByUnitAndPeriod,
+				new ParamBuilder().add("unitUuid", unitUuid).add("startDate", startDate).add("endDate", endDate).add("entityStatus", entityStatus)
+				.process(),
+				BigDecimal.class));
+	}
+
+	@Override
+	public Optional<BigDecimal> findTotalCreditByUnitAndPeriod(final String unitUuid, final LocalDate startDate, final LocalDate endDate,
+			final EntityStatus entityStatus)
+					throws BusinessException {
+		return Optional.ofNullable(this.findSingleByNamedQuery(SaleRepository.QUERY_NAME.findTotalCreditByUnitAndPeriod,
+				new ParamBuilder().add("unitUuid", unitUuid).add("startDate", startDate).add("endDate", endDate).add("entityStatus", entityStatus)
+				.process(),
+				BigDecimal.class));
 	}
 }

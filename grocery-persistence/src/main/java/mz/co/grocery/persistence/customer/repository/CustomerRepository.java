@@ -53,6 +53,8 @@ public interface CustomerRepository extends GenericDAO<CustomerEntity, Long> {
 		public static final String findByUnitAndQuotationType = "SELECT c FROM QuotationEntity q INNER JOIN q.customer c WHERE q.unit.uuid = :unitUuid AND q.type = :type AND q.entityStatus = :entityStatus AND c.entityStatus = :entityStatus GROUP BY c.id ORDER BY q.issueDate DESC";
 
 		public static final String findCustomerByContact = "SELECT c FROM CustomerEntity c WHERE c.contact = :contact AND c.entityStatus = :entityStatus";
+
+		public static final String findCustomersInDeptByUnit = "SELECT c FROM SaleEntity s INNER JOIN s.customer c INNER JOIN s.unit u WHERE u.uuid = :unitUuid AND s.saleType = 'CREDIT' AND s.saleStatus = 'PENDING' AND c.entityStatus = :entityStatus GROUP BY c.id ORDER BY c.name";
 	}
 
 	class QUERY_NAME {
@@ -88,6 +90,8 @@ public interface CustomerRepository extends GenericDAO<CustomerEntity, Long> {
 		public static final String findByUnitAndQuotationType = "CustomerEntity.findByUnitAndQuotationType";
 
 		public static final String findCustomerByContact = "CustomerEntity.findCustomerByContact";
+
+		public static final String findCustomersInDeptByUnit = "CustomerEntity.findCustomersInDeptByUnit";
 	}
 
 	Long countByUnit(String unitUuid, EntityStatus entityStatus) throws BusinessException;
@@ -126,4 +130,7 @@ public interface CustomerRepository extends GenericDAO<CustomerEntity, Long> {
 	List<CustomerEntity> findByUnitAndQuotationType(String unitUuid, EntityStatus entityStatus, QuotationType type) throws BusinessException;
 
 	Optional<CustomerEntity> findCustomerByContact(String contact, EntityStatus entityStatus) throws BusinessException;
+
+	List<CustomerEntity> findCustomersInDeptByUnit(String unitUuid, int currentPage, int maxResult, EntityStatus entityStatus)
+			throws BusinessException;
 }

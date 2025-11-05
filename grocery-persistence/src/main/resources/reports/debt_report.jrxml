@@ -21,22 +21,21 @@
 	<parameter name="phoneNumber" class="java.lang.String">
 		<parameterDescription><![CDATA[Phone Number]]></parameterDescription>
 	</parameter>
-	<parameter name="totalSales" class="java.lang.String"/>
-	<parameter name="unitName" class="java.lang.String"/>
-	<parameter name="saleDate" class="java.lang.String"/>
+	<parameter name="subTotal" class="java.lang.String"/>
+	<parameter name="reportDate" class="java.lang.String"/>
 	<parameter name="code" class="java.lang.String"/>
 	<parameter name="logoPath" class="java.lang.String"/>
-	<parameter name="immediatePayment" class="java.lang.String"/>
-	<parameter name="creditSales" class="java.lang.String"/>
-	<parameter name="debtCollections" class="java.lang.String"/>
-	<parameter name="cashAvailable" class="java.lang.String"/>
+	<parameter name="totalPaid" class="java.lang.String"/>
+	<parameter name="totalInDebt" class="java.lang.String"/>
+	<parameter name="customerName" class="java.lang.String"/>
 	<queryString>
 		<![CDATA[]]>
 	</queryString>
 	<field name="name" class="java.lang.String"/>
-	<field name="salePrice" class="java.lang.String"/>
+	<field name="price" class="java.lang.String"/>
 	<field name="quantity" class="java.lang.String"/>
-	<field name="value" class="java.lang.String"/>
+	<field name="debtItemValue" class="java.lang.String"/>
+	<field name="debtDate" class="java.lang.String"/>
 	<title>
 		<band height="150">
 			<property name="com.jaspersoft.studio.unit.height" value="px"/>
@@ -56,14 +55,14 @@
 			<textField>
 				<reportElement x="446" y="49" width="95" height="20" uuid="4446f9ed-cfd3-40bb-9a0c-f9166f85ce97"/>
 				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$P{saleDate}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{reportDate}]]></textFieldExpression>
 			</textField>
 			<textField>
 				<reportElement x="286" y="74" width="255" height="20" uuid="52cd4616-4740-421c-bc6d-f900726d8371">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
 				<textElement verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$P{unitName}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{customerName}]]></textFieldExpression>
 			</textField>
 			<staticText>
 				<reportElement x="240" y="74" width="50" height="20" uuid="f72e0966-a31e-4495-becc-d695ea28c8a9"/>
@@ -101,7 +100,7 @@
 				<textElement textAlignment="Justified" verticalAlignment="Middle">
 					<font fontName="Times New Roman" size="18" isBold="true"/>
 				</textElement>
-				<text><![CDATA[Relatório de Vendas]]></text>
+				<text><![CDATA[Relatório de Dívidas]]></text>
 			</staticText>
 			<textField>
 				<reportElement x="420" y="5" width="121" height="30" forecolor="#F71C19" uuid="eefb7d55-7430-4409-b136-ee6ce1aa113e"/>
@@ -113,9 +112,9 @@
 		</band>
 	</title>
 	<columnHeader>
-		<band height="40">
+		<band height="41">
 			<staticText>
-				<reportElement mode="Opaque" x="0" y="15" width="285" height="25" backcolor="#E6E6E6" uuid="d3b04039-4124-4971-9e8e-c6d72aa283f7">
+				<reportElement mode="Opaque" x="80" y="15" width="234" height="25" backcolor="#E6E6E6" uuid="d3b04039-4124-4971-9e8e-c6d72aa283f7">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
@@ -134,7 +133,7 @@
 				<text><![CDATA[Nome do Item]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="285" y="15" width="90" height="25" backcolor="#E6E6E6" uuid="623f25e0-0f20-4efd-b7e8-3b4f81d3ed97">
+				<reportElement mode="Opaque" x="314" y="15" width="80" height="25" backcolor="#E6E6E6" uuid="623f25e0-0f20-4efd-b7e8-3b4f81d3ed97">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
@@ -148,10 +147,10 @@
 					<font isBold="true"/>
 					<paragraph lineSpacing="1_1_2"/>
 				</textElement>
-				<text><![CDATA[Quant. Vendida]]></text>
+				<text><![CDATA[Quantidade]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="375" y="15" width="90" height="25" backcolor="#E6E6E6" uuid="71d7f37c-8d30-43c4-9a22-706700f8a132">
+				<reportElement mode="Opaque" x="394" y="15" width="80" height="25" backcolor="#E6E6E6" uuid="71d7f37c-8d30-43c4-9a22-706700f8a132">
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
@@ -166,11 +165,11 @@
 					<font isBold="true"/>
 					<paragraph lineSpacing="1_1_2"/>
 				</textElement>
-				<text><![CDATA[Preço Unitário]]></text>
+				<text><![CDATA[P. Unitário]]></text>
 			</staticText>
 			<staticText>
-				<reportElement mode="Opaque" x="465" y="15" width="90" height="25" backcolor="#E6E6E6" uuid="57a4586f-3aff-4899-9fa7-d329cf62bca6">
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+				<reportElement mode="Opaque" x="474" y="15" width="80" height="25" backcolor="#E6E6E6" uuid="57a4586f-3aff-4899-9fa7-d329cf62bca6">
+					<property name="com.jaspersoft.studio.unit.width" value="pixel"/>
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 				</reportElement>
 				<box>
@@ -186,12 +185,30 @@
 				</textElement>
 				<text><![CDATA[Valor]]></text>
 			</staticText>
+			<staticText>
+				<reportElement mode="Opaque" x="0" y="15" width="80" height="25" backcolor="#E6E6E6" uuid="c0ca3e27-daa3-4ce9-88a2-cebd54ab93fa">
+					<property name="com.jaspersoft.studio.unit.width" value="px"/>
+					<property name="com.jaspersoft.studio.unit.height" value="px"/>
+					<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+				</reportElement>
+				<box>
+					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<font isBold="true"/>
+					<paragraph lineSpacing="1_1_2" leftIndent="5"/>
+				</textElement>
+				<text><![CDATA[Data]]></text>
+			</staticText>
 		</band>
 	</columnHeader>
 	<detail>
-		<band height="24">
+		<band height="26">
 			<textField>
-				<reportElement x="0" y="-1" width="285" height="25" uuid="0bcc0b56-e65e-4b87-b2ca-4fa53cf504a6">
+				<reportElement x="80" y="-1" width="234" height="25" uuid="0bcc0b56-e65e-4b87-b2ca-4fa53cf504a6">
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="db1a2d00-ca97-443b-a7f1-4314053b5fd1"/>
 					<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
@@ -209,7 +226,7 @@
 				<textFieldExpression><![CDATA[$F{name}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="285" y="-1" width="90" height="25" uuid="8a5cee9a-e296-42c4-b140-de451bc9ce81">
+				<reportElement x="314" y="-1" width="80" height="25" uuid="8a5cee9a-e296-42c4-b140-de451bc9ce81">
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="db907914-f795-44c4-9133-2c39c39eb862"/>
 					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 				</reportElement>
@@ -226,7 +243,7 @@
 				<textFieldExpression><![CDATA[$F{quantity}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement x="375" y="-1" width="90" height="25" uuid="961f8660-502c-49ce-b53b-2f041a20995c">
+				<reportElement x="394" y="-1" width="80" height="25" uuid="961f8660-502c-49ce-b53b-2f041a20995c">
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="696114d8-6fb9-4a67-a851-79540c73fde5"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
 				</reportElement>
@@ -238,10 +255,10 @@
 					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
 				</box>
 				<textElement textAlignment="Center" verticalAlignment="Middle"/>
-				<textFieldExpression><![CDATA[$F{salePrice}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{price}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement mode="Transparent" x="465" y="-1" width="90" height="25" uuid="45f0a2ae-652f-4b8e-9751-6a3aaed940da">
+				<reportElement mode="Transparent" x="474" y="-1" width="80" height="25" uuid="45f0a2ae-652f-4b8e-9751-6a3aaed940da">
 					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="7b47edd0-23ef-40f4-be10-2af75ed0a42f"/>
 					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 				</reportElement>
@@ -255,12 +272,30 @@
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<paragraph rightIndent="5"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$F{value}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$F{debtItemValue}]]></textFieldExpression>
+			</textField>
+			<textField>
+				<reportElement x="0" y="-1" width="80" height="25" uuid="cd476c58-8a64-4e90-8a2d-f9afa8d9f61d">
+					<property name="com.jaspersoft.studio.spreadsheet.connectionID" value="db907914-f795-44c4-9133-2c39c39eb862"/>
+					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
+					<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
+				</reportElement>
+				<box>
+					<pen lineWidth="1.0" lineStyle="Dashed"/>
+					<topPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid" lineColor="#000000"/>
+				</box>
+				<textElement textAlignment="Left" verticalAlignment="Middle">
+					<paragraph leftIndent="5" rightIndent="0"/>
+				</textElement>
+				<textFieldExpression><![CDATA[$F{debtDate}]]></textFieldExpression>
 			</textField>
 		</band>
 	</detail>
 	<pageFooter>
-		<band height="45">
+		<band height="44">
 			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<textField>
 				<reportElement mode="Opaque" x="295" y="1" width="220" height="40" backcolor="#E6E6E6" uuid="fed27553-a6c4-4a8a-9056-2f6f2589a3e5">
@@ -293,10 +328,10 @@ Email: mowinner@mowinner.co.mz]]></text>
 		</band>
 	</pageFooter>
 	<summary>
-		<band height="142">
+		<band height="87">
 			<property name="com.jaspersoft.studio.unit.height" value="px"/>
 			<staticText>
-				<reportElement mode="Opaque" x="285" y="6" width="180" height="25" backcolor="#E6E6E6" uuid="29a63a00-3d82-43d9-9940-02a20c8ca476">
+				<reportElement mode="Opaque" x="394" y="5" width="80" height="25" backcolor="#E6E6E6" uuid="29a63a00-3d82-43d9-9940-02a20c8ca476">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
@@ -306,16 +341,16 @@ Email: mowinner@mowinner.co.mz]]></text>
 					<topPen lineWidth="1.0" lineStyle="Solid"/>
 					<leftPen lineWidth="1.0" lineStyle="Solid"/>
 					<bottomPen lineWidth="1.0" lineStyle="Solid"/>
-					<rightPen lineWidth="1.0" lineStyle="Solid"/>
+					<rightPen lineWidth="0.0" lineStyle="Solid"/>
 				</box>
 				<textElement verticalAlignment="Middle">
 					<font isBold="true"/>
-					<paragraph lineSpacing="1_1_2" lineSpacingSize="1.0" leftIndent="5"/>
+					<paragraph lineSpacing="1_1_2" leftIndent="5"/>
 				</textElement>
-				<text><![CDATA[Total de vendas]]></text>
+				<text><![CDATA[Sub-Total]]></text>
 			</staticText>
 			<textField>
-				<reportElement mode="Opaque" x="465" y="6" width="90" height="25" backcolor="#E6E6E6" uuid="7a653d30-0dbe-450e-a1ac-df7ecb9475d8">
+				<reportElement mode="Opaque" x="474" y="5" width="80" height="25" backcolor="#E6E6E6" uuid="7a653d30-0dbe-450e-a1ac-df7ecb9475d8">
 					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 				</reportElement>
 				<box>
@@ -326,12 +361,12 @@ Email: mowinner@mowinner.co.mz]]></text>
 				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font isBold="true"/>
-					<paragraph lineSpacing="1_1_2" rightIndent="5"/>
+					<paragraph rightIndent="5"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$P{totalSales}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{subTotal}]]></textFieldExpression>
 			</textField>
 			<textField>
-				<reportElement mode="Opaque" x="465" y="31" width="90" height="25" backcolor="#E6E6E6" uuid="4e473e16-3be8-4fa6-b29b-1c848d9ececf">
+				<reportElement mode="Opaque" x="474" y="30" width="80" height="25" backcolor="#E6E6E6" uuid="5db4d3d6-d477-4d30-a608-d3e9cda45989">
 					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 				</reportElement>
 				<box>
@@ -342,12 +377,12 @@ Email: mowinner@mowinner.co.mz]]></text>
 				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font isBold="true"/>
-					<paragraph lineSpacing="1_1_2" rightIndent="5"/>
+					<paragraph rightIndent="5"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$P{immediatePayment}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{totalPaid}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement mode="Opaque" x="285" y="31" width="180" height="25" backcolor="#E6E6E6" uuid="ad801297-5198-4b3f-ae12-10fa890697ba">
+				<reportElement mode="Opaque" x="394" y="30" width="80" height="25" backcolor="#E6E6E6" uuid="91b6a962-96ec-475b-8f83-e1f7dcb486de">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
@@ -361,12 +396,12 @@ Email: mowinner@mowinner.co.mz]]></text>
 				</box>
 				<textElement verticalAlignment="Middle">
 					<font isBold="true"/>
-					<paragraph lineSpacing="1_1_2" lineSpacingSize="1.0" leftIndent="5"/>
+					<paragraph lineSpacing="1_1_2" leftIndent="5"/>
 				</textElement>
-				<text><![CDATA[Pagamento Imediato]]></text>
+				<text><![CDATA[Total Pago]]></text>
 			</staticText>
 			<textField>
-				<reportElement mode="Opaque" x="465" y="56" width="90" height="25" backcolor="#E6E6E6" uuid="1f9c8948-93fc-416c-8601-b6fa2c904a21">
+				<reportElement mode="Opaque" x="474" y="55" width="80" height="25" forecolor="#F71C19" backcolor="#E6E6E6" uuid="8dfc5f3b-9dac-47a8-9c8b-6f89045b3dc2">
 					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
 				</reportElement>
 				<box>
@@ -377,12 +412,12 @@ Email: mowinner@mowinner.co.mz]]></text>
 				</box>
 				<textElement textAlignment="Right" verticalAlignment="Middle">
 					<font isBold="true"/>
-					<paragraph lineSpacing="1_1_2" rightIndent="5"/>
+					<paragraph rightIndent="5"/>
 				</textElement>
-				<textFieldExpression><![CDATA[$P{creditSales}]]></textFieldExpression>
+				<textFieldExpression><![CDATA[$P{totalInDebt}]]></textFieldExpression>
 			</textField>
 			<staticText>
-				<reportElement mode="Opaque" x="285" y="56" width="180" height="25" backcolor="#E6E6E6" uuid="4574ef64-98d7-4c29-9266-80287a66a65e">
+				<reportElement mode="Opaque" x="394" y="55" width="80" height="25" forecolor="#000000" backcolor="#E6E6E6" uuid="9e78da25-a5a5-4c82-943e-02a943881ec3">
 					<property name="com.jaspersoft.studio.unit.height" value="px"/>
 					<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
 					<property name="com.jaspersoft.studio.unit.width" value="px"/>
@@ -396,79 +431,9 @@ Email: mowinner@mowinner.co.mz]]></text>
 				</box>
 				<textElement verticalAlignment="Middle">
 					<font isBold="true"/>
-					<paragraph lineSpacing="1_1_2" lineSpacingSize="1.0" leftIndent="5"/>
+					<paragraph lineSpacing="1_1_2" leftIndent="5"/>
 				</textElement>
-				<text><![CDATA[A Crédito]]></text>
-			</staticText>
-			<textField>
-				<reportElement mode="Opaque" x="465" y="81" width="90" height="25" backcolor="#E6E6E6" uuid="aecf9e84-7f1d-4838-9838-25f14b5a5a8d">
-					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
-				</reportElement>
-				<box>
-					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font isBold="true"/>
-					<paragraph lineSpacing="1_1_2" rightIndent="5"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$P{debtCollections}]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement mode="Opaque" x="285" y="81" width="180" height="25" backcolor="#E6E6E6" uuid="999b1107-1323-47aa-9003-3e6180b9f8dd">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-				</reportElement>
-				<box>
-					<pen lineWidth="0.0" lineStyle="Solid"/>
-					<topPen lineWidth="1.0" lineStyle="Solid"/>
-					<leftPen lineWidth="1.0" lineStyle="Solid"/>
-					<bottomPen lineWidth="1.0" lineStyle="Solid"/>
-					<rightPen lineWidth="1.0" lineStyle="Solid"/>
-				</box>
-				<textElement verticalAlignment="Middle">
-					<font isBold="true"/>
-					<paragraph lineSpacing="1_1_2" lineSpacingSize="1.0" leftIndent="5"/>
-				</textElement>
-				<text><![CDATA[Cobranças]]></text>
-			</staticText>
-			<textField>
-				<reportElement mode="Opaque" x="465" y="106" width="90" height="25" backcolor="#E6E6E6" uuid="49da1243-236f-43b5-8133-39f2ed7d9fee">
-					<property name="com.jaspersoft.studio.unit.rightIndent" value="px"/>
-				</reportElement>
-				<box>
-					<topPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-					<leftPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-					<bottomPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-					<rightPen lineWidth="1.0" lineStyle="Solid" lineColor="#000000"/>
-				</box>
-				<textElement textAlignment="Right" verticalAlignment="Middle">
-					<font isBold="true"/>
-					<paragraph lineSpacing="1_1_2" rightIndent="5"/>
-				</textElement>
-				<textFieldExpression><![CDATA[$P{cashAvailable}]]></textFieldExpression>
-			</textField>
-			<staticText>
-				<reportElement mode="Opaque" x="285" y="106" width="180" height="25" backcolor="#E6E6E6" uuid="c64de05c-0bb9-491c-8342-1d415756ac2f">
-					<property name="com.jaspersoft.studio.unit.height" value="px"/>
-					<property name="com.jaspersoft.studio.unit.leftIndent" value="px"/>
-					<property name="com.jaspersoft.studio.unit.width" value="px"/>
-				</reportElement>
-				<box>
-					<pen lineWidth="0.0" lineStyle="Solid"/>
-					<topPen lineWidth="1.0" lineStyle="Solid"/>
-					<leftPen lineWidth="1.0" lineStyle="Solid"/>
-					<bottomPen lineWidth="1.0" lineStyle="Solid"/>
-					<rightPen lineWidth="1.0" lineStyle="Solid"/>
-				</box>
-				<textElement verticalAlignment="Middle">
-					<font isBold="true"/>
-					<paragraph lineSpacing="1_1_2" lineSpacingSize="1.0" leftIndent="5"/>
-				</textElement>
-				<text><![CDATA[Disponível em Caixa]]></text>
+				<text><![CDATA[Em Dívida]]></text>
 			</staticText>
 		</band>
 	</summary>

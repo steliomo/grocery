@@ -50,7 +50,7 @@ public class CustomerResource extends AbstractResource {
 	@Inject
 	private VerifySubscriptionValidatyUseCase verifySubscriptionValidatyUseCase;
 
-	//	workaround for customer pagination
+	// workaround for customer pagination
 	private static final int MAX_RESULT_FACTOR = 2;
 
 	@POST
@@ -195,6 +195,17 @@ public class CustomerResource extends AbstractResource {
 			@QueryParam("quotationType") final QuotationType quotationType) throws BusinessException {
 
 		final List<Customer> customers = this.customerPort.findCustomersWithQuotationByUnitAndType(unitUuid, quotationType);
+
+		return Response.ok(new CustomersDTO(customers, BigDecimal.ZERO.longValue(), this.customerMapper)).build();
+	}
+
+	@Path("find-customers-in-dept-by-unit/{unitUuid}")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response findcustomersInDeptByUnit(@PathParam("unitUuid") final String unitUuid, @QueryParam("currentPage") final int currentPage,
+			@QueryParam("maxResult") final int maxResult) throws BusinessException {
+
+		final List<Customer> customers = this.customerPort.findCustomersInDeptByUnit(unitUuid, currentPage, maxResult);
 
 		return Response.ok(new CustomersDTO(customers, BigDecimal.ZERO.longValue(), this.customerMapper)).build();
 	}

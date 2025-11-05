@@ -3,10 +3,13 @@
  */
 package mz.co.grocery.core.application.sale.out;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
 import mz.co.grocery.core.domain.customer.Customer;
+import mz.co.grocery.core.domain.pos.Debt;
 import mz.co.grocery.core.domain.sale.Sale;
 import mz.co.grocery.core.domain.sale.SaleReport;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
@@ -37,4 +40,12 @@ public interface SalePort {
 	Sale findByUuid(String saleUuid) throws BusinessException;
 
 	List<Sale> fetchOpenedTables(String unitUuid) throws BusinessException;
+
+	List<Sale> findCreditSaleTypeAndPendingSaleStatusSalesByCustomer(Customer customer) throws BusinessException;
+
+	Debt findDeptByCustomer(String customerUuid) throws BusinessException;
+
+	Optional<BigDecimal> findTotalCashByUnitAndPeriod(String unitUuid, LocalDate startDate, LocalDate endDate) throws BusinessException;
+
+	Optional<BigDecimal> findTotalCreditByUnitAndPeriod(String uuid, LocalDate startDate, LocalDate endDate) throws BusinessException;
 }

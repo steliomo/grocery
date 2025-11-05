@@ -11,15 +11,23 @@ import javax.persistence.Entity;
 import javax.persistence.FetchType;
 import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
+import javax.persistence.NamedQueries;
+import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.validation.constraints.NotNull;
 
+import mz.co.grocery.persistence.sale.repository.SalePaymentRepository;
 import mz.co.msaude.boot.frameworks.model.GenericEntity;
 
 /**
  * @author Stélio Moiane
  *
  */
+
+@NamedQueries({
+	@NamedQuery(name = SalePaymentRepository.QUERY_NAME.findDebtCollectionsByUnitAndPeriod, query = SalePaymentRepository.QUERY.findDebtCollectionsByUnitAndPeriod)
+})
+
 @Entity
 @Table(name = "SALE_PAYMENTS")
 public class SalePaymentEntity extends GenericEntity {

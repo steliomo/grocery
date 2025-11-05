@@ -15,6 +15,8 @@ import org.mockito.Mockito;
 import mz.co.grocery.core.application.document.DocumentGeneratorPort;
 import mz.co.grocery.core.application.email.out.EmailPort;
 import mz.co.grocery.core.application.sale.out.SaleItemPort;
+import mz.co.grocery.core.application.sale.out.SalePaymentPort;
+import mz.co.grocery.core.application.sale.out.SalePort;
 import mz.co.grocery.core.application.sale.service.SendDailySalesReportService;
 import mz.co.grocery.core.application.unit.out.UnitPort;
 import mz.co.grocery.core.config.AbstractUnitServiceTest;
@@ -43,6 +45,12 @@ public class SendDailySalesReportUseCaseTest extends AbstractUnitServiceTest {
 
 	@Mock
 	private EmailPort emailPort;
+
+	@Mock
+	private SalePort salePort;
+
+	@Mock
+	private SalePaymentPort salePaymentPort;
 
 	@Test
 	public void shouldSendDailySalesReport() throws BusinessException {

@@ -40,7 +40,9 @@ import mz.co.msaude.boot.frameworks.model.GenericEntity;
 	@NamedQuery(name = CustomerRepository.QUERY_NAME.findCustomersWithPendingOrIncompleteDeliveryStatusSalesByUnit, query = CustomerRepository.QUERY.findCustomersWithPendingOrIncompleteDeliveryStatusSalesByUnit),
 	@NamedQuery(name = CustomerRepository.QUERY_NAME.findCustomersWithDeliveredGuidesByUnit, query = CustomerRepository.QUERY.findCustomersWithDeliveredGuidesByUnit),
 	@NamedQuery(name = CustomerRepository.QUERY_NAME.findByUnitAndQuotationType, query = CustomerRepository.QUERY.findByUnitAndQuotationType),
-	@NamedQuery(name = CustomerRepository.QUERY_NAME.findCustomerByContact, query = CustomerRepository.QUERY.findCustomerByContact) })
+	@NamedQuery(name = CustomerRepository.QUERY_NAME.findCustomerByContact, query = CustomerRepository.QUERY.findCustomerByContact),
+	@NamedQuery(name = CustomerRepository.QUERY_NAME.findCustomersInDeptByUnit, query = CustomerRepository.QUERY.findCustomersInDeptByUnit) })
+
 @Entity
 @Table(name = "CUSTOMERS")
 public class CustomerEntity extends GenericEntity {

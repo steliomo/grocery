@@ -7,9 +7,9 @@ import java.time.LocalDate;
 import java.util.List;
 import java.util.Optional;
 
+import mz.co.grocery.core.domain.pos.DebtItem;
 import mz.co.grocery.core.domain.sale.SaleItem;
 import mz.co.grocery.core.domain.sale.SaleItemReport;
-import mz.co.grocery.core.domain.sale.SaleStatus;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.model.UserContext;
 
@@ -29,6 +29,8 @@ public interface SaleItemPort {
 
 	Optional<SaleItem> findBySaleAndServiceUuid(String saleUuid, String serviceUuid) throws BusinessException;
 
-	List<SaleItemReport> findSaleItemsByUnitAndPeriodAndSaleStatus(String uuid, LocalDate startDate, LocalDate endDate, SaleStatus saleStatus)
+	List<SaleItemReport> findSaleItemsByUnitAndPeriod(String uuid, LocalDate startDate, LocalDate endDate)
 			throws BusinessException;
+
+	List<DebtItem> findDeptItemsByCustomer(String customerUuid) throws BusinessException;
 }

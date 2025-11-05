@@ -9,9 +9,9 @@ import java.util.Optional;
 
 import mz.co.grocery.core.application.sale.out.SaleItemPort;
 import mz.co.grocery.core.common.PersistenceAdapter;
+import mz.co.grocery.core.domain.pos.DebtItem;
 import mz.co.grocery.core.domain.sale.SaleItem;
 import mz.co.grocery.core.domain.sale.SaleItemReport;
-import mz.co.grocery.core.domain.sale.SaleStatus;
 import mz.co.grocery.persistence.sale.entity.SaleItemEntity;
 import mz.co.grocery.persistence.sale.repository.SaleItemRepository;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
@@ -85,8 +85,13 @@ public class SaleItemAdapter implements SaleItemPort {
 	}
 
 	@Override
-	public List<SaleItemReport> findSaleItemsByUnitAndPeriodAndSaleStatus(final String unitUuid, final LocalDate startDate, final LocalDate endDate,
-			final SaleStatus saleStatus) throws BusinessException {
-		return this.repository.findSaleItemsByUnitAndPeriodAndSaleStatus(unitUuid, startDate, endDate, saleStatus, EntityStatus.ACTIVE);
+	public List<SaleItemReport> findSaleItemsByUnitAndPeriod(final String unitUuid, final LocalDate startDate, final LocalDate endDate)
+			throws BusinessException {
+		return this.repository.findSaleItemsByUnitAndPeriod(unitUuid, startDate, endDate, EntityStatus.ACTIVE);
+	}
+
+	@Override
+	public List<DebtItem> findDeptItemsByCustomer(final String customerUuid) throws BusinessException {
+		return this.repository.findDeptItemsByCustomer(customerUuid, EntityStatus.ACTIVE);
 	}
 }

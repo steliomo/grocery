@@ -11,7 +11,7 @@ import mz.co.grocery.core.application.pos.out.SendMessagesPort;
 import mz.co.grocery.core.common.Clock;
 import mz.co.grocery.core.common.UseCase;
 import mz.co.grocery.core.domain.document.Document;
-import mz.co.grocery.core.domain.pos.Bill;
+import mz.co.grocery.core.domain.pos.BillReport;
 import mz.co.grocery.core.domain.pos.Message;
 import mz.co.grocery.core.domain.pos.MessageType;
 import mz.co.grocery.core.domain.sale.Sale;
@@ -46,12 +46,11 @@ public class SendTableBillService implements SendTableBillUseCase {
 			throw new BusinessException("pos.table.must.have.items");
 		}
 
-		sale.getCustomer();
 		if (!sale.getCustomer().isPresent()) {
 			throw new BusinessException("pos.table.must.have.customer");
 		}
 
-		final Document document = new Bill(sale, this.clock);
+		final Document document = new BillReport(sale, this.clock);
 		final String filename = this.documentGeneratorPort.generatePdfDocument(document);
 
 		sale.setFilename(filename);

@@ -54,4 +54,6 @@ public interface CustomerPort {
 	List<Customer> findCustomersWithQuotationByUnitAndType(String unitUuid, QuotationType quotationType) throws BusinessException;
 
 	Optional<Customer> findCustomerByContact(String contact) throws BusinessException;
+
+	List<Customer> findCustomersInDeptByUnit(String unitUuid, int currentPage, int maxResult) throws BusinessException;
 }

@@ -3,6 +3,7 @@
  */
 package mz.co.grocery.persistence.sale;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
 import java.util.Set;
@@ -19,7 +20,10 @@ import mz.co.grocery.core.application.item.out.ProductPort;
 import mz.co.grocery.core.application.item.out.ProductUnitPort;
 import mz.co.grocery.core.application.item.out.ServiceDescriptionPort;
 import mz.co.grocery.core.application.item.out.ServicePort;
+import mz.co.grocery.core.application.sale.in.RegistCreditSaleUseCase;
 import mz.co.grocery.core.application.sale.in.SaleUseCase;
+import mz.co.grocery.core.application.sale.out.SaleItemPort;
+import mz.co.grocery.core.application.sale.out.SalePort;
 import mz.co.grocery.core.application.sale.out.ServiceItemPort;
 import mz.co.grocery.core.application.sale.out.StockPort;
 import mz.co.grocery.core.application.sale.service.CashSaleService;
@@ -31,8 +35,10 @@ import mz.co.grocery.core.domain.item.Product;
 import mz.co.grocery.core.domain.item.ProductDescription;
 import mz.co.grocery.core.domain.item.ProductUnit;
 import mz.co.grocery.core.domain.item.ServiceDescription;
+import mz.co.grocery.core.domain.sale.DeliveryStatus;
 import mz.co.grocery.core.domain.sale.Sale;
 import mz.co.grocery.core.domain.sale.SaleItem;
+import mz.co.grocery.core.domain.sale.SaleStatus;
 import mz.co.grocery.core.domain.sale.ServiceItem;
 import mz.co.grocery.core.domain.sale.Stock;
 import mz.co.grocery.core.domain.unit.Unit;
@@ -86,9 +92,22 @@ public class SaleBuilder extends AbstractIntegServiceTest {
 	@Qualifier(InstallmentSaleService.NAME)
 	private SaleUseCase installmentSaleUseCase;
 
+	@Inject
+	private SalePort salePort;
+
+	@Inject
+	private RegistCreditSaleUseCase registCreditSaleUseCase;
+
+	@Inject
+	private SaleItemPort saleItemPort;
+
 	private Sale sale;
 
 	private Set<SaleItem> items;
+
+	private Unit unit;
+
+	private Customer customer;
 
 	public SaleBuilder sale() {
 		this.sale = new Sale();
@@ -174,10 +193,10 @@ public class SaleBuilder extends AbstractIntegServiceTest {
 
 	public SaleBuilder withUnit() throws BusinessException {
 
-		final Unit unit = this.unitPort.createUnit(this.getUserContext(),
+		this.unit = this.unitPort.createUnit(this.getUserContext(),
 				EntityFactory.gimme(Unit.class, UnitTemplate.VALID));
 
-		this.sale.setUnit(unit);
+		this.sale.setUnit(this.unit);
 
 		return this;
 	}
@@ -188,16 +207,26 @@ public class SaleBuilder extends AbstractIntegServiceTest {
 	}
 
 	public SaleBuilder withCustomer() throws BusinessException {
-		Customer customer = EntityFactory.gimme(Customer.class, CustomerTemplate.VALID);
-		customer.setUnit(this.unitPort.createUnit(this.getUserContext(),
+		this.customer = EntityFactory.gimme(Customer.class, CustomerTemplate.VALID);
+		this.customer.setUnit(this.unitPort.createUnit(this.getUserContext(),
 				EntityFactory.gimme(Unit.class, UnitTemplate.VALID)));
-		customer = this.customerPort.createCustomer(this.getUserContext(), customer);
-		this.sale.setCustomer(customer);
+		this.customer = this.customerPort.createCustomer(this.getUserContext(), this.customer);
+		this.sale.setCustomer(this.customer);
 		return this;
 	}
 
 	public SaleBuilder dueDate(final LocalDate dueDate) {
 		this.sale.setDueDate(dueDate);
+		return this;
+	}
+
+	public SaleBuilder withTotal(final BigDecimal total) {
+		this.sale.setTotal(total);
+		return this;
+	}
+
+	public SaleBuilder withTotalPaid(final BigDecimal totalPaid) {
+		this.sale.setTotalPaid(totalPaid);
 		return this;
 	}
 
@@ -214,6 +243,29 @@ public class SaleBuilder extends AbstractIntegServiceTest {
 			this.items.forEach(item -> {
 				this.sale.addItem(item);
 			});
+
+			return this.sale;
+		}
+
+		if (SaleType.CREDIT.equals(this.sale.getSaleType())) {
+			this.sale.setSaleStatus(SaleStatus.IN_PROGRESS);
+			this.sale.setDeliveryStatus(DeliveryStatus.COMPLETE);
+			this.sale.setTotalPaid(BigDecimal.ONE);
+
+			this.sale = this.salePort.createSale(this.getUserContext(), this.sale);
+
+			for (final SaleItem item : this.items) {
+				item.setSale(this.sale);
+				item.setDeliveredQuantity(BigDecimal.ZERO);
+				item.setDeliveryStatus(DeliveryStatus.COMPLETE);
+
+				this.saleItemPort.createSaleItem(this.getUserContext(), item);
+				this.sale.addItem(item);
+			}
+
+			this.sale = this.registCreditSaleUseCase.regist(this.getUserContext(), this.sale.getUuid());
+			this.sale.setUnit(this.unit);
+			this.sale.setCustomer(this.customer);
 
 			return this.sale;
 		}

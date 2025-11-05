@@ -38,7 +38,6 @@ public class CustomerAdapter implements CustomerPort {
 		this.mapper = mapper;
 	}
 
-
 	@Override
 	public Customer createCustomer(final UserContext userContext, final Customer customer) throws BusinessException {
 
@@ -156,5 +155,11 @@ public class CustomerAdapter implements CustomerPort {
 		}
 
 		return Optional.empty();
+	}
+
+	@Override
+	public List<Customer> findCustomersInDeptByUnit(final String unitUuid, final int currentPage, final int maxResult) throws BusinessException {
+		return this.repository.findCustomersInDeptByUnit(unitUuid, currentPage, maxResult, EntityStatus.ACTIVE).stream().map(this.mapper::toDomain)
+				.collect(Collectors.toList());
 	}
 }

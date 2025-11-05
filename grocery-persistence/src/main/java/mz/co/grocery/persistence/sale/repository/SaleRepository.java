@@ -3,9 +3,12 @@
  */
 package mz.co.grocery.persistence.sale.repository;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
+import mz.co.grocery.core.domain.pos.Debt;
 import mz.co.grocery.core.domain.sale.SaleReport;
 import mz.co.grocery.persistence.sale.entity.SaleEntity;
 import mz.co.msaude.boot.frameworks.dao.GenericDAO;
@@ -30,6 +33,10 @@ public interface SaleRepository extends GenericDAO<SaleEntity, Long> {
 				+ "WHERE s.customer.uuid = :customerUuid AND s.entityStatus = :entityStatus AND g.entityStatus = :entityStatus ORDER BY s.saleDate DESC";
 
 		public static final String fetchOpenedTables = "SELECT s FROM SaleEntity s INNER JOIN FETCH s.customer INNER JOIN FETCH s.unit u WHERE u.uuid = :unitUuid AND s.saleStatus IN ('OPENED', 'IN_PROGRESS') AND s.entityStatus = :entityStatus ORDER BY s.id ASC";
+		public static final String findCreditSaleTypeAndPendingSaleStatusSalesByCustomer = "SELECT s FROM SaleEntity s INNER JOIN s.customer c WHERE s.saleType = 'CREDIT' AND s.saleStatus = 'PENDING' AND c.uuid = :customerUuid AND s.entityStatus = :entityStatus ORDER BY s.saleDate ASC";
+		public static final String findDeptByCustomer = "SELECT NEW mz.co.grocery.core.domain.pos.Debt(SUM(s.total), SUM(s.totalPaid)) FROM SaleEntity s INNER JOIN s.customer c WHERE s.saleType = 'CREDIT' AND s.saleStatus = 'PENDING' AND c.uuid = :customerUuid AND s.entityStatus = :entityStatus";
+		public static final String findTotalCashByUnitAndPeriod = "SELECT SUM(s.total) FROM SaleEntity s INNER JOIN s.unit u WHERE s.saleType IN ('INSTALLMENT', 'CASH') AND s.saleStatus = 'CLOSED' AND u.uuid = :unitUuid AND s.saleDate BETWEEN :startDate AND :endDate AND s.entityStatus = :entityStatus";
+		public static final String findTotalCreditByUnitAndPeriod = "SELECT SUM(s.total) FROM SaleEntity s INNER JOIN s.unit u WHERE s.saleType = 'CREDIT' AND s.saleStatus IN ('PENDING','CLOSED') AND u.uuid = :unitUuid AND s.saleDate BETWEEN :startDate AND :endDate AND s.entityStatus = :entityStatus";
 	}
 
 	class QUERY_NAME {
@@ -40,6 +47,10 @@ public interface SaleRepository extends GenericDAO<SaleEntity, Long> {
 		public static final String fetchByUuid = "SaleEntity.fetchByUuid";
 		public static final String fetchSalesWithDeliveryGuidesByCustomer = "SaleEntity.fetchSalesWithDeliveryGuidesByCustomer";
 		public static final String fetchOpenedTables = "SaleEntity.fetchOpenedTables";
+		public static final String findCreditSaleTypeAndPendingSaleStatusSalesByCustomer = "SaleEntity.findCreditSaleTypeAndPendingSaleStatusSalesByCustomer";
+		public static final String findDeptByCustomer = "SaleEntity.findDeptByCustomer";
+		public static final String findTotalCashByUnitAndPeriod = "SaleEntity.findTotalCashByUnitAndPeriod";
+		public static final String findTotalCreditByUnitAndPeriod = "SaleEntity.findTotalCreditByUnitAndPeriod";
 
 	}
 
@@ -59,4 +70,14 @@ public interface SaleRepository extends GenericDAO<SaleEntity, Long> {
 	List<SaleEntity> fetchSalesWithDeliveryGuidesByCustomer(String customerUuid, EntityStatus entityStatus) throws BusinessException;
 
 	List<SaleEntity> fetchOpenedTables(String unitUuid, EntityStatus entityStatus) throws BusinessException;
+
+	List<SaleEntity> findCreditSaleTypeAndPendingSaleStatusSalesByCustomer(String customerUuid, EntityStatus entityStatus) throws BusinessException;
+
+	Debt findDeptByCustomer(String customerUuid, EntityStatus entityStatus) throws BusinessException;
+
+	Optional<BigDecimal> findTotalCashByUnitAndPeriod(String unitUuid, LocalDate startDate, LocalDate endDate, EntityStatus entityStatus)
+			throws BusinessException;
+
+	Optional<BigDecimal> findTotalCreditByUnitAndPeriod(String unitUuid, LocalDate startDate, LocalDate endDate, EntityStatus entityStatus)
+			throws BusinessException;
 }

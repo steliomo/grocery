@@ -43,7 +43,11 @@ import mz.co.msaude.boot.frameworks.util.ProxyUtil;
 	@NamedQuery(name = SaleRepository.QUERY_NAME.fetchSalesWithPendingOrIncompleteDeliveryStatusByCustomer, query = SaleRepository.QUERY.fetchSalesWithPendingOrIncompleteDeliveryStatusByCustomer),
 	@NamedQuery(name = SaleRepository.QUERY_NAME.fetchByUuid, query = SaleRepository.QUERY.fetchByUuid),
 	@NamedQuery(name = SaleRepository.QUERY_NAME.fetchSalesWithDeliveryGuidesByCustomer, query = SaleRepository.QUERY.fetchSalesWithDeliveryGuidesByCustomer),
-	@NamedQuery(name = SaleRepository.QUERY_NAME.fetchOpenedTables, query = SaleRepository.QUERY.fetchOpenedTables)
+	@NamedQuery(name = SaleRepository.QUERY_NAME.fetchOpenedTables, query = SaleRepository.QUERY.fetchOpenedTables),
+	@NamedQuery(name = SaleRepository.QUERY_NAME.findCreditSaleTypeAndPendingSaleStatusSalesByCustomer, query = SaleRepository.QUERY.findCreditSaleTypeAndPendingSaleStatusSalesByCustomer),
+	@NamedQuery(name = SaleRepository.QUERY_NAME.findDeptByCustomer, query = SaleRepository.QUERY.findDeptByCustomer),
+	@NamedQuery(name = SaleRepository.QUERY_NAME.findTotalCashByUnitAndPeriod, query = SaleRepository.QUERY.findTotalCashByUnitAndPeriod),
+	@NamedQuery(name = SaleRepository.QUERY_NAME.findTotalCreditByUnitAndPeriod, query = SaleRepository.QUERY.findTotalCreditByUnitAndPeriod)
 })
 @Entity
 @Table(name = "SALES")

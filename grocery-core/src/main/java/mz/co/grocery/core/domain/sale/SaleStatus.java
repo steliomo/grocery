@@ -15,5 +15,7 @@ public enum SaleStatus {
 
 	CLOSED,
 
-	CANCELLED
+	CANCELLED,
+
+	PENDING
 }

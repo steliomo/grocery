@@ -6,11 +6,13 @@ package mz.co.grocery.integ.resources.sale;
 import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
+import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -24,14 +26,18 @@ import org.springframework.scheduling.annotation.Scheduled;
 import mz.co.grocery.core.application.expense.out.ExpensePort;
 import mz.co.grocery.core.application.pos.in.CancelTableUseCase;
 import mz.co.grocery.core.application.pos.in.OpenTableUseCase;
+import mz.co.grocery.core.application.pos.in.PayDeptUseCase;
 import mz.co.grocery.core.application.pos.in.RegistTableItemsUseCase;
+import mz.co.grocery.core.application.pos.in.SendCustomerDebtUseCase;
 import mz.co.grocery.core.application.pos.in.SendTableBillUseCase;
 import mz.co.grocery.core.application.pos.out.SaleListner;
 import mz.co.grocery.core.application.pos.out.SaleNotifier;
 import mz.co.grocery.core.application.rent.out.RentPaymentPort;
+import mz.co.grocery.core.application.sale.in.RegistCreditSaleUseCase;
 import mz.co.grocery.core.application.sale.in.SalePaymentUseCase;
 import mz.co.grocery.core.application.sale.in.SaleUseCase;
 import mz.co.grocery.core.application.sale.in.SendDailySalesReportUseCase;
+import mz.co.grocery.core.application.sale.out.SaleItemPort;
 import mz.co.grocery.core.application.sale.out.SalePort;
 import mz.co.grocery.core.application.sale.service.CashSaleService;
 import mz.co.grocery.core.application.sale.service.InstallmentSaleService;
@@ -40,12 +46,17 @@ import mz.co.grocery.core.common.BeanQualifier;
 import mz.co.grocery.core.common.WebAdapter;
 import mz.co.grocery.core.domain.customer.Customer;
 import mz.co.grocery.core.domain.expense.ExpenseReport;
+import mz.co.grocery.core.domain.pos.Debt;
+import mz.co.grocery.core.domain.pos.DebtItem;
 import mz.co.grocery.core.domain.sale.Sale;
 import mz.co.grocery.core.domain.sale.SalePayment;
 import mz.co.grocery.core.domain.sale.SaleReport;
 import mz.co.grocery.core.domain.unit.UnitUser;
 import mz.co.grocery.integ.resources.AbstractResource;
 import mz.co.grocery.integ.resources.customer.dto.CustomerDTO;
+import mz.co.grocery.integ.resources.sale.dto.DebtDTO;
+import mz.co.grocery.integ.resources.sale.dto.DebtDTOMapper;
+import mz.co.grocery.integ.resources.sale.dto.DebtItemDTOMapper;
 import mz.co.grocery.integ.resources.sale.dto.SaleDTO;
 import mz.co.grocery.integ.resources.sale.dto.SalePaymentDTO;
 import mz.co.grocery.integ.resources.sale.dto.SalesDTO;
@@ -121,6 +132,24 @@ public class SaleResource extends AbstractResource {
 	@Inject
 	private CancelTableUseCase cancelTableUseCase;
 
+	@Inject
+	private RegistCreditSaleUseCase registCreditSaleUseCase;
+
+	@Inject
+	private PayDeptUseCase payDebtUseCase;
+
+	@Inject
+	private DebtItemDTOMapper deptItemDTOMapper;
+
+	@Inject
+	private SaleItemPort saleItemPort;
+
+	@Inject
+	private SendCustomerDebtUseCase sendCustomerDebtUseCase;
+
+	@Inject
+	private DebtDTOMapper debtDTOMapper;
+
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
@@ -134,6 +163,9 @@ public class SaleResource extends AbstractResource {
 
 		case INSTALLMENT:
 			sale = this.installmentSaleService.registSale(this.getContext(), sale);
+			break;
+
+		default:
 			break;
 		}
 
@@ -333,8 +365,61 @@ public class SaleResource extends AbstractResource {
 
 	@Scheduled(cron = "0 15 0 * * ?")
 	public void sendSalesDailyReport() throws BusinessException {
-		final LocalDate reortDate = LocalDate.now().minusDays(1);
+		final LocalDate reportDate = LocalDate.now().minusDays(1);
 
-		this.sendDailySalesReportUseCase.sendReport(reortDate);
+		this.sendDailySalesReportUseCase.sendReport(reportDate);
+	}
+
+	@Path("regist-credit-sale/{saleUuid}")
+	@PUT
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response registCreditSale(@PathParam("saleUuid") final String saleUuid) throws BusinessException {
+
+		final Sale sale = this.registCreditSaleUseCase.regist(this.getContext(), saleUuid);
+
+		return Response.ok(this.saleMapper.toDTO(sale)).build();
+	}
+
+	@Path("pay-debt")
+	@POST
+	@Consumes(MediaType.APPLICATION_JSON)
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response payDebt(final DebtDTO debt) throws BusinessException {
+
+		final Debt paidDebt = this.payDebtUseCase.pay(this.getContext(), this.debtDTOMapper.toDomain(debt));
+
+		return Response.ok(this.debtDTOMapper.toDTO(paidDebt)).build();
+	}
+
+	@Path("find-debt-by-customer/{customerUuid}")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response findDebtByCustomer(@PathParam("customerUuid") final String customerUuid) throws BusinessException {
+
+		final Debt debt = this.salePort.findDeptByCustomer(customerUuid);
+
+		return Response.ok(this.debtDTOMapper.toDTO(debt)).build();
+	}
+
+	@Path("find-debt-items-by-customer/{customerUuid}")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public Response findDebtItemsByCustomer(@PathParam("customerUuid") final String customerUuid) throws BusinessException {
+
+		final List<DebtItem> debtItems = this.saleItemPort.findDeptItemsByCustomer(customerUuid);
+
+		return Response.ok(debtItems.stream().map(this.deptItemDTOMapper::toDTO).collect(Collectors.toList())).build();
+	}
+
+	@Path("send-customer-debt")
+	@POST
+	@Produces(MediaType.APPLICATION_JSON)
+	@Consumes(MediaType.APPLICATION_JSON)
+	public Response sendCustomerDebt(final DebtDTO debt) throws BusinessException {
+
+		this.sendCustomerDebtUseCase.sendDebt(this.debtDTOMapper.toDomain(debt));
+
+		return Response.ok().build();
 	}
 }

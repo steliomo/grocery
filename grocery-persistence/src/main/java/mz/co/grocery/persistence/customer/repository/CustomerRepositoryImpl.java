@@ -149,4 +149,14 @@ public class CustomerRepositoryImpl extends GenericDAOImpl<CustomerEntity, Long>
 			return Optional.empty();
 		}
 	}
+
+	@Override
+	public List<CustomerEntity> findCustomersInDeptByUnit(final String unitUuid, final int currentPage, final int maxResult,
+			final EntityStatus entityStatus)
+					throws BusinessException {
+		return this
+				.findByQuery(CustomerRepository.QUERY_NAME.findCustomersInDeptByUnit,
+						new ParamBuilder().add("unitUuid", unitUuid).add("entityStatus", entityStatus).process())
+				.setFirstResult(currentPage * maxResult).setMaxResults(maxResult).getResultList();
+	}
 }

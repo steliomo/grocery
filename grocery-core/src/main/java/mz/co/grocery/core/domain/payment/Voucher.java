@@ -15,7 +15,7 @@ public enum Voucher {
 
 	SEMI_ANNUAL(new UptoOneMonthDiscount(new Integer(180))),
 
-	YEARLY(new UptoOneMonthDiscount(new Integer(360)));
+	YEARLY(new UptoOneMonthDiscount(new Integer(365)));
 
 	private final Discount discount;
 

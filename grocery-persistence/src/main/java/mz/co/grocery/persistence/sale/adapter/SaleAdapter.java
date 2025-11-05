@@ -3,13 +3,16 @@
  */
 package mz.co.grocery.persistence.sale.adapter;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import mz.co.grocery.core.application.sale.out.SalePort;
 import mz.co.grocery.core.common.PersistenceAdapter;
 import mz.co.grocery.core.domain.customer.Customer;
+import mz.co.grocery.core.domain.pos.Debt;
 import mz.co.grocery.core.domain.sale.Sale;
 import mz.co.grocery.core.domain.sale.SaleReport;
 import mz.co.grocery.persistence.sale.entity.SaleEntity;
@@ -101,5 +104,27 @@ public class SaleAdapter implements SalePort {
 	public List<Sale> fetchOpenedTables(final String unitUuid) throws BusinessException {
 		return this.repository.fetchOpenedTables(unitUuid, EntityStatus.ACTIVE).stream().map(this.mapper::toDomain)
 				.collect(Collectors.toList());
+	}
+
+	@Override
+	public List<Sale> findCreditSaleTypeAndPendingSaleStatusSalesByCustomer(final Customer customer) throws BusinessException {
+		return this.repository.findCreditSaleTypeAndPendingSaleStatusSalesByCustomer(customer.getUuid(), EntityStatus.ACTIVE).stream()
+				.map(this.mapper::toDomain).collect(Collectors.toList());
+	}
+
+	@Override
+	public Debt findDeptByCustomer(final String customerUuid) throws BusinessException {
+		return this.repository.findDeptByCustomer(customerUuid, EntityStatus.ACTIVE);
+	}
+
+	@Override
+	public Optional<BigDecimal> findTotalCashByUnitAndPeriod(final String unitUuid, final LocalDate startDate, final LocalDate endDate)
+			throws BusinessException {
+		return this.repository.findTotalCashByUnitAndPeriod(unitUuid, startDate, endDate, EntityStatus.ACTIVE);
+	}
+
+	@Override
+	public Optional<BigDecimal> findTotalCreditByUnitAndPeriod(final String unitUuid, final LocalDate startDate, final LocalDate endDate) throws BusinessException {
+		return this.repository.findTotalCreditByUnitAndPeriod(unitUuid, startDate, endDate, EntityStatus.ACTIVE);
 	}
 }

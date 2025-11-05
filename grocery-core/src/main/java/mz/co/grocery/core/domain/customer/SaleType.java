@@ -11,5 +11,7 @@ public enum SaleType {
 
 	INSTALLMENT,
 
-	CASH
+	CASH,
+
+	CREDIT
 }
