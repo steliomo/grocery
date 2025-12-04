@@ -7,6 +7,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.List;
+import java.util.Optional;
 
 import mz.co.grocery.core.application.document.DocumentGeneratorPort;
 import mz.co.grocery.core.application.email.out.EmailPort;
@@ -62,11 +63,15 @@ public class SendDailySalesReportService extends AbstractService implements Send
 
 		for (final Unit unit : units) {
 
-			final List<SaleItemReport> saleItems = this.saleItemPort.findSaleItemsByUnitAndPeriod(unit.getUuid(), saleDate, saleDate);
+			final List<SaleItemReport> saleItems = this.saleItemPort.findSaleProductItemsByUnitAndPeriod(unit.getUuid(), saleDate, saleDate);
+			final List<SaleItemReport> saleServiceItems = this.saleItemPort.findSaleServiceItemsByUnitAndPeriod(unit.getUuid(), saleDate, saleDate);
+
+			saleItems.addAll(saleServiceItems);
 
 			final BigDecimal totalCash = this.salePort.findTotalCashByUnitAndPeriod(unit.getUuid(), saleDate, saleDate).orElse(BigDecimal.ZERO);
 			final BigDecimal totalCredit = this.salePort.findTotalCreditByUnitAndPeriod(unit.getUuid(), saleDate, saleDate).orElse(BigDecimal.ZERO);
-			final BigDecimal debtCollections = this.salePaymentPort.findDebtCollectionsByUnitAndPeriod(unit.getUuid(), saleDate, saleDate).orElse(BigDecimal.ZERO);
+			final BigDecimal debtCollections = this.salePaymentPort.findDebtCollectionsByUnitAndPeriod(unit.getUuid(), saleDate, saleDate)
+					.orElse(BigDecimal.ZERO);
 
 			final Document document = new SaleReportDocument(unit, saleDate, saleItems, totalCash, totalCredit, debtCollections);
 
@@ -74,7 +79,7 @@ public class SendDailySalesReportService extends AbstractService implements Send
 
 			this.documentGeneratorPort.generatePdfDocument(document);
 
-			final EmailDetails email = new EmailDetails(unit, EmailType.DAILY_SALE, filename);
+			final EmailDetails email = new EmailDetails(unit, EmailType.DAILY_SALE, Optional.ofNullable(filename));
 			email.setParam("saleDate", saleDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
 			email.setParam("unitName", unit.getName());
 			email.setParam("phoneNumber", unit.getPhoneNumber());

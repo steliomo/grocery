@@ -1,0 +1,86 @@
+<html>
+<body>
+<head>
+ 	<style>
+ 		body, ul, li, a, table, label, p, tr, td, span, textarea, input {
+			font: 11px "Lucida Grande", Georgia, "Times New Roman", Times, serif;
+        }
+        
+        table {
+        	border-collapse: collapse;
+        	margin-left: 1px;
+        	margin-bottom: 15px;
+        	cursor: pointer;
+        }
+        
+        table th {
+        	border: 1px solid #017a84;
+        	padding: 7px;
+        }
+        
+        table td {
+        	border: 1px solid #017a84;
+        	padding: 7px;
+        }
+        
+        table th{
+        	background: #017a84;
+        	color: #fff;
+        }
+        
+        table td:first-child{
+        	background: #FFCDD2;
+        	font-weight: bold;
+        }
+        
+        
+ 	</style>
+  	<meta charset="UTF-8">
+</head>
+
+<p>Exmo.(a) Sr.(a) <strong>${customerName}<strong/></p>
+<p>Acusamos a recepção do pagamento referente à sua subscrição do aplicativo de gestão Negócio na Mão (NNM). Seguem abaixo os detalhes do pagamento efectuado:</p>
+
+<table>
+	<tr>
+		<th colspan="2">Recibo de Pagamento</th>
+	</tr>
+	
+	<tr>
+		<td width="160px"><strong>Nome do Estebelecimento<strong/></td>
+		<td width="400px">${unitName}</td>
+	</tr>
+
+	<tr>
+		<td width="120px"><strong>Subscrição<strong/></td>
+		<td width="400px">Aplicativo de gestão Negócio Na Mão (NNM)</td>
+	</tr>
+
+	<tr>
+		<td width="120px"><strong>Montante<strong/></td>
+		<td width="400px">${amount}</td>
+	</tr>
+	
+	<tr>
+		<td width="120px"><strong>Data de Liquidação<strong/></td>
+		<td width="400px">${paymentDate}</td>
+	</tr>
+	
+	<tr>
+		<td width="120px"><strong>Validade da Subscrição<strong/></td>
+		<td width="400px">${subscriptionEndDate}</td>
+	</tr>
+
+	<tr>
+		<td width="120px"><strong>Método de Pagamento<strong/></td>
+		<td width="400px">M-pesa</td>
+	</tr>
+</table>
+
+<p>Este documento serve como comprovativo formal de pagamento.</p>
+<p>Agradecemos a confiança depositada nos nossos serviços e permanecemos ao dispôr para quaisquer esclarecimentos adicionais.</p>
+<p>Com elevada estima e consideração,</p>
+
+<p>Negócio na mão (NNM) © 2025 ©</p>
+</body>
+</html>

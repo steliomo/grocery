@@ -29,8 +29,11 @@ public interface SaleItemPort {
 
 	Optional<SaleItem> findBySaleAndServiceUuid(String saleUuid, String serviceUuid) throws BusinessException;
 
-	List<SaleItemReport> findSaleItemsByUnitAndPeriod(String uuid, LocalDate startDate, LocalDate endDate)
+	List<SaleItemReport> findSaleProductItemsByUnitAndPeriod(String uuid, LocalDate startDate, LocalDate endDate)
 			throws BusinessException;
 
 	List<DebtItem> findDeptItemsByCustomer(String customerUuid) throws BusinessException;
+
+	List<SaleItemReport> findSaleServiceItemsByUnitAndPeriod(String unitUuid, LocalDate startDate, LocalDate endDate)
+			throws BusinessException;
 }

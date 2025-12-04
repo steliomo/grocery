@@ -9,7 +9,12 @@ package mz.co.grocery.core.domain.email;
  */
 public enum EmailType {
 
-	DAILY_SALE("sale-daily-report-template.txt", "email.daily.sale");
+	DAILY_SALE("sale-daily-report-template.txt", "email.daily.sale"),
+
+	SUBSCRIPTION_PAYMENT_RECEIPT("subscription-payment-receipt-template.txt", "email.subscription.payment.receipt"),
+
+	SUBSCRIPTION_RENEWAL("subscription-renewal-template.txt", "email.subscription.renewal");
+
 
 	private String template;
 

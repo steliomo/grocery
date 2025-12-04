@@ -5,6 +5,7 @@ package mz.co.grocery.core.domain.email;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 import mz.co.grocery.core.domain.unit.Unit;
 
@@ -18,11 +19,15 @@ public class EmailDetails {
 
 	private EmailType emailType;
 
-	private String attachment;
+	private Optional<String> attachment;
 
 	private Map<String, Object> params;
 
-	public EmailDetails(final Unit unit, final EmailType emailType, final String attachment) {
+	private String customerName;
+
+	private String customerEmail;
+
+	public EmailDetails(final Unit unit, final EmailType emailType, final Optional<String> attachment) {
 		this.unit = unit;
 		this.emailType = emailType;
 		this.attachment = attachment;
@@ -39,7 +44,7 @@ public class EmailDetails {
 		return this.emailType;
 	}
 
-	public String getAttachment() {
+	public Optional<String> getAttachment() {
 		return this.attachment;
 	}
 
@@ -49,5 +54,21 @@ public class EmailDetails {
 
 	public void setParam(final String key, final Object value) {
 		this.params.put(key, value);
+	}
+
+	public String getCustomerName() {
+		return this.customerName;
+	}
+
+	public void setCustomerName(final String customerName) {
+		this.customerName = customerName;
+	}
+
+	public String getCustomerEmail() {
+		return this.customerEmail;
+	}
+
+	public void setCustomerEmail(final String customerEmail) {
+		this.customerEmail = customerEmail;
 	}
 }

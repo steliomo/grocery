@@ -14,9 +14,11 @@ import org.mockito.InjectMocks;
 import org.mockito.Mock;
 import org.mockito.Mockito;
 
+import mz.co.grocery.core.application.email.out.EmailPort;
 import mz.co.grocery.core.application.payment.out.PaymentPort;
 import mz.co.grocery.core.application.payment.service.SubscriptionService;
 import mz.co.grocery.core.application.unit.out.UnitPort;
+import mz.co.grocery.core.common.Clock;
 import mz.co.grocery.core.config.AbstractUnitServiceTest;
 import mz.co.grocery.core.domain.payment.SubscriptionDetails;
 import mz.co.grocery.core.domain.payment.Voucher;
@@ -45,6 +47,12 @@ public class SubscriptionServiceTest extends AbstractUnitServiceTest {
 	@Mock
 	private PaymentPort paymentPort;
 
+	@Mock
+	private Clock clock;
+
+	@Mock
+	private EmailPort emailPort;
+
 	@InjectMocks
 	private SubscriptionService subscriptionUseCase;
 
@@ -56,6 +64,8 @@ public class SubscriptionServiceTest extends AbstractUnitServiceTest {
 
 		final SubscriptionDetails subscriptionDetails = new SubscriptionDetails(Voucher.MONTHLY);
 		Mockito.when(this.paymentPort.wasPaymentCompleted(subscriptionDetails)).thenReturn(Boolean.TRUE);
+
+		Mockito.when(this.clock.todayDate()).thenReturn(LocalDate.now());
 
 		final UserContext context = this.getUserContext();
 

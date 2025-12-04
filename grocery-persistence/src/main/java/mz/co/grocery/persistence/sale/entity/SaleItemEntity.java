@@ -30,8 +30,9 @@ import mz.co.msaude.boot.frameworks.util.ProxyUtil;
 @NamedQueries({
 	@NamedQuery(name = SaleItemRepository.QUERY_NAME.findBySaleAndProductUuid, query = SaleItemRepository.QUERY.findBySaleAndProductUuid),
 	@NamedQuery(name = SaleItemRepository.QUERY_NAME.findBySaleAndServiceUuid, query = SaleItemRepository.QUERY.findBySaleAndServiceUuid),
-	@NamedQuery(name = SaleItemRepository.QUERY_NAME.findSaleItemsByUnitAndPeriod, query = SaleItemRepository.QUERY.findSaleItemsByUnitAndPeriod),
-	@NamedQuery(name = SaleItemRepository.QUERY_NAME.findDeptItemsByCustomer, query = SaleItemRepository.QUERY.findDeptItemsByCustomer)
+	@NamedQuery(name = SaleItemRepository.QUERY_NAME.findSaleProductItemsByUnitAndPeriod, query = SaleItemRepository.QUERY.findSaleProductItemsByUnitAndPeriod),
+	@NamedQuery(name = SaleItemRepository.QUERY_NAME.findDeptItemsByCustomer, query = SaleItemRepository.QUERY.findDeptItemsByCustomer),
+	@NamedQuery(name = SaleItemRepository.QUERY_NAME.findSaleServiceItemsByUnitAndPeriod, query = SaleItemRepository.QUERY.findSaleServiceItemsByUnitAndPeriod)
 })
 @Entity
 @Table(name = "SALE_ITEMS")

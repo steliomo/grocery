@@ -48,6 +48,7 @@ public class ResourceOwnerServiceImpl implements UserDetailsService, ResourceOnw
 		user.setPassword(userDTO.getPassword());
 		user.setUuid(userDTO.getUuid());
 		user.setFullName(userDTO.getFullName());
+		user.setEmail(userDTO.getEmail());
 
 		return new ResourceOwner(user);
 	}

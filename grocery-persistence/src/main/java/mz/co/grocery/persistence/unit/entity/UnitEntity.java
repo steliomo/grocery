@@ -31,7 +31,8 @@ import mz.co.msaude.boot.frameworks.util.LocalDateAdapter;
 	@NamedQuery(name = UnitRepository.QUERY_NAME.findAllIds, query = UnitRepository.QUERY.findAllIds),
 	@NamedQuery(name = UnitRepository.QUERY_NAME.findAll, query = UnitRepository.QUERY.findAll),
 	@NamedQuery(name = UnitRepository.QUERY_NAME.findByName, query = UnitRepository.QUERY.findByName),
-	@NamedQuery(name = UnitRepository.QUERY_NAME.findUnitsWithDailySales, query = UnitRepository.QUERY.findUnitsWithDailySales) })
+	@NamedQuery(name = UnitRepository.QUERY_NAME.findUnitsWithDailySales, query = UnitRepository.QUERY.findUnitsWithDailySales),
+	@NamedQuery(name = UnitRepository.QUERY_NAME.findUnitsWithSubscriptionActiveToDate, query = UnitRepository.QUERY.findUnitsWithSubscriptionActiveToDate) })
 @Entity
 @Table(name = "GROCERIES")
 public class UnitEntity extends GenericEntity {

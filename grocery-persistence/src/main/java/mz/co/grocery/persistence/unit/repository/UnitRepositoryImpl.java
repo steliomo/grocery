@@ -50,4 +50,10 @@ public class UnitRepositoryImpl extends GenericDAOImpl<UnitEntity, Long> impleme
 		return this.findByNamedQuery(UnitRepository.QUERY_NAME.findUnitsWithDailySales,
 				new ParamBuilder().add("saleDate", saleDate).add("entityStatus", entityStatus).process());
 	}
+
+	@Override
+	public List<UnitEntity> findUnitsWithSubscriptionActiveToDate(final LocalDate toDate, final EntityStatus entityStatus) throws BusinessException {
+		return this.findByNamedQuery(UnitRepository.QUERY_NAME.findUnitsWithSubscriptionActiveToDate,
+				new ParamBuilder().add("toDate", toDate).add("entityStatus", entityStatus).process());
+	}
 }

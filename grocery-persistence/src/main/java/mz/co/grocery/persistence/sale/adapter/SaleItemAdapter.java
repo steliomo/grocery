@@ -85,13 +85,19 @@ public class SaleItemAdapter implements SaleItemPort {
 	}
 
 	@Override
-	public List<SaleItemReport> findSaleItemsByUnitAndPeriod(final String unitUuid, final LocalDate startDate, final LocalDate endDate)
+	public List<SaleItemReport> findSaleProductItemsByUnitAndPeriod(final String unitUuid, final LocalDate startDate, final LocalDate endDate)
 			throws BusinessException {
-		return this.repository.findSaleItemsByUnitAndPeriod(unitUuid, startDate, endDate, EntityStatus.ACTIVE);
+		return this.repository.findSaleProductItemsByUnitAndPeriod(unitUuid, startDate, endDate, EntityStatus.ACTIVE);
 	}
 
 	@Override
 	public List<DebtItem> findDeptItemsByCustomer(final String customerUuid) throws BusinessException {
 		return this.repository.findDeptItemsByCustomer(customerUuid, EntityStatus.ACTIVE);
+	}
+
+	@Override
+	public List<SaleItemReport> findSaleServiceItemsByUnitAndPeriod(final String unitUuid, final LocalDate startDate, final LocalDate endDate)
+			throws BusinessException {
+		return this.repository.findSaleServiceItemsByUnitAndPeriod(unitUuid, startDate, endDate, EntityStatus.ACTIVE);
 	}
 }

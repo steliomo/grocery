@@ -78,4 +78,10 @@ public class UnitAdapter implements UnitPort {
 		return this.repository.findUnitsWithDailySales(saleDate, EntityStatus.ACTIVE).stream().map(this.mapper::toDomain)
 				.collect(Collectors.toList());
 	}
+
+	@Override
+	public List<Unit> findUnitsWithSubscriptionActiveToDate(final LocalDate toDate) throws BusinessException {
+		return this.repository.findUnitsWithSubscriptionActiveToDate(toDate, EntityStatus.ACTIVE).stream()
+				.map(this.mapper::toDomain).collect(Collectors.toList());
+	}
 }

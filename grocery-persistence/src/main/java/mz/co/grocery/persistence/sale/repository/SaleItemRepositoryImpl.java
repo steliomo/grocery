@@ -51,10 +51,10 @@ public class SaleItemRepositoryImpl extends GenericDAOImpl<SaleItemEntity, Long>
 	}
 
 	@Override
-	public List<SaleItemReport> findSaleItemsByUnitAndPeriod(final String unitUuid, final LocalDate startDate, final LocalDate endDate,
+	public List<SaleItemReport> findSaleProductItemsByUnitAndPeriod(final String unitUuid, final LocalDate startDate, final LocalDate endDate,
 			final EntityStatus entityStatus)
 					throws BusinessException {
-		return this.findByNamedQuery(SaleItemRepository.QUERY_NAME.findSaleItemsByUnitAndPeriod,
+		return this.findByNamedQuery(SaleItemRepository.QUERY_NAME.findSaleProductItemsByUnitAndPeriod,
 				new ParamBuilder().add("unitUuid", unitUuid)
 				.add("startDate", startDate).add("endDate", endDate).add("entityStatus", entityStatus)
 				.process(),
@@ -65,5 +65,16 @@ public class SaleItemRepositoryImpl extends GenericDAOImpl<SaleItemEntity, Long>
 	public List<DebtItem> findDeptItemsByCustomer(final String customerUuid, final EntityStatus entityStatus) throws BusinessException {
 		return this.findByNamedQuery(SaleItemRepository.QUERY_NAME.findDeptItemsByCustomer,
 				new ParamBuilder().add("customerUuid", customerUuid).add("entityStatus", entityStatus).process(), DebtItem.class);
+	}
+
+	@Override
+	public List<SaleItemReport> findSaleServiceItemsByUnitAndPeriod(final String unitUuid, final LocalDate startDate, final LocalDate endDate,
+			final EntityStatus entityStatus)
+					throws BusinessException {
+		return this.findByNamedQuery(SaleItemRepository.QUERY_NAME.findSaleServiceItemsByUnitAndPeriod,
+				new ParamBuilder().add("unitUuid", unitUuid)
+				.add("startDate", startDate).add("endDate", endDate).add("entityStatus", entityStatus)
+				.process(),
+				SaleItemReport.class);
 	}
 }

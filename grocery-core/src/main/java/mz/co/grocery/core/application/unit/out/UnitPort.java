@@ -29,4 +29,6 @@ public interface UnitPort {
 	List<Unit> findUnitsByName(String unitName) throws BusinessException;
 
 	List<Unit> findUnitsWithDailySales(LocalDate saleDate) throws BusinessException;
+
+	List<Unit> findUnitsWithSubscriptionActiveToDate(LocalDate toDate) throws BusinessException;
 }

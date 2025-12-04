@@ -21,7 +21,8 @@ public interface UnitRepository extends GenericDAO<UnitEntity, Long> {
 		public static final String findAllIds = "SELECT u.id FROM UnitEntity u WHERE u.entityStatus = :entityStatus";
 		public static final String findAll = "SELECT u FROM UnitEntity u WHERE u.id IN (:unitIds)";
 		public static final String findByName = "SELECT g FROM UnitEntity g WHERE g.name LIKE :unitName AND g.entityStatus = :entityStatus";
-		public static final String findUnitsWithDailySales = "SELECT u FROM SaleEntity s INNER JOIN s.unit u WHERE s.saleDate = :saleDate AND s.entityStatus = :entityStatus AND u.entityStatus = :entityStatus GROUP BY u.id";
+		public static final String findUnitsWithDailySales = "SELECT u FROM SaleEntity s INNER JOIN s.unit u WHERE s.saleDate = :saleDate AND s.saleStatus IN ('PENDING','CLOSED') AND s.entityStatus = :entityStatus AND u.entityStatus = :entityStatus GROUP BY u.id";
+		public static final String findUnitsWithSubscriptionActiveToDate = "SELECT u FROM UnitEntity u WHERE u.subscriptionEndDate IS NOT NULL AND u.subscriptionEndDate > :toDate AND u.entityStatus = :entityStatus";
 	}
 
 	class QUERY_NAME {
@@ -29,6 +30,7 @@ public interface UnitRepository extends GenericDAO<UnitEntity, Long> {
 		public static final String findAll = "UnitEntity.findAll";
 		public static final String findByName = "UnitEntity.findByName";
 		public static final String findUnitsWithDailySales = "UnitEntity.findUnitsWithDailySales";
+		public static final String findUnitsWithSubscriptionActiveToDate = "UnitEntity.findUnitsWithSubscriptionActiveToDate";
 	}
 
 	List<UnitEntity> findAll(int currentPage, int maxResul, EntityStatus entityStatus) throws BusinessException;
@@ -36,4 +38,6 @@ public interface UnitRepository extends GenericDAO<UnitEntity, Long> {
 	List<UnitEntity> findByName(String unitName, EntityStatus entityStatus) throws BusinessException;
 
 	List<UnitEntity> findUnitsWithDailySales(LocalDate saleDate, EntityStatus entityStatus) throws BusinessException;
+
+	List<UnitEntity> findUnitsWithSubscriptionActiveToDate(LocalDate toDate, EntityStatus entityStatus) throws BusinessException;
 }

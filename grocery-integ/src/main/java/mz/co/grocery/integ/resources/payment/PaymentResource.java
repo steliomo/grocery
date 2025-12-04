@@ -3,6 +3,8 @@
  */
 package mz.co.grocery.integ.resources.payment;
 
+import java.time.LocalDate;
+
 import javax.inject.Inject;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
@@ -13,6 +15,9 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 
+import org.springframework.scheduling.annotation.Scheduled;
+
+import mz.co.grocery.core.application.payment.in.SubscriptionRenewalNotificationUseCase;
 import mz.co.grocery.core.application.payment.in.SubscriptionUseCase;
 import mz.co.grocery.core.common.WebAdapter;
 import mz.co.grocery.core.domain.payment.SubscriptionDetails;
@@ -35,6 +40,9 @@ public class PaymentResource extends AbstractResource {
 
 	@Inject
 	private SubscriptionUseCase paymentService;
+
+	@Inject
+	private SubscriptionRenewalNotificationUseCase subscriptionRenewalNotificationUseCase;
 
 	@GET
 	@Path("vouchers")
@@ -60,5 +68,13 @@ public class PaymentResource extends AbstractResource {
 		this.paymentService.updateSubscription(this.getContext(), subscriptionDetails);
 
 		return Response.ok(subscriptionDetails).build();
+	}
+
+
+	@Scheduled(cron = "10 30 0 * * ?")
+	public void sendSalesDailyReport() throws BusinessException {
+		final LocalDate notificationDate = LocalDate.now();
+
+		this.subscriptionRenewalNotificationUseCase.sendNotification(notificationDate);
 	}
 }

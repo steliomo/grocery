@@ -6,6 +6,8 @@ package mz.co.grocery.integ.resources.mail;
 import java.io.File;
 import java.io.IOException;
 
+import javax.mail.MessagingException;
+
 import org.springframework.mail.javamail.JavaMailSender;
 import org.springframework.mail.javamail.MimeMessageHelper;
 import org.springframework.stereotype.Service;
@@ -91,11 +93,17 @@ public class MailSenderService implements EmailPort {
 
 			mimeMessageHelper.setText(builder.toString(), Boolean.TRUE);
 
-			mimeMessageHelper.addAttachment(email.getAttachment(), new File(DocumentGeneratorPort.FILE_DIR + email.getAttachment()));
+			email.getAttachment().ifPresent(attachment -> {
+				try {
+					mimeMessageHelper.addAttachment(attachment,
+							new File(DocumentGeneratorPort.FILE_DIR + attachment));
+				} catch (final MessagingException e) {
+					e.printStackTrace();
+				}
+			});
 
 			this.mailSender.send(mimeMessageHelper.getMimeMessage());
 
 		});
-
 	}
 }
