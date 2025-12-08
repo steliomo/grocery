@@ -10,7 +10,7 @@
   	<meta charset="UTF-8">
 </head>
 <p>Prezado(a) cliente (<strong>${unitName}<strong/>)</p>
-<p>Vimos por este meio recordar que o pagamento da sua subscrição de uso do aplicativo Negócio na Mão (NNM) que vence à <strong>${subscriptionEndDate}</strong></p>
+<p>Vimos por este meio recordar que o pagamento da sua subscrição de uso do aplicativo Negócio na Mão (NNM) vence à <strong>${subscriptionEndDate}</strong>.</p>
 <p>Pode realizar o pagamento dentro do próprio aplicativo através do menú <strong>Pagamentos</strong>.</p>
 <p>Agradecemos a confiança depositada nos nossos serviços e permanecemos ao dispôr para quaisquer esclarecimentos adicionais.</p>
 <p>Com os melhores cumprimentos,</p>

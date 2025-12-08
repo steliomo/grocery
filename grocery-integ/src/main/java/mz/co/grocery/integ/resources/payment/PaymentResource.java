@@ -71,7 +71,7 @@ public class PaymentResource extends AbstractResource {
 	}
 
 
-	@Scheduled(cron = "10 30 0 * * ?")
+	@Scheduled(cron = "0 30 10 * * ?")
 	public void sendSalesDailyReport() throws BusinessException {
 		final LocalDate notificationDate = LocalDate.now();
 
