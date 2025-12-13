@@ -4,8 +4,8 @@
 package mz.co.grocery.core.application.payment.service;
 
 import java.time.LocalDate;
-import java.time.Period;
 import java.time.format.DateTimeFormatter;
+import java.time.temporal.ChronoUnit;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Optional;
@@ -45,7 +45,7 @@ public class SubscriptionRenewalNotificationService implements SubscriptionRenew
 
 		for (final Unit unit : units) {
 
-			final int days = Period.between(notificationDate, unit.getSubscriptionEndDate()).getDays();
+			final long days = ChronoUnit.DAYS.between(notificationDate, unit.getSubscriptionEndDate());
 
 			if (days == NotificationDays.THREE_DAYS.getValue() || days == NotificationDays.FIVE_DAYS.getValue()) {
 
