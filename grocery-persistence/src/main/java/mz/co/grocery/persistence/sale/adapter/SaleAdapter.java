@@ -124,7 +124,19 @@ public class SaleAdapter implements SalePort {
 	}
 
 	@Override
-	public Optional<BigDecimal> findTotalCreditByUnitAndPeriod(final String unitUuid, final LocalDate startDate, final LocalDate endDate) throws BusinessException {
+	public Optional<BigDecimal> findTotalCreditByUnitAndPeriod(final String unitUuid, final LocalDate startDate, final LocalDate endDate)
+			throws BusinessException {
 		return this.repository.findTotalCreditByUnitAndPeriod(unitUuid, startDate, endDate, EntityStatus.ACTIVE);
+	}
+
+	@Override
+	public Optional<SaleReport> findDailyNumberOfSalesAndTotalSalesByUnit(final String unitUuid, final LocalDate saleDate) throws BusinessException {
+		return this.repository.findDailyNumberOfSalesAndTotalSalesByUnit(unitUuid, saleDate, EntityStatus.ACTIVE);
+	}
+
+	@Override
+	public List<Sale> findDailySalesByUnit(final String unitUuid, final LocalDate saleDate) throws BusinessException {
+		return this.repository.findDailySalesByUnit(unitUuid, saleDate, EntityStatus.ACTIVE).stream().map(this.mapper::toDomain)
+				.collect(Collectors.toList());
 	}
 }

@@ -47,7 +47,9 @@ import mz.co.msaude.boot.frameworks.util.ProxyUtil;
 	@NamedQuery(name = SaleRepository.QUERY_NAME.findCreditSaleTypeAndPendingSaleStatusSalesByCustomer, query = SaleRepository.QUERY.findCreditSaleTypeAndPendingSaleStatusSalesByCustomer),
 	@NamedQuery(name = SaleRepository.QUERY_NAME.findDeptByCustomer, query = SaleRepository.QUERY.findDeptByCustomer),
 	@NamedQuery(name = SaleRepository.QUERY_NAME.findTotalCashByUnitAndPeriod, query = SaleRepository.QUERY.findTotalCashByUnitAndPeriod),
-	@NamedQuery(name = SaleRepository.QUERY_NAME.findTotalCreditByUnitAndPeriod, query = SaleRepository.QUERY.findTotalCreditByUnitAndPeriod)
+	@NamedQuery(name = SaleRepository.QUERY_NAME.findTotalCreditByUnitAndPeriod, query = SaleRepository.QUERY.findTotalCreditByUnitAndPeriod),
+	@NamedQuery(name = SaleRepository.QUERY_NAME.findDailyNumberOfSalesAndTotalSalesByUnit, query = SaleRepository.QUERY.findDailyNumberOfSalesAndTotalSalesByUnit),
+	@NamedQuery(name = SaleRepository.QUERY_NAME.findDailySalesByUnit, query = SaleRepository.QUERY.findDailySalesByUnit)
 })
 @Entity
 @Table(name = "SALES")

@@ -5,7 +5,6 @@ package mz.co.grocery.core.domain.sale;
 
 import java.math.BigDecimal;
 import java.text.DecimalFormat;
-import java.time.LocalDate;
 import java.time.format.DateTimeFormatter;
 import java.util.Collection;
 import java.util.HashMap;
@@ -27,8 +26,6 @@ public class SaleReportDocument implements Document {
 
 	private Unit unit;
 
-	private LocalDate saleDate;
-
 	private List<SaleItemReport> saleItems;
 
 	private String code;
@@ -41,9 +38,12 @@ public class SaleReportDocument implements Document {
 
 	private BigDecimal debtCollections;
 
-	public SaleReportDocument(final Unit unit, final LocalDate saleDate, final List<SaleItemReport> saleItems, final BigDecimal immediatePayment,
+	private SaleReport saleReport;
+
+	public SaleReportDocument(final Unit unit, final SaleReport saleReport, final List<SaleItemReport> saleItems, final BigDecimal immediatePayment,
 			final BigDecimal creditSales, final BigDecimal debtCollections) {
 
+		this.saleReport = saleReport;
 		this.immediatePayment = immediatePayment;
 		this.creditSales = creditSales;
 		this.debtCollections = debtCollections;
@@ -51,7 +51,6 @@ public class SaleReportDocument implements Document {
 		this.formatter = new DecimalFormat("#,###.00 MT");
 
 		this.unit = unit;
-		this.saleDate = saleDate;
 		this.saleItems = saleItems;
 		this.code = StringUtils.leftPad(String.valueOf(unit.getId()), Document.LEFT_PAD, Document.PAD_CHAR);
 
@@ -59,7 +58,7 @@ public class SaleReportDocument implements Document {
 
 	@Override
 	public String getFilename() {
-		final String time = String.valueOf(this.saleDate).replace("-", "");
+		final String time = String.valueOf(this.saleReport.getSaleDate()).replace("-", "");
 		return "DAILY_SALE_" + this.code + "_" + time + "." + Document.PDF;
 	}
 
@@ -71,7 +70,7 @@ public class SaleReportDocument implements Document {
 		final BigDecimal cashAvailable = this.immediatePayment.add(this.debtCollections);
 
 		parameters.put("code", this.code);
-		parameters.put("saleDate", this.saleDate.format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
+		parameters.put("saleDate", this.saleReport.getSaleDate().format(DateTimeFormatter.ofPattern("dd-MM-yyyy")));
 		parameters.put("unitName", this.unit.getName());
 		parameters.put("phoneNumber", this.unit.getPhoneNumber());
 
@@ -80,8 +79,13 @@ public class SaleReportDocument implements Document {
 		parameters.put("creditSales", this.formatter.format(this.creditSales));
 		parameters.put("debtCollections", this.formatter.format(this.debtCollections));
 		parameters.put("cashAvailable", this.formatter.format(cashAvailable));
+		parameters.put("cashAvailable", this.formatter.format(cashAvailable));
+		parameters.put("numberOfSales", this.saleReport.getNumberOfSales().toString());
+		parameters.put("averageTicket", this.formatter.format(this.saleReport.getAverageTicket()));
 
 		parameters.put("logoPath", this.unit.getLogoPath());
+
+		parameters.put("salesPerPeriod", this.saleReport.getSalesPerPeriod());
 
 		return parameters;
 	}

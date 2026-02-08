@@ -48,4 +48,8 @@ public interface SalePort {
 	Optional<BigDecimal> findTotalCashByUnitAndPeriod(String unitUuid, LocalDate startDate, LocalDate endDate) throws BusinessException;
 
 	Optional<BigDecimal> findTotalCreditByUnitAndPeriod(String uuid, LocalDate startDate, LocalDate endDate) throws BusinessException;
+
+	Optional<SaleReport> findDailyNumberOfSalesAndTotalSalesByUnit(String unitUuid, LocalDate saleDate) throws BusinessException;
+
+	List<Sale> findDailySalesByUnit(String unitUuid, LocalDate saleDate) throws BusinessException;
 }

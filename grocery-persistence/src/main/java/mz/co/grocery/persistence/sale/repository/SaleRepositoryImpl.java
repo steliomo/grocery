@@ -111,4 +111,19 @@ public class SaleRepositoryImpl extends GenericDAOImpl<SaleEntity, Long> impleme
 				.process(),
 				BigDecimal.class));
 	}
+
+	@Override
+	public Optional<SaleReport> findDailyNumberOfSalesAndTotalSalesByUnit(final String unitUuid, final LocalDate saleDate,
+			final EntityStatus entityStatus) throws BusinessException {
+		return Optional.ofNullable(this.findSingleByNamedQuery(SaleRepository.QUERY_NAME.findDailyNumberOfSalesAndTotalSalesByUnit,
+				new ParamBuilder().add("unitUuid", unitUuid).add("saleDate", saleDate).add("entityStatus", entityStatus).process(),
+				SaleReport.class));
+	}
+
+	@Override
+	public List<SaleEntity> findDailySalesByUnit(final String unitUuid, final LocalDate saleDate, final EntityStatus entityStatus)
+			throws BusinessException {
+		return this.findByNamedQuery(SaleRepository.QUERY_NAME.findDailySalesByUnit,
+				new ParamBuilder().add("unitUuid", unitUuid).add("saleDate", saleDate).add("entityStatus", entityStatus).process());
+	}
 }

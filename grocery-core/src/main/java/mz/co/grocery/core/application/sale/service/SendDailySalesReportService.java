@@ -20,9 +20,12 @@ import mz.co.grocery.core.common.UseCase;
 import mz.co.grocery.core.domain.document.Document;
 import mz.co.grocery.core.domain.email.EmailDetails;
 import mz.co.grocery.core.domain.email.EmailType;
+import mz.co.grocery.core.domain.sale.Sale;
 import mz.co.grocery.core.domain.sale.SaleItemReport;
+import mz.co.grocery.core.domain.sale.SaleReport;
 import mz.co.grocery.core.domain.sale.SaleReportDocument;
 import mz.co.grocery.core.domain.unit.Unit;
+import mz.co.grocery.core.util.ApplicationTranslator;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.service.AbstractService;
 
@@ -46,14 +49,17 @@ public class SendDailySalesReportService extends AbstractService implements Send
 
 	private SalePaymentPort salePaymentPort;
 
+	private ApplicationTranslator translator;
+
 	public SendDailySalesReportService(final UnitPort unitPort, final SaleItemPort saleItemPort, final DocumentGeneratorPort documentGeneratorPort,
-			final EmailPort emailPort, final SalePort salePort, final SalePaymentPort salePaymentPort) {
+			final EmailPort emailPort, final SalePort salePort, final SalePaymentPort salePaymentPort, final ApplicationTranslator translator) {
 		this.unitPort = unitPort;
 		this.saleItemPort = saleItemPort;
 		this.documentGeneratorPort = documentGeneratorPort;
 		this.emailPort = emailPort;
 		this.salePort = salePort;
 		this.salePaymentPort = salePaymentPort;
+		this.translator = translator;
 	}
 
 	@Override
@@ -73,7 +79,12 @@ public class SendDailySalesReportService extends AbstractService implements Send
 			final BigDecimal debtCollections = this.salePaymentPort.findDebtCollectionsByUnitAndPeriod(unit.getUuid(), saleDate, saleDate)
 					.orElse(BigDecimal.ZERO);
 
-			final Document document = new SaleReportDocument(unit, saleDate, saleItems, totalCash, totalCredit, debtCollections);
+			final SaleReport saleReport = this.salePort.findDailyNumberOfSalesAndTotalSalesByUnit(unit.getUuid(), saleDate).get();
+			final List<Sale> sales = this.salePort.findDailySalesByUnit(unit.getUuid(), saleDate);
+
+			saleReport.groupSalesPerPeriod(sales, this.translator);
+
+			final Document document = new SaleReportDocument(unit, saleReport, saleItems, totalCash, totalCredit, debtCollections);
 
 			final String filename = document.getFilename();
 

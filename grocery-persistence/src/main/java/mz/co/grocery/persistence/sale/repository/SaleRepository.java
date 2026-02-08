@@ -37,6 +37,8 @@ public interface SaleRepository extends GenericDAO<SaleEntity, Long> {
 		public static final String findDeptByCustomer = "SELECT NEW mz.co.grocery.core.domain.pos.Debt(SUM(s.total), SUM(s.totalPaid)) FROM SaleEntity s INNER JOIN s.customer c WHERE s.saleType = 'CREDIT' AND s.saleStatus = 'PENDING' AND c.uuid = :customerUuid AND s.entityStatus = :entityStatus";
 		public static final String findTotalCashByUnitAndPeriod = "SELECT SUM(s.total) FROM SaleEntity s INNER JOIN s.unit u WHERE s.saleType IN ('INSTALLMENT', 'CASH') AND s.saleStatus = 'CLOSED' AND u.uuid = :unitUuid AND s.saleDate BETWEEN :startDate AND :endDate AND s.entityStatus = :entityStatus";
 		public static final String findTotalCreditByUnitAndPeriod = "SELECT SUM(s.total) FROM SaleEntity s INNER JOIN s.unit u WHERE s.saleType = 'CREDIT' AND s.saleStatus IN ('PENDING','CLOSED') AND u.uuid = :unitUuid AND s.saleDate BETWEEN :startDate AND :endDate AND s.entityStatus = :entityStatus";
+		public static final String findDailyNumberOfSalesAndTotalSalesByUnit = "SELECT NEW mz.co.grocery.core.domain.sale.SaleReport(s.saleDate, COUNT(s.id), SUM(s.total)) FROM SaleEntity s INNER JOIN s.unit u WHERE s.saleStatus IN ('PENDING','CLOSED') AND u.uuid = :unitUuid AND s.saleDate = :saleDate AND s.entityStatus = :entityStatus";
+		public static final String findDailySalesByUnit = "SELECT s FROM SaleEntity s INNER JOIN s.unit u WHERE s.saleStatus IN ('PENDING','CLOSED') AND u.uuid = :unitUuid AND s.saleDate = :saleDate AND s.entityStatus = :entityStatus";
 	}
 
 	class QUERY_NAME {
@@ -51,6 +53,8 @@ public interface SaleRepository extends GenericDAO<SaleEntity, Long> {
 		public static final String findDeptByCustomer = "SaleEntity.findDeptByCustomer";
 		public static final String findTotalCashByUnitAndPeriod = "SaleEntity.findTotalCashByUnitAndPeriod";
 		public static final String findTotalCreditByUnitAndPeriod = "SaleEntity.findTotalCreditByUnitAndPeriod";
+		public static final String findDailyNumberOfSalesAndTotalSalesByUnit = "SaleEntity.findDailyNumberOfSalesAndTotalSalesByUnit";
+		public static final String findDailySalesByUnit = "SaleEntity.findDailySalesByUnit";
 
 	}
 
@@ -80,4 +84,9 @@ public interface SaleRepository extends GenericDAO<SaleEntity, Long> {
 
 	Optional<BigDecimal> findTotalCreditByUnitAndPeriod(String unitUuid, LocalDate startDate, LocalDate endDate, EntityStatus entityStatus)
 			throws BusinessException;
+
+	Optional<SaleReport> findDailyNumberOfSalesAndTotalSalesByUnit(String unitUuid, LocalDate saleDate, EntityStatus entityStatus)
+			throws BusinessException;
+
+	List<SaleEntity> findDailySalesByUnit(String unitUuid, LocalDate saleDate, EntityStatus entityStatus) throws BusinessException;
 }

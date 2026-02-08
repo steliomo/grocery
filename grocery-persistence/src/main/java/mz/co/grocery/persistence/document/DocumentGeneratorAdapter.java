@@ -5,6 +5,8 @@ package mz.co.grocery.persistence.document;
 
 import java.io.FileInputStream;
 import java.io.IOException;
+import java.util.Collection;
+import java.util.Map;
 
 import mz.co.grocery.core.application.document.DocumentGeneratorPort;
 import mz.co.grocery.core.common.PersistenceAdapter;
@@ -34,7 +36,18 @@ public class DocumentGeneratorAdapter implements DocumentGeneratorPort {
 
 			final JRBeanCollectionDataSource jrBeanCollectionDataSource = new JRBeanCollectionDataSource(report.getData());
 
-			final JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, report.getParameters(), jrBeanCollectionDataSource);
+			final Map<String, Object> parameters = report.getParameters();
+
+			parameters.entrySet().forEach(param -> {
+
+				final Object value = param.getValue();
+
+				if (value instanceof Collection) {
+					param.setValue(new JRBeanCollectionDataSource((Collection<?>) value));
+				}
+			});
+
+			final JasperPrint jasperPrint = JasperFillManager.fillReport(jasperReport, parameters, jrBeanCollectionDataSource);
 			JasperExportManager.exportReportToPdfFile(jasperPrint, DocumentGeneratorPort.FILE_DIR + report.getFilename());
 		} catch (final IOException | JRException e) {
 			e.printStackTrace();

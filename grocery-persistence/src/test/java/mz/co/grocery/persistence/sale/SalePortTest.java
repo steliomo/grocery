@@ -5,6 +5,8 @@ package mz.co.grocery.persistence.sale;
 
 import java.math.BigDecimal;
 import java.time.LocalDate;
+import java.time.LocalDateTime;
+import java.time.LocalTime;
 import java.util.List;
 import java.util.Optional;
 
@@ -188,5 +190,49 @@ public class SalePortTest extends AbstractIntegServiceTest {
 
 		Assert.assertTrue(totalCredit.isPresent());
 		Assert.assertTrue(BigDecimalUtil.isEqual(sale.getTotal(), totalCredit.get()));
+	}
+
+	@Test
+	public void shouldFindDailyNumberOfSalesAndTotalSalesByUnit() throws BusinessException {
+
+		final Sale sale = this.saleBuilder.sale().withProducts(5).withCustomer().withUnit().saleType(SaleType.CREDIT)
+				.withTotal(new BigDecimal(1000)).withTotalPaid(new BigDecimal(1000)).dueDate(LocalDate.now()).build();
+
+		final LocalDate saleDate = LocalDate.now();
+
+		final Optional<SaleReport> saleReport = this.salePort.findDailyNumberOfSalesAndTotalSalesByUnit(sale.getUnit().get().getUuid(), saleDate);
+
+		saleReport.ifPresent(report -> {
+			Assert.assertEquals(1, report.getNumberOfSales(), 0.0);
+			Assert.assertEquals(sale.getTotal(), report.getTotalOfSales());
+			Assert.assertEquals(sale.getSaleDate(), report.getSaleDate());
+		});
+	}
+
+	@Test
+	public void shouldFindDailySalesByUnit() throws BusinessException {
+
+		final Sale sale = this.saleBuilder.sale().withProducts(5).withCustomer().withUnit().saleType(SaleType.CREDIT)
+				.withTotal(new BigDecimal(1000)).withTotalPaid(new BigDecimal(1000)).dueDate(LocalDate.now()).build();
+
+		final LocalDate saleDate = LocalDate.now();
+
+		final List<Sale> sales = this.salePort.findDailySalesByUnit(sale.getUnit().get().getUuid(), saleDate);
+
+		Assert.assertFalse(sales.isEmpty());
+	}
+
+	@Test
+	public void myplayGound() {
+		final LocalDateTime localDateTime = LocalDateTime.now();
+
+		LocalTime localTime = localDateTime.toLocalTime();
+
+		localTime = localTime.withNano(0);
+		localTime = localTime.withSecond(0);
+
+		LocalTime.of(0, 0);
+
+		System.out.println(localTime);
 	}
 }
