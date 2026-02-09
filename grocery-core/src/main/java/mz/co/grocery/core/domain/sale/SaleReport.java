@@ -99,6 +99,10 @@ public class SaleReport implements Serializable {
 	}
 
 	public BigDecimal getAverageTicket() {
+		if (this.totalSales == null) {
+			return BigDecimal.ZERO;
+		}
+
 		return this.totalSales.divide(new BigDecimal(this.numberOfSales));
 	}
 
