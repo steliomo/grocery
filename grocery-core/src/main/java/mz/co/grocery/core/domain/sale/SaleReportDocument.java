@@ -79,7 +79,6 @@ public class SaleReportDocument implements Document {
 		parameters.put("creditSales", this.formatter.format(this.creditSales));
 		parameters.put("debtCollections", this.formatter.format(this.debtCollections));
 		parameters.put("cashAvailable", this.formatter.format(cashAvailable));
-		parameters.put("cashAvailable", this.formatter.format(cashAvailable));
 		parameters.put("numberOfSales", this.saleReport.getNumberOfSales().toString());
 		parameters.put("averageTicket", this.formatter.format(this.saleReport.getAverageTicket()));
 

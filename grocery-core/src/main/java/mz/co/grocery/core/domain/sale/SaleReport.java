@@ -5,6 +5,7 @@ package mz.co.grocery.core.domain.sale;
 
 import java.io.Serializable;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.time.LocalDate;
 import java.time.Month;
 import java.util.ArrayList;
@@ -103,7 +104,7 @@ public class SaleReport implements Serializable {
 			return BigDecimal.ZERO;
 		}
 
-		return this.totalSales.divide(new BigDecimal(this.numberOfSales));
+		return this.totalSales.divide(new BigDecimal(this.numberOfSales), RoundingMode.HALF_UP);
 	}
 
 	public void groupSalesPerPeriod(final List<Sale> sales, final ApplicationTranslator translator) {
