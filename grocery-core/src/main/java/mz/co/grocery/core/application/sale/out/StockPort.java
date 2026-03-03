@@ -5,8 +5,11 @@ package mz.co.grocery.core.application.sale.out;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
+import mz.co.grocery.core.domain.item.ProductDescription;
 import mz.co.grocery.core.domain.sale.Stock;
+import mz.co.grocery.core.domain.unit.Unit;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
 import mz.co.msaude.boot.frameworks.model.EntityStatus;
 import mz.co.msaude.boot.frameworks.model.UserContext;
@@ -47,5 +50,7 @@ public interface StockPort {
 	List<Stock> fetchStockNotInthisGroceryByProduct(String groceryUuid, String productUuid) throws BusinessException;
 
 	List<Stock> fetchStocksInAnalysisByUnit(String unitUuid) throws BusinessException;
+
+	Optional<Stock> fetchStockByProductAndUnit(ProductDescription productDescription, Unit unit) throws BusinessException;
 
 }

@@ -5,7 +5,10 @@ package mz.co.grocery.persistence.sale.repository;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 
+import mz.co.grocery.core.domain.item.ProductDescription;
+import mz.co.grocery.core.domain.unit.Unit;
 import mz.co.grocery.persistence.sale.entity.StockEntity;
 import mz.co.msaude.boot.frameworks.dao.GenericDAO;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
@@ -37,6 +40,8 @@ public interface StockRepositoty extends GenericDAO<StockEntity, Long> {
 		public static final String fetchNotInThisGroceryByProduct = "SELECT s FROM StockEntity s INNER JOIN FETCH s.unit g INNER JOIN FETCH s.productDescription pd INNER JOIN FETCH pd.product p INNER JOIN FETCH pd.productUnit WHERE NOT EXISTS (SELECT st FROM StockEntity st INNER JOIN st.productDescription pdn WHERE st.unit.uuid = :groceryUuid AND pdn.id = pd.id) AND p.uuid = :productUuid AND s.entityStatus = :entityStatus GROUP BY pd.id ORDER BY p.name, pd.description";
 
 		public static final String fetchInAnalysisByUnitUuid = "SELECT s FROM StockEntity s INNER JOIN FETCH s.productDescription pd INNER JOIN FETCH pd.product p INNER JOIN FETCH pd.productUnit WHERE s.unit.uuid = :unitUuid AND s.productStockStatus = 'BAD' AND s.entityStatus = :entityStatus ORDER BY CONCAT(p.name,' ', pd.description) ASC";
+
+		public static final String fetchStockByProductAndUnit = "SELECT s FROM StockEntity s INNER JOIN FETCH s.productDescription pd INNER JOIN FETCH pd.product INNER JOIN FETCH pd.productUnit INNER JOIN FETCH s.unit u WHERE pd.uuid = :productDescriptionUuid AND u.uuid = :unitUuid AND s.entityStatus = :entityStatus";
 	}
 
 	class QUERY_NAME {
@@ -58,6 +63,8 @@ public interface StockRepositoty extends GenericDAO<StockEntity, Long> {
 		public static final String fetchNotInThisGroceryByProduct = "StockEntity.fetchNotInThisGroceryByProduct";
 
 		public static final String fetchInAnalysisByUnitUuid = "StockEntity.fetchInAnalysisByUnitUuid";
+
+		public static final String fetchStockByProductAndUnit = "StockEntity.fetchStockByProductAndUnit";
 	}
 
 	List<StockEntity> fetchAll(int currentPage, int maxResult, EntityStatus entityStatus) throws BusinessException;
@@ -79,4 +86,7 @@ public interface StockRepositoty extends GenericDAO<StockEntity, Long> {
 			throws BusinessException;
 
 	List<StockEntity> fetchInAnalysisByUnitUuid(String unitUuid, EntityStatus entityStatus) throws BusinessException;
+
+	Optional<StockEntity> fetchStockByProductAndUnit(ProductDescription productDescription, Unit unit, EntityStatus entityStatus)
+			throws BusinessException;
 }

@@ -5,11 +5,14 @@ package mz.co.grocery.persistence.sale.adapter;
 
 import java.time.LocalDate;
 import java.util.List;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import mz.co.grocery.core.application.sale.out.StockPort;
 import mz.co.grocery.core.common.PersistenceAdapter;
+import mz.co.grocery.core.domain.item.ProductDescription;
 import mz.co.grocery.core.domain.sale.Stock;
+import mz.co.grocery.core.domain.unit.Unit;
 import mz.co.grocery.persistence.sale.entity.StockEntity;
 import mz.co.grocery.persistence.sale.repository.StockRepositoty;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
@@ -135,5 +138,17 @@ public class StockAdapter implements StockPort {
 	@Override
 	public Stock findStockById(final Long stockId) throws BusinessException {
 		return this.mapper.toDomain(this.repositoty.findById(stockId));
+	}
+
+	@Override
+	public Optional<Stock> fetchStockByProductAndUnit(final ProductDescription productDescription, final Unit unit) throws BusinessException {
+
+		final Optional<StockEntity> stock = this.repositoty.fetchStockByProductAndUnit(productDescription, unit, EntityStatus.ACTIVE);
+
+		if (stock.isPresent()) {
+			return Optional.of(this.mapper.toDomain(stock.get()));
+		}
+
+		return Optional.empty();
 	}
 }

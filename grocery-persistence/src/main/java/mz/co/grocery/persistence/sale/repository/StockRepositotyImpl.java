@@ -6,10 +6,15 @@ package mz.co.grocery.persistence.sale.repository;
 import java.time.LocalDate;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
+
+import javax.persistence.NoResultException;
 
 import org.springframework.stereotype.Repository;
 
+import mz.co.grocery.core.domain.item.ProductDescription;
 import mz.co.grocery.core.domain.sale.Stock;
+import mz.co.grocery.core.domain.unit.Unit;
 import mz.co.grocery.persistence.sale.entity.StockEntity;
 import mz.co.msaude.boot.frameworks.dao.GenericDAOImpl;
 import mz.co.msaude.boot.frameworks.exception.BusinessException;
@@ -93,5 +98,18 @@ public class StockRepositotyImpl extends GenericDAOImpl<StockEntity, Long> imple
 	public List<StockEntity> fetchInAnalysisByUnitUuid(final String unitUuid, final EntityStatus entityStatus) throws BusinessException {
 		return this.findByNamedQuery(StockRepositoty.QUERY_NAME.fetchInAnalysisByUnitUuid,
 				new ParamBuilder().add("unitUuid", unitUuid).add("entityStatus", entityStatus).process());
+	}
+
+	@Override
+	public Optional<StockEntity> fetchStockByProductAndUnit(final ProductDescription productDescription, final Unit unit,
+			final EntityStatus entityStatus)
+					throws BusinessException {
+		try {
+			return Optional.of(this.findSingleByNamedQuery(StockRepositoty.QUERY_NAME.fetchStockByProductAndUnit,
+					new ParamBuilder().add("productDescriptionUuid", productDescription.getUuid()).add("unitUuid", unit.getUuid())
+					.add("entityStatus", entityStatus).process()));
+		} catch (final NoResultException e) {
+			return Optional.empty();
+		}
 	}
 }

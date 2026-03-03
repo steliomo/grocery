@@ -38,7 +38,8 @@ import mz.co.msaude.boot.frameworks.util.ProxyUtil;
 	@NamedQuery(name = StockRepositoty.QUERY_NAME.fetchByGrocery, query = StockRepositoty.QUERY.fetchByGrocery),
 	@NamedQuery(name = StockRepositoty.QUERY_NAME.fetchByGroceryAndSalePeriod, query = StockRepositoty.QUERY.fetchByGroceryAndSalePeriod),
 	@NamedQuery(name = StockRepositoty.QUERY_NAME.fetchNotInThisGroceryByProduct, query = StockRepositoty.QUERY.fetchNotInThisGroceryByProduct),
-	@NamedQuery(name = StockRepositoty.QUERY_NAME.fetchInAnalysisByUnitUuid, query = StockRepositoty.QUERY.fetchInAnalysisByUnitUuid) })
+	@NamedQuery(name = StockRepositoty.QUERY_NAME.fetchInAnalysisByUnitUuid, query = StockRepositoty.QUERY.fetchInAnalysisByUnitUuid),
+	@NamedQuery(name = StockRepositoty.QUERY_NAME.fetchStockByProductAndUnit, query = StockRepositoty.QUERY.fetchStockByProductAndUnit) })
 @Entity
 @Table(name = "STOCKS")
 public class StockEntity extends GenericEntity {

@@ -22,6 +22,7 @@ import javax.ws.rs.core.Response;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
+import mz.co.grocery.core.application.item.in.RegistStockProductUseCase;
 import mz.co.grocery.core.application.sale.out.StockPort;
 import mz.co.grocery.core.common.WebAdapter;
 import mz.co.grocery.core.domain.sale.Stock;
@@ -48,13 +49,16 @@ public class StockResource extends AbstractResource {
 	@Autowired
 	private DTOMapper<StockDTO, Stock> stockMapper;
 
+	@Inject
+	private RegistStockProductUseCase registStockProductUseCase;
+
 	@POST
 	@Consumes(MediaType.APPLICATION_JSON)
 	@Produces(MediaType.APPLICATION_JSON)
 	public Response createStock(final StockDTO stockDTO) throws BusinessException {
 		Stock stock = this.stockMapper.toDomain(stockDTO);
 
-		stock = this.stockPort.createStock(this.getContext(), stock);
+		stock = this.registStockProductUseCase.regist(this.getContext(), stock);
 
 		return Response.ok(this.stockMapper.toDTO(stock)).build();
 	}
