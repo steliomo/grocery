@@ -4,7 +4,6 @@
 package mz.co.grocery.core.payment;
 
 import java.math.BigDecimal;
-import java.math.RoundingMode;
 
 import org.junit.Assert;
 import org.junit.Test;
@@ -23,6 +22,6 @@ public class DiscountCalculationTest {
 
 		final Discount discount = Voucher.QUARTERLY.getDiscount();
 
-		Assert.assertEquals(discount.getDiscount(), new BigDecimal(45).setScale(1, RoundingMode.FLOOR));
+		Assert.assertEquals(discount.getDiscount(), BigDecimal.ZERO);
 	}
 }

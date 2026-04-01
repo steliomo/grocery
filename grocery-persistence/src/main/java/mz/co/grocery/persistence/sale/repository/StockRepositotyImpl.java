@@ -105,9 +105,10 @@ public class StockRepositotyImpl extends GenericDAOImpl<StockEntity, Long> imple
 			final EntityStatus entityStatus)
 					throws BusinessException {
 		try {
-			return Optional.of(this.findSingleByNamedQuery(StockRepositoty.QUERY_NAME.fetchStockByProductAndUnit,
+			return Optional.of(this.findByQuery(StockRepositoty.QUERY_NAME.fetchStockByProductAndUnit,
 					new ParamBuilder().add("productDescriptionUuid", productDescription.getUuid()).add("unitUuid", unit.getUuid())
-					.add("entityStatus", entityStatus).process()));
+					.add("entityStatus", entityStatus).process())
+					.setMaxResults(1).getSingleResult());
 		} catch (final NoResultException e) {
 			return Optional.empty();
 		}

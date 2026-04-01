@@ -11,7 +11,7 @@ import java.math.BigDecimal;
  */
 public interface Discount {
 
-	BigDecimal SUBSCRITION_BASE_VALUE = new BigDecimal(10);
+	BigDecimal SUBSCRITION_BASE_VALUE = new BigDecimal(20);
 
 	BigDecimal getDiscount();
 
